@@ -32,7 +32,7 @@ Ky projekt eshte i punuar ne
 
 ## Konfigurimi
 
-Se pari duhet te behet konfigurimi i Connection String ne FinanCare/appsettings.json dhe duhet te nderrohet emri i Server me ate te serverit tuaj, pastaj ju duhet te beni run komanden **update-database** ne **Serverin e Projektit - FinanCare** e cili do te mundesoj gjenerimin ne teresi te databases dhe insertimin e te dhenave bazike, pasi te keni perfunduar me keto hapa ju duhet qe te beni **run** serverin dhe pastaj ne VSC pjesen e React qe gjendet tek **financare** duhet te hapet ne terminal pastaj duhen te behen run keto komonda:
+Se pari duhet te behet konfigurimi i Connection String ne FinanCare/appsettings.json dhe duhet te nderrohet emri i Server me ate te serverit tuaj, pastaj ju duhet te beni run komanden **EntityFrameworkCore\update-database** ne **Serverin e Projektit - FinanCare** e cili do te mundesoj gjenerimin ne teresi te databases dhe insertimin e te dhenave bazike, pasi te keni perfunduar me keto hapa ju duhet qe te beni **run** serverin dhe pastaj ne VSC pjesen e React qe gjendet tek **financare** duhet te hapet ne terminal pastaj duhen te behen run keto komonda:
 
 - **npm i** - Bene instalimin automatik te paketave te nevojtura,
 - **npm run build** - Bene Build Projektin,
