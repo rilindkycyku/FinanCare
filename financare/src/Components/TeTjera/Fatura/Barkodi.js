@@ -1,4 +1,3 @@
-import React from "react";
 import { useBarcode } from "next-barcode";
 
 const Barkodi = ({ value }) => {

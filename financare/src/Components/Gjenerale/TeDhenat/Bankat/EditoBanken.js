@@ -5,7 +5,6 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
-import Bankat from "../../../../Pages/Gjenerale/TeDhenat/Bankat";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoBanken(props) {

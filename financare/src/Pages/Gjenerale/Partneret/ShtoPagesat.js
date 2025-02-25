@@ -1,27 +1,17 @@
 import { useEffect, useState } from "react";
-import classes from "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
-  faXmark,
-  faPenToSquare,
-  faArrowLeft,
-  faDownload,
-  faClose,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Table, Form, Container, Row, Col } from "react-bootstrap";
+import { Form, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { Modal } from "react-bootstrap";
-import useKeyboardNavigation from "../../../Context/useKeyboardNavigation";
-import { Helmet } from "react-helmet";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Select from "react-select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function ShtoPagesat(props) {

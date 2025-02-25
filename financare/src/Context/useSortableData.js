@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { parseISO, isValid, isWithinInterval } from 'date-fns';
 
 const useSortableData = (items, config = null, search = '', itemsPerPage = 10, dateField = null, startDate = null, endDate = null) => {

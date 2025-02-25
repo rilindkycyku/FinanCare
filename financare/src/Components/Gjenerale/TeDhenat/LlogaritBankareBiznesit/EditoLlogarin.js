@@ -5,7 +5,6 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
-import Bankat from "../../../../Pages/Gjenerale/TeDhenat/Bankat";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 

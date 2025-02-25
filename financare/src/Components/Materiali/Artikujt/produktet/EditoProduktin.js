@@ -1,11 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Col, Button, Form, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
-import useKeyboardNavigation from "../../../../Context/useKeyboardNavigation";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 

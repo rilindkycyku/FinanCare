@@ -1,26 +1,14 @@
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
-import Button from "react-bootstrap/Button";
 import ShtoGrupetEProduktit from "../../../Components/Materiali/Artikujt/GrupetEProduktit/ShtoGrupetEProduktit";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faPenToSquare,
-  faPlus,
-  faClose,
-} from "@fortawesome/free-solid-svg-icons";
 import EditoGrupetEProduktit from "../../../Components/Materiali/Artikujt/GrupetEProduktit/EditoGrupetEProduktit";
 import LargoGrupetEProduktit from "../../../Components/Materiali/Artikujt/GrupetEProduktit/LargoGrupetEProduktit";
 import { TailSpin } from "react-loader-spinner";
-import { MDBBtn, MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
-import { Link } from "react-router-dom";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
-import Titulli from "../../../Components/TeTjera/Titulli";
 
 function GrupetEProduktit(props) {
   const [njesiteMatese, setNjesiteMatese] = useState([]);

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import NavBar from "../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import "./Styles/Dashboard.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,12 +8,11 @@ import { Tab, Tabs, Form, InputGroup, Row, Col } from "react-bootstrap";
 import Titulli from "../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import {
-  MDBBtnGroup,
   MDBContainer,
   MDBNavbar,
   MDBNavbarItem,
   MDBNavbarLink,
-  MDBNavbarNav,
+  MDBNavbarNav
 } from "mdb-react-ui-kit";
 import { roleBasedDropdowns } from "../Components/TeTjera/layout/roleBasedDropdowns";
 import jwtDecode from "jwt-decode";

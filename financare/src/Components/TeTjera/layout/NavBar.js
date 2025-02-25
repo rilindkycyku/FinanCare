@@ -12,15 +12,12 @@ import {
   MDBDropdown,
   MDBDropdownMenu,
   MDBDropdownItem,
-  MDBDropdownToggle,
+  MDBDropdownToggle
 } from "mdb-react-ui-kit";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
 import {
   faRightFromBracket,
   faRightToBracket,
-  faCartShopping,
 } from "@fortawesome/free-solid-svg-icons";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";

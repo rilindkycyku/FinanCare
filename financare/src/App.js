@@ -33,6 +33,7 @@ import LlogaritBankareBiznesit from "./Pages/Gjenerale/TeDhenat/LlogaritBankareB
 import NukKeniAkses from "./Components/TeTjera/ErrorPages/403";
 import NukUGjet from "./Components/TeTjera/ErrorPages/404";
 import ShikimiQmimeve from "./Pages/ShikimiQmimeve";
+import Stoqet from "./Pages/Materiali/Artikujt/Stoqet";
 
 function App() {
   useEffect(() => {
@@ -86,6 +87,7 @@ function App() {
           element={<LlogaritBankareBiznesit />}
         />
         <Route path="/ShikimiQmimeve" element={<ShikimiQmimeve />} />
+        <Route path="/Stoqet" element={<Stoqet />} />
 
         <Route path="/403" element={<NukKeniAkses />} />
         <Route path="/404" element={<NukUGjet />} />

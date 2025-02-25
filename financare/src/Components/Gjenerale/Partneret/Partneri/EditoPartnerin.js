@@ -3,7 +3,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Form, Col, Button, Modal, Tabs, Tab } from "react-bootstrap";
-import { MDBRow, MDBCol, MDBInput, MDBBtn, MDBTooltip } from "mdb-react-ui-kit";
+import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoKompanin(props) {

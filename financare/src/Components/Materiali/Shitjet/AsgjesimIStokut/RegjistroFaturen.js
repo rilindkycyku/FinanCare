@@ -6,13 +6,11 @@ import Mesazhi from "../../../TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
-  faXmark,
   faPenToSquare,
   faArrowLeft,
-  faFileImport,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Table, Form, Container, Row, Col } from "react-bootstrap";
+import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import useKeyboardNavigation from "../../../../Context/useKeyboardNavigation";

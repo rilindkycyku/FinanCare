@@ -79,7 +79,7 @@ builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "FinanCare_API",
-        Version = "v1"
+        Version = "v2"
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {

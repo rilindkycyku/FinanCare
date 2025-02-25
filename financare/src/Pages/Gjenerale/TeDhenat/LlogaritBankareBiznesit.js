@@ -1,25 +1,13 @@
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
-import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faPenToSquare,
-  faPlus,
-  faClose,
-} from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { MDBBtn, MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
-import { Link } from "react-router-dom";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import ShtoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankareBiznesit/ShtoLlogarin";
 import EditoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankareBiznesit/EditoLlogarin";
 import LargoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankareBiznesit/LargoLlogarin";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function LlogaritBankareBiznesit(props) {
   const [bankat, setBankat] = useState([]);

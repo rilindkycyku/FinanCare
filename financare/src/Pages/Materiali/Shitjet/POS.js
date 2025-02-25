@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import classes from "../../../Pages/Styles/DizajniPergjithshem.css";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -10,14 +8,12 @@ import {
   faPlus,
   faXmark,
   faPenToSquare,
-  faArrowLeft,
-  faDolly,
+  faDolly
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Table, Form, Container, Row, Col, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
-import useKeyboardNavigation from "../../../Context/useKeyboardNavigation";
 import Select from "react-select";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";

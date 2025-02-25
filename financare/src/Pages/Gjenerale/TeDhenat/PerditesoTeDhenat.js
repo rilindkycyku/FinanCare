@@ -1,22 +1,18 @@
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import "../../Styles/PerditesoTeDhenat.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
-import { Link, useNavigate } from "react-router-dom";
-import { MDBRow, MDBCol, MDBInput, MDBBtn } from "mdb-react-ui-kit";
+import { useNavigate } from "react-router-dom";
+import { MDBRow, MDBCol, MDBInput} from "mdb-react-ui-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faX,
   faEye,
   faEyeSlash,
-  faPenToSquare,
+  faPenToSquare
 } from "@fortawesome/free-solid-svg-icons";
-
-import Form from "react-bootstrap/Form";
 
 function PerditesoTeDhenat(props) {
   const [teDhenat, setTeDhenat] = useState([]);

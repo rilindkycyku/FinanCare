@@ -6,31 +6,14 @@ import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
-  faXmark,
-  faPenToSquare,
-  faL,
-  faArrowRotateForward,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Table, Form, Container, Row, Col } from "react-bootstrap";
+import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { Modal } from "react-bootstrap";
-import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import RegjistroFaturen from "../../../Components/Materiali/Shitjet/Porosite/RegjistroFaturen";
 import PerditesoStatusinKalk from "../../../Components/Materiali/Shitjet/Porosite/PerditesoStatusinKalk";
 import TeDhenatKalkulimit from "../../../Components/Materiali/Shitjet/Porosite/TeDhenatKalkulimit";
-import { Helmet } from "react-helmet";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import useKeyboardNavigation from "../../../Context/useKeyboardNavigation";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateField } from "@mui/x-date-pickers/DateField";
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
 // import Select from "@mui/material/Select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";

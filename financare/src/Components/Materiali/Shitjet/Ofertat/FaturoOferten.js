@@ -1,12 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPenToSquare,
   faCheck,
   faXmark,
-  faFileImport,
+  faFileImport
 } from "@fortawesome/free-solid-svg-icons";
 import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";

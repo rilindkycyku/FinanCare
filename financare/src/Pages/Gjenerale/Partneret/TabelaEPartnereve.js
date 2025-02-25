@@ -1,26 +1,13 @@
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
-import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faPenToSquare,
-  faPlus,
-  faClose,
-} from "@fortawesome/free-solid-svg-icons";
 import EditoKompanin from "../../../Components/Gjenerale/Partneret/Partneri/EditoPartnerin";
 import LargoKompanin from "../../../Components/Gjenerale/Partneret/Partneri/LargoPartnerin";
 import { TailSpin } from "react-loader-spinner";
-import { MDBBtn, MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
-import { Link } from "react-router-dom";
 import ShtoPartnerin from "../../../Components/Gjenerale/Partneret/Partneri/ShtoPartnerin";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-import { Row } from "react-bootstrap";
-import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function TabelaEKompanive(props) {

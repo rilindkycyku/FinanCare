@@ -3,13 +3,10 @@ import { useState, useEffect } from "react";
 import "../../Styles/ProductTables.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
-import ShtoProduktin from "../../../Components/Materiali/Artikujt/Produktet/ShtoProduktin";
-import EditoProduktin from "../../../Components/Materiali/Artikujt/Produktet/EditoProduktin";
 import { TailSpin } from "react-loader-spinner";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-import LargoProduktin from "../../../Components/Materiali/Artikujt/Produktet/LargoProduktin";
 
-const ProductTables = () => {
+const Stoqet = () => {
   const [produkti, setProdukti] = useState([]);
   const [id, setId] = useState();
   const [perditeso, setPerditeso] = useState("");
@@ -47,11 +44,19 @@ const ProductTables = () => {
             "Njesia Matese": k.emriNjesiaMatese,
             "Grupi i Produktit": k.grupiIProduktit,
             "Lloji TVSH %": k.llojiTVSH,
+            "Sasia ne Stok": k.sasiaNeStok,
+            "Qmimi i Furnizimit €": parseFloat(k.qmimiBleres)?.toFixed(2) ?? 0,
+            "Vlera e Furnizimit €":
+              parseFloat(k.sasiaNeStok * k.qmimiBleres)?.toFixed(2) ?? 0,
             "Qmimi i Produktit Me Pakic €":
               parseFloat(k.qmimiProduktit)?.toFixed(2) ?? 0,
+            "Vlera Shitese €":
+              parseFloat(k.sasiaNeStok * k.qmimiProduktit)?.toFixed(2) ?? 0,
+            "Sasia e Shumices": k.sasiaShumices,
             "Qmimi i Produktit Me Shumic €":
               parseFloat(k.qmimiMeShumic)?.toFixed(2) ?? 0,
-            "Sasia e Shumices": k.sasiaShumices,
+            "Vlera Shitese Me Shumic €":
+              parseFloat(k.sasiaShumices * k.qmimiMeShumic)?.toFixed(2) ?? 0,
           }))
         );
         setLoading(false);
@@ -94,42 +99,11 @@ const ProductTables = () => {
       <NavBar />
 
       <div className="containerDashboardP">
-        {show && (
-          <ShtoProduktin
-            show={handleShow}
-            hide={handleClose}
-            shfaqmesazhin={() => setShfaqMesazhin(true)}
-            perditesoTeDhenat={() => setPerditeso(Date.now())}
-            setTipiMesazhit={setTipiMesazhit}
-            setPershkrimiMesazhit={setPershkrimiMesazhit}
-          />
-        )}
         {shfaqMesazhin && (
           <Mesazhi
             setShfaqMesazhin={setShfaqMesazhin}
             pershkrimi={pershkrimiMesazhit}
             tipi={tipiMesazhit}
-          />
-        )}
-        {edito && (
-          <EditoProduktin
-            show={handleShow}
-            hide={handleEditoMbyll}
-            id={id}
-            shfaqmesazhin={() => setShfaqMesazhin(true)}
-            perditesoTeDhenat={() => setPerditeso(Date.now())}
-            setTipiMesazhit={setTipiMesazhit}
-            setPershkrimiMesazhit={setPershkrimiMesazhit}
-          />
-        )}
-        {fshij && (
-          <LargoProduktin
-            largo={() => handleFshijMbyll()}
-            id={id}
-            shfaqmesazhin={() => setShfaqMesazhin(true)}
-            perditesoTeDhenat={() => setPerditeso(Date.now())}
-            setTipiMesazhit={setTipiMesazhit}
-            setPershkrimiMesazhit={setPershkrimiMesazhit}
           />
         )}
         {loading ? (
@@ -148,21 +122,7 @@ const ProductTables = () => {
         ) : (
           <>
             <div className="mt-2">
-              <Tabela
-                data={produkti}
-                tableName="Lista e Produkteve"
-                kaButona={true}
-                funksionButonShto={handleShow}
-                funksionButonEdit={(e) => {
-                  setId(e);
-                  handleEdito(e);
-                }}
-                funksionButonFshij={(e) => {
-                  setId(e);
-                  handleFshij(e);
-                }}
-                mosShfaqID={true}
-              />
+              <Tabela data={produkti} tableName="Stoqet" mosShfaqID={true} />
             </div>
           </>
         )}
@@ -171,4 +131,4 @@ const ProductTables = () => {
   );
 };
 
-export default ProductTables;
+export default Stoqet;

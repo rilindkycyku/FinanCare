@@ -1,7 +1,7 @@
 import "./Styles/Fatura.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import DetajeFatura from "./DetajeFatura";

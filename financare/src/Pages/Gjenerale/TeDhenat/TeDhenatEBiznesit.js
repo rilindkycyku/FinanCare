@@ -1,15 +1,12 @@
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import { useEffect, useState } from "react";
 import "../../Styles/TeDhenatEBiznesit.css";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
-
-import { MDBRow, MDBCol, MDBInput, MDBBtn } from "mdb-react-ui-kit";
+import { MDBRow, MDBCol, MDBInput} from "mdb-react-ui-kit";
 import Titulli from "../../../Components/TeTjera/Titulli";
-import KontrolloAksesinNeFunksione from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 

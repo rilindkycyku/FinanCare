@@ -1,11 +1,10 @@
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import "../../Styles/Statistika.css";
 import "../../Styles/DizajniPergjithshem.css";
 import Card from "react-bootstrap/Card";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { MDBBtn, MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
+import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import ChartComponent from "../../../Components/TeTjera/Chart/ChartComponent";
 import { Col, Row } from "react-bootstrap";
 import Titulli from "../../../Components/TeTjera/Titulli";

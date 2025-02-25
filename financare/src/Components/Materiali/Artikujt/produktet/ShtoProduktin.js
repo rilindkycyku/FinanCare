@@ -1,12 +1,11 @@
-import { React, useState, useRef } from "react";
+import { useState} from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faBan, faL } from "@fortawesome/free-solid-svg-icons";
+import { faXmark} from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
-import useKeyboardNavigation from "../../../../Context/useKeyboardNavigation";
 import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
 import { Col } from "react-bootstrap";
 import Select from "react-select";

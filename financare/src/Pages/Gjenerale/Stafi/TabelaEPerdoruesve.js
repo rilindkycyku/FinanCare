@@ -1,5 +1,4 @@
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { Helmet } from "react-helmet";
 import { useEffect, useState } from "react";
 import "../../Styles/TabelaEPerdoruesve.css";
 import "../../Styles/DizajniPergjithshem.css";
@@ -7,15 +6,9 @@ import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
 import EditoPerdorues from "../../../Components/Gjenerale/Stafi/users/EditoPerdorues";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import Button from "react-bootstrap/Button";
 import Rolet from "./Rolet";
-import { Link } from "react-router-dom";
-import { MDBBtn, MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import ShtoPerdorues from "../../../Components/Gjenerale/Stafi/users/ShtoPerdorues";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function TabelaEPerdoruesve() {

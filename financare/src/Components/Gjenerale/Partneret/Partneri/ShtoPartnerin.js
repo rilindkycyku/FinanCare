@@ -8,9 +8,8 @@ import {
   Tab,
   Tabs,
   Form,
-  InputGroup,
   Row,
-  Col,
+  Col
 } from "react-bootstrap";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 function ShtoPartnerin(props) {

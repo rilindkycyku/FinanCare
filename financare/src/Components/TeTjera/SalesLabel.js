@@ -1,4 +1,3 @@
-import React from "react";
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
 import { Button } from "react-bootstrap";

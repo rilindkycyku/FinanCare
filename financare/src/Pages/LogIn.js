@@ -1,7 +1,3 @@
-import React from "react";
-import { Helmet } from "react-helmet";
-import NavBar from "../Components/TeTjera/layout/NavBar";
-import Form from "react-bootstrap/Form";
 import "./Styles/LogIn.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -9,13 +5,10 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import {
   MDBContainer,
-  MDBRow,
-  MDBCol,
   MDBCard,
   MDBCardBody,
-  MDBInput,
+  MDBInput
 } from "mdb-react-ui-kit";
-import { Link } from "react-router-dom";
 import Mesazhi from "../Components/TeTjera/layout/Mesazhi";
 import Titulli from "../Components/TeTjera/Titulli";
 

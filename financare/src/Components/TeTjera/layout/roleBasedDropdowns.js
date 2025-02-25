@@ -27,6 +27,10 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Kalkulant", "Faturist"],
             path: "/KartelaEArtikullit",
             label: "Kartela e Artikullit",
+          },{
+            roles: ["Menaxher", "Kalkulant"],
+            path: "/Stoqet",
+            label: "Stoqet",
           },
           { isDivider: true },
           {

@@ -6,11 +6,6 @@ import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
-  faXmark,
-  faPenToSquare,
-  faL,
-  faArrowRotateForward,
-  faFileImport,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
@@ -18,12 +13,9 @@ import { useNavigate } from "react-router-dom";
 import RegjistroFaturen from "../../../Components/Materiali/Shitjet/Ofertat/RegjistroFaturen";
 import PerditesoStatusinKalk from "../../../Components/Materiali/Shitjet/Ofertat/PerditesoStatusinKalk";
 import TeDhenatKalkulimit from "../../../Components/Materiali/Shitjet/Ofertat/TeDhenatKalkulimit";
-import { Helmet } from "react-helmet";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import useKeyboardNavigation from "../../../Context/useKeyboardNavigation";
 import FaturoOferten from "../../../Components/Materiali/Shitjet/Ofertat/FaturoOferten";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-
 import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 

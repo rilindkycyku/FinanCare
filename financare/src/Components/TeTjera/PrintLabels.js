@@ -1,9 +1,8 @@
-import React from "react";
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faPrint } from "@fortawesome/free-solid-svg-icons";
 
 const PrintLabels = ({ storeName, products }) => {
   const generatePDF = () => {

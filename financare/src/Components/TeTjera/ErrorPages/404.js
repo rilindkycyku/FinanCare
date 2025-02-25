@@ -1,5 +1,4 @@
 import { Col, Image, Row } from "react-bootstrap";
-import { Helmet } from "react-helmet";
 import NavBar from "../layout/NavBar";
 import Titulli from "../Titulli";
 import { useEffect } from "react";

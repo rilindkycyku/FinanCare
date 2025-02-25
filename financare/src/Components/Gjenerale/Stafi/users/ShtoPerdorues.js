@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import ToggleButton from "react-bootstrap/ToggleButton";
-import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -12,7 +10,7 @@ import {
   Form,
   InputGroup,
   Row,
-  Col,
+  Col
 } from "react-bootstrap";
 import Select from "react-select";
 import DatePicker from "react-datepicker";

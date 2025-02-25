@@ -1,6 +1,6 @@
 import "./Styles/Fatura.css";
 import axios from "axios";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect} from "react";
 
 function TeDhenatFatura(props) {
   const [perditeso, setPerditeso] = useState(Date.now());
