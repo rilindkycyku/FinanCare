@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./Pages/Dashboard";
-
 import LogIn from "./Pages/LogIn";
 import { useEffect } from "react";
 import Aos from "aos";
@@ -34,6 +33,7 @@ import NukKeniAkses from "./Components/TeTjera/ErrorPages/403";
 import NukUGjet from "./Components/TeTjera/ErrorPages/404";
 import ShikimiQmimeve from "./Pages/ShikimiQmimeve";
 import Stoqet from "./Pages/Materiali/Artikujt/Stoqet";
+import KalkulimiFillestarVjetor from "./Pages/Materiali/Hyrjet/KalkulimiFillestarVjetor";
 
 function App() {
   useEffect(() => {
@@ -88,6 +88,7 @@ function App() {
         />
         <Route path="/ShikimiQmimeve" element={<ShikimiQmimeve />} />
         <Route path="/Stoqet" element={<Stoqet />} />
+        <Route path="/KalkulimiFillestarVjetor" element={<KalkulimiFillestarVjetor />} />
 
         <Route path="/403" element={<NukKeniAkses />} />
         <Route path="/404" element={<NukUGjet />} />

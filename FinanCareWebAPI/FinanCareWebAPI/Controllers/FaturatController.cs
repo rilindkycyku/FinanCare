@@ -587,6 +587,40 @@ namespace WebAPI.Controllers
 
         [Authorize]
         [HttpPut]
+        [Route("ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin")]
+        public async Task<IActionResult> Putkalkulimifillestarvjetor(int id, [FromBody] StokuQmimiProduktit stoku)
+        {
+            var produkti = await _context.StokuQmimiProduktit.FindAsync(id);
+            if (produkti == null)
+            {
+                return NotFound();
+            }
+
+            produkti.SasiaNeStok = stoku.SasiaNeStok;
+            produkti.DataPerditsimit = DateTime.Now;
+            produkti.QmimiProduktit = stoku.QmimiProduktit;
+            produkti.QmimiBleres = stoku.QmimiBleres;
+            produkti.QmimiMeShumic = stoku.QmimiMeShumic;
+
+            if (stoku.DataKrijimit == null)
+            {
+                produkti.DataKrijimit = produkti.DataKrijimit;
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return Ok(produkti);
+        }
+
+        [Authorize]
+        [HttpPut]
         [Route("FaturoOferten/PerditesoStokun")]
         public async Task<IActionResult> FaturoOfertenPerditesoStokun(int id, string lloji, double stoku)
         {
