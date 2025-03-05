@@ -10,9 +10,8 @@ import {
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Form, Container, Row, Col } from "react-bootstrap";
+import { Form, Container, Row, Col, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { Modal } from "react-bootstrap";
 import Select from "react-select";
 import Tabela from "../../../TeTjera/Tabela/Tabela";
 import PrintLabels from "../../../TeTjera/PrintLabels";
@@ -23,7 +22,8 @@ function RegjistroFaturen(props) {
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
   const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // For initial loading
+  const [isLoadingKartela, setIsLoadingKartela] = useState(false); // For VendosKartelenMenaxherit
   const [produktetNeKalkulim, setproduktetNeKalkulim] = useState([]);
   const [emriProduktit, setEmriProduktit] = useState("");
   const [produktiID, setproduktiID] = useState(0);
@@ -38,19 +38,14 @@ function RegjistroFaturen(props) {
   const [qmimiSH, setQmimiSH] = useState(0);
   const [llojiTVSH, setLlojiTVSH] = useState(0);
   const [qmimiSH2, setQmimiSH2] = useState(0);
-
   const [idTeDhenatKalk, setIdTeDhenatKalk] = useState(0);
-
   const [edito, setEdito] = useState(false);
   const [konfirmoMbylljenFatures, setKonfirmoMbylljenFatures] = useState(false);
   const [konfirmoProduktin, setKonfirmoProduktin] = useState(false);
-
   const [teDhenat, setTeDhenat] = useState([]);
   const [teDhenatFatures, setTeDhenatFatures] = useState([]);
-
   const [siteName, setSiteName] = useState("FinanCare");
   const [produktetQmimore, setProduktetQmimore] = useState([]);
-
   const [kartelaMenaxherit, setKartelaMenaxherit] = useState("");
   const [vendosKartelenMenaxherit, setVendosKartelenMenaxherit] =
     useState(false);
@@ -58,9 +53,7 @@ function RegjistroFaturen(props) {
   const [pendingId, setPendingId] = useState(null);
 
   const navigate = useNavigate();
-
   const getID = localStorage.getItem("id");
-
   const getToken = localStorage.getItem("token");
 
   const authentikimi = {
@@ -73,6 +66,7 @@ function RegjistroFaturen(props) {
     if (getID) {
       const vendosTeDhenat = async () => {
         try {
+          setLoading(true);
           const perdoruesi = await axios.get(
             `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
@@ -84,7 +78,6 @@ function RegjistroFaturen(props) {
           setLoading(false);
         }
       };
-
       vendosTeDhenat();
     } else {
       navigate("/login");
@@ -95,6 +88,7 @@ function RegjistroFaturen(props) {
     if (props.idKalkulimitEdit != 0) {
       const vendosTeDhenat = async () => {
         try {
+          setLoading(true);
           const teDhenatKalkulimit = await axios.get(
             `https://localhost:7285/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${props.idKalkulimitEdit}`,
             authentikimi
@@ -134,7 +128,7 @@ function RegjistroFaturen(props) {
             }))
           );
           setProduktetQmimore(
-            teDhenatKalkulimit.data.map((k, index) => ({
+            teDhenatKalkulimit.data.map((k) => ({
               name: k.emriProduktit,
               price: k.qmimiShites,
               wholesalePrice: k.qmimiShitesMeShumic,
@@ -148,7 +142,6 @@ function RegjistroFaturen(props) {
           setLoading(false);
         }
       };
-
       vendosTeDhenat();
     }
   }, [perditeso, produktiID]);
@@ -165,7 +158,6 @@ function RegjistroFaturen(props) {
         console.log(err);
       }
     };
-
     vendosProduktet();
   }, [perditeso]);
 
@@ -213,20 +205,15 @@ function RegjistroFaturen(props) {
         console.log(err);
       }
     };
-
     perditesoFaturen();
   }, [perditeso]);
 
   const handleSubmit = async (event) => {
     if (sasia <= 0) {
-      console.log(optionsSelected);
       setPershkrimiMesazhit("Ju lutem plotesoni te gjitha te dhenat!");
       setTipiMesazhit("danger");
       setShfaqMesazhin(true);
-      console.log(optionsSelected);
     } else {
-      // Check if the product already exists based on productID
-      console.log(produktetNeKalkulim);
       const existingProduct = produktetNeKalkulim.find(
         (product) => product["Barkodi"] === optionsSelected?.item?.barkodi
       );
@@ -235,7 +222,6 @@ function RegjistroFaturen(props) {
         const sasiaNeKalkulim =
           parseFloat(existingProduct["Sasia ne Kalkulim"]) || 0;
         const sasiaNumerike = parseFloat(sasia) || 0;
-
         const sasiaStokut = parseFloat(
           (sasiaNeKalkulim + sasiaNumerike).toFixed(2)
         );
@@ -252,18 +238,16 @@ function RegjistroFaturen(props) {
             },
             authentikimi
           )
-          .then(async () => {
+          .then(() => {
             setPerditeso(Date.now());
           });
-        console.log(existingProduct);
       } else {
-        // If product does not exist, add a new row using the POST request
         await axios
           .post(
             "https://localhost:7285/api/Faturat/ruajKalkulimin/teDhenat",
             {
               idRegjistrimit: props.nrRendorKalkulimit,
-              idProduktit: optionsSelected?.value, // Use the selected product's ID
+              idProduktit: optionsSelected?.value,
               sasiaStokut: sasia,
               qmimiBleres: optionsSelected?.item.qmimiBleres,
               qmimiShites: optionsSelected?.item.qmimiProduktit,
@@ -271,11 +255,11 @@ function RegjistroFaturen(props) {
             },
             authentikimi
           )
-          .then(async () => {
+          .then(() => {
             setPerditeso(Date.now());
           });
       }
-      // Reset form fields after adding the new product
+
       setproduktiID(0);
       setQmimiBleres("");
       setSasia("");
@@ -302,53 +286,8 @@ function RegjistroFaturen(props) {
     setVendosKartelenMenaxherit(true);
   }
 
-  // async function handleMbyllFature() {
-  //   try {
-  //     if (produktetNeKalkulim.length === 0) {
-  //       props.setPerditeso();
-  //       props.mbyllPerkohesisht();
-  //     } else {
-  //       for (let produkti of produktetNeKalkulim) {
-  //         console.log(produkti);
-  //         var prod = produktet.find(
-  //           (item) => item.emriProduktit == produkti["Emri Produktit"]
-  //         );
-
-  //         console.log(produktet);
-
-  //         await axios.put(
-  //           `https://localhost:7285/api/Faturat/ruajKalkulimin/perditesoStokunQmimin?id=${prod.produktiID}`,
-  //           {
-  //             qmimiBleres: produkti["Qmimi Bleres + TVSH €"],
-  //             qmimiProduktit: produkti["Qmimi Shites me Pakic + TVSH €"],
-  //             sasiaNeStok: produkti["Sasia"],
-  //             qmimiMeShumic: produkti["Qmimi Shites me Shumic + TVSH €"],
-  //           },
-  //           authentikimi
-  //         );
-  //       }
-
-  //       props.setPerditeso();
-  //       props.mbyllKalkulimin();
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-
-  async function handleFshij(id) {
-    setPendingAction("delete");
-    setPendingId(id);
-    setVendosKartelenMenaxherit(true);
-  }
-
-  async function handleEdit(id) {
-    setPendingAction("edit");
-    setPendingId(id);
-    setVendosKartelenMenaxherit(true);
-  }
-
   async function VendosKartelenMenaxherit() {
+    setIsLoadingKartela(true); // Start spinner
     try {
       const kaKartele = await axios.get(
         `https://localhost:7285/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaMenaxherit}`,
@@ -369,7 +308,7 @@ function RegjistroFaturen(props) {
             )
             .then((p) => {
               console.log(p.data[0]);
-              setPerditeso(Date.now);
+              setPerditeso(Date.now());
               setEdito(true);
               setproduktiID(p.data[0].idProduktit);
               setEmriProduktit(p.data[0].emriProduktit);
@@ -388,6 +327,30 @@ function RegjistroFaturen(props) {
               props.setPerditeso();
               props.mbyllPerkohesisht();
             } else {
+              // Fetch dataRegjistrimit to determine the year
+              const response = await axios.get(
+                `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
+                authentikimi
+              );
+              const dataRegjistrimit =
+                response.data.regjistrimet.dataRegjistrimit;
+              console.log("dataRegjistrimit:", dataRegjistrimit); // Debugging
+
+              // Extract the year and subtract 1
+              const year = new Date(dataRegjistrimit).getFullYear();
+              const previousYear = year - 1;
+              const newDatabaseName = `FinanCareDB${previousYear}`;
+              const sourceDatabaseName = "FinanCareDB"; // Assuming this remains static
+
+              console.log("newDatabaseName:", newDatabaseName); // Debugging
+
+              // Perform the database import with the dynamic name
+              await axios.post(
+                `https://localhost:7285/api/Database?newDatabaseName=${newDatabaseName}&sourceDatabaseName=${sourceDatabaseName}`,
+                null,
+                authentikimi
+              );
+
               for (let produkti of produktetNeKalkulim) {
                 console.log(produkti);
                 var prod = produktet.find(
@@ -431,7 +394,10 @@ function RegjistroFaturen(props) {
               props.mbyllKalkulimin();
             }
           } catch (error) {
-            console.error(error);
+            console.error("Error during closeInvoice:", error);
+            setTipiMesazhit("danger");
+            setPershkrimiMesazhit("Error processing invoice closure!");
+            setShfaqMesazhin(true);
           }
         }
 
@@ -444,10 +410,25 @@ function RegjistroFaturen(props) {
         setShfaqMesazhin(true);
       }
     } catch (error) {
+      console.error("Error in VendosKartelenMenaxherit:", error);
       setTipiMesazhit("danger");
       setPershkrimiMesazhit("Kartela nuk egziston!");
       setShfaqMesazhin(true);
+    } finally {
+      setIsLoadingKartela(false); // Stop spinner
     }
+  }
+
+  async function handleFshij(id) {
+    setPendingAction("delete");
+    setPendingId(id);
+    setVendosKartelenMenaxherit(true);
+  }
+
+  async function handleEdit(id) {
+    setPendingAction("edit");
+    setPendingId(id);
+    setVendosKartelenMenaxherit(true);
   }
 
   async function handleEdito(id) {
@@ -467,20 +448,19 @@ function RegjistroFaturen(props) {
           },
           authentikimi
         )
-        .then(async () => {
+        .then(() => {
           setPerditeso(Date.now());
+          setproduktiID(0);
+          setQmimiBleres("");
+          setSasia("");
+          setQmimiShites("");
+          setQmimiShitesMeShumic("");
+          setSasiaNeStok(0);
+          setQmimiB(0);
+          setQmimiSH(0);
+          setQmimiSH2(0);
+          setEdito(false);
         });
-
-      setproduktiID(0);
-      setQmimiBleres("");
-      setSasia("");
-      setQmimiShites("");
-      setQmimiShitesMeShumic("");
-      setSasiaNeStok(0);
-      setQmimiB(0);
-      setQmimiSH(0);
-      setQmimiSH2(0);
-      setEdito(false);
     }
   }
 
@@ -494,9 +474,10 @@ function RegjistroFaturen(props) {
   const customStyles = {
     menu: (provided) => ({
       ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
+      zIndex: 1050,
     }),
   };
+
   useEffect(() => {
     axios
       .get(
@@ -522,7 +503,6 @@ function RegjistroFaturen(props) {
   }, []);
 
   const handleChange = async (partneri) => {
-    console.log(partneri);
     if (partneri.item.qmimiProduktit <= 0) {
       setPershkrimiMesazhit(
         "<strong><h5>Ju lutem qe te se pari te caktoni qmimin e produktit! </h5><br>Produkti eshte me qmim <i>0.00€!</i> Si i tille nuk mund te futet ne kalkulim. </strong>"
@@ -533,7 +513,6 @@ function RegjistroFaturen(props) {
     } else {
       setOptionsSelected(partneri);
       document.getElementById("sasia").focus();
-      console.log(partneri);
     }
   };
 
@@ -549,7 +528,6 @@ function RegjistroFaturen(props) {
         console.log(err);
       }
     };
-
     vendosTeDhenatBiznesit();
   }, [perditeso]);
 
@@ -575,40 +553,55 @@ function RegjistroFaturen(props) {
         setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
       />
       <div className={classes.containerDashboardP}>
-        {/* Modal for Manager Card Input */}
         <Modal
           show={vendosKartelenMenaxherit}
-          onHide={() => setVendosKartelenMenaxherit(false)}>
-          <Modal.Header closeButton>
+          onHide={() => !isLoadingKartela && setVendosKartelenMenaxherit(false)} // Disable close during loading
+        >
+          <Modal.Header closeButton={!isLoadingKartela}>
             <Modal.Title>Vendosni Kartelen</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Nr. Karteles se Menaxherit per Fshirje/Editim!"
-              value={kartelaMenaxherit}
-              onChange={(e) => setKartelaMenaxherit(e.target.value)}
-            />
+            {isLoadingKartela ? (
+              <div className="text-center">
+                <TailSpin
+                  height="80"
+                  width="80"
+                  color="#009879"
+                  ariaLabel="tail-spin-loading"
+                  radius="1"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                />
+                <p>Processing... Please wait.</p>
+              </div>
+            ) : (
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Nr. Karteles se Menaxherit per Fshirje/Editim!"
+                value={kartelaMenaxherit}
+                onChange={(e) => setKartelaMenaxherit(e.target.value)}
+                disabled={isLoadingKartela}
+              />
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button
               variant="secondary"
-              onClick={() => setVendosKartelenMenaxherit(false)}>
+              onClick={() => setVendosKartelenMenaxherit(false)}
+              disabled={isLoadingKartela}>
               Anulo
             </Button>
-            <Button variant="primary" onClick={VendosKartelenMenaxherit}>
+            <Button
+              variant="primary"
+              onClick={VendosKartelenMenaxherit}
+              disabled={isLoadingKartela}>
               Konfirmo
             </Button>
           </Modal.Footer>
         </Modal>
 
-        {/* Error Message */}
-        {shfaqMesazhin && (
-          <div className={`alert alert-${tipiMesazhit} mt-3`} role="alert">
-            {pershkrimiMesazhit}
-          </div>
-        )}
         {shfaqMesazhin && (
           <Mesazhi
             setShfaqMesazhin={setShfaqMesazhin}
@@ -626,8 +619,8 @@ function RegjistroFaturen(props) {
             <Modal.Body>
               <strong style={{ fontSize: "15pt" }}>
                 A jeni te sigurt qe deshironi ta mbyllni Faturen?
-                <br></br>
-                <br></br>
+                <br />
+                <br />
                 Perditesimi i kesaj fature nuk do te jete me i mundur!!!!
               </strong>
             </Modal.Body>
@@ -659,7 +652,6 @@ function RegjistroFaturen(props) {
         ) : (
           <>
             <h1 className="title">Kalkulimi i Mallit</h1>
-
             <Container fluid>
               <Row>
                 <Col>
@@ -670,9 +662,9 @@ function RegjistroFaturen(props) {
                         value={optionsSelected}
                         onChange={handleChange}
                         options={options}
-                        id="produktiSelect" // Setting the id attribute
-                        inputId="produktiSelect-input" // Setting the input id attribute
-                        isDisabled={edito}
+                        id="produktiSelect"
+                        inputId="produktiSelect-input"
+                        isDisabled={edito || isLoadingKartela}
                         styles={customStyles}
                       />
                     </Form.Group>
@@ -683,19 +675,17 @@ function RegjistroFaturen(props) {
                         type="number"
                         placeholder={"0.00 " + njesiaMatese}
                         value={sasia}
-                        onChange={(e) => {
-                          setSasia(e.target.value);
-                        }}
+                        onChange={(e) => setSasia(e.target.value)}
                         onKeyDown={handleMenaxhoTastetPagesa}
+                        disabled={isLoadingKartela}
                       />
                     </Form.Group>
-
                     <br />
                     <div style={{ display: "flex", gap: "0.3em" }}>
                       <Button
                         variant="success"
                         type="submit"
-                        disabled={edito}
+                        disabled={edito || isLoadingKartela}
                         onClick={(e) => {
                           e.preventDefault();
                           handleSubmit();
@@ -705,7 +695,8 @@ function RegjistroFaturen(props) {
                       {edito && (
                         <Button
                           variant="warning"
-                          onClick={() => handleEdito(idTeDhenatKalk)}>
+                          onClick={() => handleEdito(idTeDhenatKalk)}
+                          disabled={isLoadingKartela}>
                           Edito Produktin{" "}
                           <FontAwesomeIcon icon={faPenToSquare} />
                         </Button>
@@ -799,8 +790,7 @@ function RegjistroFaturen(props) {
                       {parseFloat(
                         teDhenatFatures.regjistrimet &&
                           teDhenatFatures.regjistrimet.totaliPaTVSH +
-                            teDhenatFatures.regjistrimet &&
-                          teDhenatFatures.regjistrimet.tvsh
+                            teDhenatFatures.regjistrimet.tvsh
                       ).toFixed(2)}{" "}
                       €
                     </h5>
@@ -809,17 +799,18 @@ function RegjistroFaturen(props) {
                       {teDhenatFatures.regjistrimet &&
                         teDhenatFatures.regjistrimet.pershkrimShtese}
                     </h5>
-
                     <hr />
                     <Col>
                       <Button
                         className="mb-3 Butoni"
-                        onClick={() => setKonfirmoMbylljenFatures(true)}>
+                        onClick={() => setKonfirmoMbylljenFatures(true)}
+                        disabled={isLoadingKartela}>
                         Mbyll Faturen <FontAwesomeIcon icon={faPlus} />
                       </Button>
                       <Button
                         className="mb-3 Butoni"
-                        onClick={() => KthehuTekFaturat()}>
+                        onClick={() => KthehuTekFaturat()}
+                        disabled={isLoadingKartela}>
                         <FontAwesomeIcon icon={faArrowLeft} /> Kthehu Mbrapa
                       </Button>
                       <PrintLabels
@@ -842,6 +833,7 @@ function RegjistroFaturen(props) {
                   }}
                   mosShfaqKerkimin
                   mosShfaqID={true}
+                  shfaqEksporto
                 />
               </div>
             </Container>

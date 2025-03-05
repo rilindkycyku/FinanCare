@@ -937,7 +937,6 @@ D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\staticwebassets.build.json
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\staticwebassets.development.json
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\scopedcss\bundle\FinanCareWebAPI.styles.css
-D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\FinanCareWebAPI.csproj.CopyComplete
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\FinanCareWebAPI.dll
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\refint\FinanCareWebAPI.dll
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\FinanCareWebAPI.pdb
@@ -1258,3 +1257,9 @@ D:\OneDrive - ubt-uni.net\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\Fin
 D:\OneDrive - ubt-uni.net\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\FinanCareWebAPI.pdb
 D:\OneDrive - ubt-uni.net\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\FinanCareWebAPI.genruntimeconfig.cache
 D:\OneDrive - ubt-uni.net\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\ref\FinanCareWebAPI.dll
+D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\bin\Debug\net6.0\FinanCareWebAPI.staticwebassets.endpoints.json
+D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\FinanCareWebAPI.sourcelink.json
+D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\staticwebassets.build.endpoints.json
+D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\staticwebassets\msbuild.FinanCareWebAPI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\staticwebassets.upToDateCheck.txt
+D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\FinanCar.9412170B.Up2Date

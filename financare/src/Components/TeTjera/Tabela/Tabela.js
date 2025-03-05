@@ -44,6 +44,7 @@ function Tabela({
   butoniShtypZbritjet,
   storeName,
   products,
+  shfaqEksporto,
 }) {
   const [perditeso, setPerditeso] = useState(Date.now());
   const [searchQuery, setSearchQuery] = useState("");
@@ -129,7 +130,7 @@ function Tabela({
       tabelaDiv.style.zoom = "80%";
     }
   }, []);
-//Rregullimi printo zbritjen
+  //Rregullimi printo zbritjen
   return (
     <div className="tabelaDiv">
       <Titulli titulli={tableName} />
@@ -236,6 +237,25 @@ function Tabela({
               </>
             )}
 
+            {shfaqEksporto && (
+              <>
+                <tr>
+                  <th colSpan={filteredHeaders.length + 1}>
+                    <Row className="align-items-center">
+                      <Col xs="auto" className="pe-0 mx-1">
+                        {data.length > 0 && (
+                          <EksportoTeDhenat
+                            teDhenatJSON={data}
+                            emriDokumentit={tableName}
+                          />
+                        )}
+                      </Col>
+                    </Row>
+                  </th>
+                </tr>
+              </>
+            )}
+
             <tr>
               {filteredHeaders.map((header) => (
                 <th key={header} onClick={() => requestSort(header)}>
@@ -334,20 +354,20 @@ function Tabela({
               </th>
             </tr>
             <tr>
-                  <th colSpan={filteredHeaders.length + 1}>
-                    <Row className="align-items-center">
-                      <Col xs="auto" className="pe-0 mx-1">
-                        {funksionButonShto && (
-                          <Button
-                            variant="success"
-                            onClick={() => funksionButonShto()}>
-                            <FontAwesomeIcon icon={faPlus} />
-                          </Button>
-                        )}
-                      </Col>
-                    </Row>
-                  </th>
-                </tr>
+              <th colSpan={filteredHeaders.length + 1}>
+                <Row className="align-items-center">
+                  <Col xs="auto" className="pe-0 mx-1">
+                    {funksionButonShto && (
+                      <Button
+                        variant="success"
+                        onClick={() => funksionButonShto()}>
+                        <FontAwesomeIcon icon={faPlus} />
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </th>
+            </tr>
           </thead>
           <tbody>
             <tr>

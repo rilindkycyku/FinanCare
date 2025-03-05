@@ -1,0 +1,1577 @@
+[
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "FshijRolet",
+    "RelativePath": "api/Authenticate/fshijRolin",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "emriRolit",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "Login",
+    "RelativePath": "api/Authenticate/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "login",
+        "Type": "WebAPI.Auth.LogInModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "NdryshoFjalekalimin",
+    "RelativePath": "api/Authenticate/NdryshoFjalekalimin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "AspNetID",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fjalekalimiAktual",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fjalekalimiIRi",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "PerditesoAksesin",
+    "RelativePath": "api/Authenticate/PerditesoAksesin",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "roli",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "Register",
+    "RelativePath": "api/Authenticate/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "registerModel",
+        "Type": "WebAPI.Auth.RegisterModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "ResetoFjalekalimin",
+    "RelativePath": "api/Authenticate/ResetoFjalekalimin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "AspNetID",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "ShfaqRolet",
+    "RelativePath": "api/Authenticate/shfaqRolet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "Method": "ShtoRolin",
+    "RelativePath": "api/Authenticate/shtoRolin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roli",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.DatabaseController",
+    "Method": "CreateAndImportDatabase",
+    "RelativePath": "api/Database",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "newDatabaseName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "sourceDatabaseName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "FaturoOferten",
+    "RelativePath": "api/Faturat/FaturoOferten",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "FaturoOfertenPerditesoStokun",
+    "RelativePath": "api/Faturat/FaturoOferten/PerditesoStokun",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "lloji",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "stoku",
+        "Type": "System.Double",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "fshijKalkulimin",
+    "RelativePath": "api/Faturat/fshijKalkulimin",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idKalkulimi",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "fshijKalkuliminPerditesoStokun",
+    "RelativePath": "api/Faturat/fshijKalkulimin/perditesoStokunQmimin",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idKalkulimi",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "idProdukti",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "idTeDhenatKalkulimit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "GetNumriFaturesMeRradhe",
+    "RelativePath": "api/Faturat/getNumriFaturesMeRradhe",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "llojiKalkulimit",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "FshijAsgjesiminPerditesoStokun",
+    "RelativePath": "api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idProdukti",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "idTeDhenatKalkulimit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "lloji",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "PerditesoFaturen",
+    "RelativePath": "api/Faturat/perditesoFaturen",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idKalulimit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "fat",
+        "Type": "FinanCareWebAPI.Models.Faturat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Post",
+    "RelativePath": "api/Faturat/ruajKalkulimin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "regjistrimet",
+        "Type": "FinanCareWebAPI.Models.Faturat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "AsgjesoStokunPerditesoStokunQmimin",
+    "RelativePath": "api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "stoku",
+        "Type": "FinanCareWebAPI.Models.StokuQmimiProduktit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Delete",
+    "RelativePath": "api/Faturat/ruajKalkulimin/FshijTeDhenat",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idTeDhenat",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "DeleteByIdKalkulimi",
+    "RelativePath": "api/Faturat/ruajKalkulimin/FshijTeDhenatNgaIdKalkulimit",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idKalkulimi",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "GetKalkulimi",
+    "RelativePath": "api/Faturat/ruajKalkulimin/getKalkulimi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idKalkulimit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Putkalkulimifillestarvjetor",
+    "RelativePath": "api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "stoku",
+        "Type": "FinanCareWebAPI.Models.StokuQmimiProduktit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Put",
+    "RelativePath": "api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "statusi",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Put",
+    "RelativePath": "api/Faturat/ruajKalkulimin/perditesoStokunQmimin",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "stoku",
+        "Type": "FinanCareWebAPI.Models.StokuQmimiProduktit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Put",
+    "RelativePath": "api/Faturat/ruajKalkulimin/PerditesoTeDhenat",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "teDhenat",
+        "Type": "FinanCareWebAPI.Models.TeDhenatFaturat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Post",
+    "RelativePath": "api/Faturat/ruajKalkulimin/teDhenat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "teDhenat",
+        "Type": "FinanCareWebAPI.Models.TeDhenatFaturat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "ShfaqNumrinRendorFatures",
+    "RelativePath": "api/Faturat/ShfaqNumrinRendorFatures",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "stafiID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "Get",
+    "RelativePath": "api/Faturat/shfaqRegjistrimet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "GetRegjistrimin",
+    "RelativePath": "api/Faturat/shfaqRegjistrimetNgaID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "GetByStatusi",
+    "RelativePath": "api/Faturat/shfaqRegjistrimetSipasStatusit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "statusi",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "GetRegjistrimi",
+    "RelativePath": "api/Faturat/shfaqTeDhenatKalkulimit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "IDRegjistrimit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "Method": "Delete",
+    "RelativePath": "api/GrupiProduktit/fshijGrupinEProduktit",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "Method": "Put",
+    "RelativePath": "api/GrupiProduktit/perditesoGrupinEProduktit",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "k",
+        "Type": "FinanCareWebAPI.Models.GrupiProduktit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "Method": "Get",
+    "RelativePath": "api/GrupiProduktit/shfaqGrupetEProduktit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "Method": "Get",
+    "RelativePath": "api/GrupiProduktit/shfaqGrupinEProduktitSipasIDs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "Method": "Post",
+    "RelativePath": "api/GrupiProduktit/shtoGrupinEProduktit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "grupiIProduktit",
+        "Type": "FinanCareWebAPI.Models.GrupiProduktit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "Method": "Delete",
+    "RelativePath": "api/Kartelat/fshijKartelen",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "Method": "Put",
+    "RelativePath": "api/Kartelat/perditesoKartelen",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "k",
+        "Type": "FinanCareWebAPI.Models.Kartelat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "Method": "ShfaqKartelat",
+    "RelativePath": "api/Kartelat/shfaqKartelat",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "Method": "ShfaqKartelenSipasIDs",
+    "RelativePath": "api/Kartelat/shfaqKartelenSipasIDs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "Method": "ShfaqKartelenSipasKodit",
+    "RelativePath": "api/Kartelat/shfaqKartelenSipasKodit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "kodiKarteles",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "Method": "Post",
+    "RelativePath": "api/Kartelat/shtoKartelen",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "kartela",
+        "Type": "FinanCareWebAPI.Models.Kartelat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "Method": "ShtoKartelenBonus",
+    "RelativePath": "api/Kartelat/ShtoKartelenBonus",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idPartneri",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "stafiID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "rabati",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "Method": "Delete",
+    "RelativePath": "api/NjesiaMatese/fshijNjesineMatese",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "Method": "Put",
+    "RelativePath": "api/NjesiaMatese/perditesoNjesineMatese",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "k",
+        "Type": "FinanCareWebAPI.Models.NjesiaMatese",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "Method": "Get",
+    "RelativePath": "api/NjesiaMatese/shfaqNjesineMateseSipasIDs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "Method": "Get",
+    "RelativePath": "api/NjesiaMatese/shfaqNjesiteMatese",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "Method": "Post",
+    "RelativePath": "api/NjesiaMatese/shtoNjesineMatese",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "njesiaMatese",
+        "Type": "FinanCareWebAPI.Models.NjesiaMatese",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "Delete",
+    "RelativePath": "api/Partneri/fshijPartnerin",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "GetById",
+    "RelativePath": "api/Partneri/KartelaFinanciare",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "Put",
+    "RelativePath": "api/Partneri/perditesoPartnerin",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "k",
+        "Type": "FinanCareWebAPI.Models.Partneri",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "Get",
+    "RelativePath": "api/Partneri/shfaqPartneret",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "GetBleresit",
+    "RelativePath": "api/Partneri/shfaqPartneretBleres",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "GetFurnitoret",
+    "RelativePath": "api/Partneri/shfaqPartneretFurntiore",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "GetSipasLlojit",
+    "RelativePath": "api/Partneri/shfaqPartneretSipasLlojit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "llojiPartnerit",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "Get",
+    "RelativePath": "api/Partneri/shfaqPartnerinSipasIDs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "Method": "Post",
+    "RelativePath": "api/Partneri/shtoPartnerin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "partneri",
+        "Type": "FinanCareWebAPI.Models.Partneri",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "GjeneroTeDhenatPerHyrje",
+    "RelativePath": "api/Perdoruesi/GjeneroTeDhenatPerHyrje",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "e",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "m",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "domain",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "KontrolloEmail",
+    "RelativePath": "api/Perdoruesi/KontrolloEmail",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "KontrolloFjalekalimin",
+    "RelativePath": "api/Perdoruesi/KontrolloFjalekalimin",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "AspNetID",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fjalekalimi",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "NdryshoEmail",
+    "RelativePath": "api/Perdoruesi/NdryshoEmail",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "emailIVjeter",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "emailIRI",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "NdryshoFjalekalimin",
+    "RelativePath": "api/Perdoruesi/NdryshoFjalekalimin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "AspNetID",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fjalekalimiAktual",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fjalekalimiIRi",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "Put",
+    "RelativePath": "api/Perdoruesi/perditesoPerdorues/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "p",
+        "Type": "FinanCareWebAPI.Models.Perdoruesi",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "Get",
+    "RelativePath": "api/Perdoruesi/shfaqPerdoruesit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "Method": "GetbyId",
+    "RelativePath": "api/Perdoruesi/shfaqSipasID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idUserAspNet",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "Put",
+    "RelativePath": "api/Produkti/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "p",
+        "Type": "FinanCareWebAPI.Models.Produkti",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "Delete",
+    "RelativePath": "api/Produkti/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "GetKodiProduktitPerRegjistrim",
+    "RelativePath": "api/Produkti/GetKodiProduktitPerRegjistrim",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "IDPartneri",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "GetStokuProduktit",
+    "RelativePath": "api/Produkti/GetStokuProduktit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "GetById",
+    "RelativePath": "api/Produkti/KartelaArtikullit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "Get",
+    "RelativePath": "api/Produkti/Products",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "ProduktetPerKalkulim",
+    "RelativePath": "api/Produkti/ProduktetPerKalkulim",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "ShfaqProduktinNgaID",
+    "RelativePath": "api/Produkti/ShfaqProduktinNgaID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "Post",
+    "RelativePath": "api/Produkti/shtoProdukt",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "produkti",
+        "Type": "FinanCareWebAPI.Models.Produkti",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "Method": "BleresitBiznesorMeSeShumtiBlerje",
+    "RelativePath": "api/Statistikat/15BleresitBiznesorMeSeShumtiBlerje",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "Method": "BleresitQytetarMeSeShumtiBlerje",
+    "RelativePath": "api/Statistikat/15BleresitQytetarMeSeShumtiBlerje",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "Method": "GetTop15Prod",
+    "RelativePath": "api/Statistikat/15ProduktetMeTeShitura",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "Method": "ShitjetMeParagonSipasOperatorit",
+    "RelativePath": "api/Statistikat/ShitjetMeParagonSipasOperatorit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "Method": "GetTotaleTeNdryshme",
+    "RelativePath": "api/Statistikat/totaleTeNdryshme",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "Method": "GetShitjetJavore",
+    "RelativePath": "api/Statistikat/TotaletJavore",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "FshijBanken",
+    "RelativePath": "api/TeDhenatBiznesit/FshijBanken",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "FshijLlogarinBankareBiznesit",
+    "RelativePath": "api/TeDhenatBiznesit/FshijLlogarinBankareBiznesit",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "PerditesoBanken",
+    "RelativePath": "api/TeDhenatBiznesit/PerditesoBanken",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "b",
+        "Type": "FinanCareWebAPI.Models.Bankat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "PerditesoLlogarineBankare",
+    "RelativePath": "api/TeDhenatBiznesit/PerditesoLlogarineBankare",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "b",
+        "Type": "FinanCareWebAPI.Models.LlogaritEBiznesit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "Put",
+    "RelativePath": "api/TeDhenatBiznesit/perditesoTeDhenat",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "k",
+        "Type": "FinanCareWebAPI.Models.TeDhenatBiznesit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "ShfaqBankat",
+    "RelativePath": "api/TeDhenatBiznesit/ShfaqBankat",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "ShfaqBankenNgaID",
+    "RelativePath": "api/TeDhenatBiznesit/ShfaqBankenNgaID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "ShfaqLlogarineNgaID",
+    "RelativePath": "api/TeDhenatBiznesit/ShfaqLlogarineNgaID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "ShfaqLlogaritEBiznesit",
+    "RelativePath": "api/TeDhenatBiznesit/ShfaqLlogaritEBiznesit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "Get",
+    "RelativePath": "api/TeDhenatBiznesit/ShfaqTeDhenat",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "ShtoBanken",
+    "RelativePath": "api/TeDhenatBiznesit/ShtoBanken",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "banka",
+        "Type": "FinanCareWebAPI.Models.Bankat",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "Method": "ShtoLlogarineBankareBiznesit",
+    "RelativePath": "api/TeDhenatBiznesit/ShtoLlogarineBankareBiznesit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "banka",
+        "Type": "FinanCareWebAPI.Models.LlogaritEBiznesit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.VendosFototController",
+    "Method": "PerditesoTeDhenatBiznesit",
+    "RelativePath": "api/VendosFotot/PerditesoTeDhenatBiznesit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "foto",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "logoVjeter",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.ZbritjaQmimitProduktitController",
+    "Method": "Delete",
+    "RelativePath": "api/ZbritjaQmimitProduktit/fshijZbritjenProduktit",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.ZbritjaQmimitProduktitController",
+    "Method": "get",
+    "RelativePath": "api/ZbritjaQmimitProduktit/shfaqZbritjet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.ZbritjaQmimitProduktitController",
+    "Method": "post",
+    "RelativePath": "api/ZbritjaQmimitProduktit/shtoZbritjenProduktit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "zbritja",
+        "Type": "FinanCareWebAPI.Models.ZbritjaQmimitProduktit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
