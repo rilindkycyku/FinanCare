@@ -1,0 +1,19 @@
+.PerditesoTeDhenatContainer {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin: 0 auto;
+}
+
+.titulliPerditeso {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.butonatPerditesoTeDhenat {
+  display: flex;
+  gap: 0.5em;
+}

@@ -1,0 +1,78 @@
+.dashboard {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.containerDashboard {
+  margin: 25px 0;
+  font-size: 0.9em;
+  gap: 2em;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.containerDashboard tr th {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+.containerDashboard th,
+.containerDashboard td {
+  padding: 12px 15px;
+}
+
+.containerDashboard tr td {
+  border-bottom: 1px solid #dddddd;
+}
+
+.titulliPershkrim {
+  display: flex;
+  flex-direction: column;
+  color: grey; 
+  width: 100%;
+  text-align: center;
+  margin-top: 1.6em;
+  padding: 14px;
+}
+
+.button {
+  border: none;
+  box-shadow: 0 0 10px #d3d3d3;
+  background-color: white;
+  color: black;
+  padding: 10px;
+  width: 12em;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.button:hover {
+  background-color: #01df93;
+  color: white;
+}
+@media (max-width: 767px) {
+  .containerDashboard table {
+    overflow-x: auto;
+    overflow-y: auto;
+    width: 100%;
+  }
+  table {
+    display: block;
+  }
+  .containerDashboard {
+    flex-direction: unset;
+  }
+
+  .butonatDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 1em;
+  }
+}

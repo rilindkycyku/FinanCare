@@ -1,0 +1,3305 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "FinanCare_API",
+    "version": "v2"
+  },
+  "paths": {
+    "/api/Authenticate/shfaqRolet": {
+      "get": {
+        "tags": [
+          "Authenticate"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authenticate/register": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authenticate/login": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogInModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogInModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogInModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authenticate/NdryshoFjalekalimin": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "parameters": [
+          {
+            "name": "AspNetID",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fjalekalimiAktual",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fjalekalimiIRi",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authenticate/ResetoFjalekalimin": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "parameters": [
+          {
+            "name": "AspNetID",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authenticate/shtoRolin": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "parameters": [
+          {
+            "name": "roli",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authenticate/PerditesoAksesin": {
+      "put": {
+        "tags": [
+          "Authenticate"
+        ],
+        "parameters": [
+          {
+            "name": "UserID",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roli",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authenticate/fshijRolin": {
+      "delete": {
+        "tags": [
+          "Authenticate"
+        ],
+        "parameters": [
+          {
+            "name": "emriRolit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Database": {
+      "post": {
+        "tags": [
+          "Database"
+        ],
+        "parameters": [
+          {
+            "name": "newDatabaseName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceDatabaseName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/shfaqRegjistrimet": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/shfaqRegjistrimetSipasStatusit": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "statusi",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/shfaqRegjistrimetNgaID": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/shfaqTeDhenatKalkulimit": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "IDRegjistrimit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ShfaqNumrinRendorFatures": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "stafiID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/getKalkulimi": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idKalkulimit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/getNumriFaturesMeRradhe": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "llojiKalkulimit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/fshijKalkulimin/perditesoStokunQmimin": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idKalkulimi",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "idProdukti",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "idTeDhenatKalkulimit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idProdukti",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "idTeDhenatKalkulimit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "lloji",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin": {
+      "post": {
+        "tags": [
+          "Faturat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Faturat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Faturat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Faturat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/teDhenat": {
+      "post": {
+        "tags": [
+          "Faturat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatFaturat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatFaturat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatFaturat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/PerditesoTeDhenat": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatFaturat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatFaturat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatFaturat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/perditesoStokunQmimin": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/FaturoOferten/PerditesoStokun": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "lloji",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stoku",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "statusi",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/FaturoOferten": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StokuQmimiProduktit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/perditesoFaturen": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idKalulimit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Faturat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Faturat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Faturat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/fshijKalkulimin": {
+      "delete": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idKalkulimi",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/FshijTeDhenat": {
+      "delete": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idTeDhenat",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/ruajKalkulimin/FshijTeDhenatNgaIdKalkulimit": {
+      "delete": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idKalkulimi",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GrupiProduktit/shfaqGrupinEProduktitSipasIDs": {
+      "get": {
+        "tags": [
+          "GrupiProduktit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GrupiProduktit/shfaqGrupetEProduktit": {
+      "get": {
+        "tags": [
+          "GrupiProduktit"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GrupiProduktit/shtoGrupinEProduktit": {
+      "post": {
+        "tags": [
+          "GrupiProduktit"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrupiProduktit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrupiProduktit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrupiProduktit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GrupiProduktit/perditesoGrupinEProduktit": {
+      "put": {
+        "tags": [
+          "GrupiProduktit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrupiProduktit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrupiProduktit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrupiProduktit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GrupiProduktit/fshijGrupinEProduktit": {
+      "delete": {
+        "tags": [
+          "GrupiProduktit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Kartelat/shfaqKartelenSipasIDs": {
+      "get": {
+        "tags": [
+          "Kartelat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Kartelat/shfaqKartelenSipasKodit": {
+      "get": {
+        "tags": [
+          "Kartelat"
+        ],
+        "parameters": [
+          {
+            "name": "kodiKarteles",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Kartelat/shfaqKartelat": {
+      "get": {
+        "tags": [
+          "Kartelat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Kartelat/ShtoKartelenBonus": {
+      "post": {
+        "tags": [
+          "Kartelat"
+        ],
+        "parameters": [
+          {
+            "name": "idPartneri",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "stafiID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "rabati",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Kartelat/shtoKartelen": {
+      "post": {
+        "tags": [
+          "Kartelat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Kartelat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Kartelat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Kartelat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Kartelat/perditesoKartelen": {
+      "put": {
+        "tags": [
+          "Kartelat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Kartelat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Kartelat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Kartelat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Kartelat/fshijKartelen": {
+      "delete": {
+        "tags": [
+          "Kartelat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/NjesiaMatese/shfaqNjesineMateseSipasIDs": {
+      "get": {
+        "tags": [
+          "NjesiaMatese"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/NjesiaMatese/shfaqNjesiteMatese": {
+      "get": {
+        "tags": [
+          "NjesiaMatese"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/NjesiaMatese/shtoNjesineMatese": {
+      "post": {
+        "tags": [
+          "NjesiaMatese"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NjesiaMatese"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NjesiaMatese"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NjesiaMatese"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/NjesiaMatese/perditesoNjesineMatese": {
+      "put": {
+        "tags": [
+          "NjesiaMatese"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NjesiaMatese"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NjesiaMatese"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NjesiaMatese"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/NjesiaMatese/fshijNjesineMatese": {
+      "delete": {
+        "tags": [
+          "NjesiaMatese"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/shfaqPartnerinSipasIDs": {
+      "get": {
+        "tags": [
+          "Partneri"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/shfaqPartneretSipasLlojit": {
+      "get": {
+        "tags": [
+          "Partneri"
+        ],
+        "parameters": [
+          {
+            "name": "llojiPartnerit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/shfaqPartneretFurntiore": {
+      "get": {
+        "tags": [
+          "Partneri"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/shfaqPartneretBleres": {
+      "get": {
+        "tags": [
+          "Partneri"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/shfaqPartneret": {
+      "get": {
+        "tags": [
+          "Partneri"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/KartelaFinanciare": {
+      "get": {
+        "tags": [
+          "Partneri"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/shtoPartnerin": {
+      "post": {
+        "tags": [
+          "Partneri"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Partneri"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Partneri"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Partneri"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/perditesoPartnerin": {
+      "put": {
+        "tags": [
+          "Partneri"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Partneri"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Partneri"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Partneri"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Partneri/fshijPartnerin": {
+      "delete": {
+        "tags": [
+          "Partneri"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/shfaqPerdoruesit": {
+      "get": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/shfaqSipasID": {
+      "get": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "idUserAspNet",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/KontrolloEmail": {
+      "get": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/KontrolloFjalekalimin": {
+      "get": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "AspNetID",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fjalekalimi",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/GjeneroTeDhenatPerHyrje": {
+      "get": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "e",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "m",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "domain",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/NdryshoEmail": {
+      "post": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "emailIVjeter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "emailIRI",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/NdryshoFjalekalimin": {
+      "post": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "AspNetID",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fjalekalimiAktual",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fjalekalimiIRi",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/perditesoPerdorues/{id}": {
+      "put": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Perdoruesi"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Perdoruesi"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Perdoruesi"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/Products": {
+      "get": {
+        "tags": [
+          "Produkti"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/ShfaqProduktinNgaID": {
+      "get": {
+        "tags": [
+          "Produkti"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/ProduktetPerKalkulim": {
+      "get": {
+        "tags": [
+          "Produkti"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/GetStokuProduktit": {
+      "get": {
+        "tags": [
+          "Produkti"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/GetKodiProduktitPerRegjistrim": {
+      "get": {
+        "tags": [
+          "Produkti"
+        ],
+        "parameters": [
+          {
+            "name": "IDPartneri",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/KartelaArtikullit": {
+      "get": {
+        "tags": [
+          "Produkti"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/shtoProdukt": {
+      "post": {
+        "tags": [
+          "Produkti"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Produkti"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Produkti"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Produkti"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/{id}": {
+      "put": {
+        "tags": [
+          "Produkti"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Produkti"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Produkti"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Produkti"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Produkti"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Statistikat/totaleTeNdryshme": {
+      "get": {
+        "tags": [
+          "Statistikat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Statistikat/15BleresitQytetarMeSeShumtiBlerje": {
+      "get": {
+        "tags": [
+          "Statistikat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Statistikat/15BleresitBiznesorMeSeShumtiBlerje": {
+      "get": {
+        "tags": [
+          "Statistikat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Statistikat/ShitjetMeParagonSipasOperatorit": {
+      "get": {
+        "tags": [
+          "Statistikat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Statistikat/15ProduktetMeTeShitura": {
+      "get": {
+        "tags": [
+          "Statistikat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Statistikat/TotaletJavore": {
+      "get": {
+        "tags": [
+          "Statistikat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/ShfaqTeDhenat": {
+      "get": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/ShfaqBankat": {
+      "get": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/ShfaqLlogaritEBiznesit": {
+      "get": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/ShfaqBankenNgaID": {
+      "get": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/ShfaqLlogarineNgaID": {
+      "get": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/ShtoBanken": {
+      "post": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bankat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bankat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bankat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/ShtoLlogarineBankareBiznesit": {
+      "post": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlogaritEBiznesit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlogaritEBiznesit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlogaritEBiznesit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/PerditesoBanken": {
+      "put": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bankat"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bankat"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bankat"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/PerditesoLlogarineBankare": {
+      "put": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlogaritEBiznesit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlogaritEBiznesit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlogaritEBiznesit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/perditesoTeDhenat": {
+      "put": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatBiznesit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatBiznesit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeDhenatBiznesit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/FshijBanken": {
+      "delete": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/TeDhenatBiznesit/FshijLlogarinBankareBiznesit": {
+      "delete": {
+        "tags": [
+          "TeDhenatBiznesit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/VendosFotot/PerditesoTeDhenatBiznesit": {
+      "post": {
+        "tags": [
+          "VendosFotot"
+        ],
+        "parameters": [
+          {
+            "name": "logoVjeter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "foto": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "foto": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/ZbritjaQmimitProduktit/shfaqZbritjet": {
+      "get": {
+        "tags": [
+          "ZbritjaQmimitProduktit"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/ZbritjaQmimitProduktit/shtoZbritjenProduktit": {
+      "post": {
+        "tags": [
+          "ZbritjaQmimitProduktit"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZbritjaQmimitProduktit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZbritjaQmimitProduktit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZbritjaQmimitProduktit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/ZbritjaQmimitProduktit/fshijZbritjenProduktit": {
+      "delete": {
+        "tags": [
+          "ZbritjaQmimitProduktit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Bankat": {
+        "type": "object",
+        "properties": {
+          "bankaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emriBankes": {
+            "type": "string",
+            "nullable": true
+          },
+          "lokacioniBankes": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Faturat": {
+        "type": "object",
+        "properties": {
+          "idRegjistrimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dataRegjistrimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "stafiID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totaliPaTVSH": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "tvsh": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "idPartneri": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "statusiPageses": {
+            "type": "string",
+            "nullable": true
+          },
+          "llojiPageses": {
+            "type": "string",
+            "nullable": true
+          },
+          "llojiKalkulimit": {
+            "type": "string",
+            "nullable": true
+          },
+          "nrFatures": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusiKalkulimit": {
+            "type": "string",
+            "nullable": true
+          },
+          "pershkrimShtese": {
+            "type": "string",
+            "nullable": true
+          },
+          "rabati": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "nrRendorFatures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "eshteFaturuarOferta": {
+            "type": "string",
+            "nullable": true
+          },
+          "idBonusKartela": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "partneri": {
+            "$ref": "#/components/schemas/Partneri"
+          },
+          "stafi": {
+            "$ref": "#/components/schemas/Perdoruesi"
+          },
+          "bonusKartela": {
+            "$ref": "#/components/schemas/Kartelat"
+          },
+          "teDhenatFaturat": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeDhenatFaturat"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GrupiProduktit": {
+        "type": "object",
+        "properties": {
+          "idGrupiProduktit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "grupiIProduktit": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "string",
+            "nullable": true
+          },
+          "produkti": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Produkti"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IdentityUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalizedUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalizedEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailConfirmed": {
+            "type": "boolean"
+          },
+          "passwordHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "securityStamp": {
+            "type": "string",
+            "nullable": true
+          },
+          "concurrencyStamp": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumberConfirmed": {
+            "type": "boolean"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean"
+          },
+          "lockoutEnd": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lockoutEnabled": {
+            "type": "boolean"
+          },
+          "accessFailedCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Kartelat": {
+        "type": "object",
+        "properties": {
+          "idKartela": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "kodiKartela": {
+            "type": "string",
+            "nullable": true
+          },
+          "llojiKarteles": {
+            "type": "string",
+            "nullable": true
+          },
+          "rabati": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "stafiID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "partneriID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "dataKrijimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "stafi": {
+            "$ref": "#/components/schemas/Perdoruesi"
+          },
+          "partneri": {
+            "$ref": "#/components/schemas/Partneri"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LlogaritEBiznesit": {
+        "type": "object",
+        "properties": {
+          "idLlogariaBankare": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numriLlogaris": {
+            "type": "string",
+            "nullable": true
+          },
+          "adresaBankes": {
+            "type": "string",
+            "nullable": true
+          },
+          "valuta": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "banka": {
+            "$ref": "#/components/schemas/Bankat"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LogInModel": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "password": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NjesiaMatese": {
+        "type": "object",
+        "properties": {
+          "idNjesiaMatese": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emriNjesiaMatese": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "string",
+            "nullable": true
+          },
+          "produkti": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Produkti"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Partneri": {
+        "type": "object",
+        "properties": {
+          "idPartneri": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emriBiznesit": {
+            "type": "string",
+            "nullable": true
+          },
+          "nui": {
+            "type": "string",
+            "nullable": true
+          },
+          "nrf": {
+            "type": "string",
+            "nullable": true
+          },
+          "tvsh": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "adresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "nrKontaktit": {
+            "type": "string",
+            "nullable": true
+          },
+          "llojiPartnerit": {
+            "type": "string",
+            "nullable": true
+          },
+          "shkurtesaPartnerit": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "string",
+            "nullable": true
+          },
+          "faturat": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Faturat"
+            },
+            "nullable": true
+          },
+          "produkti": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Produkti"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "kartela": {
+            "$ref": "#/components/schemas/Kartelat"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Perdoruesi": {
+        "type": "object",
+        "properties": {
+          "userID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emri": {
+            "type": "string",
+            "nullable": true
+          },
+          "mbiemri": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "aspNetUserID": {
+            "type": "string",
+            "nullable": true
+          },
+          "aspNetUser": {
+            "$ref": "#/components/schemas/IdentityUser"
+          },
+          "faturat": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Faturat"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "teDhenatPerdoruesit": {
+            "$ref": "#/components/schemas/TeDhenatPerdoruesit"
+          },
+          "kartelat": {
+            "$ref": "#/components/schemas/Kartelat"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Produkti": {
+        "type": "object",
+        "properties": {
+          "produktiID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emriProduktit": {
+            "type": "string",
+            "nullable": true
+          },
+          "idPartneri": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "idNjesiaMatese": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "barkodi": {
+            "type": "string",
+            "nullable": true
+          },
+          "kodiProduktit": {
+            "type": "string",
+            "nullable": true
+          },
+          "llojiTVSH": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "idGrupiProduktit": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "sasiaShumices": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "string",
+            "nullable": true
+          },
+          "njesiaMatese": {
+            "$ref": "#/components/schemas/NjesiaMatese"
+          },
+          "partneri": {
+            "$ref": "#/components/schemas/Partneri"
+          },
+          "grupiProduktit": {
+            "$ref": "#/components/schemas/GrupiProduktit"
+          },
+          "stokuQmimiProduktit": {
+            "$ref": "#/components/schemas/StokuQmimiProduktit"
+          },
+          "teDhenatFaturat": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeDhenatFaturat"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "zbritjaQmimitProduktit": {
+            "$ref": "#/components/schemas/ZbritjaQmimitProduktit"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterModel": {
+        "required": [
+          "email",
+          "lastName",
+          "name",
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "lastName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "username": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "password": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "nrTelefonit": {
+            "type": "string",
+            "nullable": true
+          },
+          "adresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailPrivat": {
+            "type": "string",
+            "nullable": true
+          },
+          "datelindja": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dataFillimitKontrates": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dataMbarimitKontrates": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "paga": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "profesioni": {
+            "type": "string",
+            "nullable": true
+          },
+          "specializimi": {
+            "type": "string",
+            "nullable": true
+          },
+          "kualifikimi": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankaID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "numriLlogarisBankare": {
+            "type": "string",
+            "nullable": true
+          },
+          "nrPersonal": {
+            "type": "string",
+            "nullable": true
+          },
+          "eshtePuntorAktive": {
+            "type": "string",
+            "nullable": true
+          },
+          "roli": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StokuQmimiProduktit": {
+        "type": "object",
+        "properties": {
+          "produktiID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sasiaNeStok": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "qmimiBleres": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "qmimiProduktit": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dataKrijimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dataPerditsimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "qmimiMeShumic": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "produkti": {
+            "$ref": "#/components/schemas/Produkti"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TeDhenatBiznesit": {
+        "type": "object",
+        "properties": {
+          "idTeDhenatBiznesit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emriIBiznesit": {
+            "type": "string",
+            "nullable": true
+          },
+          "shkurtesaEmritBiznesit": {
+            "type": "string",
+            "nullable": true
+          },
+          "nui": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "nf": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "nrTVSH": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "adresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "nrKontaktit": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailDomain": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TeDhenatFaturat": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "idRegjistrimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "idProduktit": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "sasiaStokut": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "qmimiBleres": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "qmimiShites": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "qmimiShitesMeShumic": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rabati1": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rabati2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rabati3": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "produkti": {
+            "$ref": "#/components/schemas/Produkti"
+          },
+          "faturat": {
+            "$ref": "#/components/schemas/Faturat"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TeDhenatPerdoruesit": {
+        "type": "object",
+        "properties": {
+          "userID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nrKontaktit": {
+            "type": "string",
+            "nullable": true
+          },
+          "adresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailPrivat": {
+            "type": "string",
+            "nullable": true
+          },
+          "datelindja": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dataFillimitKontrates": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dataMbarimitKontrates": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "paga": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "profesioni": {
+            "type": "string",
+            "nullable": true
+          },
+          "specializimi": {
+            "type": "string",
+            "nullable": true
+          },
+          "kualifikimi": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankaID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "numriLlogarisBankare": {
+            "type": "string",
+            "nullable": true
+          },
+          "nrPersonal": {
+            "type": "string",
+            "nullable": true
+          },
+          "eshtePuntorAktive": {
+            "type": "string",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/Perdoruesi"
+          },
+          "banka": {
+            "$ref": "#/components/schemas/Bankat"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ZbritjaQmimitProduktit": {
+        "type": "object",
+        "properties": {
+          "produktiID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dataZbritjes": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dataSkadimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "rabati": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "produkti": {
+            "$ref": "#/components/schemas/Produkti"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}

@@ -135,6 +135,7 @@ namespace WebAPI.Controllers
             decimal TotaliPaTVSH18 = 0;
             decimal TotaliPaTVSH8 = 0;
             decimal Rabati = 0;
+            decimal QmimiTotalShites = 0;
 
             foreach (var teDhenat in totTVSH18)
             {
@@ -146,7 +147,12 @@ namespace WebAPI.Controllers
                 decimal totalBeforeVAT = 0.00m;
                 decimal vatAmount = 0.00m;
 
-                if(regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
+                if (regjistrimet.LlojiKalkulimit.Equals("KLFV"))
+                {
+                    QmimiTotalShites += Convert.ToDecimal(teDhenat.QmimiShites * teDhenat.SasiaStokut);
+                }
+
+                if (regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
                 {
                     totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
                               (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
@@ -236,7 +242,8 @@ namespace WebAPI.Controllers
                 TVSH18 = TotaliMeTVSH18 - TotaliPaTVSH18,
                 TVSH8 = TotaliMeTVSH8 - TotaliPaTVSH8,
                 totTVSH18,
-                totTVSH8
+                totTVSH8,
+                QmimiTotalShites
             });
         }
 

@@ -1,0 +1,190 @@
+/* Reset and base styles */
+.fatura * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+  font-family: "Segoe UI", SegoeUI, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14pt; /* Base font size for readability */
+}
+
+/* Fixed-size container for the entire invoice in UI */
+.fatura {
+  width: 595px; /* Portrait width (A4) */
+  margin: 0 auto;
+  padding: 1em;
+}
+
+/* Page containers for UI */
+.mePakSe25,
+.meShumeSe15,
+.meShumeSe30,
+.meShumeSe45,
+.meShumeSe60,
+.meShumeSe75,
+.meShumeSe90 {
+  width: 595px; /* Portrait width */
+  height: 842px; /* Portrait height (A4) */
+  box-sizing: border-box;
+  overflow: hidden; /* Prevents content from spilling out in UI */
+  margin-bottom: 1em; /* Spacing between pages in UI */
+}
+
+/* Header layout */
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+}
+
+/* Company details */
+.teDhenatKompanis {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.teDhenatKompanis img {
+  width: 120px; /* Slightly smaller for narrower width */
+  height: auto;
+  margin-bottom: 0.5em;
+}
+
+/* Client details */
+.teDhenatKlientit {
+  width: 100%;
+  margin: 1em 0;
+}
+
+/* Invoice date and metadata */
+.data {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Product table */
+.tabelaETeDhenaveProduktit {
+  width: 100%;
+}
+
+.tabelaETeDhenaveProduktit table {
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  font-size: 9pt; /* Slightly smaller to fit narrower width */
+}
+
+.tabelaETeDhenaveProduktit th,
+.tabelaETeDhenaveProduktit td {
+  padding: 4px 4px; /* Adjusted padding for narrower columns */
+  border: 1px solid #ccc;
+}
+
+/* Main content container */
+.containerFatura {
+  width: 100%;
+}
+
+/* Delivery and order details */
+.detajetDorezimit,
+.detajetPoresis {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography */
+.fatura h1 {
+  font-size: 18pt; /* Adjusted for narrower width */
+  margin-bottom: 0.5em;
+}
+
+.fatura h2 {
+  font-size: 14pt; /* Adjusted */
+}
+
+.fatura h3 {
+  font-size: 12pt; /* Adjusted */
+}
+
+/* Signatures */
+.nenshkrimet {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1em; /* Adjusted to fit taller page */
+}
+
+.nenshkrimet2Faqe {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2em;
+}
+
+.nenshkrimi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 9pt; /* Smaller font for signatures */
+}
+
+.nenshkrimi span {
+  margin-top: 0.2em;
+  font-weight: bold;
+}
+
+.nenshkrimi span:first-child {
+  margin-bottom: 0.2em;
+}
+
+/* Barcode */
+.barkodi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Client data box */
+.teDhenatEKlientit {
+  width: 100%;
+  border: 1px solid black;
+  padding: 0.5em;
+  text-align: right;
+  font-size: 11pt; /* Adjusted for narrower width */
+}
+
+/* Buttons and title */
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+.Butoni {
+  margin-left: 1em;
+  font-size: 11pt; /* Adjusted */
+  padding: 0.4em 0.8em; /* Slightly smaller padding */
+}
+
+/* Ensure footer stays at bottom if content is short */
+.fatura > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.fatura > div > div:last-child {
+  margin-top: auto; /* Pushes footer to bottom */
+}
+
+/* HR styling */
+hr {
+  height: 1px;
+  border-width: 0;
+  background-color: black;
+  margin: 0.5em 0;
+}
