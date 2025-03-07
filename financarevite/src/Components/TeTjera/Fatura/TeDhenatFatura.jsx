@@ -47,9 +47,9 @@ function TeDhenatFatura({ faturaID, ProduktiPare, ProduktiFundit, isPDF, data })
         {rows.map(({ produkti, index, qmimiPaTVSH, rabati1, rabati2, rabati3, tvshRate, qmimiMeRabat, tvshValue, shuma, sasia }) => (
           <View style={styles.row} key={index}>
             <Text style={styles.cell}>{ProduktiPare + index + 1}</Text>
-            <Text style={styles.cell}>{produkti.kodiProduktit || "N/A"}</Text>
-            <Text style={styles.cell}>{produkti.emriProduktit || "N/A"} {produkti.barkodi || ""}</Text>
-            <Text style={styles.cell}>{produkti.emriNjesiaMatese || "N/A"}</Text>
+            <Text style={styles.cell}>{produkti.kodiProduktit || ""}</Text>
+            <Text style={styles.cell}>{produkti.emriProduktit || ""} {produkti.barkodi || ""}</Text>
+            <Text style={styles.cell}>{produkti.emriNjesiaMatese || ""}</Text>
             <Text style={styles.cell}>{sasia.toFixed(2)}</Text>
             <Text style={styles.cell}>{qmimiPaTVSH.toFixed(2)}</Text>
             <Text style={styles.cell}>{rabati1.toFixed(2)}</Text>
@@ -89,9 +89,9 @@ function TeDhenatFatura({ faturaID, ProduktiPare, ProduktiFundit, isPDF, data })
           {rows.map(({ produkti, index, qmimiPaTVSH, rabati1, rabati2, rabati3, tvshRate, qmimiMeRabat, tvshValue, shuma, sasia }) => (
             <tr key={index}>
               <td>{ProduktiPare + index + 1}</td>
-              <td>{produkti.kodiProduktit || "N/A"}</td>
-              <td>{produkti.emriProduktit || "N/A"} {produkti.barkodi || ""}</td>
-              <td>{produkti.emriNjesiaMatese || "N/A"}</td>
+              <td>{produkti.kodiProduktit || ""}</td>
+              <td>{produkti.emriProduktit || ""} {produkti.barkodi || ""}</td>
+              <td>{produkti.emriNjesiaMatese || ""}</td>
               <td>{sasia.toFixed(2)}</td>
               <td>{qmimiPaTVSH.toFixed(2)}</td>
               <td>{rabati1.toFixed(2)}</td>

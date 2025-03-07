@@ -6,29 +6,30 @@
   text-decoration: none;
   list-style: none;
   font-family: "Segoe UI", SegoeUI, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14pt; /* Base font size for readability */
+  font-size: 14pt;
 }
 
 /* Fixed-size container for the entire invoice in UI */
 .fatura {
-  width: 595px; /* Portrait width (A4) */
+  width: 595px;
   margin: 0 auto;
   padding: 1em;
 }
 
-/* Page containers for UI */
-.mePakSe25,
-.meShumeSe15,
-.meShumeSe30,
-.meShumeSe45,
-.meShumeSe60,
-.meShumeSe75,
-.meShumeSe90 {
-  width: 595px; /* Portrait width */
-  height: 842px; /* Portrait height (A4) */
+/* Dynamic page containers */
+.page-1,
+.page-2,
+.page-3,
+.page-4,
+.page-5,
+.page-6,
+.page-7 {
+  width: 595px;
+  max-height: 842px;
   box-sizing: border-box;
-  overflow: hidden; /* Prevents content from spilling out in UI */
-  margin-bottom: 1em; /* Spacing between pages in UI */
+  overflow: hidden;
+  margin-bottom: 1em;
+  break-inside: avoid;
 }
 
 /* Header layout */
@@ -41,14 +42,14 @@
 
 /* Company details */
 .teDhenatKompanis {
-  width: 50%;
+  width: 48%;
   display: flex;
   flex-direction: column;
 }
 
 .teDhenatKompanis img {
-  width: 120px; /* Slightly smaller for narrower width */
-  height: auto;
+  width: 100px;
+  height: 50px;
   margin-bottom: 0.5em;
 }
 
@@ -60,7 +61,7 @@
 
 /* Invoice date and metadata */
 .data {
-  width: 50%;
+  width: 48%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -75,13 +76,17 @@
   width: 100%;
   text-align: center;
   border-collapse: collapse;
-  font-size: 9pt; /* Slightly smaller to fit narrower width */
+  font-size: 8pt;
 }
 
 .tabelaETeDhenaveProduktit th,
 .tabelaETeDhenaveProduktit td {
-  padding: 4px 4px; /* Adjusted padding for narrower columns */
+  padding: 3px;
   border: 1px solid #ccc;
+}
+
+.tabelaETeDhenaveProduktit th {
+  background-color: #f0f0f0;
 }
 
 /* Main content container */
@@ -99,23 +104,23 @@
 
 /* Typography */
 .fatura h1 {
-  font-size: 18pt; /* Adjusted for narrower width */
+  font-size: 18pt;
   margin-bottom: 0.5em;
 }
 
 .fatura h2 {
-  font-size: 14pt; /* Adjusted */
+  font-size: 14pt;
 }
 
 .fatura h3 {
-  font-size: 12pt; /* Adjusted */
+  font-size: 12pt;
 }
 
 /* Signatures */
 .nenshkrimet {
   display: flex;
   justify-content: space-between;
-  margin-top: 1em; /* Adjusted to fit taller page */
+  margin-top: 1em;
 }
 
 .nenshkrimet2Faqe {
@@ -128,7 +133,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 9pt; /* Smaller font for signatures */
+  font-size: 9pt;
 }
 
 .nenshkrimi span {
@@ -153,7 +158,7 @@
   border: 1px solid black;
   padding: 0.5em;
   text-align: right;
-  font-size: 11pt; /* Adjusted for narrower width */
+  font-size: 11pt;
 }
 
 /* Buttons and title */
@@ -166,8 +171,8 @@
 
 .Butoni {
   margin-left: 1em;
-  font-size: 11pt; /* Adjusted */
-  padding: 0.4em 0.8em; /* Slightly smaller padding */
+  font-size: 11pt;
+  padding: 0.4em 0.8em;
 }
 
 /* Ensure footer stays at bottom if content is short */
@@ -178,7 +183,7 @@
 }
 
 .fatura > div > div:last-child {
-  margin-top: auto; /* Pushes footer to bottom */
+  margin-top: auto;
 }
 
 /* HR styling */
