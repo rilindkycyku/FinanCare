@@ -1,13 +1,26 @@
 import "./Styles/Fatura.css";
 import { useRef } from "react";
-import { View, Text, StyleSheet, Image } from "@react-pdf/renderer";
+import { View, Text, StyleSheet, Image, Font } from "@react-pdf/renderer";
 import Barcode from "react-barcode"; // For UI
 import JsBarcode from "jsbarcode"; // For PDF
 
+Font.register({
+  family: "Quicksand",
+  fonts: [
+    { src: "/fonts/Quicksand-Regular.ttf" }, // Regular weight
+    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" }, // Bold weight (if used)
+    // Add other weights/styles if needed (e.g., italic, light)
+  ],
+});
+
 const styles = StyleSheet.create({
-  header: { flexDirection: "row", justifyContent: "space-between" },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    fontFamily: "Quicksand",
+  },
   column: { width: "48%" },
-  title: { fontSize: 16, textAlign: "center" },
+  title: { fontSize: 16, textAlign: "left", marginTop: 2 },
   text: { fontSize: 10, marginBottom: 2 },
   bold: { fontWeight: "bold" },
   barcodeImage: { marginTop: 5 },
@@ -24,10 +37,10 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
     FL: "FLETLEJIM",
     FAT: "FATURE",
     KMSH: "KTHIM I MALLIT TE SHITUR",
-	KLFV: "KALKULIMI FILLESTAR VJETORE",
-	OFERTE: "OFERTE",
-	PAGES: "PAGES FATURE",
-	PARAGON: "PARAGON",
+    KLFV: "KALKULIMI FILLESTAR VJETORE",
+    OFERTE: "OFERTE",
+    PAGES: "PAGES FATURE",
+    PARAGON: "PARAGON",
   };
 
   // Generate barcode as data URL for PDF
@@ -35,10 +48,10 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
   const generateBarcodeDataUrl = () => {
     const canvas = document.createElement("canvas");
     JsBarcode(canvas, Barkodi, {
-      width: 2,          // 4 pixels per bar for good scanner readability
-      height: 60,        // Taller barcode for better scan detection
-      fontSize: 25,      // Readable text size
-      margin: 10,        // Quiet zones around barcode
+      width: 2, // 4 pixels per bar for good scanner readability
+      height: 40, // Taller barcode for better scan detection
+      fontSize: 15, // Readable text size
+      margin: 6, // Quiet zones around barcode
       displayValue: true, // Show barcode value below
     });
     return canvas.toDataURL("image/png");
@@ -54,34 +67,45 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
             src={`/img/web/${teDhenatBiznesit?.logo || "default.png"}`}
             style={{ width: 100, height: 50 }}
           />
-          <Text style={styles.title}>{teDhenatBiznesit?.emriIBiznesit || ""}</Text>
+          <Text style={[styles.title, styles.bold]}>
+            {teDhenatBiznesit?.emriIBiznesit || ""}
+          </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Adresa: </Text>
             {teDhenatBiznesit?.adresa || ""}
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>NUI: </Text>
-            {teDhenatBiznesit?.nui || ""} / <Text style={styles.bold}>NF: </Text>
-            {teDhenatBiznesit?.nf || ""} / <Text style={styles.bold}>TVSH: </Text>
+            {teDhenatBiznesit?.nui || ""} /{" "}
+            <Text style={styles.bold}>NF: </Text>
+            {teDhenatBiznesit?.nf || ""} /{" "}
+            <Text style={styles.bold}>TVSH: </Text>
             {teDhenatBiznesit?.nrTVSH || ""}
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Kontakti: </Text>
-            {teDhenatBiznesit?.nrKontaktit || ""} - {teDhenatBiznesit?.email || ""}
+            {teDhenatBiznesit?.nrKontaktit || ""} -{" "}
+            {teDhenatBiznesit?.email || ""}
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Data e Fatures: </Text>
-            {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
+            {new Date(
+              teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()
+            ).toLocaleDateString("en-GB")}
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Shenime Shtese: </Text>
             {teDhenatFat?.regjistrimet?.pershkrimShtese || ""}
           </Text>
-          <Text style={styles.bold}>Faqe: {NrFaqes} / {NrFaqeve}</Text>
+          <Text style={styles.bold}>
+            Faqe: {NrFaqes} / {NrFaqeve}
+          </Text>
         </View>
         <View style={styles.column}>
-        <View style={styles.barcodeContainer}>
-            <Text style={styles.title}>{titleMap[llojiKalkulimit] || ""}</Text>
+          <View style={styles.barcodeContainer}>
+            <Text style={[styles.title, styles.bold]}>
+              {titleMap[llojiKalkulimit] || ""}
+            </Text>
             <Image src={barcodeDataUrl} style={styles.barcodeImage} />
           </View>
           {llojiKalkulimit === "AS" || llojiKalkulimit === "KMSH" ? (
@@ -91,27 +115,40 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
                 {teDhenatFat?.regjistrimet?.username || ""}
               </Text>
               <Text style={styles.text}>
-                <Text style={styles.bold}>{llojiKalkulimit === "AS" ? "Nr. Asgjesimit" : "Nr. Referencues"}: </Text>
-                {teDhenatFat?.regjistrimet?.[llojiKalkulimit === "AS" ? "nrRendorFatures" : "nrFatures"] || ""}
+                <Text style={styles.bold}>
+                  {llojiKalkulimit === "AS"
+                    ? "Nr. Asgjesimit"
+                    : "Nr. Referencues"}
+                  :{" "}
+                </Text>
+                {teDhenatFat?.regjistrimet?.[
+                  llojiKalkulimit === "AS" ? "nrRendorFatures" : "nrFatures"
+                ] || ""}
               </Text>
             </>
           ) : (
             <>
               <Text style={styles.text}>
                 <Text style={styles.bold}>
-                  {teDhenatFat?.regjistrimet?.idPartneri || ""} - {teDhenatFat?.regjistrimet?.shkurtesaPartnerit || ""} /{" "}
+                  {teDhenatFat?.regjistrimet?.idPartneri || ""} -{" "}
+                  {teDhenatFat?.regjistrimet?.shkurtesaPartnerit || ""} /{" "}
                   {teDhenatFat?.regjistrimet?.emriBiznesit || ""}
                 </Text>
               </Text>
               <Text style={styles.text}>
                 <Text style={styles.bold}>NUI: </Text>
-                {teDhenatFat?.regjistrimet?.nui || ""} / <Text style={styles.bold}>NF: </Text>
-                {teDhenatFat?.regjistrimet?.nrf || ""} / <Text style={styles.bold}>TVSH: </Text>
+                {teDhenatFat?.regjistrimet?.nui || ""} /{" "}
+                <Text style={styles.bold}>NF: </Text>
+                {teDhenatFat?.regjistrimet?.nrf || ""} /{" "}
+                <Text style={styles.bold}>TVSH: </Text>
                 {teDhenatFat?.regjistrimet?.partneriTVSH || ""}
               </Text>
-              <Text style={styles.text}>{teDhenatFat?.regjistrimet?.adresa || ""}</Text>
               <Text style={styles.text}>
-                {teDhenatFat?.regjistrimet?.nrKontaktit || ""} - {teDhenatFat?.regjistrimet?.email || ""}
+                {teDhenatFat?.regjistrimet?.adresa || ""}
+              </Text>
+              <Text style={styles.text}>
+                {teDhenatFat?.regjistrimet?.nrKontaktit || ""} -{" "}
+                {teDhenatFat?.regjistrimet?.email || ""}
               </Text>
             </>
           )}
@@ -123,7 +160,11 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
   return (
     <div className="header">
       <div className="teDhenatKompanis">
-        <img src={`/img/web/${teDhenatBiznesit?.logo || "default.png"}`} alt="Logo" style={{ width: "100px", height: "50px" }} />
+        <img
+          src={`/img/web/${teDhenatBiznesit?.logo || "default.png"}`}
+          alt="Logo"
+          style={{ width: "100px", height: "50px" }}
+        />
         <h2>{teDhenatBiznesit?.emriIBiznesit || ""}</h2>
         <p>
           <strong>Adresa: </strong>
@@ -137,22 +178,34 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
         </p>
         <p>
           <strong>Kontakti: </strong>
-          {teDhenatBiznesit?.nrKontaktit || ""} - {teDhenatBiznesit?.email || ""}
+          {teDhenatBiznesit?.nrKontaktit || ""} -{" "}
+          {teDhenatBiznesit?.email || ""}
         </p>
         <p>
           <strong>Data e Fatures: </strong>
-          {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
+          {new Date(
+            teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()
+          ).toLocaleDateString("en-GB")}
         </p>
         <p>
           <strong>Shenime Shtese: </strong>
-          <span dangerouslySetInnerHTML={{ __html: teDhenatFat?.regjistrimet?.pershkrimShtese || "" }} />
+          <span
+            dangerouslySetInnerHTML={{
+              __html: teDhenatFat?.regjistrimet?.pershkrimShtese || "",
+            }}
+          />
         </p>
-        <strong>Faqe: {NrFaqes} / {NrFaqeve}</strong>
       </div>
       <div className="data">
         <div className="barkodi">
           <h3>{titleMap[llojiKalkulimit] || ""}</h3>
-          <Barcode value={Barkodi} height={50} width={1} fontSize={12} ref={barcodeRef} />
+          <Barcode
+            value={Barkodi}
+            height={50}
+            width={1}
+            fontSize={12}
+            ref={barcodeRef}
+          />
         </div>
         <div className="teDhenatEKlientit">
           {llojiKalkulimit === "AS" || llojiKalkulimit === "KMSH" ? (
@@ -162,15 +215,23 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
                 {teDhenatFat?.regjistrimet?.username || ""}
               </p>
               <p>
-                <strong>{llojiKalkulimit === "AS" ? "Nr. Asgjesimit" : "Nr. Referencues"}: </strong>
-                {teDhenatFat?.regjistrimet?.[llojiKalkulimit === "AS" ? "nrRendorFatures" : "nrFatures"] || ""}
+                <strong>
+                  {llojiKalkulimit === "AS"
+                    ? "Nr. Asgjesimit"
+                    : "Nr. Referencues"}
+                  :{" "}
+                </strong>
+                {teDhenatFat?.regjistrimet?.[
+                  llojiKalkulimit === "AS" ? "nrRendorFatures" : "nrFatures"
+                ] || ""}
               </p>
             </>
           ) : (
             <>
               <p>
                 <strong>
-                  {teDhenatFat?.regjistrimet?.idPartneri || ""} - {teDhenatFat?.regjistrimet?.shkurtesaPartnerit || ""} /{" "}
+                  {teDhenatFat?.regjistrimet?.idPartneri || ""} -{" "}
+                  {teDhenatFat?.regjistrimet?.shkurtesaPartnerit || ""} /{" "}
                   {teDhenatFat?.regjistrimet?.emriBiznesit || ""}
                 </strong>
               </p>
@@ -182,7 +243,8 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
               </p>
               <p>{teDhenatFat?.regjistrimet?.adresa || ""}</p>
               <p>
-                {teDhenatFat?.regjistrimet?.nrKontaktit || ""} - {teDhenatFat?.regjistrimet?.email || ""}
+                {teDhenatFat?.regjistrimet?.nrKontaktit || ""} -{" "}
+                {teDhenatFat?.regjistrimet?.email || ""}
               </p>
             </>
           )}

@@ -6,30 +6,41 @@
   text-decoration: none;
   list-style: none;
   font-family: "Segoe UI", SegoeUI, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
 }
 
-/* Fixed-size container for the entire invoice in UI */
+/* Container for the entire invoice */
 .fatura {
   width: 595px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 1em;
+  padding: 0.8em;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative; /* For sticky title */
 }
 
-/* Dynamic page containers */
-.page-1,
-.page-2,
-.page-3,
-.page-4,
-.page-5,
-.page-6,
-.page-7 {
-  width: 595px;
-  max-height: 842px;
-  box-sizing: border-box;
-  overflow: hidden;
-  margin-bottom: 1em;
-  break-inside: avoid;
+/* Fixed title within container */
+.title {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 0.4em 0;
+  z-index: 10;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Continuous content area */
+.fatura-content {
+  width: 100%;
+  padding: 0.4em;
+  margin-top: 2.5em; /* Space for sticky title */
 }
 
 /* Header layout */
@@ -37,7 +48,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.4em;
 }
 
 /* Company details */
@@ -48,15 +59,15 @@
 }
 
 .teDhenatKompanis img {
-  width: 100px;
-  height: 50px;
-  margin-bottom: 0.5em;
+  width: 80px;
+  height: 40px;
+  margin-bottom: 0.4em;
 }
 
 /* Client details */
 .teDhenatKlientit {
   width: 100%;
-  margin: 1em 0;
+  margin: 0.8em 0;
 }
 
 /* Invoice date and metadata */
@@ -72,77 +83,112 @@
   width: 100%;
 }
 
+.table-wrapper {
+  max-height: 50vh;
+  overflow-y: scroll; /* Always show vertical scrollbar */
+  overflow-x: scroll; /* Always show horizontal scrollbar */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Force scrollbars to always show */
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Firefox scrollbar styling */
+.table-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
 .tabelaETeDhenaveProduktit table {
-  width: 100%;
+  width: 100%; /* Fill container, expand with min-width */
+  min-width: 700px; /* Force horizontal scroll beyond 595px */
   text-align: center;
   border-collapse: collapse;
-  font-size: 8pt;
+  font-size: 6pt;
+  table-layout: fixed;
 }
 
 .tabelaETeDhenaveProduktit th,
 .tabelaETeDhenaveProduktit td {
-  padding: 3px;
+  padding: 2px;
   border: 1px solid #ccc;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tabelaETeDhenaveProduktit th {
   background-color: #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-/* Main content container */
-.containerFatura {
-  width: 100%;
-}
-
-/* Delivery and order details */
-.detajetDorezimit,
-.detajetPoresis {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Adjusted column widths (total ~100% for min-width) */
+.col-nr { width: 6%; }
+  .col-shifra { width: 10%; }
+  .col-emertimi { width: 18%; }
+  .col-njm { width: 6%; }
+  .col-sasia { width: 7%; }
+  .col-qm-pa-tvsh { width: 9%; }
+  .col-rab1 { width: 7%; }
+  .col-rab2 { width: 7%; }
+  .col-rab3 { width: 7%; }
+  .col-tvsh-rate { width: 6%; }
+  .col-qm-me-rabat { width: 11%; }
+  .col-tvsh-value { width: 8%; }
+  .col-shuma { width: 9%; }
 /* Typography */
 .fatura h1 {
-  font-size: 18pt;
-  margin-bottom: 0.5em;
+  font-size: 14pt;
+  margin-bottom: 0;
 }
 
 .fatura h2 {
-  font-size: 14pt;
+  font-size: 12pt;
 }
 
 .fatura h3 {
-  font-size: 12pt;
+  font-size: 10pt;
 }
 
 /* Signatures */
 .nenshkrimet {
   display: flex;
   justify-content: space-between;
-  margin-top: 1em;
-}
-
-.nenshkrimet2Faqe {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2em;
+  margin-top: 0.8em;
 }
 
 .nenshkrimi {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 9pt;
+  font-size: 7pt;
 }
 
 .nenshkrimi span {
-  margin-top: 0.2em;
+  margin-top: 0.15em;
   font-weight: bold;
 }
 
 .nenshkrimi span:first-child {
-  margin-bottom: 0.2em;
+  margin-bottom: 0.15em;
 }
 
 /* Barcode */
@@ -156,40 +202,120 @@
 .teDhenatEKlientit {
   width: 100%;
   border: 1px solid black;
-  padding: 0.5em;
+  padding: 0.4em;
   text-align: right;
-  font-size: 11pt;
+  font-size: 9pt;
 }
 
-/* Buttons and title */
-.title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5em;
+/* Title and buttons */
+.page-hint {
+  font-size: 8pt;
+  color: #666;
+  margin-right: 0.8em;
 }
 
-.Butoni {
-  margin-left: 1em;
-  font-size: 11pt;
-  padding: 0.4em 0.8em;
+.fatura .fatura-butoni {
+  margin-left: 0.8em;
+  font-size: 9pt;
+  padding: 0.3em 0.6em;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-/* Ensure footer stays at bottom if content is short */
-.fatura > div {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.fatura > div > div:last-child {
-  margin-top: auto;
+.fatura .fatura-butoni:hover {
+  background-color: #0056b3;
 }
 
 /* HR styling */
-hr {
+.fatura-hr {
   height: 1px;
   border-width: 0;
-  background-color: black;
-  margin: 0.5em 0;
+  background-color: #333;
+  margin: 0.4em 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .fatura {
+    width: 100%;
+    padding: 0.5em;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .teDhenatKompanis,
+  .data {
+    width: 100%;
+  }
+
+  .data {
+    align-items: flex-start;
+    margin-top: 0.5em;
+  }
+
+  .teDhenatKompanis img {
+    width: 60px;
+    height: 30px;
+  }
+
+  .fatura h1 {
+    font-size: 12pt;
+  }
+
+  .title {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.3em 0;
+  }
+
+  .page-hint {
+    margin-bottom: 0.5em;
+  }
+
+  .fatura .fatura-butoni {
+    margin-left: 0;
+    margin-top: 0.5em;
+    font-size: 8pt;
+    padding: 0.25em 0.5em;
+  }
+
+  .tabelaETeDhenaveProduktit table {
+    font-size: 5pt;
+    min-width: 600px; /* Adjusted for mobile */
+  }
+
+  .table-wrapper {
+    max-height: 40vh;
+  }
+
+  /* Mobile column widths */
+  .col-nr { width: 6%; }
+  .col-shifra { width: 10%; }
+  .col-emertimi { width: 18%; }
+  .col-njm { width: 6%; }
+  .col-sasia { width: 7%; }
+  .col-qm-pa-tvsh { width: 9%; }
+  .col-rab1 { width: 7%; }
+  .col-rab2 { width: 7%; }
+  .col-rab3 { width: 7%; }
+  .col-tvsh-rate { width: 6%; }
+  .col-qm-me-rabat { width: 11%; }
+  .col-tvsh-value { width: 8%; }
+  .col-shuma { width: 9%; }
+
+  /* Stack signatures vertically on mobile */
+  .nenshkrimet {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nenshkrimi {
+    margin: 0.5em 0;
+  }
 }

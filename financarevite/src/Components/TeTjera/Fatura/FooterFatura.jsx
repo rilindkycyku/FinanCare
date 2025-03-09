@@ -1,11 +1,21 @@
 import "./Styles/Fatura.css";
-import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import { View, Text, StyleSheet, Font } from "@react-pdf/renderer";
+
+Font.register({
+  family: "Quicksand",
+  fonts: [
+    { src: "/fonts/Quicksand-Regular.ttf" }, // Regular weight
+    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" }, // Bold weight (if used)
+    // Add other weights/styles if needed (e.g., italic, light)
+  ],
+});
 
 const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
+    fontFamily: "Quicksand",
   },
   column: { width: "48%", fontSize: 9 },
   bold: { fontWeight: "bold", marginTop: 6 },
@@ -15,7 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 10,
   },
-  signature: { textAlign: "center", fontSize: 7, marginTop:20 },
+  signature: { textAlign: "center", fontSize: 7, marginTop: 20 },
   bankTable: {
     width: "100%",
     borderStyle: "solid",

@@ -1,11 +1,20 @@
 import "./Styles/Fatura.css";
-import { View, StyleSheet } from "@react-pdf/renderer";
+import { View, StyleSheet, Font } from "@react-pdf/renderer";
 import HeaderFatura from "./HeaderFatura";
 import TeDhenatFatura from "./TeDhenatFatura";
 import FooterFatura from "./FooterFatura";
 
+Font.register({
+  family: "Quicksand",
+  fonts: [
+    { src: "/fonts/Quicksand-Regular.ttf" }, // Regular weight
+    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" }, // Bold weight (if used)
+    // Add other weights/styles if needed (e.g., italic, light)
+  ],
+});
+
 const styles = StyleSheet.create({
-  page: { padding: 20, fontSize: 11 },
+  page: { padding: 20, fontSize: 11, fontFamily: "Quicksand" },
   hr: { borderBottomWidth: 1, borderColor: "black", marginVertical: 5 },
 });
 
@@ -30,7 +39,9 @@ function DetajeFatura({
 
   if (isPDF) {
     if (pageItems.length === 0) {
-      console.log(`Skipping empty PDF page ${NrFaqes}: ${ProduktiPare}-${ProduktiFundit}`);
+      console.log(
+        `Skipping empty PDF page ${NrFaqes}: ${ProduktiPare}-${ProduktiFundit}`
+      );
       return null;
     }
 
@@ -55,7 +66,12 @@ function DetajeFatura({
         {!LargoFooter && !forceFooterNewPage ? (
           <View>
             <View style={styles.hr} />
-            <FooterFatura faturaID={nrFatures} Barkodi={Barkodi} isPDF={true} data={data} />
+            <FooterFatura
+              faturaID={nrFatures}
+              Barkodi={Barkodi}
+              isPDF={true}
+              data={data}
+            />
           </View>
         ) : null}
       </View>
@@ -72,7 +88,14 @@ function DetajeFatura({
         isPDF={false}
         data={data}
       />
-      <hr style={{ height: "1px", borderWidth: "0", backgroundColor: "black", margin: "0.5em 0" }} />
+      <hr
+        style={{
+          height: "1px",
+          borderWidth: "0",
+          backgroundColor: "black",
+          margin: "0.5em 0",
+        }}
+      />
       <TeDhenatFatura
         faturaID={nrFatures}
         ProduktiPare={ProduktiPare}
@@ -82,8 +105,20 @@ function DetajeFatura({
       />
       {!LargoFooter && !forceFooterNewPage ? (
         <div>
-          <hr style={{ height: "1px", borderWidth: "0", backgroundColor: "black", margin: "0.5em 0" }} />
-          <FooterFatura faturaID={nrFatures} Barkodi={Barkodi} isPDF={false} data={data} />
+          <hr
+            style={{
+              height: "1px",
+              borderWidth: "0",
+              backgroundColor: "black",
+              margin: "0.5em 0",
+            }}
+          />
+          <FooterFatura
+            faturaID={nrFatures}
+            Barkodi={Barkodi}
+            isPDF={false}
+            data={data}
+          />
         </div>
       ) : null}
     </div>
