@@ -4,9 +4,9 @@
 
 ![](ReadMeImages/Logo.png)
 
-Projekti eshte i tipit Shitje dhe Kontabilitet.
+Projekti është i tipit Shitje dhe Kontabilitet.
 
-Ky projekt eshte i punuar ne
+Ky projekt është i punuar në:
 
 - **React JS** - Frontend
 - **ASP.NET Core** - Backend
@@ -16,47 +16,65 @@ Ky projekt eshte i punuar ne
 
 ## Funksionet
 
-- Authentikimi behet permes JWToken.
-- **Eksportimi i Te Dhenave** - Eksportimi i te dhenave eshte i mundur ne te gjitha faqet ku gjenden tabela. Eksportimi lejohet ne formate te ndryshme si: Excel, JSON, CSV, Tekst etj.
-- **Tabelat** - Secila tabel eshte e konfiguruar ne ate menyre qe te mundesoj filtrimin e te dhenave mbas search, apo te beje renditjen e tyre sipas te gjitha kolonave ne tabel.
-- **Fatura** - Secila porosi ka te mundur shfaqjen, ruajtjen dhe printimin e fatures per ate porosi, gjithashtu gjat blerjes me POS fatura shfaqet gjithmon pas mbylljes se Paragonit.
-- **Barcode** - Secila fature ka te vendosur Barcode i cili permban numrin e fatures.
-- **Statistikat** - Kjo eshte nje faqe e dedikuar vetem per statistikat e Dyqanit e cila ka qasje vetem Roli i Admin, Ne kete faqe gjenden statistika te ndryshme per shtije, produkte dhe klient.
-- **Zbritjet e Produktit** - Zbritjet mundesohen per te gjitha produktet dhe mund te vendosen sipas datave te ndryshme.
-- **Te dhenat e Biznesit** - Ketu mund te vendosen Te dhenat e Biznesit si Emri Biznesit, Numri Unik, TVSH etj., Logo si dhe Infomatat bankare te cilat shfaqen tek pjesa e fatures.
-- **Atributi isDeleted** - Me kete atribut mundesohet qe gjate largimit se produkteve, kategorive, kompanive etj. nga sistemi ato ne te vertet nuk fshihen por si te tilla mbeten ne databaze por qe nuk shfaqen tek klienti, kjo eshte bere qe te mos kete probleme pas largimit te mos kete probleme ne sistem dhe te mos ndryshohen faturat e statistikat.
-- **Menaxhimi i Borxheve - POS** - Qdo klient qe posedon bonus kartele ne sistem ka mundesi qe gjate pageses te marr borxh gje qe sistemi ben kalkulimin automatik te tij.
-- **Qmimorja** - Qmimorja eshte aktive per printim gjate kalkulimit si dhe zbritjeve.
-- **Kartelat Financiare** - Kartelat financiare jane te mundura per cilin do partner qe eshte i vendosur ne sistem.
-- **Kartelat e Artikullit** - Secili artikull posedon kartelat te cilat permbaj informatat kyqe per produktin.
+- Authentikimi bëhet përmes JWToken.
+- **Eksportimi i të Dhënave** - Eksportimi i të dhënave është i mundur në të gjitha faqet ku gjenden tabela. Eksportimi lejohet në formate të ndryshme si: Excel, JSON, CSV, Tekst etj.
+- **Tabelat** - Secila tabelë është e konfiguruar në atë mënyrë që të mundësojë filtrimin e të dhënave pas kërkimit, apo të bëjë renditjen e tyre sipas të gjitha kolonave në tabelë.
+- **Fatura** - Secila porosi ka të mundur shfaqjen, ruajtjen dhe printimin e faturës për atë porosi, gjithashtu gjatë blerjes me POS fatura shfaqet gjithmonë pas mbylljes së Paragonit.
+- **Barcode** - Secila faturë ka të vendosur Barcode i cili përmban numrin e faturës.
+- **Statistikat** - Kjo është një faqe e dedikuar vetëm për statistikat e Dyqanit e cila ka qasje vetëm Roli i Admin. Në këtë faqe gjenden statistika të ndryshme për shitje, produkte dhe klientë.
+- **Zbritjet e Produktit** - Zbritjet mundësohen për të gjitha produktet dhe mund të vendosen sipas datave të ndryshme.
+- **Të dhënat e Biznesit** - Këtu mund të vendosen të dhënat e biznesit si Emri i Biznesit, Numri Unik, TVSH etj., Logo si dhe informatat bankare të cilat shfaqen tek pjesa e faturës.
+- **Atributi isDeleted** - Me këtë atribut mundësohet që gjatë largimit të produkteve, kategorive, kompanive etj. nga sistemi ato në të vërtetë nuk fshihen por mbeten në databazë, por nuk shfaqen tek klienti. Kjo është bërë që të mos ketë probleme pas largimit dhe të mos ndryshohen faturat e statistikat.
+- **Menaxhimi i Borxheve - POS** - Çdo klient që posedon bonus kartelë në sistem ka mundësi që gjatë pagesës të marrë borxh, gjë që sistemi bën kalkulimin automatik të tij.
+- **Çmimorja** - Çmimorja është aktive për printim gjatë kalkulimit si dhe zbritjeve.
+- **Kartelat Financiare** - Kartelat financiare janë të mundura për cilin do partner që është i vendosur në sistem.
+- **Kartelat e Artikullit** - Secili artikull posedon kartela të cilat përmbajnë informatat kyçe për produktin.
 
 ## Konfigurimi
 
-Se pari duhet te behet konfigurimi i Connection String ne FinanCare/appsettings.json dhe duhet te nderrohet emri i Server me ate te serverit tuaj, pastaj ju duhet te beni run komanden **EntityFrameworkCore\update-database** ne **Serverin e Projektit - FinanCare** e cili do te mundesoj gjenerimin ne teresi te databases dhe insertimin e te dhenave bazike, pasi te keni perfunduar me keto hapa ju duhet qe te beni **run** serverin dhe pastaj ne VSC pjesen e React qe gjendet tek **financare** duhet te hapet ne terminal pastaj duhen te behen run keto komonda:
+Së pari duhet të bëhet konfigurimi i Connection String në `FinanCare/appsettings.json` dhe duhet të ndërrohet emri i Server me atë të serverit tuaj. Pastaj ju duhet të bëni run komandën **EntityFrameworkCore\update-database** në **Serverin e Projektit - FinanCare**, e cila do të mundësojë gjenerimin në tërësi të databazës dhe insertimin e të dhënave bazike.
 
-- **npm i** - Bene instalimin automatik te paketave te nevojtura,
-- **npm run build** - Bene Build Projektin,
-  _Keto duhen te behen vetem ne qoftese e keni hapur projketin per here te pare_
-- **npm start** - Bene startimin e projektit (_Kjo duhet te behet gjithmone kur startojme projektin e React_).
+### **Njoftimi për Ndryshimin e Serverit të API**
+API i cili vjen nga ASP.NET Core mund të ndryshohet duke vendosur adresën IP në file-in `.env` që gjendet në folderin `financare`. Adresa IP mund të gjendet duke ekzekutuar komandën `ipconfig` në Command Prompt (CMD).  
+- **Hapi 1**: Hapni CMD dhe shkruani:
+```ipconfig```
+Kërkoni nën seksionin "IPv4 Address" (p.sh., `192.168.0.102`).  
+- **Hapi 2**: Në file-in `.env`, shtoni ose përditësoni rreshtin:
+```VITE_API_BASE_URL=https://192.168.0.102:7285```
+- **Shënim**: Zëvendësoni `192.168.0.10` me adresën tuaj IP dhe `7285` me portin e konfiguruar për API-n tuaj (```7285``` është i konfiguruar automatikisht).
 
-Pasi qe te behet konfigurimi ju mund te kyqeni me keto te dhena:
+### **Konfigurimi i Certifikatës HTTPS**
+Për të shmangur problemet gjatë përdorimit të HTTPS, duhet të krijohet dhe të besohet një certifikatë zhvillimi.  
+- **Hapi 1**: Hapni PowerShell si Administrator.  
+- **Hapi 2**: Ekzekutoni komandën:
+```dotnet dev-certs https --trust```
+- **Rezultati**: Do të shihni një mesazh konfirmimi dhe certifikata HTTPS do të regjistrohet në sistemin tuaj për komunikim të sigurt gjatë zhvillimit.  
+
+Pasi të keni përfunduar me këto hapa, ju duhet të bëni **run** serverin dhe pastaj në Visual Studio Code, pjesën e React që gjendet tek **financare**, duhet të hapet në terminal. Më pas duhen të bëhen run këto komanda:
+
+- **npm i** - Bën instalimin automatik të paketave të nevojshme.
+- **npm run build** - Bën Build Projektin.  
+_Këto duhen të bëhen vetëm nëse e keni hapur projektin për herë të parë._
+- **npm start** - Bën startimin e projektit. (_Kjo duhet të bëhet gjithmonë kur startojmë projektin e React._)
+
+Pasi të bëhet konfigurimi, ju mund të kyçeni me këto të dhëna:
 
 | **Email**                               | **Password**               | **Aksesi**            |
-| --------------------------------------- | -------------------------- | --------------------- |
+|-----------------------------------------|----------------------------|-----------------------|
 | financa.financa@financare.com           | financafinanca1@           | Financa               |
-| mbeshtetje.klientit@financare.com       | mbeshtetjeklientit1@       | Mbeshtetje e Klientit |
-| qmimore.qmimore@financare.com           | qmimoreqmimore1@           | Qmimore               |
+| mbeshtetje.klientit@financare.com       | mbeshtetjeklientit1@       | Mbështetje e Klientit |
+| qmimore.qmimore@financare.com           | qmimoreqmimore1@           | Çmimore               |
 | faturist.faturist@financare.com         | faturistfaturist1@         | Faturist              |
 | kalkulant.kalkulant@financare.com       | kalkulantkalkulant1@       | Kalkulant             |
 | menaxher.menaxher@financare.com         | menaxhermenaxher1@         | Menaxher              |
 | komercialist.komercialist@financare.com | komercialistkomercialist1@ | Komercialist          |
 | arkatar.arkatar@financare.com           | arkatararkatar1@           | Arkatar               |
 | burime.njerzore@financare.com           | burimenjerzore1@           | Burime Njerzore       |
-| puntor.thjeshte@financare.com           | puntorthjeshte1@           | Puntor i Thjeshte     |
+| puntor.thjeshte@financare.com           | puntorthjeshte1@           | Puntor i Thjeshtë     |
 
-## Informata te tjera
+## Informata të tjera
 
-Ne rast se deshironi te perdorni te dhenat e FinanCare ato mund te i gjeni ne file-in e cila gjendet ne folderin **Databaza** me emrin **FinanCareDB.sql** kete file duhet ta beni execute ne **SQL Server** pasi qe te keni bere konfigurimet paraprake.
+Në rast se dëshironi të përdorni të dhënat e FinanCare, ato mund t’i gjeni në file-in që gjendet në folderin **Databaza** me emrin **FinanCareDB.sql**. Këtë file duhet ta bëni execute në **SQL Server** pasi të keni bërë konfigurimet paraprake.
 
 ## Pamja e FinanCare
 
@@ -72,11 +90,11 @@ Ne rast se deshironi te perdorni te dhenat e FinanCare ato mund te i gjeni ne fi
 
 ![](ReadMeImages/Tabela.png)
 
-### Eksportimi Te Dhenave
+### Eksportimi të Dhënave
 
 ![](ReadMeImages/ExportimiTeDhenave.png)
 
-### Eksportimi te Dhenave - EXCEL
+### Eksportimi të Dhënave - EXCEL
 
 ![](ReadMeImages/ExportimiTeDhenave.jpeg)
 
@@ -88,7 +106,7 @@ Ne rast se deshironi te perdorni te dhenat e FinanCare ato mund te i gjeni ne fi
 
 ![](ReadMeImages/KartelaFinanciare.png)
 
-### Kontrollimi Qmimvev
+### Kontrollimi Çmimeve
 
 ![](ReadMeImages/KontrollimiQmimev.png)
 
@@ -100,7 +118,7 @@ Ne rast se deshironi te perdorni te dhenat e FinanCare ato mund te i gjeni ne fi
 
 ![](ReadMeImages/Paragon.jpg)
 
-### Pagesat e Fatures
+### Pagesat e Faturës
 
 ![](ReadMeImages/PagesatEFatures.png)
 
@@ -108,11 +126,11 @@ Ne rast se deshironi te perdorni te dhenat e FinanCare ato mund te i gjeni ne fi
 
 ![](ReadMeImages/POS.png)
 
-### Qmimorja
+### Çmimorja
 
 ![](ReadMeImages/Qmimorja.jpg)
 
-### Qmimorja Zbritjes
+### Çmimorja Zbritjes
 
 ![](ReadMeImages/QmimorjaZbritjes.jpg)
 
