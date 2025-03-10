@@ -13,6 +13,7 @@ import {
 } from "react-bootstrap";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 function ShtoPartnerin(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [emri, setEmri] = useState(null);
   const [mbiemri, setMbiemri] = useState(null);
   const [emriPartnerit, setEmriPartnerit] = useState(null);
@@ -46,7 +47,7 @@ function ShtoPartnerin(props) {
     const vendosTeDhenat = async () => {
       try {
         const perdoruesi = await axios.get(
-          `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+          `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
           authentikimi
         );
         setTeDhenat(perdoruesi.data);
@@ -62,7 +63,7 @@ function ShtoPartnerin(props) {
     const ShfaqTeDhenat = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setTeDhenatBiznesit(teDhenat.data);
@@ -114,7 +115,7 @@ function ShtoPartnerin(props) {
       } else {
         axios
           .post(
-            "https://localhost:7285/api/Partneri/shtoPartnerin",
+            `${API_BASE_URL}/api/Partneri/shtoPartnerin`,
             {
               emriBiznesit: emri + " " + mbiemri,
               shkurtesaPartnerit: `${emri.charAt(0).toUpperCase()}${mbiemri
@@ -132,7 +133,7 @@ function ShtoPartnerin(props) {
           )
           .then((response) => {
             axios.post(
-              `https://localhost:7285/api/Kartelat/ShtoKartelenBonus?idPartneri=${response.data.idPartneri}&stafiID=${teDhenat.perdoruesi.userID}&rabati=${rabati}`,
+              `${API_BASE_URL}/api/Kartelat/ShtoKartelenBonus?idPartneri=${response.data.idPartneri}&stafiID=${teDhenat.perdoruesi.userID}&rabati=${rabati}`,
               {},
               authentikimi
             );
@@ -182,7 +183,7 @@ function ShtoPartnerin(props) {
       } else {
         axios
           .post(
-            "https://localhost:7285/api/Partneri/shtoPartnerin",
+            `${API_BASE_URL}/api/Partneri/shtoPartnerin`,
             {
               emriBiznesit: emriPartnerit,
               nui: NUI.toString(),
@@ -199,7 +200,7 @@ function ShtoPartnerin(props) {
           .then((response) => {
             if (key == "klientBiznesi") {
               axios.post(
-                `https://localhost:7285/api/Kartelat/ShtoKartelenBonus?idPartneri=${response.data.idPartneri}&stafiID=${teDhenat.perdoruesi.userID}&rabati=${rabati}`,
+                `${API_BASE_URL}/api/Kartelat/ShtoKartelenBonus?idPartneri=${response.data.idPartneri}&stafiID=${teDhenat.perdoruesi.userID}&rabati=${rabati}`,
                 {},
                 authentikimi
               );

@@ -103,6 +103,15 @@ builder.Services.AddSwaggerGen(c => {
     });
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(7286); // Port 5000, change if needed.
+    options.ListenAnyIP(7285, listenOptions => // HTTPS
+    {
+        listenOptions.UseHttps();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

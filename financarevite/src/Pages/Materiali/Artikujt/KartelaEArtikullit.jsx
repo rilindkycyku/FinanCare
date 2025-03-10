@@ -11,6 +11,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function KartelaEArtikullit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -42,7 +43,7 @@ function KartelaEArtikullit(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -63,7 +64,7 @@ function KartelaEArtikullit(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/ProduktetPerKalkulim`,
+          `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -79,7 +80,7 @@ function KartelaEArtikullit(props) {
     const kartelaEProduktit = async () => {
       try {
         const kartela = await axios.get(
-          `https://localhost:7285/api/Produkti/KartelaArtikullit?id=${produktiID}`,
+          `${API_BASE_URL}/api/Produkti/KartelaArtikullit?id=${produktiID}`,
           authentikimi
         );
         setKartelaEProduktit(kartela.data);
@@ -142,7 +143,7 @@ function KartelaEArtikullit(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/Produkti/ProduktetPerKalkulim",
+        `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
         authentikimi
       )
       .then((response) => {

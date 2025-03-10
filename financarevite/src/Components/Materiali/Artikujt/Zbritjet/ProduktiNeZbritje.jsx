@@ -10,6 +10,7 @@ import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ProduktiNeZbritje(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [produkti, setProdukti] = useState("");
   const [qmimiBleresProduktit, setQmimiBleresProduktit] = useState(0.0);
   const [qmimiShitesProduktit, setQmimiShitesProduktit] = useState(0.0);
@@ -37,7 +38,7 @@ function ProduktiNeZbritje(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/Products`,
+          `${API_BASE_URL}/api/Produkti/Products`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -73,7 +74,7 @@ function ProduktiNeZbritje(props) {
     if (zbritjaNeRregull === true && kaZbritje === false) {
       axios
         .post(
-          "https://localhost:7285/api/ZbritjaQmimitProduktit/shtoZbritjenProduktit",
+          `${API_BASE_URL}/api/ZbritjaQmimitProduktit/shtoZbritjenProduktit`,
           {
             produktiID: optionsSelected.value,
             rabati: rabati,
@@ -110,7 +111,7 @@ function ProduktiNeZbritje(props) {
   };
   useEffect(() => {
     axios
-      .get("https://localhost:7285/api/Produkti/Products", authentikimi)
+      .get(`${API_BASE_URL}/api/Produkti/Products`, authentikimi)
       .then((response) => {
         console.log(response);
         const fetchedoptions = response.data.map((item) => ({

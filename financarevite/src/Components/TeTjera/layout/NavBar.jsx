@@ -28,6 +28,7 @@ import axios from "axios";
 import { roleBasedDropdowns } from "./roleBasedDropdowns";
 
 function NavBar() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -70,7 +71,7 @@ function NavBar() {
     const ShfaqTeDhenat = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setTeDhenatBiznesit(teDhenat.data);
@@ -87,7 +88,7 @@ function NavBar() {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);

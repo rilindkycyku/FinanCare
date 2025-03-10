@@ -6,6 +6,7 @@ import axios from "axios";
 import { useState } from "react";
 
 function NukUGjet(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState([]);
   const [perditeso, setPerditeso] = useState("");
 
@@ -21,7 +22,7 @@ function NukUGjet(props) {
     const ShfaqTeDhenat = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setTeDhenatBiznesit(teDhenat.data);

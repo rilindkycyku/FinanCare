@@ -6,6 +6,7 @@ import { faBan, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function LargoProduktin(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const getToken = localStorage.getItem("token");
 
   const authentikimi = {
@@ -17,7 +18,7 @@ function LargoProduktin(props) {
   async function handleSubmit() {
     try {
       await axios.delete(
-        `https://localhost:7285/api/Produkti/${props.id}`,
+        `${API_BASE_URL}/api/Produkti/${props.id}`,
         authentikimi
       );
       props.setTipiMesazhit("success");

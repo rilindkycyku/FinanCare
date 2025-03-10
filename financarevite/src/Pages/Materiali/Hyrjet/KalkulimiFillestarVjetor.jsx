@@ -15,6 +15,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function KalkulimiFillestarVjetor(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -70,7 +71,7 @@ function KalkulimiFillestarVjetor(props) {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          "https://localhost:7285/api/Faturat/shfaqRegjistrimet",
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
           authentikimi
         );
         const kalkulimet = kalkulimi.data.filter(
@@ -104,7 +105,7 @@ function KalkulimiFillestarVjetor(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -125,7 +126,7 @@ function KalkulimiFillestarVjetor(props) {
     const vendosPartnerin = async () => {
       try {
         const partneri = await axios.get(
-          `https://localhost:7285/api/Partneri/shfaqPartneretFurntiore`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
           authentikimi
         );
         setPartneret(partneri.data);
@@ -141,7 +142,7 @@ function KalkulimiFillestarVjetor(props) {
     const vendosNrFaturesMeRradhe = async () => {
       try {
         const nrFat = await axios.get(
-          `https://localhost:7285/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=KLFV`,
+          `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=KLFV`,
           authentikimi
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
@@ -183,7 +184,7 @@ function KalkulimiFillestarVjetor(props) {
       } else {
         // Proceed with the registration if no active calculation
         const response = await axios.post(
-          "https://localhost:7285/api/Faturat/ruajKalkulimin",
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
           {
             dataRegjistrimit: dataEFatures,
             stafiID: teDhenat.perdoruesi.userID,
@@ -224,19 +225,19 @@ function KalkulimiFillestarVjetor(props) {
     try {
       axios
         .put(
-          `https://localhost:7285/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
           authentikimi
         )
         .then(async () => {
           setRegjistroKalkulimin(false);
           var r = await axios.get(
-            `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${idKalkulimitEdit}`,
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idKalkulimitEdit}`,
             authentikimi
           );
           if (r.data.regjistrimet.llojiPageses !== "Borxh") {
             await axios.post(
-              "https://localhost:7285/api/Faturat/ruajKalkulimin",
+              `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
               {
                 dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
                 stafiID: r.data.regjistrimet.stafiID,
@@ -291,7 +292,7 @@ function KalkulimiFillestarVjetor(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/Partneri/shfaqPartneretFurntiore",
+        `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
         authentikimi
       )
       .then((response) => {

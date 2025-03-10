@@ -13,6 +13,7 @@ import Mesazhi from "../Components/TeTjera/layout/Mesazhi";
 import Titulli from "../Components/TeTjera/Titulli";
 
 const LogIn = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -53,7 +54,7 @@ const LogIn = () => {
 
     try {
       const response = await axios.post(
-        "https://localhost:7285/api/Authenticate/login",
+        `${API_BASE_URL}/api/Authenticate/login`,
         {
           email: email,
           password: password,

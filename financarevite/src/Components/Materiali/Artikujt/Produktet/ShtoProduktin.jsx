@@ -45,7 +45,7 @@ const ShtoProduktin = (props) => {
     const vendosTeDhenat = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/Products`,
+          `${API_BASE_URL}/api/Produkti/Products`,
           authentikimi
         );
 
@@ -66,7 +66,7 @@ const ShtoProduktin = (props) => {
     try {
       await axios
         .post(
-          "https://localhost:7285/api/Produkti/shtoProdukt",
+          `${API_BASE_URL}/api/Produkti/shtoProdukt`,
           {
             emriProduktit: produkti.emriProduktit,
             idNjesiaMatese: produkti.idNjesiaMatese,
@@ -142,7 +142,7 @@ const ShtoProduktin = (props) => {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/GrupiProduktit/shfaqGrupetEProduktit",
+        `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
         authentikimi
       )
       .then((response) => {
@@ -158,7 +158,7 @@ const ShtoProduktin = (props) => {
       });
     axios
       .get(
-        "https://localhost:7285/api/Partneri/shfaqPartneretFurntiore",
+        `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
         authentikimi
       )
       .then((response) => {
@@ -174,7 +174,7 @@ const ShtoProduktin = (props) => {
       });
     axios
       .get(
-        "https://localhost:7285/api/NjesiaMatese/shfaqNjesiteMatese",
+        `${API_BASE_URL}/api/NjesiaMatese/shfaqNjesiteMatese`,
         authentikimi
       )
       .then((response) => {
@@ -205,7 +205,7 @@ const ShtoProduktin = (props) => {
 
     await axios
       .get(
-        `https://localhost:7285/api/Produkti/GetKodiProduktitPerRegjistrim?idPartneri=${partneri.value}`,
+        `${API_BASE_URL}/api/Produkti/GetKodiProduktitPerRegjistrim?idPartneri=${partneri.value}`,
         authentikimi
       )
       .then((response) => {

@@ -19,6 +19,7 @@ import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function KalkulimiIMallit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -75,7 +76,7 @@ function KalkulimiIMallit(props) {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          "https://localhost:7285/api/Faturat/shfaqRegjistrimet",
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
           authentikimi
         );
         const kalkulimet = kalkulimi.data.filter(
@@ -112,7 +113,7 @@ function KalkulimiIMallit(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -133,7 +134,7 @@ function KalkulimiIMallit(props) {
     const vendosPartnerin = async () => {
       try {
         const partneri = await axios.get(
-          `https://localhost:7285/api/Partneri/shfaqPartneretFurntiore`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
           authentikimi
         );
         setPartneret(partneri.data);
@@ -149,7 +150,7 @@ function KalkulimiIMallit(props) {
     const vendosNrFaturesMeRradhe = async () => {
       try {
         const nrFat = await axios.get(
-          `https://localhost:7285/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=FL`,
+          `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=FL`,
           authentikimi
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
@@ -172,7 +173,7 @@ function KalkulimiIMallit(props) {
     try {
       await axios
         .post(
-          "https://localhost:7285/api/Faturat/ruajKalkulimin",
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
           {
             dataRegjistrimit: dataEFatures,
             stafiID: teDhenat.perdoruesi.userID,
@@ -207,7 +208,7 @@ function KalkulimiIMallit(props) {
     try {
       axios
         .put(
-          `https://localhost:7285/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
           authentikimi
         )
@@ -252,7 +253,7 @@ function KalkulimiIMallit(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/Partneri/shfaqPartneret",
+        `${API_BASE_URL}/api/Partneri/shfaqPartneret`,
         authentikimi
       )
       .then((response) => {

@@ -8,6 +8,7 @@ import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoGrupetEProduktit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [njesiaMatese, setNjesiaMatese] = useState("");
 
   const [perditeso, setPerditeso] = useState("");
@@ -28,7 +29,7 @@ function EditoGrupetEProduktit(props) {
     const vendosNjesiteMatese = async () => {
       try {
         const njesiteMatese = await axios.get(
-          `https://localhost:7285/api/GrupiProduktit/shfaqGrupetEProduktit`,
+          `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
           authentikimi
         );
         setNjesiteMatese(njesiteMatese.data);
@@ -45,7 +46,7 @@ function EditoGrupetEProduktit(props) {
     const shfaqNjesineMatese = async () => {
       try {
         const njesiaMatese = await axios.get(
-          `https://localhost:7285/api/GrupiProduktit/shfaqGrupinEProduktitSipasIDs?id=${props.id}`,
+          `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupinEProduktitSipasIDs?id=${props.id}`,
           authentikimi
         );
         setNjesiaMatese(njesiaMatese.data);
@@ -68,7 +69,7 @@ function EditoGrupetEProduktit(props) {
   function handleSubmit() {
     axios
       .put(
-        `https://localhost:7285/api/GrupiProduktit/perditesoGrupinEProduktit?id=${njesiaMatese.idGrupiProduktit}`,
+        `${API_BASE_URL}/api/GrupiProduktit/perditesoGrupinEProduktit?id=${njesiaMatese.idGrupiProduktit}`,
         njesiaMatese,
         authentikimi
       )

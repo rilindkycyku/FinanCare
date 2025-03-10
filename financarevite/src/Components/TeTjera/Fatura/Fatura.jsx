@@ -29,6 +29,7 @@ Font.register({
 });
 
 function Fatura({ nrFatures, mbyllFaturen }) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState({});
   const [teDhenatFat, setTeDhenatFat] = useState({});
   const [produktet, setProduktet] = useState([]);
@@ -64,23 +65,23 @@ function Fatura({ nrFatures, mbyllFaturen }) {
         const [produktetRes, fatRes, biznesiRes, userRes, bankatRes] =
           await Promise.all([
             axios.get(
-              `https://localhost:7285/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${nrFatures}`,
+              `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${nrFatures}`,
               authentikimi
             ),
             axios.get(
-              `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${nrFatures}`,
+              `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${nrFatures}`,
               authentikimi
             ),
             axios.get(
-              "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+              `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
               authentikimi
             ),
             axios.get(
-              `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+              `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
               authentikimi
             ),
             axios.get(
-              "https://localhost:7285/api/TeDhenatBiznesit/ShfaqLlogaritEBiznesit",
+              `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqLlogaritEBiznesit`,
               authentikimi
             ),
           ]);

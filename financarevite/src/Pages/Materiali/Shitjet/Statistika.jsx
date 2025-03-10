@@ -11,6 +11,7 @@ import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function Statistika() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [totaleTeNdryshme, setTotaleTeNdryshme] = useState([]);
   const [top15Bleresit, setTop15Bleresit] = useState([]);
   const [top15Bizneset, setTop15Bizneset] = useState([]);
@@ -30,7 +31,7 @@ function Statistika() {
     const vendosTotalinPerdoruesve = async () => {
       try {
         const totalet = await axios.get(
-          "https://localhost:7285/api/Statistikat/totaleTeNdryshme",
+          `${API_BASE_URL}/api/Statistikat/totaleTeNdryshme`,
           authentikimi
         );
         setTotaleTeNdryshme(totalet.data);
@@ -42,7 +43,7 @@ function Statistika() {
     const vendosTop15Bleresit = async () => {
       try {
         const bleresit = await axios.get(
-          "https://localhost:7285/api/Statistikat/15BleresitQytetarMeSeShumtiBlerje",
+          `${API_BASE_URL}/api/Statistikat/15BleresitQytetarMeSeShumtiBlerje`,
           authentikimi
         );
         setTop15Bleresit(bleresit.data);
@@ -54,7 +55,7 @@ function Statistika() {
     const vendosTop15Bizneset = async () => {
       try {
         const bleresit = await axios.get(
-          "https://localhost:7285/api/Statistikat/15BleresitBiznesorMeSeShumtiBlerje",
+          `${API_BASE_URL}/api/Statistikat/15BleresitBiznesorMeSeShumtiBlerje`,
           authentikimi
         );
         setTop15Bizneset(bleresit.data);
@@ -66,7 +67,7 @@ function Statistika() {
     const vendosTop15Produktet = async () => {
       try {
         const produktet = await axios.get(
-          "https://localhost:7285/api/Statistikat/15ProduktetMeTeShitura",
+          `${API_BASE_URL}/api/Statistikat/15ProduktetMeTeShitura`,
           authentikimi
         );
         setTop15Produktet(produktet.data);
@@ -78,7 +79,7 @@ function Statistika() {
     const vendosShitjetJavore = async () => {
       try {
         const dita = await axios.get(
-          "https://localhost:7285/api/Statistikat/TotaletJavore",
+          `${API_BASE_URL}/api/Statistikat/TotaletJavore`,
           authentikimi
         );
         setShitjetJavore(dita.data);
@@ -90,7 +91,7 @@ function Statistika() {
     const vendosShitjetMeParagon = async () => {
       try {
         const dita = await axios.get(
-          "https://localhost:7285/api/Statistikat/ShitjetMeParagonSipasOperatorit",
+          `${API_BASE_URL}/api/Statistikat/ShitjetMeParagonSipasOperatorit`,
           authentikimi
         );
         setShitjetMeParagon(dita.data);

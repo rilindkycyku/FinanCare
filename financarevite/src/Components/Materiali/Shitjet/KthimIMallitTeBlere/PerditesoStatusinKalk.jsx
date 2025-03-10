@@ -11,6 +11,7 @@ import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function PerditesoStatusinKalk(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [kalkulimet, setKalkulimet] = useState([]);
   const [kalkulimetEFiltruara, setKalkulimetEFiltruara] = useState([]);
 
@@ -39,7 +40,7 @@ function PerditesoStatusinKalk(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/Products`,
+          `${API_BASE_URL}/api/Produkti/Products`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -55,7 +56,7 @@ function PerditesoStatusinKalk(props) {
     const shfaqKalkulimet = async () => {
       try {
         const kalkulimet = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqRegjistrimet`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
           authentikimi
         );
         const kthimet = kalkulimet.data.filter(
@@ -74,7 +75,7 @@ function PerditesoStatusinKalk(props) {
     const shfaqKalkulimet = async () => {
       try {
         const kalkulimet = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqRegjistrimetSipasStatusit?statusi=${statusiIFiltrimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetSipasStatusit?statusi=${statusiIFiltrimit}`,
           authentikimi
         );
         const kthimet = kalkulimet.data.filter(
@@ -94,7 +95,7 @@ function PerditesoStatusinKalk(props) {
     try {
       await axios
         .put(
-          `https://localhost:7285/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${nrKalkulimit}&statusi=false`,
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${nrKalkulimit}&statusi=false`,
           {},
           authentikimi
         )
@@ -105,13 +106,13 @@ function PerditesoStatusinKalk(props) {
 
       await axios
         .get(
-          `https://localhost:7285/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${nrKalkulimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${nrKalkulimit}`,
           authentikimi
         )
         .then(async (teDhenat) => {
           for (let p of teDhenat.data) {
             await axios.get(
-              `https://localhost:7285/api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin?idProdukti=${p.idProduktit}&idTeDhenatKalkulimit=${p.id}&lloji=AS`,
+              `${API_BASE_URL}/api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin?idProdukti=${p.idProduktit}&idTeDhenatKalkulimit=${p.id}&lloji=AS`,
               authentikimi
             );
           }
@@ -127,7 +128,7 @@ function PerditesoStatusinKalk(props) {
     try {
       await axios
         .delete(
-          `https://localhost:7285/api/Faturat/fshijKalkulimin?idKalkulimi=${nrKalkulimit}`,
+          `${API_BASE_URL}/api/Faturat/fshijKalkulimin?idKalkulimi=${nrKalkulimit}`,
           authentikimi
         )
         .then(() => {

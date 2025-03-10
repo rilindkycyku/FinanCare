@@ -9,6 +9,7 @@ import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ShtoLlogarin(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [bankaID, setBankaID] = useState(0);
   const [numriLlogaris, setNumriLlogaris] = useState("");
   const [adresaBankes, setAdresaBankes] = useState("");
@@ -32,7 +33,7 @@ function ShtoLlogarin(props) {
     const vendosbankat = async () => {
       try {
         const bankat = await axios.get(
-          `https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat`,
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
           authentikimi
         );
         setBankat(bankat.data);
@@ -60,7 +61,7 @@ function ShtoLlogarin(props) {
   function handleSubmit() {
     axios
       .post(
-        "https://localhost:7285/api/TeDhenatBiznesit/ShtoLlogarineBankareBiznesit",
+        `${API_BASE_URL}/api/TeDhenatBiznesit/ShtoLlogarineBankareBiznesit`,
         {
           bankaID: bankaID,
           numriLlogaris: numriLlogaris,
@@ -89,8 +90,7 @@ function ShtoLlogarin(props) {
         konfirmoBanken == false &&
         bankat.filter(
           (item) =>
-            (item.bankaID === bankaID &&
-              item.numriLlogaris == numriLlogaris)
+            item.bankaID === bankaID && item.numriLlogaris == numriLlogaris
         ).length !== 0
       ) {
         setKontrolloBankat(true);
@@ -110,7 +110,7 @@ function ShtoLlogarin(props) {
   };
   useEffect(() => {
     axios
-      .get("https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat", authentikimi)
+      .get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data.map((item) => ({
           value: item.bankaID,
@@ -209,7 +209,7 @@ function ShtoLlogarin(props) {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group  className="mb-3" controlId="idDheEmri">
+            <Form.Group className="mb-3" controlId="idDheEmri">
               <Form.Label>Banka</Form.Label>
               <Select
                 value={optionsSelected}

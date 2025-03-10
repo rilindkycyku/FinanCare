@@ -15,6 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 function PerditesoTeDhenat(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [teDhenat, setTeDhenat] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
@@ -52,7 +53,7 @@ function PerditesoTeDhenat(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -105,14 +106,14 @@ function PerditesoTeDhenat(props) {
           /^[A-Z][A-Za-z0-9@$!%*?&]*[a-z][A-Za-z0-9@$!%*?&]*[0-9][A-Za-z0-9@$!%*?&]*$/;
 
         const kontrolloFjalekalimin = await axios.get(
-          `https://localhost:7285/api/Perdoruesi/KontrolloFjalekalimin?AspNetID=${getID}&fjalekalimi=${fjalekalimiAktual}`,
+          `${API_BASE_URL}/api/Perdoruesi/KontrolloFjalekalimin?AspNetID=${getID}&fjalekalimi=${fjalekalimiAktual}`,
           authentikimi
         );
 
         if (kontrolloFjalekalimin.data === true) {
           if (passREGEX.test(fjalekalimiIRi)) {
             await axios.post(
-              `https://localhost:7285/api/Perdoruesi/NdryshoFjalekalimin?AspNetID=${getID}&fjalekalimiAktual=${fjalekalimiAktual}&fjalekalimiIRi=${fjalekalimiIRi}`,
+              `${API_BASE_URL}/api/Perdoruesi/NdryshoFjalekalimin?AspNetID=${getID}&fjalekalimiAktual=${fjalekalimiAktual}&fjalekalimiIRi=${fjalekalimiIRi}`,
               {},
               authentikimi
             );

@@ -6,6 +6,7 @@ import Titulli from "../Components/TeTjera/Titulli";
 import NavBar from "../Components/TeTjera/layout/NavBar";
 
 function ShikimiQmimeve(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [produktiID, setproduktiID] = useState(0);
   const [kartelaEProduktit, setKartelaEProduktit] = useState([]);
   const [options, setOptions] = useState([]);
@@ -24,7 +25,7 @@ function ShikimiQmimeve(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/ProduktetPerKalkulim`,
+          `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
           authentikimi
         );
         setOptions(
@@ -46,7 +47,7 @@ function ShikimiQmimeve(props) {
       const kartelaEProduktit = async () => {
         try {
           const kartela = await axios.get(
-            `https://localhost:7285/api/Produkti/KartelaArtikullit?id=${produktiID}`,
+            `${API_BASE_URL}/api/Produkti/KartelaArtikullit?id=${produktiID}`,
             authentikimi
           );
           setKartelaEProduktit(kartela.data);

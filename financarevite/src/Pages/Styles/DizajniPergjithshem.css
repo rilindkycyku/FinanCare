@@ -1,12 +1,14 @@
+/* General styles (unchanged for desktop) */
 table {
   width: 100%;
+  border-collapse: collapse;
 }
 
 .title {
   margin-top: 0.3em;
 }
 
-.DataPerFiltrim{
+.DataPerFiltrim {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -19,21 +21,20 @@ table {
 
 .mdb-tooltip {
   background-color: transparent !important;
-  border: none !important; 
-  box-shadow: none !important; 
-  padding: 0 !important; 
-  margin: 0 !important; 
-  font-size: inherit !important; 
-  line-height: inherit !important; 
-  width: 100%; /* Adjust the width as needed */
-    padding: 0; /* Remove padding if not needed */
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  width: 100%;
 }
 
 .mdb-tooltip-content {
-  background-color: transparent !important; 
-  color: inherit !important; 
-  font-size: inherit !important; 
-  line-height: inherit !important; 
+  background-color: transparent !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
 }
 
 .containerDashboardP {
@@ -43,7 +44,6 @@ table {
 }
 
 .containerDashboardP tr th {
-  margin-top: 3em;
   background-color: #009879;
   color: #ffffff;
   text-align: left;
@@ -71,4 +71,103 @@ table {
   width: 100%;
 }
 
+/* Mobile optimizations (only applied on smaller screens) */
+@media (max-width: 768px) {
+  /* Container adjustments */
+  .containerDashboardP {
+    width: 100%; /* Full width on mobile */
+    padding: 15px; /* Add padding for better spacing */
+  }
 
+  /* Title adjustments */
+  .title {
+    font-size: 1.8rem; /* Slightly smaller title */
+    margin-top: 0.5em;
+    margin-bottom: 20px; /* More space below */
+  }
+
+  /* Flexbox layouts (used in forms or filters) */
+  .DataPerFiltrim {
+    flex-direction: column; /* Stack items vertically */
+    align-items: stretch; /* Full width for items */
+    gap: 0.5em; /* Reduce gap */
+    margin-left: 0; /* Remove left margin */
+  }
+
+  /* Form elements */
+  .form-control,
+  .form-select {
+    font-size: 16px; /* Larger text for readability */
+    padding: 10px; /* More padding for touch */
+  }
+
+  /* Table adjustments */
+  .containerDashboardP table {
+    display: block;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+
+  .containerDashboardP th,
+  .containerDashboardP td {
+    padding: 10px 12px; /* Slightly smaller padding */
+    font-size: 16px; /* Larger text for readability */
+  }
+
+  .containerDashboardP tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+  }
+
+  /* Headings */
+  .containerDashboardP h1 {
+    font-size: 1.8rem; /* Smaller heading */
+  }
+
+  /* Search box */
+  .searchBoxi {
+    width: 90%; /* Slightly narrower to avoid edge overlap */
+    left: 5%; /* Center it slightly */
+  }
+
+  /* Buttons */
+  .Butoni {
+    width: 100%; /* Full-width buttons */
+    padding: 12px; /* Larger tap target */
+    font-size: 18px; /* Larger text */
+  }
+
+  /* Bootstrap buttons (used in table headers, etc.) */
+  .btn {
+    padding: 8px 16px; /* Larger tap target */
+    font-size: 14px; /* Readable text */
+    margin: 5px; /* Space between buttons */
+  }
+}
+
+@media (max-width: 576px) {
+  /* Further adjustments for very small screens */
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .containerDashboardP th,
+  .containerDashboardP td {
+    padding: 8px 10px;
+    font-size: 14px; /* Slightly smaller but still readable */
+  }
+
+  .DataPerFiltrim {
+    gap: 0.3em; /* Minimal gap */
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}

@@ -11,6 +11,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function TabelaEKategorive(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [njesiteMatese, setNjesiteMatese] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shto, setShto] = useState(false);
@@ -35,7 +36,7 @@ function TabelaEKategorive(props) {
       try {
         setLoading(true);
         const njesiaMatese = await axios.get(
-          "https://localhost:7285/api/NjesiaMatese/shfaqNjesiteMatese",
+          `${API_BASE_URL}/api/NjesiaMatese/shfaqNjesiteMatese`,
           authentikimi
         );
         setNjesiteMatese(

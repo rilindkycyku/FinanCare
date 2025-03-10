@@ -15,6 +15,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function ShtoPagesat(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -49,7 +50,7 @@ function ShtoPagesat(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -70,7 +71,7 @@ function ShtoPagesat(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Partneri/shfaqPartneret`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartneret`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -87,7 +88,7 @@ function ShtoPagesat(props) {
       try {
         setLoading(true); // Show loading indicator
         const response = await axios.get(
-          `https://localhost:7285/api/Partneri/KartelaFinanciare?id=${produktiID}`,
+          `${API_BASE_URL}/api/Partneri/KartelaFinanciare?id=${produktiID}`,
           authentikimi
         );
 
@@ -173,7 +174,7 @@ function ShtoPagesat(props) {
     try {
       await axios
         .post(
-          "https://localhost:7285/api/Faturat/ruajKalkulimin",
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
           {
             stafiID: teDhenat.perdoruesi.userID,
             totaliPaTVSH: shumaPageses,
@@ -211,7 +212,7 @@ function ShtoPagesat(props) {
   };
   useEffect(() => {
     axios
-      .get("https://localhost:7285/api/Partneri/shfaqPartneret", authentikimi)
+      .get(`${API_BASE_URL}/api/Partneri/shfaqPartneret`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data.map((item) => ({
           value: item.idPartneri,

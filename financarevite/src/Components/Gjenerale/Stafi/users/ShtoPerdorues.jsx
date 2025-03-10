@@ -19,6 +19,7 @@ import "./Styles/costumStyles.css";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ShtoPerdorues(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [emri, setEmri] = useState(null);
   const [mbiemri, setMbiemri] = useState(null);
   const [dataFillimitKontrates, setDataFillimitKontrates] = useState(null);
@@ -54,7 +55,7 @@ function ShtoPerdorues(props) {
     const ShfaqTeDhenat = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setTeDhenatBiznesit(teDhenat.data);
@@ -80,7 +81,7 @@ function ShtoPerdorues(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat",
+        `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
         authentikimi
       )
       .then((response) => {
@@ -95,7 +96,7 @@ function ShtoPerdorues(props) {
       });
 
     axios
-      .get("https://localhost:7285/api/Authenticate/shfaqRolet", authentikimi)
+      .get(`${API_BASE_URL}/api/Authenticate/shfaqRolet`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data
           .filter((item) => item.name != "User")
@@ -155,7 +156,7 @@ function ShtoPerdorues(props) {
       props.shfaqmesazhin();
     } else {
       const gjeneroTeDhenatPerHyrje = await axios.get(
-        `https://localhost:7285/api/Perdoruesi/GjeneroTeDhenatPerHyrje?e=${emri}&m=${mbiemri}&domain=${
+        `${API_BASE_URL}/api/Perdoruesi/GjeneroTeDhenatPerHyrje?e=${emri}&m=${mbiemri}&domain=${
           teDhenatBiznesit && teDhenatBiznesit.emailDomain
         }`,
         authentikimi
@@ -201,7 +202,7 @@ function ShtoPerdorues(props) {
         });
         axios
           .post(
-            "https://localhost:7285/api/Authenticate/register",
+            `${API_BASE_URL}/api/Authenticate/register`,
             {
               name: emri,
               lastName: mbiemri,

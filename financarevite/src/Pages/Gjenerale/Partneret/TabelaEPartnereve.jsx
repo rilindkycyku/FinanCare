@@ -11,6 +11,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function TabelaEKompanive(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [partneret, setPartneret] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shto, setShto] = useState(false);
@@ -35,7 +36,7 @@ function TabelaEKompanive(props) {
       try {
         setLoading(true);
         const partneri = await axios.get(
-          "https://localhost:7285/api/Partneri/shfaqPartneret",
+          `${API_BASE_URL}/api/Partneri/shfaqPartneret`,
           authentikimi
         );
         console.log(partneri.data)

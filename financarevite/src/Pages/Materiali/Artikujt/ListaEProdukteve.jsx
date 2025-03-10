@@ -10,6 +10,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import LargoProduktin from "../../../Components/Materiali/Artikujt/Produktet/LargoProduktin";
 
 const ProductTables = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [produkti, setProdukti] = useState([]);
   const [id, setId] = useState();
   const [perditeso, setPerditeso] = useState("");
@@ -34,7 +35,7 @@ const ProductTables = () => {
       try {
         setLoading(true);
         const produkti = await axios.get(
-          "https://localhost:7285/api/Produkti/Products",
+          `${API_BASE_URL}/api/Produkti/Products`,
           authentikimi
         );
         console.log(produkti.data);

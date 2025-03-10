@@ -11,6 +11,7 @@ import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 function TeDhenatEBiznesit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [edito, setEdito] = useState(false);
@@ -55,7 +56,7 @@ function TeDhenatEBiznesit(props) {
       try {
         setLoading(true);
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setTeDhenatBiznesit(teDhenat.data);
@@ -114,13 +115,13 @@ function TeDhenatEBiznesit(props) {
       try {
         await axios
           .post(
-            `https://localhost:7285/api/VendosFotot/PerditesoTeDhenatBiznesit?logoVjeter=${teDhenatBiznesit.logo}`,
+            `${API_BASE_URL}/api/VendosFotot/PerditesoTeDhenatBiznesit?logoVjeter=${teDhenatBiznesit.logo}`,
             formData,
             authentikimi
           )
           .then(async (response) => {
             axios.put(
-              "https://localhost:7285/api/TeDhenatBiznesit/perditesoTeDhenat",
+              `${API_BASE_URL}/api/TeDhenatBiznesit/perditesoTeDhenat`,
               {
                 emriIbiznesit: formValue.emriIBiznesit,
                 shkurtesaEmritBiznesit: formValue.shkurtesaEmrit,
@@ -144,7 +145,7 @@ function TeDhenatEBiznesit(props) {
       }
     } else {
       await axios.put(
-        "https://localhost:7285/api/TeDhenatBiznesit/perditesoTeDhenat",
+        `${API_BASE_URL}/api/TeDhenatBiznesit/perditesoTeDhenat`,
         {
           emriIbiznesit: formValue.emriIBiznesit,
           shkurtesaEmritBiznesit: formValue.shkurtesaEmrit,

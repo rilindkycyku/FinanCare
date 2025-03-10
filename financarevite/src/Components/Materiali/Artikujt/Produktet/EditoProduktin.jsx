@@ -9,6 +9,7 @@ import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoProduktin(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [produkti, setProdukti] = useState([]);
 
   const [perditeso, setPerditeso] = useState("");
@@ -41,7 +42,7 @@ function EditoProduktin(props) {
     const vendosTeDhenat = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/Products`,
+          `${API_BASE_URL}/api/Produkti/Products`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -73,7 +74,7 @@ function EditoProduktin(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/GrupiProduktit/shfaqGrupetEProduktit",
+        `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
         authentikimi
       )
       .then((response) => {
@@ -89,7 +90,7 @@ function EditoProduktin(props) {
       });
     axios
       .get(
-        "https://localhost:7285/api/Partneri/shfaqPartneretFurntiore",
+        `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
         authentikimi
       )
       .then((response) => {
@@ -105,7 +106,7 @@ function EditoProduktin(props) {
       });
     axios
       .get(
-        "https://localhost:7285/api/NjesiaMatese/shfaqNjesiteMatese",
+        `${API_BASE_URL}/api/NjesiaMatese/shfaqNjesiteMatese`,
         authentikimi
       )
       .then((response) => {
@@ -130,7 +131,7 @@ function EditoProduktin(props) {
     const shfaqProduktin = async () => {
       try {
         const produkti = await axios.get(
-          `https://localhost:7285/api/Produkti/ShfaqProduktinNgaID?id=${props.id}`,
+          `${API_BASE_URL}/api/Produkti/ShfaqProduktinNgaID?id=${props.id}`,
           authentikimi
         );
         setProdukti(produkti.data);
@@ -181,7 +182,7 @@ function EditoProduktin(props) {
       console.log(produkti);
       await axios
         .put(
-          `https://localhost:7285/api/Produkti/` + props.id,
+          `${API_BASE_URL}/api/Produkti/` + props.id,
           produkti,
           authentikimi
         )
@@ -240,7 +241,7 @@ function EditoProduktin(props) {
 
     await axios
       .get(
-        `https://localhost:7285/api/Produkti/GetKodiProduktitPerRegjistrim?idPartneri=${partneri.value}`,
+        `${API_BASE_URL}/api/Produkti/GetKodiProduktitPerRegjistrim?idPartneri=${partneri.value}`,
         authentikimi
       )
       .then((response) => {

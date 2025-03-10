@@ -9,6 +9,7 @@ import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoLlogarin(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [banka, setBanka] = useState([]);
 
   const [perditeso, setPerditeso] = useState("");
@@ -29,7 +30,7 @@ function EditoLlogarin(props) {
     const vendosbankat = async () => {
       try {
         const bankat = await axios.get(
-          `https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat`,
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
           authentikimi
         );
         setBankat(bankat.data);
@@ -53,7 +54,7 @@ function EditoLlogarin(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat",
+        `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
         authentikimi
       )
       .then((response) => {
@@ -81,7 +82,7 @@ function EditoLlogarin(props) {
     const shfaqNjesineMatese = async () => {
       try {
         const bankaKerkim = await axios.get(
-          `https://localhost:7285/api/TeDhenatBiznesit/ShfaqLlogarineNgaID?id=${props.id}`,
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqLlogarineNgaID?id=${props.id}`,
           authentikimi
         );
         setOptionsSelected(
@@ -117,7 +118,7 @@ function EditoLlogarin(props) {
   function handleSubmit() {
     axios
       .put(
-        `https://localhost:7285/api/TeDhenatBiznesit/PerditesoLlogarineBankare?id=${banka.idLlogariaBankare}`,
+        `${API_BASE_URL}/api/TeDhenatBiznesit/PerditesoLlogarineBankare?id=${banka.idLlogariaBankare}`,
         banka,
         authentikimi
       )

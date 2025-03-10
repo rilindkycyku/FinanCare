@@ -7,6 +7,7 @@ import { TailSpin } from "react-loader-spinner";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 
 const Stoqet = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [produkti, setProdukti] = useState([]);
   const [id, setId] = useState();
   const [perditeso, setPerditeso] = useState("");
@@ -31,7 +32,7 @@ const Stoqet = () => {
       try {
         setLoading(true);
         const produkti = await axios.get(
-          "https://localhost:7285/api/Produkti/Products",
+          `${API_BASE_URL}/api/Produkti/Products`,
           authentikimi
         );
         console.log(produkti.data);

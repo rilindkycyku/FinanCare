@@ -18,6 +18,7 @@ import { roleBasedDropdowns } from "../Components/TeTjera/layout/roleBasedDropdo
 import jwtDecode from "jwt-decode";
 
 const Dashboard = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [shfaqAdmin, setShfaqAdmin] = useState(false);
   const [teDhenat, setTeDhenat] = useState([]);
   const [perditeso, setPerditeso] = useState("");
@@ -44,7 +45,7 @@ const Dashboard = () => {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);

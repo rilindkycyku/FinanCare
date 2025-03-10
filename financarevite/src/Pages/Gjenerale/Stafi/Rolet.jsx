@@ -33,7 +33,7 @@ function TabelaEKompanive(props) {
       try {
         setLoading(true);
         const roli = await axios.get(
-          "https://localhost:7285/api/Authenticate/shfaqRolet",
+          `${API_BASE_URL}/api/Authenticate/shfaqRolet`,
           authentikimi
         );
 

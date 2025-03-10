@@ -4,9 +4,7 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -19,14 +17,14 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
-function KthimIMallitTeBlere(props) {
+function Ofertat(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
   const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
   const [loading, setLoading] = useState(false);
   const [partneret, setPartneret] = useState([]);
-
   const [nrRendorKalkulimit, setNrRendorKalkulimit] = useState(0);
   const [pershkrimShtese, setPershkrimShtese] = useState("");
   const [Partneri, setPartneri] = useState(0);
@@ -36,32 +34,20 @@ function KthimIMallitTeBlere(props) {
   const [totPaTVSH, setTotPaTVSH] = useState("0.00");
   const [TVSH, setTVSH] = useState("0.00");
   const [kartela, setKartela] = useState(null);
-
   const [kalkulimet, setKalkulimet] = useState([]);
   const [regjistroKalkulimin, setRegjistroKalkulimin] = useState(false);
   const [shfaqTeDhenat, setShfaqTeDhenat] = useState(false);
   const [mbyllFature, setMbyllFaturen] = useState(true);
   const [id, setId] = useState(0);
-
   const [idKalkulimitEdit, setIdKalkulimitEdit] = useState(0);
-
   const [edito, setEdito] = useState(false);
   const [importoNgaOferta, setImportoNgaOferta] = useState(false);
   const [nrRendorFat, setNrRendorFat] = useState(0);
-
   const [teDhenat, setTeDhenat] = useState([]);
-
   const navigate = useNavigate();
-
   const getID = localStorage.getItem("id");
-
   const getToken = localStorage.getItem("token");
-
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
+  const authentikimi = { headers: { Authorization: `Bearer ${getToken}` } };
 
   const handleShfaqTeDhenat = (id) => {
     setId(id);
@@ -74,13 +60,12 @@ function KthimIMallitTeBlere(props) {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          "https://localhost:7285/api/Faturat/shfaqRegjistrimet",
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
           authentikimi
         );
         const kthimet = kalkulimi.data.filter(
           (item) => item.llojiKalkulimit === "OFERTE"
         );
-        console.log(kthimet);
         setKalkulimet(
           kthimet.map((k) => ({
             ID: k.idRegjistrimit,
@@ -90,7 +75,6 @@ function KthimIMallitTeBlere(props) {
             "Data e Fatures": new Date(k.dataRegjistrimit).toISOString(),
             "Lloji Pageses": k.llojiPageses,
             Referenti: k.username,
-
             "Statusi Kalkulimit":
               k.statusiKalkulimit === "true" ? "I Mbyllur" : "I Hapur",
             "Eshte Faturuar": k.eshteFaturuarOferta === "true" ? "Po" : "Jo",
@@ -102,7 +86,6 @@ function KthimIMallitTeBlere(props) {
         setLoading(false);
       }
     };
-
     shfaqKalkulimet();
   }, [perditeso]);
 
@@ -111,7 +94,7 @@ function KthimIMallitTeBlere(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -121,7 +104,6 @@ function KthimIMallitTeBlere(props) {
           setLoading(false);
         }
       };
-
       vendosTeDhenat();
     } else {
       navigate("/login");
@@ -132,16 +114,14 @@ function KthimIMallitTeBlere(props) {
     const vendosPartnerin = async () => {
       try {
         const partneri = await axios.get(
-          `https://localhost:7285/api/Partneri/shfaqPartneretBleres`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`,
           authentikimi
         );
         setPartneret(partneri.data);
-        console.log(partneri);
       } catch (err) {
         console.log(err);
       }
     };
-
     vendosPartnerin();
   }, [perditeso]);
 
@@ -149,7 +129,7 @@ function KthimIMallitTeBlere(props) {
     const vendosNrFaturesMeRradhe = async () => {
       try {
         const nrFat = await axios.get(
-          `https://localhost:7285/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=OFERTE`,
+          `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=OFERTE`,
           authentikimi
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
@@ -157,7 +137,6 @@ function KthimIMallitTeBlere(props) {
         console.log(err);
       }
     };
-
     vendosNrFaturesMeRradhe();
   }, [perditeso]);
 
@@ -172,7 +151,7 @@ function KthimIMallitTeBlere(props) {
     try {
       await axios
         .post(
-          "https://localhost:7285/api/Faturat/ruajKalkulimin",
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
           {
             stafiID: teDhenat.perdoruesi.userID,
             totaliPaTVSH: totPaTVSH,
@@ -207,7 +186,7 @@ function KthimIMallitTeBlere(props) {
     try {
       axios
         .put(
-          `https://localhost:7285/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
           authentikimi
         )
@@ -256,17 +235,33 @@ function KthimIMallitTeBlere(props) {
   const customStyles = {
     menu: (provided) => ({
       ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
+      zIndex: 1050,
+    }),
+    control: (provided, state) => ({
+      ...provided,
+      fontSize: "16px", // Larger font for mobile
+      padding: "5px",
+      minHeight: "48px", // Larger tap target
+      "@media (max-width: 576px)": {
+        fontSize: "14px",
+        padding: "3px",
+        minHeight: "40px",
+      },
+    }),
+    option: (provided) => ({
+      ...provided,
+      fontSize: "16px",
+      padding: "10px",
+      "@media (max-width: 576px)": {
+        fontSize: "14px",
+        padding: "8px",
+      },
     }),
   };
   useEffect(() => {
     axios
-      .get(
-        "https://localhost:7285/api/Partneri/shfaqPartneretBleres",
-        authentikimi
-      )
+      .get(`${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`, authentikimi)
       .then((response) => {
-        console.log(response);
         const fetchedoptions = response.data
           .filter((item) => item.nui != 0)
           .map((item) => ({
@@ -280,11 +275,11 @@ function KthimIMallitTeBlere(props) {
         console.error("Error fetching data:", error);
       });
   }, []);
+
   const handleChange = async (partneri) => {
     setPartneri(partneri.value);
     setOptionsSelected(partneri);
     setKartela(partneri?.item?.kartela?.idKartela ?? null);
-
     document.getElementById("pershkrimShtese").focus();
   };
 
@@ -356,63 +351,53 @@ function KthimIMallitTeBlere(props) {
           !shfaqTeDhenat && (
             <>
               <h1 className="title">Ofertat</h1>
-
               <Container fluid>
-                <Row>
-                  <Col>
+                <Row className="gy-3">
+                  {" "}
+                  {/* Added gy-3 for vertical gutter spacing */}
+                  <Col xs={12} sm={6} md={4} className="mb-3">
                     <Form.Group controlId="idDheEmri">
-                      <Form.Group>
-                        <Form.Label>Nr. Rendor i Ofertes</Form.Label>
-                        <Form.Control
-                          id="nrRendorKalkulimit"
-                          type="number"
-                          value={
-                            nrRendorKalkulimit ? nrRendorKalkulimit + 1 : 1
-                          }
-                          disabled
-                        />
-                      </Form.Group>
+                      <Form.Label>Nr. Rendor i Ofertes</Form.Label>
+                      <Form.Control
+                        id="nrRendorKalkulimit"
+                        type="number"
+                        value={nrRendorKalkulimit ? nrRendorKalkulimit + 1 : 1}
+                        disabled
+                        className="form-control-lg"
+                      />
                     </Form.Group>
-                    <Form.Group controlId="idDheEmri">
+                    <Form.Group controlId="idDheEmri" className="mt-3">
                       <Form.Label>Partneri</Form.Label>
                       <Select
                         value={optionsSelected}
                         onChange={handleChange}
                         options={options}
-                        id="produktiSelect" // Setting the id attribute
-                        inputId="produktiSelect-input" // Setting the input id attribute
+                        id="produktiSelect"
+                        inputId="produktiSelect-input"
                         isDisabled={edito}
                         styles={customStyles}
                       />
                     </Form.Group>
                   </Col>
-                  <Col>
+                  <Col xs={12} sm={6} md={4} className="mb-3">
                     <Form.Group controlId="pershkrimShtese">
-                      <Form.Group>
-                        <Form.Label>Pershkrim Shtese</Form.Label>
-                        <Form.Control
-                          id="pershkrimShtese"
-                          type="text"
-                          value={pershkrimShtese}
-                          onChange={(e) => {
-                            setPershkrimShtese(e.target.value);
-                          }}
-                          onKeyDown={(e) => {
-                            ndrroField(e, "llojiIPageses");
-                          }}
-                        />
-                      </Form.Group>
+                      <Form.Label>Pershkrim Shtese</Form.Label>
+                      <Form.Control
+                        id="pershkrimShtese"
+                        type="text"
+                        value={pershkrimShtese}
+                        onChange={(e) => setPershkrimShtese(e.target.value)}
+                        onKeyDown={(e) => ndrroField(e, "llojiIPageses")}
+                        className="form-control-lg"
+                      />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group className="mt-3">
                       <Form.Label>Lloji i Pageses</Form.Label>
                       <select
                         id="llojiIPageses"
-                        placeholder="LlojiIPageses"
-                        className="form-select"
+                        className="form-select form-select-lg"
                         value={llojiIPageses ? llojiIPageses : 0}
-                        onChange={(e) => {
-                          setLlojiIPageses(e.target.value);
-                        }}
+                        onChange={(e) => setLlojiIPageses(e.target.value)}
                         onKeyDown={handleMenaxhoTastet}>
                         <option defaultValue value={0} key={0} disabled>
                           Zgjedhni Llojin e Pageses
@@ -429,11 +414,15 @@ function KthimIMallitTeBlere(props) {
                       </select>
                     </Form.Group>
                   </Col>
-                  <Col>
-                    <br />
+                  <Col
+                    xs={12}
+                    sm={12}
+                    md={4}
+                    className="mb-3 d-flex align-items-end">
                     <Button
-                      className="mb-3 Butoni"
-                      onClick={() => handleRegjistroKalkulimin()}>
+                      className="Butoni w-100 mb-3"
+                      onClick={() => handleRegjistroKalkulimin()}
+                      style={{ padding: "12px", fontSize: "18px" }}>
                       Regjistro <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Col>
@@ -454,7 +443,7 @@ function KthimIMallitTeBlere(props) {
                       setImportoNgaOferta(true);
                       setNrRendorFat(e);
                     }}
-                    dateField="Data e Fatures" // The field in your data that contains the date values
+                    dateField="Data e Fatures"
                     kontrolloStatusin
                     mosShfaqID={true}
                   />
@@ -468,4 +457,4 @@ function KthimIMallitTeBlere(props) {
   );
 }
 
-export default KthimIMallitTeBlere;
+export default Ofertat;

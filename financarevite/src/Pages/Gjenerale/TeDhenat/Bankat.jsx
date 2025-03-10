@@ -11,6 +11,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function Bankat(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [bankat, setBankat] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shto, setShto] = useState(false);
@@ -35,7 +36,7 @@ function Bankat(props) {
       try {
         setLoading(true);
         const Bankat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
           authentikimi
         );
 

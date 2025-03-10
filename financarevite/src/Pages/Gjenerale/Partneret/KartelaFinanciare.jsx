@@ -11,6 +11,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function KartelaFinanciare(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -40,7 +41,7 @@ function KartelaFinanciare(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -61,7 +62,7 @@ function KartelaFinanciare(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Partneri/shfaqPartneret`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartneret`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -78,7 +79,7 @@ function KartelaFinanciare(props) {
       try {
         setLoading(true); // Show loading indicator
         const response = await axios.get(
-          `https://localhost:7285/api/Partneri/KartelaFinanciare?id=${produktiID}`,
+          `${API_BASE_URL}/api/Partneri/KartelaFinanciare?id=${produktiID}`,
           authentikimi
         );
 
@@ -163,7 +164,7 @@ function KartelaFinanciare(props) {
   };
   useEffect(() => {
     axios
-      .get("https://localhost:7285/api/Partneri/shfaqPartneret", authentikimi)
+      .get(`${API_BASE_URL}/api/Partneri/shfaqPartneret`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data
           .filter(

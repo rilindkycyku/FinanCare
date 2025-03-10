@@ -35,7 +35,7 @@ function TabelaEPerdoruesve() {
       try {
         setLoading(true);
         const perdoruesit = await axios.get(
-          "https://localhost:7285/api/Perdoruesi/shfaqPerdoruesit",
+          `${API_BASE_URL}/api/Perdoruesi/shfaqPerdoruesit`,
           authentikimi
         );
         setPerdoruesit(

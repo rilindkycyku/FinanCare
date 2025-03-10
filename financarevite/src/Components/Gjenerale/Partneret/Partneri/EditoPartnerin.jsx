@@ -7,6 +7,7 @@ import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoKompanin(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [partneri, setPartneri] = useState([]);
   const [foto, setFoto] = useState(null);
 
@@ -31,7 +32,7 @@ function EditoKompanin(props) {
     const shfaqpartneret = async () => {
       try {
         const partneri = await axios.get(
-          `https://localhost:7285/api/Partneri/shfaqPartnerinSipasIDs?id=${props.id}`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartnerinSipasIDs?id=${props.id}`,
           authentikimi
         );
         setPartneri(partneri.data);
@@ -68,7 +69,7 @@ function EditoKompanin(props) {
     try {
       await axios
         .put(
-          `https://localhost:7285/api/Partneri/perditesoPartnerin?id=${props.id}`,
+          `${API_BASE_URL}/api/Partneri/perditesoPartnerin?id=${props.id}`,
           {
             emriBiznesit: partneri.emriBiznesit,
             nui: partneri.nui,
@@ -121,7 +122,7 @@ function EditoKompanin(props) {
     try {
       await axios
         .put(
-          `https://localhost:7285/api/Kartelat/perditesoKartelen?id=${partneri?.kartela?.idKartela}`,
+          `${API_BASE_URL}/api/Kartelat/perditesoKartelen?id=${partneri?.kartela?.idKartela}`,
           {
             kodiKartela: partneri?.kartela?.kodiKartela,
             llojiKarteles: partneri?.kartela?.llojiKarteles,

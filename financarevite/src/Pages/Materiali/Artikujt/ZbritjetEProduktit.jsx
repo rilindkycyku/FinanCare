@@ -10,6 +10,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function ZbritjetEProduktit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [zbritjet, setZbritjet] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shtoZbritjen, setShtoZbritjen] = useState(false);
@@ -38,7 +39,7 @@ function ZbritjetEProduktit(props) {
       try {
         setLoading(true);
         const zbritja = await axios.get(
-          "https://localhost:7285/api/ZbritjaQmimitProduktit/shfaqZbritjet",
+          `${API_BASE_URL}/api/ZbritjaQmimitProduktit/shfaqZbritjet`,
           authentikimi
         );
 
@@ -80,7 +81,7 @@ function ZbritjetEProduktit(props) {
         setLoading(false);
 
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setSiteName(teDhenat?.data?.emriIBiznesit);
@@ -112,7 +113,7 @@ function ZbritjetEProduktit(props) {
 
   const fshijZbritjen = (id) => {
     axios.delete(
-      `https://localhost:7285/api/ZbritjaQmimitProduktit/fshijZbritjenProduktit?id=${id}`,
+      `${API_BASE_URL}/api/ZbritjaQmimitProduktit/fshijZbritjenProduktit?id=${id}`,
       authentikimi
     );
     setPerditeso(Date.now());
@@ -128,7 +129,7 @@ function ZbritjetEProduktit(props) {
     const vendosTeDhenatBiznesit = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setSiteName(teDhenat?.data?.emriIBiznesit);

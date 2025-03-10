@@ -8,6 +8,7 @@ import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ShtoNjesineMatese(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [njesiaMatese, setNjesiaMatese] = useState("");
 
   const [perditeso, setPerditeso] = useState("");
@@ -28,7 +29,7 @@ function ShtoNjesineMatese(props) {
     const vendosNjesiteMatese = async () => {
       try {
         const njesiteMatese = await axios.get(
-          `https://localhost:7285/api/NjesiaMatese/shfaqNjesiteMatese`,
+          `${API_BASE_URL}/api/NjesiaMatese/shfaqNjesiteMatese`,
           authentikimi
         );
         setNjesiteMatese(njesiteMatese.data);
@@ -52,7 +53,7 @@ function ShtoNjesineMatese(props) {
   function handleSubmit() {
     axios
       .post(
-        "https://localhost:7285/api/NjesiaMatese/shtoNjesineMatese",
+        `${API_BASE_URL}/api/NjesiaMatese/shtoNjesineMatese`,
         {
           emriNjesiaMatese: njesiaMatese,
         },

@@ -9,6 +9,7 @@ import { Table, Container, Row, Col } from "react-bootstrap";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function TeDhenatKalkulimit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [loading, setLoading] = useState(false);
   const [produktet, setProduktet] = useState([]);
@@ -27,7 +28,7 @@ function TeDhenatKalkulimit(props) {
       try {
         setLoading(true);
         const produktet = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${props.id}`,
+          `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${props.id}`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -46,7 +47,7 @@ function TeDhenatKalkulimit(props) {
       try {
         setLoading(true);
         const teDhenat = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${props.id}`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.id}`,
           authentikimi
         );
         setTeDhenatFat(teDhenat.data);

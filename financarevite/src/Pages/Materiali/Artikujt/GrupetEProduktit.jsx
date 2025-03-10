@@ -11,6 +11,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function GrupetEProduktit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [njesiteMatese, setNjesiteMatese] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shto, setShto] = useState(false);
@@ -35,7 +36,7 @@ function GrupetEProduktit(props) {
       try {
         setLoading(true);
         const GrupetEProduktit = await axios.get(
-          "https://localhost:7285/api/GrupiProduktit/shfaqGrupetEProduktit",
+          `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
           authentikimi
         );
 

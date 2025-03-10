@@ -8,7 +8,7 @@ import {
   faPlus,
   faXmark,
   faPenToSquare,
-  faDolly
+  faDolly,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Table, Form, Container, Row, Col, InputGroup } from "react-bootstrap";
@@ -18,8 +18,10 @@ import Select from "react-select";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import jsPDF from "jspdf";
+import NukEshteEOptimizuarPerMobile from "../../../Components/TeTjera/layout/NukEshteEOptimizuarPerMobile";
 
 function POS(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -66,34 +68,26 @@ function POS(props) {
   const [optionsBarkodi, setOptionsBarkodi] = useState([]);
   const [optionsBarkodiSelected, setOptionsBarkodiSelected] = useState(null);
 
-  const [teDhenatBiznesit, setTeDhenatBiznesit] = useState(null); // Changed to null for better checks
+  const [teDhenatBiznesit, setTeDhenatBiznesit] = useState(null);
 
   const navigate = useNavigate();
 
   const getID = localStorage.getItem("id");
-
   const getToken = localStorage.getItem("token");
-
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
+  const authentikimi = { headers: { Authorization: `Bearer ${getToken}` } };
 
   useEffect(() => {
     const vendosTeDhenatBiznesit = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
-        console.log(teDhenat.data);
         setTeDhenatBiznesit(teDhenat.data);
       } catch (err) {
         console.error("Error fetching business details:", err);
       }
     };
-
     vendosTeDhenatBiznesit();
   }, [perditeso]);
 
@@ -102,12 +96,11 @@ function POS(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
-
           const nrRendor = await axios.get(
-            `https://localhost:7285/api/Faturat/ShfaqNumrinRendorFatures?stafiID=${perdoruesi.data.perdoruesi.userID}`,
+            `${API_BASE_URL}/api/Faturat/ShfaqNumrinRendorFatures?stafiID=${perdoruesi.data.perdoruesi.userID}`,
             authentikimi
           );
           setNrFatures(nrRendor.data.nrFat);
@@ -118,7 +111,6 @@ function POS(props) {
           setLoading(false);
         }
       };
-
       vendosTeDhenat();
     } else {
       navigate("/login");
@@ -129,25 +121,22 @@ function POS(props) {
     const timer = setTimeout(() => {
       setPerditesoFat(Date.now());
     }, 1000);
-    return () => clearTimeout(timer); // Clean up the timer on component unmount
+    return () => clearTimeout(timer);
   }, [perditeso]);
 
   useEffect(() => {
     const vendosTeDhenat = async () => {
       try {
         const teDhenatKalkulimit = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${idRegjistrimit}`,
           authentikimi
         );
-
         const teDhenatFatures = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
           authentikimi
         );
-
         setproduktetNeKalkulim(teDhenatKalkulimit.data);
         setIDPartneri(teDhenatFatures.data.regjistrimet.idPartneri);
-
         if (teDhenatFatures.data.regjistrimet.bonusKartela != null) {
           setKartelaBleresit(teDhenatFatures.data.regjistrimet.idBonusKartela);
           setTeDhenatKartelaBleresit(
@@ -157,20 +146,15 @@ function POS(props) {
           setKartelaBleresit(null);
           setTeDhenatKartelaBleresit(null);
         }
-
         if (teDhenatKalkulimit.data && teDhenatKalkulimit.data.length > 0) {
           setIDProduktiFunditShtuar(teDhenatKalkulimit.data[0].id);
         }
-
-        console.log(teDhenatFatures.data);
-        console.log(teDhenatKalkulimit.data);
       } catch (err) {
         console.log(err);
       } finally {
         setLoading(false);
       }
     };
-
     vendosTeDhenat();
   }, [perditesoFat, produktiID]);
 
@@ -179,7 +163,6 @@ function POS(props) {
       let totalQmimiPaTVSH = 0;
       let totalTVSH = 0;
       let qmimiPaRabatBonus = 0;
-
       produktetNeKalkulim.forEach((produkti) => {
         const qmimiShitesPasRabatit =
           produkti.qmimiShites -
@@ -193,32 +176,26 @@ function POS(props) {
               produkti.qmimiShites * (produkti.rabati1 / 100)) *
               (produkti.rabati2 / 100)) *
             (produkti.rabati3 / 100);
-
         const qmimiShitesPaRabatBonus =
           produkti.qmimiShites -
           produkti.qmimiShites * (produkti.rabati1 / 100);
-
         const qmimiPaTVSH =
           qmimiShitesPasRabatit / (1 + produkti.llojiTVSH / 100);
         const qmimiTVSH = qmimiPaTVSH * (produkti.llojiTVSH / 100);
-
         totalQmimiPaTVSH += qmimiPaTVSH * produkti.sasiaStokut;
         totalTVSH += qmimiTVSH * produkti.sasiaStokut;
         qmimiPaRabatBonus += qmimiShitesPaRabatBonus * produkti.sasiaStokut;
       });
-
       setTotaliTVSH(totalTVSH);
       setQmimiTotal(totalQmimiPaTVSH + totalTVSH);
       setQmimiPaRabatBonus(qmimiPaRabatBonus);
-
       try {
         const response = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
           authentikimi
         );
-
         await axios.put(
-          `https://localhost:7285/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
           {
             dataRegjistrimit: response.data.regjistrimet.dataRegjistrimit,
             stafiID: response.data.regjistrimet.stafiID,
@@ -241,7 +218,6 @@ function POS(props) {
         console.error("Error fetching or updating data:", error);
       }
     };
-
     calculateTotals();
   }, [produktetNeKalkulim, idRegjistrimit, perditesoFat, idPartneri]);
 
@@ -255,13 +231,10 @@ function POS(props) {
   async function handleEdit(id, index) {
     await axios
       .get(
-        `https://localhost:7285/api/Faturat/ruajKalkulimin/getKalkulimi?idKalkulimit=${id}`,
+        `${API_BASE_URL}/api/Faturat/ruajKalkulimin/getKalkulimi?idKalkulimit=${id}`,
         authentikimi
       )
       .then((p) => {
-        console.log(p.data[0]);
-        console.log(id);
-
         setEdito(true);
         setproduktiID(p.data[0].idProduktit);
         setSasia(p.data[0].sasiaStokut);
@@ -271,21 +244,17 @@ function POS(props) {
         setRabati1(p.data[0].rabati1);
         setRabati2(p.data[0].rabati2);
         setKalkEditID(p.data[0].id);
-
         setNjesiaMatese(p.data[0].emriNjesiaMatese);
         setSasiaAktualeNeStok(p.data[0].sasiaNeStok);
-
         document.getElementById("sasia").focus();
       });
   }
 
   async function handleEdito(e) {
-    console.log(kontrolloQmimin(sasia));
-
     if (e.key === "Enter") {
       e.preventDefault();
       await axios.put(
-        `https://localhost:7285/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${kalkEditID}`,
+        `${API_BASE_URL}/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${kalkEditID}`,
         {
           sasiaStokut: sasia,
           qmimiShites: qmimiSH,
@@ -295,7 +264,6 @@ function POS(props) {
         },
         authentikimi
       );
-
       setproduktiID(0);
       setSasia("");
       setQmimiSH(0);
@@ -307,9 +275,6 @@ function POS(props) {
 
   function kontrolloQmimin(e) {
     setSasia(e?.target?.value || e);
-
-    console.log(e.target);
-
     if (e?.target?.value >= sasiaShumices) {
       setQmimiSH(e?.target?.value?.qmimiShitesMeShumic || qmimiSH2);
     } else {
@@ -322,38 +287,33 @@ function POS(props) {
   });
 
   useEffect(() => {
-    // Simulate setting an initial value for editing
     const initialOptionsBarkodiSelected = optionsBarkodi.find(
       (option) => option.value === produktiID
     );
     setOptionsBarkodiSelected(initialOptionsBarkodiSelected);
-
     document.getElementById("sasia").focus();
   }, [edito, produktiID]);
 
   useEffect(() => {
-    // Replace with your API endpoint
     axios
-      .get(
-        "https://localhost:7285/api/Produkti/ProduktetPerKalkulim",
-        authentikimi
-      )
+      .get(`${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`, authentikimi)
       .then((response) => {
-        // Assuming the response data is an array of objects with `value` and `label` properties
-        const fetchedOptionsBarkodi = response.data.filter((item) => item.qmimiProduktit > 0).map((item) => ({
-          value: item.produktiID,
-          label:
-            item.barkodi +
-            " - " +
-            item.emriProduktit +
-            " - " +
-            item.kodiProduktit,
-          qmimiProduktit: item.qmimiProduktit,
-          qmimiMeShumic: item.qmimiMeShumic,
-          rabati: item.rabati,
-          sasiaNeStok: item.sasiaNeStok,
-          emriNjesiaMatese: item.emriNjesiaMatese,
-        }));
+        const fetchedOptionsBarkodi = response.data
+          .filter((item) => item.qmimiProduktit > 0)
+          .map((item) => ({
+            value: item.produktiID,
+            label:
+              item.barkodi +
+              " - " +
+              item.emriProduktit +
+              " - " +
+              item.kodiProduktit,
+            qmimiProduktit: item.qmimiProduktit,
+            qmimiMeShumic: item.qmimiMeShumic,
+            rabati: item.rabati,
+            sasiaNeStok: item.sasiaNeStok,
+            emriNjesiaMatese: item.emriNjesiaMatese,
+          }));
         setOptionsBarkodi(fetchedOptionsBarkodi);
       })
       .catch((error) => {
@@ -365,7 +325,7 @@ function POS(props) {
     setOptionsBarkodiSelected(barkodi);
     await axios
       .post(
-        "https://localhost:7285/api/Faturat/ruajKalkulimin/teDhenat",
+        `${API_BASE_URL}/api/Faturat/ruajKalkulimin/teDhenat`,
         {
           idRegjistrimit: idRegjistrimit,
           idProduktit: barkodi.value,
@@ -380,7 +340,6 @@ function POS(props) {
       .then((r) => {
         setIDProduktiFunditShtuar(r.data.id);
       });
-
     setproduktiID(0);
     setSasia("");
     setSasiaShumices(0);
@@ -406,13 +365,11 @@ function POS(props) {
 
   const handleMenaxhoTastetPagesa = (event) => {
     if (event.key === "F4") {
-      
-    event.preventDefault();
+      event.preventDefault();
       setVendosKartelenBleresit(true);
     }
     if (event.key === "F5") {
-      
-    event.preventDefault();
+      event.preventDefault();
       mbyllFature();
     }
   };
@@ -432,28 +389,20 @@ function POS(props) {
   };
 
   async function generateInvoice(data) {
-    // Step 1: Create an initial doc to calculate dynamic height
-    const initialDoc = new jsPDF({
-      unit: "mm",
-      format: [75, 1000], // Set a large height for initial calculation
-    });
-
-    // Set up some helper variables and functions
+    const initialDoc = new jsPDF({ unit: "mm", format: [75, 1000] });
     const logoUrl = `${process.env.PUBLIC_URL}/img/web/${teDhenatBiznesit?.logo}`;
     const logoImage = await loadImage(logoUrl);
-    initialDoc.addImage(logoImage, "PNG", 10, 5, 55, 15); // Logo position
-    let currentY = 25; // Initial Y position for the document content
+    initialDoc.addImage(logoImage, "PNG", 10, 5, 55, 15);
+    let currentY = 25;
 
     function addShrinkText(doc, text, x, y, maxWidth) {
-      let fontSize = 10; // Start with a default font size
+      let fontSize = 10;
       doc.setFont("Courier");
       doc.setFontSize(fontSize);
-
       while (doc.getTextWidth(text) > maxWidth && fontSize > 7) {
-        fontSize -= 1; // Decrease font size
+        fontSize -= 1;
         doc.setFontSize(fontSize);
       }
-
       doc.text(text, x, y, { align: "center" });
     }
 
@@ -463,60 +412,57 @@ function POS(props) {
       37.5,
       currentY,
       70
-    ); // Centered
-    currentY += 5; // Move down for the next line
+    );
+    currentY += 5;
     addShrinkText(
       initialDoc,
       `Adresa: ${teDhenatBiznesit?.adresa}`,
       37.5,
       currentY,
       70
-    ); // Centered
-    currentY += 5; // Move down
+    );
+    currentY += 5;
     addShrinkText(
       initialDoc,
       `Kontakti: ${teDhenatBiznesit?.nrKontaktit} - ${teDhenatBiznesit?.email}`,
       37.5,
       currentY,
       70
-    ); // Centered
-    currentY += 5; // Move down
+    );
+    currentY += 5;
     addShrinkText(
       initialDoc,
       `NUI: ${teDhenatBiznesit?.nui}`,
       37.5,
       currentY,
       70
-    ); // Centered
-    currentY += 5; // Move down
+    );
+    currentY += 5;
     addShrinkText(
       initialDoc,
       `TVSH: ${teDhenatBiznesit?.nrTVSH}`,
       38.5,
       currentY,
       70
-    ); // Centered
-    currentY += 5; // Move down
+    );
+    currentY += 5;
     addShrinkText(
       initialDoc,
       `NRF: ${teDhenatBiznesit?.nf}`,
       37.5,
       currentY,
       70
-    ); // Centered
-
+    );
     currentY += 5;
-    // Draw a line
-    initialDoc.line(0, currentY, 75, currentY); // Line after store info
+    initialDoc.line(0, currentY, 75, currentY);
     currentY += 5;
 
-    // Redraw the content using the new initialDoc
     addShrinkText(initialDoc, "PARAGON", 37.5, currentY, 70);
     currentY += 5;
     addShrinkText(
       initialDoc,
       `Paragon #: ${data.invoiceNumber}`,
-      25.5,
+      26.5,
       currentY,
       70
     );
@@ -531,21 +477,16 @@ function POS(props) {
       70
     );
     currentY += 5;
+    initialDoc.line(0, currentY, 75, currentY);
+    currentY += 5;
 
-    // Draw a line
-    initialDoc.line(0, currentY, 75, currentY); // Line before the product list
-    currentY += 5; // Move down for product list header
-
-    // Line Items Header
-    currentY += 5; // Move down for item row header
-    addShrinkText(initialDoc, "Produkti", 11, currentY, 30); // Product Name
-    addShrinkText(initialDoc, "TVSH (%)", 63, currentY, 20); // VAT %
-    currentY += 5; // Move down for the second row
-
-    // Second row for prices, quantity, and total
-    addShrinkText(initialDoc, "Çmimi", 11, currentY, 20); // Price
-    addShrinkText(initialDoc, "Sasia", 38, currentY, 20); // Quantity
-    addShrinkText(initialDoc, "Totali", 63, currentY, 20); // Overall Price
+    currentY += 5;
+    addShrinkText(initialDoc, "Produkti", 11, currentY, 30);
+    addShrinkText(initialDoc, "TVSH (%)", 63, currentY, 20);
+    currentY += 5;
+    addShrinkText(initialDoc, "Çmimi", 11, currentY, 20);
+    addShrinkText(initialDoc, "Sasia", 38, currentY, 20);
+    addShrinkText(initialDoc, "Totali", 63, currentY, 20);
     currentY += 5;
     addShrinkText(
       initialDoc,
@@ -557,10 +498,10 @@ function POS(props) {
     currentY += 5;
 
     data.items.forEach((item) => {
-      addShrinkText(initialDoc, item.name, 38, currentY, 30);
+      addShrinkText(doc, item.name, 38, currentY, 30);
       currentY += 5;
       addShrinkText(
-        initialDoc,
+        doc,
         `${parseFloat(item.vatPercentage).toFixed(2)} %`,
         63,
         currentY,
@@ -568,15 +509,15 @@ function POS(props) {
       );
       currentY += 5;
       addShrinkText(
-        initialDoc,
+        doc,
         `${parseFloat(item.price).toFixed(2)} €`,
         11,
         currentY,
         20
       );
-      addShrinkText(initialDoc, `${item.quantity}`, 38, currentY, 20);
+      addShrinkText(doc, `${item.quantity}`, 38, currentY, 20);
       addShrinkText(
-        initialDoc,
+        doc,
         `${parseFloat(item.total).toFixed(2)} €`,
         63,
         currentY,
@@ -584,7 +525,7 @@ function POS(props) {
       );
       currentY += 5;
       addShrinkText(
-        initialDoc,
+        doc,
         "----------------------------------",
         37.5,
         currentY,
@@ -592,7 +533,7 @@ function POS(props) {
       );
       currentY += 5;
     });
-    initialDoc.line(0, currentY, 75, currentY); // Line after the items
+    initialDoc.line(0, currentY, 75, currentY);
     currentY += 5;
 
     addShrinkText(
@@ -612,13 +553,12 @@ function POS(props) {
           parseFloat(data.vat) +
           parseFloat(data.rabati)
       ).toFixed(2)} €`,
-      27.5,
+      26.5,
       currentY,
       70
     );
-
     currentY += 5;
-    addShrinkText(initialDoc, `Rabati: ${data.rabati} €`, 17.5, currentY, 70);
+    addShrinkText(initialDoc, `Rabati: ${data.rabati} €`, 16.5, currentY, 70);
     currentY += 5;
     addShrinkText(
       initialDoc,
@@ -629,51 +569,41 @@ function POS(props) {
       currentY,
       70
     );
+    currentY += 10;
+    addShrinkText(initialDoc, "Faleminderit për blerjen!", 37.5, currentY, 70);
 
-    // Step 2: Calculate the final height needed for the document
-    const finalHeight = currentY + 20; // Add some margin
+    const finalHeight = currentY + 20;
+    const doc = new jsPDF({ unit: "mm", format: [75, finalHeight] });
+    doc.addImage(logoImage, "PNG", 10, 5, 55, 15);
+    currentY = 25;
 
-    // Step 3: Create a new jsPDF document with the calculated height
-    const doc = new jsPDF({
-      unit: "mm",
-      format: [75, finalHeight], // Set the height to fit the content
-    });
-
-    // Step 4: Regenerate content with the new height
-    // Add content again as previously done with the calculated height
-    doc.addImage(logoImage, "PNG", 10, 5, 55, 15); // Logo position
-    currentY = 25; // Reset Y position
-
-    addShrinkText(doc, teDhenatBiznesit?.emriIBiznesit, 37.5, currentY, 70); // Centered
-    currentY += 5; // Move down for the next line
+    addShrinkText(doc, teDhenatBiznesit?.emriIBiznesit, 37.5, currentY, 70);
+    currentY += 5;
     addShrinkText(
       doc,
       `Adresa: ${teDhenatBiznesit?.adresa}`,
       37.5,
       currentY,
       70
-    ); // Centered
-    currentY += 5; // Move down
+    );
+    currentY += 5;
     addShrinkText(
       doc,
       `Kontakti: ${teDhenatBiznesit?.nrKontaktit} - ${teDhenatBiznesit?.email}`,
       37.5,
       currentY,
       70
-    ); // Centered
-    currentY += 5; // Move down
-    addShrinkText(doc, `NUI: ${teDhenatBiznesit?.nui}`, 37.5, currentY, 70); // Centered
-    currentY += 5; // Move down
-    addShrinkText(doc, `TVSH: ${teDhenatBiznesit?.nrTVSH}`, 38.5, currentY, 70); // Centered
-    currentY += 5; // Move down
-    addShrinkText(doc, `NRF: ${teDhenatBiznesit?.nf}`, 37.5, currentY, 70); // Centered
-
+    );
     currentY += 5;
-    // Draw a line
-    doc.line(0, currentY, 75, currentY); // Line after store info
+    addShrinkText(doc, `NUI: ${teDhenatBiznesit?.nui}`, 37.5, currentY, 70);
+    currentY += 5;
+    addShrinkText(doc, `TVSH: ${teDhenatBiznesit?.nrTVSH}`, 38.5, currentY, 70);
+    currentY += 5;
+    addShrinkText(doc, `NRF: ${teDhenatBiznesit?.nf}`, 37.5, currentY, 70);
+    currentY += 5;
+    doc.line(0, currentY, 75, currentY);
     currentY += 5;
 
-    // Redraw the content using the new doc
     addShrinkText(doc, "PARAGON", 37.5, currentY, 70);
     currentY += 5;
     addShrinkText(doc, `Paragon #: ${data.invoiceNumber}`, 26.5, currentY, 70);
@@ -682,21 +612,16 @@ function POS(props) {
     currentY += 5;
     addShrinkText(doc, `Shitësi: ${data.salesUsername}`, 32.5, currentY, 70);
     currentY += 5;
+    doc.line(0, currentY, 75, currentY);
+    currentY += 5;
 
-    // Draw a line
-    doc.line(0, currentY, 75, currentY); // Line before the product list
-    currentY += 5; // Move down for product list header
-
-    // Line Items Header
-    currentY += 5; // Move down for item row header
-    addShrinkText(doc, "Produkti", 11, currentY, 30); // Product Name
-    addShrinkText(doc, "TVSH (%)", 63, currentY, 20); // VAT %
-    currentY += 5; // Move down for the second row
-
-    // Second row for prices, quantity, and total
-    addShrinkText(doc, "Çmimi", 11, currentY, 20); // Price
-    addShrinkText(doc, "Sasia", 38, currentY, 20); // Quantity
-    addShrinkText(doc, "Totali", 63, currentY, 20); // Overall Price
+    currentY += 5;
+    addShrinkText(doc, "Produkti", 11, currentY, 30);
+    addShrinkText(doc, "TVSH (%)", 63, currentY, 20);
+    currentY += 5;
+    addShrinkText(doc, "Çmimi", 11, currentY, 20);
+    addShrinkText(doc, "Sasia", 38, currentY, 20);
+    addShrinkText(doc, "Totali", 63, currentY, 20);
     currentY += 5;
     addShrinkText(
       doc,
@@ -743,7 +668,7 @@ function POS(props) {
       );
       currentY += 5;
     });
-    doc.line(0, currentY, 75, currentY); // Line after the items
+    doc.line(0, currentY, 75, currentY);
     currentY += 5;
 
     addShrinkText(
@@ -767,11 +692,9 @@ function POS(props) {
       currentY,
       70
     );
-
     currentY += 5;
     addShrinkText(doc, `Rabati: ${data.rabati} €`, 16.5, currentY, 70);
     currentY += 5;
-
     addShrinkText(
       doc,
       `Totali: ${parseFloat(
@@ -781,14 +704,9 @@ function POS(props) {
       currentY,
       70
     );
-
-    // Footer
     currentY += 10;
     addShrinkText(doc, "Faleminderit për blerjen!", 37.5, currentY, 70);
-
-    // Step 5: Save the document with the final height
     doc.save(`Paragon #${data.invoiceNumber}.pdf`);
-
     setPerditeso(Date.now());
     setShumaPageses(0);
     setLlojiPageses("Cash");
@@ -801,7 +719,6 @@ function POS(props) {
     setRabati1(0);
   }
 
-  // Helper function to load an image from a URL
   function loadImage(url) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -814,11 +731,10 @@ function POS(props) {
   const mbyllFature = async (event) => {
     await axios
       .get(
-        `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
+        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
         authentikimi
       )
       .then(async (r) => {
-        console.log(r);
         if (r.data.regjistrimet.totaliPaTVSH <= 0) {
           setTipiMesazhit("danger");
           setPershkrimiMesazhit(
@@ -828,7 +744,7 @@ function POS(props) {
         } else {
           await axios
             .put(
-              `https://localhost:7285/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
+              `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
               {
                 llojiPageses: llojiPageses,
                 statusiKalkulimit: "true",
@@ -850,18 +766,15 @@ function POS(props) {
             )
             .then(async () => {
               for (let produkti of produktetNeKalkulim) {
-                console.log(produkti);
                 await axios.put(
-                  `https://localhost:7285/api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin?id=${produkti.idProduktit}`,
-                  {
-                    sasiaNeStok: produkti.sasiaStokut,
-                  },
+                  `${API_BASE_URL}/api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin?id=${produkti.idProduktit}`,
+                  { sasiaNeStok: produkti.sasiaStokut },
                   authentikimi
                 );
               }
               if (llojiPageses !== "Borxh" && idPartneri !== 1) {
                 await axios.post(
-                  "https://localhost:7285/api/Faturat/ruajKalkulimin",
+                  `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
                   {
                     dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
                     stafiID: r.data.regjistrimet.stafiID,
@@ -889,7 +802,6 @@ function POS(props) {
               }
             });
         }
-
         document.getElementById("barkodiSelect-input").focus();
         const data = {
           invoiceNumber: r?.data?.regjistrimet?.nrFatures,
@@ -899,21 +811,19 @@ function POS(props) {
             " - " +
             r?.data?.regjistrimet?.username,
           items: [
-            // Map through totTVSH8 and totTVSH18 arrays and convert them to item objects
             ...(r?.data?.totTVSH8?.map((item) => ({
               name: item.produkti?.emriProduktit || "Unknown Product",
-              vatPercentage: 8, // Assuming VAT 8% for these items
-              quantity: item.sasiaStokut || 1, // Use sasiaStokut for the quantity
-              price: item.qmimiShites.toFixed(2) || "0.00", // Use qmimiShites for the price
-              total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00", // Calculate total
+              vatPercentage: 8,
+              quantity: item.sasiaStokut || 1,
+              price: item.qmimiShites.toFixed(2) || "0.00",
+              total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
             })) || []),
-
             ...(r?.data?.totTVSH18?.map((item) => ({
               name: item.produkti?.emriProduktit || "Unknown Product",
-              vatPercentage: 18, // Assuming VAT 18% for these items
-              quantity: item.sasiaStokut || 1, // Use sasiaStokut for the quantity
-              price: item.qmimiShites.toFixed(2) || "0.00", // Use qmimiShites for the price
-              total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00", // Calculate total
+              vatPercentage: 18,
+              quantity: item.sasiaStokut || 1,
+              price: item.qmimiShites.toFixed(2) || "0.00",
+              total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
             })) || []),
           ],
           totalWithoutVAT: parseFloat(
@@ -922,8 +832,6 @@ function POS(props) {
           vat: parseFloat(r?.data?.regjistrimet?.tvsh).toFixed(2),
           rabati: parseFloat(r?.data?.rabati ?? 0).toFixed(2),
         };
-
-        // Generate the invoice
         generateInvoice(data);
       });
   };
@@ -931,38 +839,33 @@ function POS(props) {
   const customStyles = {
     menu: (provided) => ({
       ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
+      zIndex: 1050,
     }),
   };
 
   useEffect(() => {
-    const tabelaDiv = document.querySelector(".tabelaDiv"); // Select the element with the class 'tabelaDiv'
+    const tabelaDiv = document.querySelector(".tabelaDiv");
     if (tabelaDiv) {
-      tabelaDiv.style.zoom = "80%"; // Zoom out to 80% of the normal size
+      tabelaDiv.style.zoom = "80%";
     }
   }, []);
 
   async function VendosKartelenBleresit() {
     try {
       const kaKartele = await axios.get(
-        `https://localhost:7285/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaBleresit}`,
+        `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaBleresit}`,
         authentikimi
       );
-
       if (kaKartele != null) {
         setRabati2(kaKartele.data.rabati);
         setIDPartneri(kaKartele.data.partneriID);
         setTeDhenatKartelaBleresit(kaKartele.data);
-
-        console.log(kaKartele.data);
-
         const r = await axios.get(
-          `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
           authentikimi
         );
-
         await axios.put(
-          `https://localhost:7285/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
           {
             llojiPageses: r.data.regjistrimet.llojiPageses,
             statusiKalkulimit: r.data.regjistrimet.statusiKalkulimit,
@@ -981,11 +884,9 @@ function POS(props) {
           },
           authentikimi
         );
-
         for (let produkti of produktetNeKalkulim) {
-          console.log(produkti);
           await axios.put(
-            `https://localhost:7285/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${produkti.id}`,
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${produkti.id}`,
             {
               sasiaStokut: produkti.sasiaStokut,
               qmimiShites: produkti.qmimiShites,
@@ -996,7 +897,6 @@ function POS(props) {
             authentikimi
           );
         }
-
         setKartelaBleresit(null);
         setVendosKartelenBleresit(false);
         setPerditesoFat(Date.now());
@@ -1015,17 +915,15 @@ function POS(props) {
   async function VendosKartelenFshirjesProduktit() {
     try {
       const kaKartele = await axios.get(
-        `https://localhost:7285/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaFshirjes}`,
+        `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaFshirjes}`,
         authentikimi
       );
-
       if (kaKartele != null) {
         if (kaKartele.data.llojiKarteles == "Fshirje") {
           await axios.delete(
-            `https://localhost:7285/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${fshijProdKalkID}`,
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${fshijProdKalkID}`,
             authentikimi
           );
-
           document.getElementById("barkodiSelect-input").focus();
           setVendosKartelenFshirjeProduktit(false);
           setKartelaFshirjes(null);
@@ -1050,12 +948,26 @@ function POS(props) {
     }
   }
 
+  const [showNEEPM, setShowNEEPM] = useState(true);
+
+  const handleCloseNEEPM = () => {
+    setShowNEEPM(false);
+  };
+
   return (
     <>
       <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Arkatar"]} />
       <Titulli titulli={"POS"} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
+        {showNEEPM && (
+          <NukEshteEOptimizuarPerMobile
+            title="Përdorni një Paisje tjeter!"
+            message="Kjo faqe (POS) nuk është e optimizuar që të përdoret në pajisjet mobile. Ju lutemi, përdorni një kompjuter për të vazhduar."
+            onClose={handleCloseNEEPM} // Call handleClose when modal is closed
+          />
+        )}
+
         {shfaqMesazhin && (
           <Mesazhi
             setShfaqMesazhin={setShfaqMesazhin}
@@ -1186,12 +1098,8 @@ function POS(props) {
                       className="form-select"
                       value={llojiPageses ? llojiPageses : 0}
                       disabled={edito}
-                      onChange={(e) => {
-                        setLlojiPageses(e.target.value);
-                      }}
-                      onKeyDown={(e) => {
-                        ndrroField(e, "statusiIPageses");
-                      }}>
+                      onChange={(e) => setLlojiPageses(e.target.value)}
+                      onKeyDown={(e) => ndrroField(e, "statusiIPageses")}>
                       <option defaultValue value={0} key={0} disabled>
                         Zgjedhni Llojin e Pageses
                       </option>
@@ -1218,9 +1126,7 @@ function POS(props) {
                       placeholder={shumaPageses}
                       value={shumaPageses}
                       disabled={edito}
-                      onChange={(e) => {
-                        setShumaPageses(e.target.value);
-                      }}
+                      onChange={(e) => setShumaPageses(e.target.value)}
                       onKeyDown={handleMenaxhoTastetPagesa}
                     />
                     <InputGroup.Text>€</InputGroup.Text>
@@ -1269,8 +1175,8 @@ function POS(props) {
                       value={optionsBarkodiSelected}
                       onChange={handleChange}
                       options={optionsBarkodi}
-                      id="barkodiSelect" // Setting the id attribute
-                      inputId="barkodiSelect-input" // Setting the input id attribute
+                      id="barkodiSelect"
+                      inputId="barkodiSelect-input"
                       isDisabled={edito}
                       onKeyDown={handleKaloTekPagesa}
                       styles={customStyles}
@@ -1285,12 +1191,8 @@ function POS(props) {
                       type="number"
                       placeholder={"0.00 " + njesiaMatese}
                       value={sasia}
-                      onChange={(e) => {
-                        kontrolloQmimin(e);
-                      }}
-                      onKeyDown={(e) => {
-                        handleEdito(e);
-                      }}
+                      onChange={(e) => kontrolloQmimin(e)}
+                      onKeyDown={(e) => handleEdito(e)}
                       disabled={!edito}
                     />
                   </Form.Group>
@@ -1339,73 +1241,66 @@ function POS(props) {
                       <th>Sasia</th>
                       <th>Qmimi Shites</th>
                       <th>Shuma €</th>
-
                       <th>Funksione</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {produktetNeKalkulim
-                      .slice() // Create a shallow copy to avoid mutating the original array
-                      .map((p, index) => {
-                        const qmimiMeTVSHRab = parseFloat(
-                          p.qmimiShites -
+                    {produktetNeKalkulim.slice().map((p, index) => {
+                      const qmimiMeTVSHRab = parseFloat(
+                        p.qmimiShites -
+                          p.qmimiShites * (p.rabati1 / 100) -
+                          (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) *
+                            (p.rabati2 / 100) -
+                          (p.qmimiShites -
                             p.qmimiShites * (p.rabati1 / 100) -
                             (p.qmimiShites -
                               p.qmimiShites * (p.rabati1 / 100)) *
-                              (p.rabati2 / 100) -
-                            (p.qmimiShites -
-                              p.qmimiShites * (p.rabati1 / 100) -
-                              (p.qmimiShites -
-                                p.qmimiShites * (p.rabati1 / 100)) *
-                                (p.rabati2 / 100)) *
-                              (p.rabati3 / 100)
-                        ).toFixed(3);
-                        const ShumaToT = parseFloat(
-                          qmimiMeTVSHRab * p.sasiaStokut
-                        ).toFixed(3);
-
-                        const originalIndex =
-                          produktetNeKalkulim.length - 1 - index;
-
-                        return (
-                          p && (
-                            <tr key={originalIndex}>
-                              <td>{originalIndex + 1}</td>
-                              <td>{p.barkodi}</td>
-                              <td>{p.emriProduktit}</td>
-                              <td>{p.emriNjesiaMatese}</td>
-                              <td>{p.sasiaStokut}</td>
-
-                              <td>{parseFloat(qmimiMeTVSHRab).toFixed(2)} €</td>
-                              <td>{parseFloat(ShumaToT).toFixed(2)} €</td>
-                              <td>
-                                <div style={{ display: "flex", gap: "0.3em" }}>
-                                  <Button
-                                    size="sm"
-                                    variant="danger"
-                                    disabled={edito}
-                                    onClick={() => {
-                                      setVendosKartelenFshirjeProduktit(true);
-                                      setFshijProduktKalkID(p.id);
-                                    }}>
-                                    <FontAwesomeIcon icon={faXmark} />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="warning"
-                                    disabled={edito}
-                                    onClick={() => {
-                                      setOptionsBarkodiSelected(p.idProduktit);
-                                      handleEdit(p.id, index);
-                                    }}>
-                                    <FontAwesomeIcon icon={faPenToSquare} />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                        );
-                      })}
+                              (p.rabati2 / 100)) *
+                            (p.rabati3 / 100)
+                      ).toFixed(3);
+                      const ShumaToT = parseFloat(
+                        qmimiMeTVSHRab * p.sasiaStokut
+                      ).toFixed(3);
+                      const originalIndex =
+                        produktetNeKalkulim.length - 1 - index;
+                      return (
+                        p && (
+                          <tr key={originalIndex}>
+                            <td>{originalIndex + 1}</td>
+                            <td>{p.barkodi}</td>
+                            <td>{p.emriProduktit}</td>
+                            <td>{p.emriNjesiaMatese}</td>
+                            <td>{p.sasiaStokut}</td>
+                            <td>{parseFloat(qmimiMeTVSHRab).toFixed(2)} €</td>
+                            <td>{parseFloat(ShumaToT).toFixed(2)} €</td>
+                            <td>
+                              <div style={{ display: "flex", gap: "0.3em" }}>
+                                <Button
+                                  size="sm"
+                                  variant="danger"
+                                  disabled={edito}
+                                  onClick={() => {
+                                    setVendosKartelenFshirjeProduktit(true);
+                                    setFshijProduktKalkID(p.id);
+                                  }}>
+                                  <FontAwesomeIcon icon={faXmark} />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="warning"
+                                  disabled={edito}
+                                  onClick={() => {
+                                    setOptionsBarkodiSelected(p.idProduktit);
+                                    handleEdit(p.id, index);
+                                  }}>
+                                  <FontAwesomeIcon icon={faPenToSquare} />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      );
+                    })}
                     <tr>
                       <td></td>
                       <td></td>

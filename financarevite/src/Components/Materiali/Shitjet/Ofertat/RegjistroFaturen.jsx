@@ -19,6 +19,7 @@ import Tabela from "../../../TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function RegjistroFaturen(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -76,7 +77,7 @@ function RegjistroFaturen(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -98,12 +99,12 @@ function RegjistroFaturen(props) {
       const vendosTeDhenat = async () => {
         try {
           const teDhenatKalkulimit = await axios.get(
-            `https://localhost:7285/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${props.idKalkulimitEdit}`,
+            `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${props.idKalkulimitEdit}`,
             authentikimi
           );
 
           const teDhenatFatures = await axios.get(
-            `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
             authentikimi
           );
 
@@ -164,7 +165,7 @@ function RegjistroFaturen(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/ProduktetPerKalkulim`,
+          `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -201,13 +202,13 @@ function RegjistroFaturen(props) {
       try {
         await axios
           .get(
-            `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
             authentikimi
           )
           .then(async (r) => {
             console.log(r.data);
             await axios.put(
-              `https://localhost:7285/api/Faturat/perditesoFaturen?idKalulimit=${props.nrRendorKalkulimit}`,
+              `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${props.nrRendorKalkulimit}`,
               {
                 llojiPageses: r.data.regjistrimet.llojiPageses,
                 statusiKalkulimit: r.data.regjistrimet.statusiKalkulimit,
@@ -247,7 +248,7 @@ function RegjistroFaturen(props) {
       console.log(optionsSelected);
       await axios
         .post(
-          "https://localhost:7285/api/Faturat/ruajKalkulimin/teDhenat",
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/teDhenat`,
           {
             idRegjistrimit: props.nrRendorKalkulimit,
             idProduktit: optionsSelected?.value,
@@ -305,7 +306,7 @@ function RegjistroFaturen(props) {
   async function handleFshij(id) {
     await axios
       .delete(
-        `https://localhost:7285/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${id}`,
+        `${API_BASE_URL}/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${id}`,
         authentikimi
       )
       .then(async () => {
@@ -316,7 +317,7 @@ function RegjistroFaturen(props) {
   async function handleEdit(id) {
     await axios
       .get(
-        `https://localhost:7285/api/Faturat/ruajKalkulimin/getKalkulimi?idKalkulimit=${id}`,
+        `${API_BASE_URL}/api/Faturat/ruajKalkulimin/getKalkulimi?idKalkulimit=${id}`,
         authentikimi
       )
       .then((p) => {
@@ -353,7 +354,7 @@ function RegjistroFaturen(props) {
       console.log(optionsSelected);
       await axios
         .put(
-          `https://localhost:7285/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${id}`,
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${id}`,
           {
             qmimiBleres: qmimiB,
             qmimiShites:
@@ -405,7 +406,7 @@ function RegjistroFaturen(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/Produkti/ProduktetPerKalkulim",
+        `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
         authentikimi
       )
       .then((response) => {

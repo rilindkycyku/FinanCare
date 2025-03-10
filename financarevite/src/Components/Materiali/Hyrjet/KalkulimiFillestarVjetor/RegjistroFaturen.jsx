@@ -18,6 +18,7 @@ import PrintLabels from "../../../TeTjera/PrintLabels";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function RegjistroFaturen(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -70,7 +71,7 @@ function RegjistroFaturen(props) {
         try {
           setLoading(true);
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -92,13 +93,13 @@ function RegjistroFaturen(props) {
         try {
           setLoading(true);
           const teDhenatKalkulimit = await axios.get(
-            `https://localhost:7285/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${props.idKalkulimitEdit}`,
+            `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${props.idKalkulimitEdit}`,
             authentikimi
           );
           console.log(teDhenatKalkulimit.data);
 
           const teDhenatFatures = await axios.get(
-            `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
             authentikimi
           );
           setproduktetNeKalkulim(
@@ -153,7 +154,7 @@ function RegjistroFaturen(props) {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
-          `https://localhost:7285/api/Produkti/ProduktetPerKalkulim`,
+          `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
           authentikimi
         );
         setProduktet(produktet.data);
@@ -169,13 +170,13 @@ function RegjistroFaturen(props) {
       try {
         await axios
           .get(
-            `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
             authentikimi
           )
           .then(async (r) => {
             console.log(r.data);
             await axios.put(
-              `https://localhost:7285/api/Faturat/perditesoFaturen?idKalulimit=${props.nrRendorKalkulimit}`,
+              `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${props.nrRendorKalkulimit}`,
               {
                 dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
                 stafiID: r.data.regjistrimet.stafiID,
@@ -231,7 +232,7 @@ function RegjistroFaturen(props) {
 
         await axios
           .put(
-            `https://localhost:7285/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${existingProduct.ID}`,
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${existingProduct.ID}`,
             {
               sasiaStokut,
               QmimiBleres: existingProduct["Qmimi Bleres + TVSH €"],
@@ -248,7 +249,7 @@ function RegjistroFaturen(props) {
       } else {
         await axios
           .post(
-            "https://localhost:7285/api/Faturat/ruajKalkulimin/teDhenat",
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/teDhenat`,
             {
               idRegjistrimit: props.nrRendorKalkulimit,
               idProduktit: optionsSelected?.value,
@@ -295,20 +296,20 @@ function RegjistroFaturen(props) {
     setIsLoadingKartela(true); // Start spinner
     try {
       const kaKartele = await axios.get(
-        `https://localhost:7285/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaMenaxherit}`,
+        `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaMenaxherit}`,
         authentikimi
       );
 
       if (kaKartele.data && kaKartele.data.llojiKarteles === "Fshirje") {
         if (pendingAction === "delete") {
           await axios.delete(
-            `https://localhost:7285/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${pendingId}`,
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${pendingId}`,
             authentikimi
           );
         } else if (pendingAction === "edit") {
           await axios
             .get(
-              `https://localhost:7285/api/Faturat/ruajKalkulimin/getKalkulimi?idKalkulimit=${pendingId}`,
+              `${API_BASE_URL}/api/Faturat/ruajKalkulimin/getKalkulimi?idKalkulimit=${pendingId}`,
               authentikimi
             )
             .then((p) => {
@@ -336,7 +337,7 @@ function RegjistroFaturen(props) {
             } else {
               // Fetch dataRegjistrimit to determine the year
               const response = await axios.get(
-                `https://localhost:7285/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
+                `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
                 authentikimi
               );
               const dataRegjistrimit =
@@ -353,7 +354,7 @@ function RegjistroFaturen(props) {
 
               // Perform the database import with the dynamic name
               await axios.post(
-                `https://localhost:7285/api/Database?newDatabaseName=${newDatabaseName}&sourceDatabaseName=${sourceDatabaseName}`,
+                `${API_BASE_URL}/api/Database?newDatabaseName=${newDatabaseName}&sourceDatabaseName=${sourceDatabaseName}`,
                 null,
                 authentikimi
               );
@@ -367,7 +368,7 @@ function RegjistroFaturen(props) {
                 console.log(produktet);
 
                 await axios.put(
-                  `https://localhost:7285/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${prod.produktiID}`,
+                  `${API_BASE_URL}/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${prod.produktiID}`,
                   {
                     qmimiBleres: produkti["Qmimi Bleres + TVSH €"],
                     qmimiProduktit: produkti["Qmimi Shites me Pakic + TVSH €"],
@@ -385,7 +386,7 @@ function RegjistroFaturen(props) {
 
                 if (!ekzistonNeKalkulim) {
                   await axios.put(
-                    `https://localhost:7285/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${produkti.produktiID}`,
+                    `${API_BASE_URL}/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${produkti.produktiID}`,
                     {
                       qmimiBleres: 0,
                       qmimiProduktit: 0,
@@ -452,7 +453,7 @@ function RegjistroFaturen(props) {
       console.log(sasiaNeStok);
       await axios
         .put(
-          `https://localhost:7285/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${id}`,
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${id}`,
           {
             qmimiBleres: qmimiBleres,
             qmimiShites: qmimiShites,
@@ -497,7 +498,7 @@ function RegjistroFaturen(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/Produkti/ProduktetPerKalkulim",
+        `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
         authentikimi
       )
       .then((response) => {
@@ -537,7 +538,7 @@ function RegjistroFaturen(props) {
     const vendosTeDhenatBiznesit = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setSiteName(teDhenat?.data?.emriIBiznesit);

@@ -20,6 +20,7 @@ import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function KthimIMallitTeBlere(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -76,7 +77,7 @@ function KthimIMallitTeBlere(props) {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          "https://localhost:7285/api/Faturat/shfaqRegjistrimet",
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
           authentikimi
         );
         const kthimet = kalkulimi.data.filter(
@@ -115,7 +116,7 @@ function KthimIMallitTeBlere(props) {
       const vendosTeDhenat = async () => {
         try {
           const perdoruesi = await axios.get(
-            `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
           setTeDhenat(perdoruesi.data);
@@ -136,7 +137,7 @@ function KthimIMallitTeBlere(props) {
     const vendosPartnerin = async () => {
       try {
         const partneri = await axios.get(
-          `https://localhost:7285/api/Partneri/shfaqPartneretBleres`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`,
           authentikimi
         );
         setPartneret(partneri.data);
@@ -153,7 +154,7 @@ function KthimIMallitTeBlere(props) {
     const vendosNrFaturesMeRradhe = async () => {
       try {
         const nrFat = await axios.get(
-          `https://localhost:7285/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=FAT`,
+          `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=FAT`,
           authentikimi
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
@@ -177,7 +178,7 @@ function KthimIMallitTeBlere(props) {
       console.log(nrRendorKalkulimit);
       await axios
         .post(
-          "https://localhost:7285/api/Faturat/ruajKalkulimin",
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
           {
             dataRegjistrimit: dataEFatures,
             stafiID: teDhenat.perdoruesi.userID,
@@ -213,7 +214,7 @@ function KthimIMallitTeBlere(props) {
     try {
       axios
         .put(
-          `https://localhost:7285/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
+          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
           authentikimi
         )
@@ -259,7 +260,7 @@ function KthimIMallitTeBlere(props) {
   useEffect(() => {
     axios
       .get(
-        "https://localhost:7285/api/Partneri/shfaqPartneretBleres",
+        `${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`,
         authentikimi
       )
       .then((response) => {

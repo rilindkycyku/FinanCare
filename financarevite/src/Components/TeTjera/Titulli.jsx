@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import axios from "axios";
 
 function Titulli({ titulli }) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [siteName, setSiteName] = useState("FinanCare");
 
   const getToken = localStorage.getItem("token");
@@ -16,7 +17,7 @@ function Titulli({ titulli }) {
     const vendosTeDhenatBiznesit = async () => {
       try {
         const teDhenat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqTeDhenat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
           authentikimi
         );
         setSiteName(teDhenat?.data?.emriIBiznesit);

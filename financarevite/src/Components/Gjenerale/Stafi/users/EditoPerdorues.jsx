@@ -16,6 +16,7 @@ import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoPerdorues(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perdoruesi, setPerdoruesi] = useState(null);
   const [rolet, setRolet] = useState([]);
   const [bankaOptions, setBankaOptions] = useState([]);
@@ -35,7 +36,7 @@ function EditoPerdorues(props) {
     const fetchPerdoruesi = async () => {
       try {
         const response = await axios.get(
-          `https://localhost:7285/api/Perdoruesi/shfaqSipasID?idUserAspNet=${props.id}`,
+          `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${props.id}`,
           authentikimi
         );
         setPerdoruesi(response.data);
@@ -72,7 +73,7 @@ function EditoPerdorues(props) {
     const fetchBankat = async () => {
       try {
         const response = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
           authentikimi
         );
         setBankaOptions(
@@ -93,7 +94,7 @@ function EditoPerdorues(props) {
     const fetchRolet = async () => {
       try {
         const response = await axios.get(
-          "https://localhost:7285/api/Authenticate/shfaqRolet",
+          `${API_BASE_URL}/api/Authenticate/shfaqRolet`,
           authentikimi
         );
         setRoletOptions(
@@ -145,7 +146,7 @@ function EditoPerdorues(props) {
   const handleResetoPasswordin = async () => {
     try {
       await axios.post(
-        `https://localhost:7285/api/Authenticate/ResetoFjalekalimin?AspNetID=${props.id}`,
+        `${API_BASE_URL}/api/Authenticate/ResetoFjalekalimin?AspNetID=${props.id}`,
         {},
         authentikimi
       ).then((r) =>  props.setPershkrimiMesazhit(
@@ -180,12 +181,12 @@ function EditoPerdorues(props) {
   const handleSubmit = async () => {
     try {
       await axios.put(
-        `https://localhost:7285/api/Perdoruesi/perditesoPerdorues/${props.id}`,
+        `${API_BASE_URL}/api/Perdoruesi/perditesoPerdorues/${props.id}`,
         perdoruesi.perdoruesi,
         authentikimi
       );
       await axios.put(
-        `https://localhost:7285/api/Authenticate/PerditesoAksesin?UserID=${props.id}&roli=${selectedRoli.value}`,
+        `${API_BASE_URL}/api/Authenticate/PerditesoAksesin?UserID=${props.id}&roli=${selectedRoli.value}`,
         {},
         authentikimi
       );

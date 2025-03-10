@@ -8,6 +8,7 @@ import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoBanken(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [banka, setBanka] = useState([]);
 
   const [perditeso, setPerditeso] = useState("");
@@ -28,7 +29,7 @@ function EditoBanken(props) {
     const vendosbankat = async () => {
       try {
         const bankat = await axios.get(
-          `https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat`,
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
           authentikimi
         );
         setBankat(bankat.data);
@@ -45,7 +46,7 @@ function EditoBanken(props) {
     const shfaqNjesineMatese = async () => {
       try {
         const bankaKerkim = await axios.get(
-          `https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankenNgaID?id=${props.id}`,
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankenNgaID?id=${props.id}`,
           authentikimi
         );
         setBanka(bankaKerkim.data[0]);
@@ -79,7 +80,7 @@ function EditoBanken(props) {
   function handleSubmit() {
     axios
       .put(
-        `https://localhost:7285/api/TeDhenatBiznesit/PerditesoBanken?id=${banka.bankaID}`,
+        `${API_BASE_URL}/api/TeDhenatBiznesit/PerditesoBanken?id=${banka.bankaID}`,
         banka,
         authentikimi
       )

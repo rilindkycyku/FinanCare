@@ -10,6 +10,7 @@ import EditoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankar
 import LargoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankareBiznesit/LargoLlogarin";
 
 function LlogaritBankareBiznesit(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [bankat, setBankat] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shto, setShto] = useState(false);
@@ -34,7 +35,7 @@ function LlogaritBankareBiznesit(props) {
       try {
         setLoading(true);
         const Bankat = await axios.get(
-          "https://localhost:7285/api/TeDhenatBiznesit/ShfaqLlogaritEBiznesit",
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqLlogaritEBiznesit`,
           authentikimi
         );
 

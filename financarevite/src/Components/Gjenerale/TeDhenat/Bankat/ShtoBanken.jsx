@@ -8,6 +8,7 @@ import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ShtoBanken(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [emriBankes, setEmriBankes] = useState("");
   const [lokacioniBankes, setLokacioniBankes] = useState("Kombetare");
 
@@ -29,7 +30,7 @@ function ShtoBanken(props) {
     const vendosbankat = async () => {
       try {
         const bankat = await axios.get(
-          `https://localhost:7285/api/TeDhenatBiznesit/ShfaqBankat`,
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
           authentikimi
         );
         setBankat(bankat.data);
@@ -57,7 +58,7 @@ function ShtoBanken(props) {
   function handleSubmit() {
     axios
       .post(
-        "https://localhost:7285/api/TeDhenatBiznesit/ShtoBanken",
+        `${API_BASE_URL}/api/TeDhenatBiznesit/ShtoBanken`,
         {
           emriBankes: emriBankes,
           lokacioniBankes: lokacioniBankes,

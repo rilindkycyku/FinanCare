@@ -8,6 +8,7 @@ import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ShtoRolin(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [emri, setEmri] = useState("");
 
   const getToken = localStorage.getItem("token");
@@ -24,7 +25,7 @@ function ShtoRolin(props) {
   function handleSubmit() {
     axios
       .post(
-        `https://localhost:7285/api/Authenticate/shtoRolin?roli=${emri}`,
+        `${API_BASE_URL}/api/Authenticate/shtoRolin?roli=${emri}`,
         {},
         authentikimi
       )
