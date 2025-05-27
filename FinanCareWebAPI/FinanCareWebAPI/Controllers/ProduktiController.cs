@@ -385,6 +385,76 @@ namespace TechStoreWebAPI.Controllers
         }
 
         [Authorize]
+        [HttpPut]
+        [Route("bartjaArtikullit")]
+        public async Task<IActionResult> BartjaArtikullit(int IDArtikulliVjeter, int IDArtikulliRi)
+        {
+            var produktiIVjeter = await _context.Produkti.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliVjeter);
+            var stokuQmimiIVjeter = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliVjeter);
+            var produktiIRi = await _context.Produkti.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliRi);
+            var stokuQmimiIRi = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliRi);
+
+            if (produktiIVjeter == null || stokuQmimiIVjeter == null || produktiIRi == null || stokuQmimiIRi == null)
+            {
+                return BadRequest("Produkti me këtë ID nuk ekziston");
+            }
+
+
+            if (stokuQmimiIVjeter != null)
+            {
+                if (stokuQmimiIVjeter.QmimiProduktit != null)
+                {
+                    stokuQmimiIRi.QmimiProduktit = stokuQmimiIVjeter.QmimiProduktit;
+                }
+
+                if (stokuQmimiIVjeter.QmimiBleres != null)
+                {
+                    stokuQmimiIRi.QmimiBleres = stokuQmimiIVjeter.QmimiBleres;
+                }
+
+                if (stokuQmimiIVjeter.SasiaNeStok != null)
+                {
+                    stokuQmimiIRi.SasiaNeStok += stokuQmimiIVjeter.SasiaNeStok;
+                }
+
+                if (stokuQmimiIVjeter.QmimiMeShumic != null)
+                {
+                    stokuQmimiIRi.QmimiMeShumic = stokuQmimiIVjeter.QmimiMeShumic;
+                }
+            }
+
+            if (stokuQmimiIVjeter != null)
+            {
+                if (stokuQmimiIVjeter.QmimiProduktit != null)
+                {
+                    stokuQmimiIVjeter.QmimiProduktit = 0;
+                }
+
+                if (stokuQmimiIVjeter.QmimiBleres != null)
+                {
+                    stokuQmimiIVjeter.QmimiBleres = 0;
+                }
+
+                if (stokuQmimiIVjeter.SasiaNeStok != null)
+                {
+                    stokuQmimiIVjeter.SasiaNeStok = 0;
+                }
+
+                if (stokuQmimiIVjeter.QmimiMeShumic != null)
+                {
+                    stokuQmimiIVjeter.QmimiMeShumic = 0;
+                }
+            }
+
+            //_context.Produkti.Update(produkti);
+            _context.StokuQmimiProduktit.Update(stokuQmimiIRi);
+            _context.StokuQmimiProduktit.Update(stokuQmimiIVjeter);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

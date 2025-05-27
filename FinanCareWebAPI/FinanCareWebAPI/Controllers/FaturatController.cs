@@ -286,23 +286,11 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> ShfaqNumrinRendorFatures(int stafiID)
         {
             var kaFatTeHapura = await _context.Faturat.Where(x => x.DataRegjistrimit.Value.Date == DateTime.Today && x.StafiID == stafiID && x.LlojiKalkulimit == "PARAGON" && x.StatusiKalkulimit == "false").FirstOrDefaultAsync();
-            var nrFat = await _context.Faturat.Where(x => x.DataRegjistrimit.Value.Date == DateTime.Today && x.StafiID == stafiID && x.LlojiKalkulimit == "PARAGON" && x.StatusiKalkulimit == "true").CountAsync();
+            var nrFat = await _context.Faturat.Where(x => x.DataRegjistrimit.Value.Date == DateTime.Today && x.StafiID == stafiID && x.LlojiKalkulimit == "PARAGON").CountAsync();
 
             string datePart = DateTime.Today.ToString("ddMMyy");
             string nrFatures = $"{datePart}-{stafiID}-{nrFat + 1}";
 
-            if (kaFatTeHapura != null)
-            {
-                var obj = new
-                {
-                    NrFat = kaFatTeHapura.NrRendorFatures,
-                    kaFatTeHapura.IDRegjistrimit,
-                };
-
-                return Ok(obj);
-            }
-            else
-            {
                 Faturat f = new Faturat()
                 {
                     IDPartneri = 1,
@@ -325,7 +313,34 @@ namespace WebAPI.Controllers
                 return Ok(obj);
             }
 
-            
+        [Authorize]
+        [HttpGet]
+        [Route("ShfaqFaturatEHapura")]
+        public async Task<IActionResult> ShfaqFaturatEHapura(int stafiID)
+        {
+            var openInvoices = await _context.Faturat
+                .Where(x => x.DataRegjistrimit.Value.Date == DateTime.Today
+                            && x.StafiID == stafiID
+                            && x.LlojiKalkulimit == "PARAGON"
+                            && x.StatusiKalkulimit == "false")
+                .Select(x => new
+                {
+                    x.IDRegjistrimit,
+                    x.NrFatures,
+                    x.IDPartneri,
+                    x.IDBonusKartela,
+                    BonusKartela = x.IDBonusKartela != null ? new
+                    {
+                        x.BonusKartela.IDKartela,
+                        x.BonusKartela.Rabati,
+                        Partneri = new
+                        {
+                            x.BonusKartela.Partneri.EmriBiznesit
+                        }
+                    } : null
+                })
+                .ToListAsync();
+            return Ok(openInvoices);
         }
 
         [Authorize]

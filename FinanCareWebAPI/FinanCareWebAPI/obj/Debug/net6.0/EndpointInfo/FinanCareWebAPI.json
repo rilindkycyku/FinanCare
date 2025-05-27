@@ -332,6 +332,28 @@
         }
       }
     },
+    "/api/Faturat/ShfaqFaturatEHapura": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "stafiID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Faturat/ruajKalkulimin/getKalkulimi": {
       "get": {
         "tags": [
@@ -1923,6 +1945,36 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Produkti/bartjaArtikullit": {
+      "put": {
+        "tags": [
+          "Produkti"
+        ],
+        "parameters": [
+          {
+            "name": "IDArtikulliVjeter",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "IDArtikulliRi",
+            "in": "query",
             "schema": {
               "type": "integer",
               "format": "int32"

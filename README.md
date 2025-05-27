@@ -34,14 +34,15 @@ Ky projekt është i punuar në:
 
 Së pari duhet të bëhet konfigurimi i Connection String në `FinanCare/appsettings.json` dhe duhet të ndërrohet emri i Server me atë të serverit tuaj. Pastaj ju duhet të bëni run komandën **EntityFrameworkCore\update-database** në **Serverin e Projektit - FinanCare**, e cila do të mundësojë gjenerimin në tërësi të databazës dhe insertimin e të dhënave bazike.
 
-### **Njoftimi për Ndryshimin e Serverit të API**
+### **Njoftimi për Ndryshimin e Serverit të API dhe Front**
 API i cili vjen nga ASP.NET Core mund të ndryshohet duke vendosur adresën IP në file-in `.env` që gjendet në folderin `financare`. Adresa IP mund të gjendet duke ekzekutuar komandën `ipconfig` në Command Prompt (CMD).  
 - **Hapi 1**: Hapni CMD dhe shkruani:
 ```ipconfig```
 Kërkoni nën seksionin "IPv4 Address" (p.sh., `192.168.0.102`).  
 - **Hapi 2**: Në file-in `.env`, shtoni ose përditësoni rreshtin:
-```VITE_API_BASE_URL=https://192.168.0.102:7285```
-- **Shënim**: Zëvendësoni `192.168.0.10` me adresën tuaj IP dhe `7285` me portin e konfiguruar për API-n tuaj (```7285``` është i konfiguruar automatikisht).
+```VITE_API_BASE_URL=http://192.168.0.102:7285```
+```VITE_BASE_URL=http://192.168.0.102:5173```
+- **Shënim**: Zëvendësoni `192.168.0.102` me adresën tuaj IP dhe `7285 dhe 5173 (Front)` me portin e konfiguruar për API-n tuaj (```7285 dhe 5173``` janë të konfiguruar automatikisht).
 
 ### **Konfigurimi i Certifikatës HTTPS**
 Për të shmangur problemet gjatë përdorimit të HTTPS, duhet të krijohet dhe të besohet një certifikatë zhvillimi.  
@@ -55,7 +56,7 @@ Pasi të keni përfunduar me këto hapa, ju duhet të bëni **run** serverin dhe
 - **npm i** - Bën instalimin automatik të paketave të nevojshme.
 - **npm run build** - Bën Build Projektin.  
 _Këto duhen të bëhen vetëm nëse e keni hapur projektin për herë të parë._
-- **npm start** - Bën startimin e projektit. (_Kjo duhet të bëhet gjithmonë kur startojmë projektin e React._)
+- **npm run dev** - Bën startimin e projektit. (_Kjo duhet të bëhet gjithmonë kur startojmë projektin e Vite._)
 
 Pasi të bëhet konfigurimi, ju mund të kyçeni me këto të dhëna:
 

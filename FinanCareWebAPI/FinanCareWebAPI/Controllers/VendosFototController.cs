@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
                 return BadRequest("Ju lutem vendosni foton");
             }
 
-            var follderi = Path.Combine("..", "..", "financare", "public", "img", "web");
+            var follderi = Path.Combine("..", "..", "financarevite", "public", "img", "web");
 
             if (!logoVjeter.Equals("PaLogo.png"))
             {

@@ -45,6 +45,8 @@ function Tabela({
   storeName,
   products,
   shfaqEksporto,
+  bartjaArtikullit,
+  funksionBartjaArtikullit,
 }) {
   const [perditeso, setPerditeso] = useState(Date.now());
   const [searchQuery, setSearchQuery] = useState("");
@@ -164,6 +166,16 @@ function Tabela({
                           />
                         )}
                       </Col>
+                      {funksionBartjaArtikullit && (
+                        <Col xs="auto" className="pe-0">
+                        <Button
+                          variant="success"
+                          onClick={() => funksionBartjaArtikullit()}>
+                          Bartja e Artikullit{" "}
+                          <FontAwesomeIcon icon={faPenToSquare} />
+                        </Button>
+                      </Col>
+                      )}
                       {funksionNdryshoStatusinEFatures && (
                         <Col xs="auto" className="pe-0">
                           <Button

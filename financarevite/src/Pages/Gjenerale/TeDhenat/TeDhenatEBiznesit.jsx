@@ -314,25 +314,28 @@ function TeDhenatEBiznesit(props) {
                 />
               </MDBCol>
               <MDBCol md="4" style={{ margin: "1em" }}>
-                {teDhenatBiznesit &&
-                (teDhenatBiznesit.logo === null ||
-                  teDhenatBiznesit.logo === "" ||
-                  teDhenatBiznesit.logo === "PaLogo.png") ? (
-                  <div className="logo">
-                    <img
-                      src={`${process.env.PUBLIC_URL}/img/web/PaLogo.png`}
-                      alt=""
-                    />
-                  </div>
-                ) : (
-                  <div className="logo">
-                    <img
-                      src={`${process.env.PUBLIC_URL}/img/web/${teDhenatBiznesit.logo}`}
-                      alt=""
-                    />
-                  </div>
-                )}
-              </MDBCol>
+  {teDhenatBiznesit && (
+    <div className="logo">
+      <img
+        src={
+          teDhenatBiznesit.logo &&
+          teDhenatBiznesit.logo !== "" &&
+          teDhenatBiznesit.logo !== "PaLogo.png" &&
+          teDhenatBiznesit.logo !== null &&
+          teDhenatBiznesit.logo !== undefined
+            ? `/img/web/${teDhenatBiznesit.logo}` // Relative path
+            : `/img/web/PaLogo.png`
+        }
+        alt="Logo e Biznesit"
+        onError={(e) => {
+          console.log("Image load failed, switching to fallback");
+          e.target.src = `/img/web/PaLogo.png`;
+        }}
+        onLoad={() => console.log("Image loaded successfully")}
+      />
+    </div>
+  )}
+</MDBCol>
               <MDBCol
                 md="4"
                 style={{

@@ -8,6 +8,7 @@ using System.Text;
 using WebAPI.Configurations;
 using Microsoft.OpenApi.Models;
 using FinanCareWebAPI.Migrations;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +113,8 @@ builder.WebHost.ConfigureKestrel(options =>
     });
 });
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -123,7 +126,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("CorsPolicy");
 
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,0 +1,28 @@
+<svg data-v-423bf9ae="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 481 90" class="iconLeftSlogan">
+  <!-- Include Quicksand font from Google Fonts -->
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+      .quicksand-text {
+        font-family: 'Quicksand', sans-serif;
+        fill: #000000;
+        font-weight: bold;
+      }
+    </style>
+  </defs>
+
+  <!-- First text group (replacing e7c540fd-...) -->
+  <g data-v-423bf9ae="" id="e7c540fd-484b-4eae-9481-480cb49d4f4f" transform="matrix(5.88235305117351,0,0,5.88235305117351,104.64706919329379,-27.94117746991133)">
+    <text x="0" y="14" class="quicksand-text" font-size="5">FinanCare</text>
+  </g>
+
+  <!-- Green circle with plus signs (unchanged) -->
+  <g data-v-423bf9ae="" id="e9d5cf1b-1c84-4c43-82c8-84039f48b424" transform="matrix(2.8125,0,0,2.8125,0,0)" stroke="none" fill="#81E291">
+    <path d="M16 32c8.837 0 16-7.163 16-16S24.837 0 16 0 0 7.163 0 16s7.163 16 16 16zM14.817 6.421h2v8.886h8.887v2H14.817V6.421zm-5.959.437h2v14.283h14.283v2H8.858V6.858z"></path>
+  </g>
+
+  <!-- Second text group (replacing 25207cb0-...) -->
+  <g data-v-423bf9ae="" id="25207cb0-2f36-46af-9902-a08f808dd1c4" transform="matrix(1.1367981418569812,0,0,1.1367981418569812,108.71541852203848,57.61272254226667)">
+    <text x="-2" y="10" class="quicksand-text" font-size="10">POS, eOrder & More</text>
+  </g>
+</svg>

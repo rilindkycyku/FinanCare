@@ -8,6 +8,7 @@ import EditoProduktin from "../../../Components/Materiali/Artikujt/Produktet/Edi
 import { TailSpin } from "react-loader-spinner";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import LargoProduktin from "../../../Components/Materiali/Artikujt/Produktet/LargoProduktin";
+import BartjaArtikullit from "../../../Components/Materiali/Artikujt/Produktet/BartjaArtikullit";
 
 const ProductTables = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -78,7 +79,7 @@ const ProductTables = () => {
   const [showD, setShowD] = useState(false);
 
   const handleCloseD = () => setShowD(false);
-  const handleShowD = (id) => {
+  const handleShowD = () => {
     setShowD(true);
   };
 
@@ -99,6 +100,16 @@ const ProductTables = () => {
           <ShtoProduktin
             show={handleShow}
             hide={handleClose}
+            shfaqmesazhin={() => setShfaqMesazhin(true)}
+            perditesoTeDhenat={() => setPerditeso(Date.now())}
+            setTipiMesazhit={setTipiMesazhit}
+            setPershkrimiMesazhit={setPershkrimiMesazhit}
+          />
+        )}
+        {showD && (
+          <BartjaArtikullit
+            show={handleShowD}
+            hide={handleCloseD}
             shfaqmesazhin={() => setShfaqMesazhin(true)}
             perditesoTeDhenat={() => setPerditeso(Date.now())}
             setTipiMesazhit={setTipiMesazhit}
@@ -153,6 +164,7 @@ const ProductTables = () => {
                 data={produkti}
                 tableName="Lista e Produkteve"
                 kaButona={true}
+                funksionBartjaArtikullit={handleShowD}
                 funksionButonShto={handleShow}
                 funksionButonEdit={(e) => {
                   setId(e);

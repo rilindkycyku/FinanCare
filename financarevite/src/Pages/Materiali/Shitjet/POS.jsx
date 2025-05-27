@@ -11,17 +11,18 @@ import {
   faDolly,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Table, Form, Container, Row, Col, InputGroup } from "react-bootstrap";
+import { Table, Form, Container, Row, Col, InputGroup, Tabs, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 import Titulli from "../../../Components/TeTjera/Titulli";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import jsPDF from "jspdf";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import NukEshteEOptimizuarPerMobile from "../../../Components/TeTjera/layout/NukEshteEOptimizuarPerMobile";
 
 function POS(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const BASE_URL = import.meta.env.VITE_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -37,8 +38,7 @@ function POS(props) {
   const [kartelaBleresit, setKartelaBleresit] = useState(null);
   const [teDhenatKartelaBleresit, setTeDhenatKartelaBleresit] = useState(null);
 
-  const [vendosKartelenFshirjeProduktit, setVendosKartelenFshirjeProduktit] =
-    useState(false);
+  const [vendosKartelenFshirjeProduktit, setVendosKartelenFshirjeProduktit] = useState(false);
   const [kartelaFshirjes, setKartelaFshirjes] = useState(null);
   const [teDhenatKartelaFshirjes, setTeDhenatKartelaFshirjes] = useState(null);
   const [fshijProdKalkID, setFshijProduktKalkID] = useState(0);
@@ -62,13 +62,15 @@ function POS(props) {
   const [IDProduktiFunditShtuar, setIDProduktiFunditShtuar] = useState(null);
 
   const [perditesoFat, setPerditesoFat] = useState("");
-
   const [edito, setEdito] = useState(false);
-
   const [optionsBarkodi, setOptionsBarkodi] = useState([]);
   const [optionsBarkodiSelected, setOptionsBarkodiSelected] = useState(null);
-
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState(null);
+
+  // New states for multi-customer support
+  const [activeInvoices, setActiveInvoices] = useState([]);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [invoicesData, setInvoicesData] = useState({});
 
   const navigate = useNavigate();
 
@@ -76,6 +78,55 @@ function POS(props) {
   const getToken = localStorage.getItem("token");
   const authentikimi = { headers: { Authorization: `Bearer ${getToken}` } };
 
+  // Function to add a new customer (new invoice)
+  const addNewCustomer = async () => {
+    if (activeInvoices.length >= 4) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Nuk mund të shtoni më shumë se 4 klientë njëkohësisht!");
+      setShfaqMesazhin(true);
+      return;
+    }
+    try {
+      setLoading(true);
+      const perdoruesi = await axios.get(
+        `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+        authentikimi
+      );
+      const nrRendor = await axios.get(
+        `${API_BASE_URL}/api/Faturat/ShfaqNumrinRendorFatures?stafiID=${perdoruesi.data.perdoruesi.userID}`,
+        authentikimi
+      );
+      const newInvoiceId = nrRendor.data.idRegjistrimit;
+      setActiveInvoices((prev) => [...prev, newInvoiceId]);
+      setInvoicesData((prev) => ({
+        ...prev,
+        [newInvoiceId]: {
+          nrFatures: nrRendor.data.nrFat,
+          produktetNeKalkulim: [],
+          idPartneri: 1,
+          kartelaBleresit: null,
+          teDhenatKartelaBleresit: null,
+          IDProduktiFunditShtuar: null,
+          qmimiTotal: 0,
+          totaliTVSH: 0,
+          qmimiPaRabatBonus: 0,
+        },
+      }));
+      if (!selectedInvoice) {
+        setSelectedInvoice(newInvoiceId);
+      }
+      setPerditeso(Date.now());
+    } catch (err) {
+      console.error("Error creating new invoice:", err);
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Gabim gjatë krijimit të faturës për klientin e ri!");
+      setShfaqMesazhin(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch business details
   useEffect(() => {
     const vendosTeDhenatBiznesit = async () => {
       try {
@@ -91,73 +142,105 @@ function POS(props) {
     vendosTeDhenatBiznesit();
   }, [perditeso]);
 
+  // Initialize first invoice or redirect to login
   useEffect(() => {
     if (getID) {
-      const vendosTeDhenat = async () => {
+      const initializeInvoices = async () => {
         try {
+          setLoading(true);
           const perdoruesi = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
-          const nrRendor = await axios.get(
-            `${API_BASE_URL}/api/Faturat/ShfaqNumrinRendorFatures?stafiID=${perdoruesi.data.perdoruesi.userID}`,
+          const stafiID = perdoruesi.data.perdoruesi.userID;
+          // Fetch open invoices for the current stafiID
+          const openInvoices = await axios.get(
+            `${API_BASE_URL}/api/Faturat/shfaqFaturatEHapura?stafiID=${stafiID}`,
             authentikimi
           );
-          setNrFatures(nrRendor.data.nrFat);
-          setIdRegjistrimit(nrRendor.data.idRegjistrimit);
+          if (openInvoices.data && openInvoices.data.length > 0) {
+            const invoiceIds = openInvoices.data.map((invoice) => invoice.idRegjistrimit);
+            const invoicesDataObj = {};
+            for (const invoice of openInvoices.data) {
+              const teDhenatKalkulimit = await axios.get(
+                `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${invoice.idRegjistrimit}`,
+                authentikimi
+              );
+              invoicesDataObj[invoice.idRegjistrimit] = {
+                nrFatures: invoice.nrFatures,
+                produktetNeKalkulim: teDhenatKalkulimit.data || [],
+                idPartneri: invoice.idPartneri || 1,
+                kartelaBleresit: invoice.idBonusKartela || null,
+                teDhenatKartelaBleresit: invoice.bonusKartela || null,
+                IDProduktiFunditShtuar:
+                  teDhenatKalkulimit.data && teDhenatKalkulimit.data.length > 0
+                    ? teDhenatKalkulimit.data[0].id
+                    : null,
+                qmimiTotal: 0,
+                totaliTVSH: 0,
+                qmimiPaRabatBonus: 0,
+              };
+            }
+            setActiveInvoices(invoiceIds);
+            setInvoicesData(invoicesDataObj);
+            setSelectedInvoice(invoiceIds[0]); // Select the first open invoice
+          } else {
+            // No open invoices, create a new one
+            await addNewCustomer();
+          }
         } catch (err) {
-          console.log(err);
+          console.error("Error initializing invoices:", err);
+          setTipiMesazhit("danger");
+          setPershkrimiMesazhit("Gabim gjatë ngarkimit të faturave të hapura!");
+          setShfaqMesazhin(true);
         } finally {
           setLoading(false);
         }
       };
-      vendosTeDhenat();
+      initializeInvoices();
     } else {
       navigate("/login");
     }
-  }, [perditeso]);
+  }, [getID]);
 
+  // Fetch invoice data for selected invoice
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPerditesoFat(Date.now());
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [perditeso]);
-
-  useEffect(() => {
-    const vendosTeDhenat = async () => {
-      try {
-        const teDhenatKalkulimit = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${idRegjistrimit}`,
-          authentikimi
-        );
-        const teDhenatFatures = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
-          authentikimi
-        );
-        setproduktetNeKalkulim(teDhenatKalkulimit.data);
-        setIDPartneri(teDhenatFatures.data.regjistrimet.idPartneri);
-        if (teDhenatFatures.data.regjistrimet.bonusKartela != null) {
-          setKartelaBleresit(teDhenatFatures.data.regjistrimet.idBonusKartela);
-          setTeDhenatKartelaBleresit(
-            teDhenatFatures.data.regjistrimet.bonusKartela
+    if (getID && selectedInvoice) {
+      const vendosTeDhenat = async () => {
+        try {
+          const teDhenatKalkulimit = await axios.get(
+            `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${selectedInvoice}`,
+            authentikimi
           );
-        } else {
-          setKartelaBleresit(null);
-          setTeDhenatKartelaBleresit(null);
+          const teDhenatFatures = await axios.get(
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
+            authentikimi
+          );
+          setproduktetNeKalkulim(teDhenatKalkulimit.data);
+          setIDPartneri(teDhenatFatures.data.regjistrimet.idPartneri);
+          if (teDhenatFatures.data.regjistrimet.bonusKartela != null) {
+            setKartelaBleresit(teDhenatFatures.data.regjistrimet.idBonusKartela);
+            setTeDhenatKartelaBleresit(teDhenatFatures.data.regjistrimet.bonusKartela);
+          } else {
+            setKartelaBleresit(null);
+            setTeDhenatKartelaBleresit(null);
+          }
+          if (teDhenatKalkulimit.data && teDhenatKalkulimit.data.length > 0) {
+            setIDProduktiFunditShtuar(teDhenatKalkulimit.data[0].id);
+          }
+          setNrFatures(teDhenatFatures.data.regjistrimet.nrFatures);
+          setIdRegjistrimit(selectedInvoice);
+        } catch (err) {
+          console.error("Error fetching invoice data:", err);
+        } finally {
+          // setLoading(false);
         }
-        if (teDhenatKalkulimit.data && teDhenatKalkulimit.data.length > 0) {
-          setIDProduktiFunditShtuar(teDhenatKalkulimit.data[0].id);
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    vendosTeDhenat();
-  }, [perditesoFat, produktiID]);
+      };
+      vendosTeDhenat();
+    }
+  }, [perditesoFat, produktiID, selectedInvoice]);
 
+  // Calculate totals for selected invoice
   useEffect(() => {
     const calculateTotals = async () => {
       let totalQmimiPaTVSH = 0;
@@ -191,11 +274,11 @@ function POS(props) {
       setQmimiPaRabatBonus(qmimiPaRabatBonus);
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
           authentikimi
         );
         await axios.put(
-          `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
           {
             dataRegjistrimit: response.data.regjistrimet.dataRegjistrimit,
             stafiID: response.data.regjistrimet.stafiID,
@@ -219,7 +302,38 @@ function POS(props) {
       }
     };
     calculateTotals();
-  }, [produktetNeKalkulim, idRegjistrimit, perditesoFat, idPartneri]);
+  }, [produktetNeKalkulim, selectedInvoice, perditesoFat, idPartneri]);
+
+  // Handle keyboard navigation between customers
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key >= "1" && event.key <= "9") {
+        const index = parseInt(event.key) - 1;
+        if (activeInvoices[index]) {
+          setSelectedInvoice(activeInvoices[index]);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeInvoices]);
+
+  // Reset form when no invoices remain
+  useEffect(() => {
+    if (activeInvoices.length === 0 && !selectedInvoice) {
+      setproduktetNeKalkulim([]);
+      setIDPartneri(1);
+      setKartelaBleresit(null);
+      setTeDhenatKartelaBleresit(null);
+      setIDProduktiFunditShtuar(null);
+      setNrFatures(0);
+      setIdRegjistrimit(0);
+      setQmimiTotal(0);
+      setTotaliTVSH(0);
+      setQmimiPaRabatBonus(0);
+      addNewCustomer();
+    }
+  }, [activeInvoices]);
 
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
@@ -327,7 +441,7 @@ function POS(props) {
       .post(
         `${API_BASE_URL}/api/Faturat/ruajKalkulimin/teDhenat`,
         {
-          idRegjistrimit: idRegjistrimit,
+          idRegjistrimit: selectedInvoice,
           idProduktit: barkodi.value,
           sasiaStokut: 1,
           qmimiShites: barkodi.qmimiProduktit,
@@ -350,6 +464,7 @@ function POS(props) {
     setOptionsBarkodiSelected(null);
     setPerditesoFat(Date.now());
   };
+  
 
   const handleKaloTekPagesa = (event) => {
     event.preventDefault();
@@ -388,9 +503,18 @@ function POS(props) {
     }
   };
 
+  function loadImage(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => resolve(img);
+      img.onerror = (error) => reject(error);
+    });
+  }
+
   async function generateInvoice(data) {
     const initialDoc = new jsPDF({ unit: "mm", format: [75, 1000] });
-    const logoUrl = `${process.env.PUBLIC_URL}/img/web/${teDhenatBiznesit?.logo}`;
+    const logoUrl = `${BASE_URL}/img/web/${teDhenatBiznesit?.logo}`;
     const logoImage = await loadImage(logoUrl);
     initialDoc.addImage(logoImage, "PNG", 10, 5, 55, 15);
     let currentY = 25;
@@ -498,10 +622,10 @@ function POS(props) {
     currentY += 5;
 
     data.items.forEach((item) => {
-      addShrinkText(doc, item.name, 38, currentY, 30);
+      addShrinkText(initialDoc, item.name, 38, currentY, 30);
       currentY += 5;
       addShrinkText(
-        doc,
+        initialDoc,
         `${parseFloat(item.vatPercentage).toFixed(2)} %`,
         63,
         currentY,
@@ -509,15 +633,15 @@ function POS(props) {
       );
       currentY += 5;
       addShrinkText(
-        doc,
+        initialDoc,
         `${parseFloat(item.price).toFixed(2)} €`,
         11,
         currentY,
         20
       );
-      addShrinkText(doc, `${item.quantity}`, 38, currentY, 20);
+      addShrinkText(initialDoc, `${item.quantity}`, 38, currentY, 20);
       addShrinkText(
-        doc,
+        initialDoc,
         `${parseFloat(item.total).toFixed(2)} €`,
         63,
         currentY,
@@ -525,7 +649,7 @@ function POS(props) {
       );
       currentY += 5;
       addShrinkText(
-        doc,
+        initialDoc,
         "----------------------------------",
         37.5,
         currentY,
@@ -719,19 +843,10 @@ function POS(props) {
     setRabati1(0);
   }
 
-  function loadImage(url) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.src = url;
-      img.onload = () => resolve(img);
-      img.onerror = (error) => reject(error);
-    });
-  }
-
-  const mbyllFature = async (event) => {
+  const mbyllFature = async () => {
     await axios
       .get(
-        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
+        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
         authentikimi
       )
       .then(async (r) => {
@@ -744,7 +859,7 @@ function POS(props) {
         } else {
           await axios
             .put(
-              `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
+              `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
               {
                 llojiPageses: llojiPageses,
                 statusiKalkulimit: "true",
@@ -800,55 +915,49 @@ function POS(props) {
                   authentikimi
                 );
               }
+              // Remove closed invoice and select next
+              const updatedInvoices = activeInvoices.filter(
+                (id) => id !== selectedInvoice
+              );
+              setActiveInvoices(updatedInvoices);
+              setSelectedInvoice(updatedInvoices[0] || null);
+              setPerditeso(Date.now());
             });
+            const data = {
+              invoiceNumber: r?.data?.regjistrimet?.nrFatures,
+              date: currentDate,
+              salesUsername:
+                r?.data?.regjistrimet?.stafiID +
+                " - " +
+                r?.data?.regjistrimet?.username,
+              items: [
+                ...(r?.data?.totTVSH8?.map((item) => ({
+                  name: item.produkti?.emriProduktit || "Unknown Product",
+                  vatPercentage: 8,
+                  quantity: item.sasiaStokut || 1,
+                  price: item.qmimiShites.toFixed(2) || "0.00",
+                  total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
+                })) || []),
+                ...(r?.data?.totTVSH18?.map((item) => ({
+                  name: item.produkti?.emriProduktit || "Unknown Product",
+                  vatPercentage: 18,
+                  quantity: item.sasiaStokut || 1,
+                  price: item.qmimiShites.toFixed(2) || "0.00",
+                  total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
+                })) || []),
+              ],
+              totalWithoutVAT: parseFloat(
+                r?.data?.regjistrimet?.totaliPaTVSH
+              ).toFixed(2),
+              vat: parseFloat(r?.data?.regjistrimet?.tvsh).toFixed(2),
+              rabati: parseFloat(r?.data?.rabati ?? 0).toFixed(2),
+            };
+            generateInvoice(data);
         }
-        document.getElementById("barkodiSelect-input").focus();
-        const data = {
-          invoiceNumber: r?.data?.regjistrimet?.nrFatures,
-          date: currentDate,
-          salesUsername:
-            r?.data?.regjistrimet?.stafiID +
-            " - " +
-            r?.data?.regjistrimet?.username,
-          items: [
-            ...(r?.data?.totTVSH8?.map((item) => ({
-              name: item.produkti?.emriProduktit || "Unknown Product",
-              vatPercentage: 8,
-              quantity: item.sasiaStokut || 1,
-              price: item.qmimiShites.toFixed(2) || "0.00",
-              total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
-            })) || []),
-            ...(r?.data?.totTVSH18?.map((item) => ({
-              name: item.produkti?.emriProduktit || "Unknown Product",
-              vatPercentage: 18,
-              quantity: item.sasiaStokut || 1,
-              price: item.qmimiShites.toFixed(2) || "0.00",
-              total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
-            })) || []),
-          ],
-          totalWithoutVAT: parseFloat(
-            r?.data?.regjistrimet?.totaliPaTVSH
-          ).toFixed(2),
-          vat: parseFloat(r?.data?.regjistrimet?.tvsh).toFixed(2),
-          rabati: parseFloat(r?.data?.rabati ?? 0).toFixed(2),
-        };
-        generateInvoice(data);
+        
       });
+    document.getElementById("barkodiSelect-input").focus();
   };
-
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050,
-    }),
-  };
-
-  useEffect(() => {
-    const tabelaDiv = document.querySelector(".tabelaDiv");
-    if (tabelaDiv) {
-      tabelaDiv.style.zoom = "80%";
-    }
-  }, []);
 
   async function VendosKartelenBleresit() {
     try {
@@ -861,11 +970,11 @@ function POS(props) {
         setIDPartneri(kaKartele.data.partneriID);
         setTeDhenatKartelaBleresit(kaKartele.data);
         const r = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
           authentikimi
         );
         await axios.put(
-          `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${idRegjistrimit}`,
+          `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
           {
             llojiPageses: r.data.regjistrimet.llojiPageses,
             statusiKalkulimit: r.data.regjistrimet.statusiKalkulimit,
@@ -948,6 +1057,20 @@ function POS(props) {
     }
   }
 
+  const customStyles = {
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 1050,
+    }),
+  };
+
+  useEffect(() => {
+    const tabelaDiv = document.querySelector(".tabelaDiv");
+    if (tabelaDiv) {
+      tabelaDiv.style.zoom = "80%";
+    }
+  }, []);
+
   const [showNEEPM, setShowNEEPM] = useState(true);
 
   const handleCloseNEEPM = () => {
@@ -964,7 +1087,7 @@ function POS(props) {
           <NukEshteEOptimizuarPerMobile
             title="Përdorni një Paisje tjeter!"
             message="Kjo faqe (POS) nuk është e optimizuar që të përdoret në pajisjet mobile. Ju lutemi, përdorni një kompjuter për të vazhduar."
-            onClose={handleCloseNEEPM} // Call handleClose when modal is closed
+            onClose={handleCloseNEEPM}
           />
         )}
 
@@ -978,7 +1101,8 @@ function POS(props) {
         {vendosKartelenBleresit && (
           <Modal
             show={vendosKartelenBleresit}
-            onHide={() => setVendosKartelenBleresit(false)}>
+            onHide={() => setVendosKartelenBleresit(false)}
+          >
             <Modal.Header closeButton>
               <Modal.Title as="h6">Vendosni Kartelen</Modal.Title>
             </Modal.Header>
@@ -999,7 +1123,8 @@ function POS(props) {
             <Modal.Footer>
               <Button
                 variant="secondary"
-                onClick={() => setVendosKartelenBleresit(false)}>
+                onClick={() => setVendosKartelenBleresit(false)}
+              >
                 Anulo <FontAwesomeIcon icon={faPenToSquare} />
               </Button>
               <Button variant="warning" onClick={VendosKartelenBleresit}>
@@ -1011,7 +1136,8 @@ function POS(props) {
         {vendosKartelenFshirjeProduktit && (
           <Modal
             show={vendosKartelenFshirjeProduktit}
-            onHide={() => setVendosKartelenFshirjeProduktit(false)}>
+            onHide={() => setVendosKartelenFshirjeProduktit(false)}
+          >
             <Modal.Header closeButton>
               <Modal.Title as="h6">Vendosni Kartelen</Modal.Title>
             </Modal.Header>
@@ -1032,12 +1158,14 @@ function POS(props) {
             <Modal.Footer>
               <Button
                 variant="secondary"
-                onClick={() => setVendosKartelenFshirjeProduktit(false)}>
+                onClick={() => setVendosKartelenFshirjeProduktit(false)}
+              >
                 Anulo <FontAwesomeIcon icon={faPenToSquare} />
               </Button>
               <Button
                 variant="warning"
-                onClick={VendosKartelenFshirjesProduktit}>
+                onClick={VendosKartelenFshirjesProduktit}
+              >
                 Vendos Kartelen <FontAwesomeIcon icon={faPlus} />
               </Button>
             </Modal.Footer>
@@ -1059,8 +1187,27 @@ function POS(props) {
         ) : (
           <>
             <h1 className="title">POS</h1>
-
             <Container fluid>
+              <Row className="mb-3">
+                <Col>
+                  <Tabs
+                    activeKey={selectedInvoice || "none"}
+                    onSelect={(key) => setSelectedInvoice(parseInt(key))}
+                    className="mb-3"
+                  >
+                    {activeInvoices.map((invoiceId, index) => (
+                      <Tab
+                        eventKey={invoiceId}
+                        title={`Klienti ${index + 1}`}
+                        key={invoiceId}
+                      />
+                    ))}
+                  </Tabs>
+                  <Button variant="primary" onClick={addNewCustomer}>
+                    Shto Klient të Ri <FontAwesomeIcon icon={faPlus} />
+                  </Button>
+                </Col>
+              </Row>
               <Row>
                 <Col>
                   <Form.Group>
@@ -1099,7 +1246,8 @@ function POS(props) {
                       value={llojiPageses ? llojiPageses : 0}
                       disabled={edito}
                       onChange={(e) => setLlojiPageses(e.target.value)}
-                      onKeyDown={(e) => ndrroField(e, "statusiIPageses")}>
+                      onKeyDown={(e) => ndrroField(e, "statusiIPageses")}
+                    >
                       <option defaultValue value={0} key={0} disabled>
                         Zgjedhni Llojin e Pageses
                       </option>
@@ -1212,7 +1360,8 @@ function POS(props) {
                 <Col md={2}>
                   <Button
                     className="mt-4 Butoni"
-                    onClick={() => navigate("/KthimiMallitTeShitur")}>
+                    onClick={() => navigate("/KthimiMallitTeShitur")}
+                  >
                     Kthimet <FontAwesomeIcon icon={faDolly} />
                   </Button>
                 </Col>
@@ -1224,7 +1373,8 @@ function POS(props) {
                 style={{
                   maxHeight: "300px",
                   overflowY: "auto",
-                }}>
+                }}
+              >
                 <Table striped bordered hover>
                   <thead
                     style={{
@@ -1232,7 +1382,8 @@ function POS(props) {
                       top: "0",
                       backgroundColor: "#fff",
                       zIndex: 999,
-                    }}>
+                    }}
+                  >
                     <tr>
                       <th>Nr.</th>
                       <th>Barkodi</th>
@@ -1282,7 +1433,8 @@ function POS(props) {
                                   onClick={() => {
                                     setVendosKartelenFshirjeProduktit(true);
                                     setFshijProduktKalkID(p.id);
-                                  }}>
+                                  }}
+                                >
                                   <FontAwesomeIcon icon={faXmark} />
                                 </Button>
                                 <Button
@@ -1292,7 +1444,8 @@ function POS(props) {
                                   onClick={() => {
                                     setOptionsBarkodiSelected(p.idProduktit);
                                     handleEdit(p.id, index);
-                                  }}>
+                                  }}
+                                >
                                   <FontAwesomeIcon icon={faPenToSquare} />
                                 </Button>
                               </div>
@@ -1323,10 +1476,12 @@ function POS(props) {
                   zIndex: 1000,
                   fontWeight: "bold",
                   fontSize: "0.8em",
-                }}>
+                }}
+              >
                 <p>
                   Me ESC kalohet tek Pagesa. F1 Editohet produkti i fundit. F4
-                  Bonus Kartela. F5 Mbyllet Fatura.
+                  Bonus Kartela. F5 Mbyllet Fatura. Ctrl+1 deri Ctrl+9 për të
+                  kaluar mes klientëve.
                 </p>
               </footer>
             </Container>

@@ -491,6 +491,22 @@
   },
   {
     "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "ShfaqFaturatEHapura",
+    "RelativePath": "api/Faturat/ShfaqFaturatEHapura",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "stafiID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
     "Method": "ShfaqNumrinRendorFatures",
     "RelativePath": "api/Faturat/ShfaqNumrinRendorFatures",
     "HttpMethod": "GET",
@@ -1163,6 +1179,27 @@
         "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "Method": "BartjaArtikullit",
+    "RelativePath": "api/Produkti/bartjaArtikullit",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "IDArtikulliVjeter",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "IDArtikulliRi",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
