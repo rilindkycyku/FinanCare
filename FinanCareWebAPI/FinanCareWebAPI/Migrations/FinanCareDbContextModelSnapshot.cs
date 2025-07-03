@@ -22,6 +22,32 @@ namespace FinanCareWebAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FinanCareWebAPI.Models.AfatetESkadimit", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateTime?>("DataSkadimit")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IDProduktit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StafiID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("IDProduktit");
+
+                    b.HasIndex("StafiID");
+
+                    b.ToTable("AfatetESkadimit");
+                });
+
             modelBuilder.Entity("FinanCareWebAPI.Models.Bankat", b =>
                 {
                     b.Property<int>("BankaID")
@@ -744,6 +770,21 @@ namespace FinanCareWebAPI.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("FinanCareWebAPI.Models.AfatetESkadimit", b =>
+                {
+                    b.HasOne("FinanCareWebAPI.Models.Produkti", "Produkti")
+                        .WithMany()
+                        .HasForeignKey("IDProduktit");
+
+                    b.HasOne("FinanCareWebAPI.Models.Perdoruesi", "PersoniPergjegjes")
+                        .WithMany()
+                        .HasForeignKey("StafiID");
+
+                    b.Navigation("PersoniPergjegjes");
+
+                    b.Navigation("Produkti");
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Faturat", b =>

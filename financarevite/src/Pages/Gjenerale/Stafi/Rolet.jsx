@@ -10,6 +10,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function TabelaEKompanive(props) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [rolet, setRolet] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shto, setShto] = useState(false);

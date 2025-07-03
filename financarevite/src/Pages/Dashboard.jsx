@@ -94,6 +94,7 @@ const Dashboard = () => {
           "Kalkulant",
           "Menaxher",
           "Arkatar",
+          "Pergjegjes i Porosive",
         ]}
       />
       <Titulli titulli={"Dashboard"} />

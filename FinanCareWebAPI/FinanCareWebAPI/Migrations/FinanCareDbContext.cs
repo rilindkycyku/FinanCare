@@ -29,4 +29,5 @@ public partial class FinanCareDbContext : IdentityDbContext
     public DbSet<Kartelat> Kartelat { get; set; }
     public DbSet<LlogaritEBiznesit> LlogaritEBiznesit { get; set; }
     public DbSet<HistoriaZbritjeveProduktit> HistoriaZbritjeveProduktit { get; set; }
+    public DbSet<AfatetESkadimit> AfatetESkadimit { get; set; }
 }

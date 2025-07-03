@@ -11,7 +11,16 @@ import {
   faDolly,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Table, Form, Container, Row, Col, InputGroup, Tabs, Tab } from "react-bootstrap";
+import {
+  Table,
+  Form,
+  Container,
+  Row,
+  Col,
+  InputGroup,
+  Tabs,
+  Tab,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
@@ -38,7 +47,8 @@ function POS(props) {
   const [kartelaBleresit, setKartelaBleresit] = useState(null);
   const [teDhenatKartelaBleresit, setTeDhenatKartelaBleresit] = useState(null);
 
-  const [vendosKartelenFshirjeProduktit, setVendosKartelenFshirjeProduktit] = useState(false);
+  const [vendosKartelenFshirjeProduktit, setVendosKartelenFshirjeProduktit] =
+    useState(false);
   const [kartelaFshirjes, setKartelaFshirjes] = useState(null);
   const [teDhenatKartelaFshirjes, setTeDhenatKartelaFshirjes] = useState(null);
   const [fshijProdKalkID, setFshijProduktKalkID] = useState(0);
@@ -82,12 +92,13 @@ function POS(props) {
   const addNewCustomer = async () => {
     if (activeInvoices.length >= 4) {
       setTipiMesazhit("danger");
-      setPershkrimiMesazhit("Nuk mund të shtoni më shumë se 4 klientë njëkohësisht!");
+      setPershkrimiMesazhit(
+        "Nuk mund të shtoni më shumë se 4 klientë njëkohësisht!"
+      );
       setShfaqMesazhin(true);
       return;
     }
     try {
-      setLoading(true);
       const perdoruesi = await axios.get(
         `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
         authentikimi
@@ -112,17 +123,19 @@ function POS(props) {
           qmimiPaRabatBonus: 0,
         },
       }));
-      if (!selectedInvoice) {
         setSelectedInvoice(newInvoiceId);
-      }
+        
       setPerditeso(Date.now());
     } catch (err) {
       console.error("Error creating new invoice:", err);
       setTipiMesazhit("danger");
-      setPershkrimiMesazhit("Gabim gjatë krijimit të faturës për klientin e ri!");
+      setPershkrimiMesazhit(
+        "Gabim gjatë krijimit të faturës për klientin e ri!"
+      );
       setShfaqMesazhin(true);
     } finally {
-      setLoading(false);
+      
+        document.getElementById("barkodiSelect-input").focus();
     }
   };
 
@@ -158,8 +171,11 @@ function POS(props) {
             `${API_BASE_URL}/api/Faturat/shfaqFaturatEHapura?stafiID=${stafiID}`,
             authentikimi
           );
+          console.log(openInvoices);
           if (openInvoices.data && openInvoices.data.length > 0) {
-            const invoiceIds = openInvoices.data.map((invoice) => invoice.idRegjistrimit);
+            const invoiceIds = openInvoices.data.map(
+              (invoice) => invoice.idRegjistrimit
+            );
             const invoicesDataObj = {};
             for (const invoice of openInvoices.data) {
               const teDhenatKalkulimit = await axios.get(
@@ -185,8 +201,10 @@ function POS(props) {
             setInvoicesData(invoicesDataObj);
             setSelectedInvoice(invoiceIds[0]); // Select the first open invoice
           } else {
-            // No open invoices, create a new one
-            await addNewCustomer();
+            // No open invoices found, set empty state
+            setActiveInvoices([]);
+            setInvoicesData({});
+            setSelectedInvoice(null);
           }
         } catch (err) {
           console.error("Error initializing invoices:", err);
@@ -205,7 +223,7 @@ function POS(props) {
 
   // Fetch invoice data for selected invoice
   useEffect(() => {
-    if (getID && selectedInvoice) {
+    if (getID && selectedInvoice !== null && selectedInvoice !== undefined) {
       const vendosTeDhenat = async () => {
         try {
           const teDhenatKalkulimit = await axios.get(
@@ -219,8 +237,12 @@ function POS(props) {
           setproduktetNeKalkulim(teDhenatKalkulimit.data);
           setIDPartneri(teDhenatFatures.data.regjistrimet.idPartneri);
           if (teDhenatFatures.data.regjistrimet.bonusKartela != null) {
-            setKartelaBleresit(teDhenatFatures.data.regjistrimet.idBonusKartela);
-            setTeDhenatKartelaBleresit(teDhenatFatures.data.regjistrimet.bonusKartela);
+            setKartelaBleresit(
+              teDhenatFatures.data.regjistrimet.idBonusKartela
+            );
+            setTeDhenatKartelaBleresit(
+              teDhenatFatures.data.regjistrimet.bonusKartela
+            );
           } else {
             setKartelaBleresit(null);
             setTeDhenatKartelaBleresit(null);
@@ -232,13 +254,18 @@ function POS(props) {
           setIdRegjistrimit(selectedInvoice);
         } catch (err) {
           console.error("Error fetching invoice data:", err);
+          setTipiMesazhit("danger");
+          setPershkrimiMesazhit(
+            "Gabim gjatë ngarkimit të të dhënave të faturës!"
+          );
+          setShfaqMesazhin(true);
         } finally {
           // setLoading(false);
         }
       };
       vendosTeDhenat();
     }
-  }, [perditesoFat, produktiID, selectedInvoice]);
+  }, [perditesoFat, produktiID, selectedInvoice, getID]);
 
   // Calculate totals for selected invoice
   useEffect(() => {
@@ -331,7 +358,6 @@ function POS(props) {
       setQmimiTotal(0);
       setTotaliTVSH(0);
       setQmimiPaRabatBonus(0);
-      addNewCustomer();
     }
   }, [activeInvoices]);
 
@@ -464,19 +490,18 @@ function POS(props) {
     setOptionsBarkodiSelected(null);
     setPerditesoFat(Date.now());
   };
-  
 
   const handleKaloTekPagesa = (event) => {
+  if (event.key === "Escape") {
     event.preventDefault();
-    if (event.key === "Escape") {
-      document.getElementById("shumaPageses").focus();
+    document.getElementById("shumaPageses").focus();
+  } else if (event.key === "F1") {
+    event.preventDefault();
+    if (IDProduktiFunditShtuar !== null) {
+      handleEdit(IDProduktiFunditShtuar);
     }
-    if (event.key === "F1") {
-      if (IDProduktiFunditShtuar != null) {
-        handleEdit(IDProduktiFunditShtuar);
-      }
-    }
-  };
+  }
+};
 
   const handleMenaxhoTastetPagesa = (event) => {
     if (event.key === "F4") {
@@ -857,6 +882,7 @@ function POS(props) {
           );
           setShfaqMesazhin(true);
         } else {
+          
           await axios
             .put(
               `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
@@ -880,6 +906,8 @@ function POS(props) {
               authentikimi
             )
             .then(async () => {
+              
+              addNewCustomer();
               for (let produkti of produktetNeKalkulim) {
                 await axios.put(
                   `${API_BASE_URL}/api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin?id=${produkti.idProduktit}`,
@@ -922,39 +950,42 @@ function POS(props) {
               setActiveInvoices(updatedInvoices);
               setSelectedInvoice(updatedInvoices[0] || null);
               setPerditeso(Date.now());
+              
+        document.getElementById("barkodiSelect-input").focus();
             });
-            const data = {
-              invoiceNumber: r?.data?.regjistrimet?.nrFatures,
-              date: currentDate,
-              salesUsername:
-                r?.data?.regjistrimet?.stafiID +
-                " - " +
-                r?.data?.regjistrimet?.username,
-              items: [
-                ...(r?.data?.totTVSH8?.map((item) => ({
-                  name: item.produkti?.emriProduktit || "Unknown Product",
-                  vatPercentage: 8,
-                  quantity: item.sasiaStokut || 1,
-                  price: item.qmimiShites.toFixed(2) || "0.00",
-                  total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
-                })) || []),
-                ...(r?.data?.totTVSH18?.map((item) => ({
-                  name: item.produkti?.emriProduktit || "Unknown Product",
-                  vatPercentage: 18,
-                  quantity: item.sasiaStokut || 1,
-                  price: item.qmimiShites.toFixed(2) || "0.00",
-                  total: (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
-                })) || []),
-              ],
-              totalWithoutVAT: parseFloat(
-                r?.data?.regjistrimet?.totaliPaTVSH
-              ).toFixed(2),
-              vat: parseFloat(r?.data?.regjistrimet?.tvsh).toFixed(2),
-              rabati: parseFloat(r?.data?.rabati ?? 0).toFixed(2),
-            };
-            generateInvoice(data);
+          const data = {
+            invoiceNumber: r?.data?.regjistrimet?.nrFatures,
+            date: currentDate,
+            salesUsername:
+              r?.data?.regjistrimet?.stafiID +
+              " - " +
+              r?.data?.regjistrimet?.username,
+            items: [
+              ...(r?.data?.totTVSH8?.map((item) => ({
+                name: item.produkti?.emriProduktit || "Unknown Product",
+                vatPercentage: 8,
+                quantity: item.sasiaStokut || 1,
+                price: item.qmimiShites.toFixed(2) || "0.00",
+                total:
+                  (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
+              })) || []),
+              ...(r?.data?.totTVSH18?.map((item) => ({
+                name: item.produkti?.emriProduktit || "Unknown Product",
+                vatPercentage: 18,
+                quantity: item.sasiaStokut || 1,
+                price: item.qmimiShites.toFixed(2) || "0.00",
+                total:
+                  (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
+              })) || []),
+            ],
+            totalWithoutVAT: parseFloat(
+              r?.data?.regjistrimet?.totaliPaTVSH
+            ).toFixed(2),
+            vat: parseFloat(r?.data?.regjistrimet?.tvsh).toFixed(2),
+            rabati: parseFloat(r?.data?.rabati ?? 0).toFixed(2),
+          };
+          generateInvoice(data);
         }
-        
       });
     document.getElementById("barkodiSelect-input").focus();
   };
@@ -1101,8 +1132,7 @@ function POS(props) {
         {vendosKartelenBleresit && (
           <Modal
             show={vendosKartelenBleresit}
-            onHide={() => setVendosKartelenBleresit(false)}
-          >
+            onHide={() => setVendosKartelenBleresit(false)}>
             <Modal.Header closeButton>
               <Modal.Title as="h6">Vendosni Kartelen</Modal.Title>
             </Modal.Header>
@@ -1123,8 +1153,7 @@ function POS(props) {
             <Modal.Footer>
               <Button
                 variant="secondary"
-                onClick={() => setVendosKartelenBleresit(false)}
-              >
+                onClick={() => setVendosKartelenBleresit(false)}>
                 Anulo <FontAwesomeIcon icon={faPenToSquare} />
               </Button>
               <Button variant="warning" onClick={VendosKartelenBleresit}>
@@ -1136,8 +1165,7 @@ function POS(props) {
         {vendosKartelenFshirjeProduktit && (
           <Modal
             show={vendosKartelenFshirjeProduktit}
-            onHide={() => setVendosKartelenFshirjeProduktit(false)}
-          >
+            onHide={() => setVendosKartelenFshirjeProduktit(false)}>
             <Modal.Header closeButton>
               <Modal.Title as="h6">Vendosni Kartelen</Modal.Title>
             </Modal.Header>
@@ -1158,14 +1186,12 @@ function POS(props) {
             <Modal.Footer>
               <Button
                 variant="secondary"
-                onClick={() => setVendosKartelenFshirjeProduktit(false)}
-              >
+                onClick={() => setVendosKartelenFshirjeProduktit(false)}>
                 Anulo <FontAwesomeIcon icon={faPenToSquare} />
               </Button>
               <Button
                 variant="warning"
-                onClick={VendosKartelenFshirjesProduktit}
-              >
+                onClick={VendosKartelenFshirjesProduktit}>
                 Vendos Kartelen <FontAwesomeIcon icon={faPlus} />
               </Button>
             </Modal.Footer>
@@ -1188,26 +1214,39 @@ function POS(props) {
           <>
             <h1 className="title">POS</h1>
             <Container fluid>
-              <Row className="mb-3">
-                <Col>
-                  <Tabs
-                    activeKey={selectedInvoice || "none"}
-                    onSelect={(key) => setSelectedInvoice(parseInt(key))}
-                    className="mb-3"
-                  >
-                    {activeInvoices.map((invoiceId, index) => (
-                      <Tab
-                        eventKey={invoiceId}
-                        title={`Klienti ${index + 1}`}
-                        key={invoiceId}
-                      />
-                    ))}
-                  </Tabs>
+              {activeInvoices.length === 0 ? (
+                <div>
+                  <h3>
+                    Asnjë klient i hapur. Shtoni një klient të ri për të
+                    filluar.
+                  </h3>
                   <Button variant="primary" onClick={addNewCustomer}>
                     Shto Klient të Ri <FontAwesomeIcon icon={faPlus} />
                   </Button>
-                </Col>
-              </Row>
+                </div>
+              ) : (
+                <>
+                  <Row className="mb-3">
+                    <Col>
+                      <Tabs
+                        activeKey={selectedInvoice || "none"}
+                        onSelect={(key) => setSelectedInvoice(parseInt(key))}
+                        className="mb-3">
+                        {activeInvoices.map((invoiceId, index) => (
+                          <Tab
+                            eventKey={invoiceId}
+                            title={`Klienti ${index + 1}`}
+                            key={invoiceId}
+                          />
+                        ))}
+                      </Tabs>
+                      <Button variant="primary" onClick={addNewCustomer}>
+                        Shto Klient të Ri <FontAwesomeIcon icon={faPlus} />
+                      </Button>
+                    </Col>
+                  </Row>
+                </>
+              )}
               <Row>
                 <Col>
                   <Form.Group>
@@ -1246,8 +1285,7 @@ function POS(props) {
                       value={llojiPageses ? llojiPageses : 0}
                       disabled={edito}
                       onChange={(e) => setLlojiPageses(e.target.value)}
-                      onKeyDown={(e) => ndrroField(e, "statusiIPageses")}
-                    >
+                      onKeyDown={(e) => ndrroField(e, "statusiIPageses")}>
                       <option defaultValue value={0} key={0} disabled>
                         Zgjedhni Llojin e Pageses
                       </option>
@@ -1360,8 +1398,7 @@ function POS(props) {
                 <Col md={2}>
                   <Button
                     className="mt-4 Butoni"
-                    onClick={() => navigate("/KthimiMallitTeShitur")}
-                  >
+                    onClick={() => navigate("/KthimiMallitTeShitur")}>
                     Kthimet <FontAwesomeIcon icon={faDolly} />
                   </Button>
                 </Col>
@@ -1373,8 +1410,7 @@ function POS(props) {
                 style={{
                   maxHeight: "300px",
                   overflowY: "auto",
-                }}
-              >
+                }}>
                 <Table striped bordered hover>
                   <thead
                     style={{
@@ -1382,8 +1418,7 @@ function POS(props) {
                       top: "0",
                       backgroundColor: "#fff",
                       zIndex: 999,
-                    }}
-                  >
+                    }}>
                     <tr>
                       <th>Nr.</th>
                       <th>Barkodi</th>
@@ -1433,8 +1468,7 @@ function POS(props) {
                                   onClick={() => {
                                     setVendosKartelenFshirjeProduktit(true);
                                     setFshijProduktKalkID(p.id);
-                                  }}
-                                >
+                                  }}>
                                   <FontAwesomeIcon icon={faXmark} />
                                 </Button>
                                 <Button
@@ -1444,8 +1478,7 @@ function POS(props) {
                                   onClick={() => {
                                     setOptionsBarkodiSelected(p.idProduktit);
                                     handleEdit(p.id, index);
-                                  }}
-                                >
+                                  }}>
                                   <FontAwesomeIcon icon={faPenToSquare} />
                                 </Button>
                               </div>
@@ -1476,8 +1509,7 @@ function POS(props) {
                   zIndex: 1000,
                   fontWeight: "bold",
                   fontSize: "0.8em",
-                }}
-              >
+                }}>
                 <p>
                   Me ESC kalohet tek Pagesa. F1 Editohet produkti i fundit. F4
                   Bonus Kartela. F5 Mbyllet Fatura. Ctrl+1 deri Ctrl+9 për të

@@ -1336,6 +1336,83 @@
         }
       }
     },
+    "/api/Njoftimet/ShfaqProduktetPaStok": {
+      "get": {
+        "tags": [
+          "Njoftimet"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Njoftimet/ShfaqAfatetESkadimit": {
+      "get": {
+        "tags": [
+          "Njoftimet"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Njoftimet/shtoAfatetESkadimit": {
+      "post": {
+        "tags": [
+          "Njoftimet"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AfatetESkadimit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AfatetESkadimit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AfatetESkadimit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Njoftimet/fshijAfatetESkadimit": {
+      "delete": {
+        "tags": [
+          "Njoftimet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Partneri/shfaqPartnerinSipasIDs": {
       "get": {
         "tags": [
@@ -2468,6 +2545,37 @@
   },
   "components": {
     "schemas": {
+      "AfatetESkadimit": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stafiID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "idProduktit": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "dataSkadimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "produkti": {
+            "$ref": "#/components/schemas/Produkti"
+          },
+          "personiPergjegjes": {
+            "$ref": "#/components/schemas/Perdoruesi"
+          }
+        },
+        "additionalProperties": false
+      },
       "Bankat": {
         "type": "object",
         "properties": {

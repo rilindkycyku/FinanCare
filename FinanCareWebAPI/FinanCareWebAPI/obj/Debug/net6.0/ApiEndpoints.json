@@ -859,6 +859,58 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "Method": "Delete",
+    "RelativePath": "api/Njoftimet/fshijAfatetESkadimit",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "Method": "ShfaqAfatetESkadimit",
+    "RelativePath": "api/Njoftimet/ShfaqAfatetESkadimit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "Method": "ShfaqProduktetPaStok",
+    "RelativePath": "api/Njoftimet/ShfaqProduktetPaStok",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "Method": "Post",
+    "RelativePath": "api/Njoftimet/shtoAfatetESkadimit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "afatetESkadimit",
+        "Type": "FinanCareWebAPI.Models.AfatetESkadimit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
     "Method": "Delete",
     "RelativePath": "api/Partneri/fshijPartnerin",

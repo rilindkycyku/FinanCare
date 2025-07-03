@@ -34,6 +34,8 @@ import NukUGjet from "./Components/TeTjera/ErrorPages/404";
 import ShikimiQmimeve from "./Pages/ShikimiQmimeve";
 import Stoqet from "./Pages/Materiali/Artikujt/Stoqet";
 import KalkulimiFillestarVjetor from "./Pages/Materiali/Hyrjet/KalkulimiFillestarVjetor";
+import ArtikujtPaStok from "./Pages/Njoftimet/Artikujt/ArtikujtPaStok";
+import AfatetESkadmit from "./Pages/Njoftimet/Artikujt/AfatetESkadmit";
 
 function App() {
   useEffect(() => {
@@ -89,6 +91,8 @@ function App() {
         <Route path="/ShikimiQmimeve" element={<ShikimiQmimeve />} />
         <Route path="/Stoqet" element={<Stoqet />} />
         <Route path="/KalkulimiFillestarVjetor" element={<KalkulimiFillestarVjetor />} />
+        <Route path="/ArtikujtPaStok" element={<ArtikujtPaStok />} />
+        <Route path="/AfatetESkadmit" element={<AfatetESkadmit />} />
 
         <Route path="/403" element={<NukKeniAkses />} />
         <Route path="/404" element={<NukUGjet />} />

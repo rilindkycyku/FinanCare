@@ -12,6 +12,8 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function TabelaEPerdoruesve() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  
   const [perdoruesit, setPerdoruesit] = useState([]);
   const [perditeso, setPerditeso] = useState("");
   const [shto, setShto] = useState(false);

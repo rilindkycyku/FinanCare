@@ -7,6 +7,7 @@ import { useState } from "react";
 
 function NukKeniAkses(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const BASE_URL = import.meta.env.VITE_BASE_URL || "";
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState([]);
   const [perditeso, setPerditeso] = useState("");
 
@@ -44,7 +45,7 @@ function NukKeniAkses(props) {
             <Row className="mb-4 align-items-center justify-content-center">
               <Col xs="12" sm="6" className="text-center">
                 <Image
-                  src={`${process.env.PUBLIC_URL}/img/web/${teDhenatBiznesit?.logo}`}
+                  src={`${BASE_URL}/img/web/${teDhenatBiznesit?.logo}`}
                   style={{ marginTop: "0.5em" }}
                   fluid
                   alt="Partner Logo 1"

@@ -189,4 +189,48 @@ export const roleBasedDropdowns = [
       },
     ],
   },
+  {
+    label: "Njoftimet",
+    items: [
+      {
+        roles: ["User"],
+        label: "Artikujt",
+        subItems: [
+          {
+            roles: ["Menaxher", "Pergjegjes i Porosive"],
+            path: "/ArtikujtPaStok",
+            label: "Artikujt Pa Stok",
+          },{
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Puntor i Thjeshte", "Komercialist", "Kalkulant"],
+            path: "/AfatetESkadmit",
+            label: "Afatet e Skadimit",
+          },
+        ],
+      },
+      {
+        roles: ["Menaxher", "Burime Njerzore"],
+        label: "Faturat",
+        subItems: [
+          {
+            roles: ["Menaxher", "Kalkulant", "Komercialist"],
+            path: "/",
+            label: "",
+          },
+          { isDivider: true },
+        ],
+      },
+      {
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant"],
+        label: "Furnitoret",
+        subItems: [
+          {
+            roles: ["Menaxher", "Kalkulant", "Komercialist"],
+            path: "/",
+            label: "",
+          },
+          { isDivider: true },
+        ],
+      },
+    ],
+  },
 ];
