@@ -70,7 +70,40 @@ function ProduktiNeZbritje(props) {
     }
   };
 
+  // Function to check if the selected date is valid
+  const kontrolloDaten = () => {
+    const selectedDate = new Date(dataSkadimit);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+
+    return selectedDate >= today;
+  };
+
   function handleSubmit() {
+    // Check if date is valid
+    if (!kontrolloDaten()) {
+      setPershkrimiMesazhit("Data e skadimit nuk mund të jetë në të kaluarën!");
+      setTipiMesazhit("danger");
+      setShfaqMesazhin(true);
+
+      // Focus on close button
+      setTimeout(() => {
+        const closeButton = document.querySelector(".btn-outline-danger");
+        if (closeButton) {
+          closeButton.focus();
+        }
+      }, 100);
+
+      const dateElement = document.getElementById("dataSkadimit");
+      if (dateElement) {
+        dateElement.focus();
+      }
+
+      return;
+    }
+
+    // Focus on date field
+
     if (zbritjaNeRregull === true && kaZbritje === false) {
       axios
         .post(
@@ -125,6 +158,7 @@ function ProduktiNeZbritje(props) {
         console.error("Error fetching data:", error);
       });
   }, []);
+
   const handleChange = async (partneri) => {
     setKaZbritje(false);
     setRabati(0);
@@ -140,6 +174,13 @@ function ProduktiNeZbritje(props) {
     } else {
       const element = document.getElementById("dataSkadimit");
       element.focus();
+    }
+  };
+
+  const ndrroField = (e, tjetra) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      document.getElementById(tjetra).focus();
     }
   };
 
@@ -211,13 +252,10 @@ function ProduktiNeZbritje(props) {
                 value={dataSkadimit}
                 type="date"
                 min={new Date().toISOString().substring(0, 10)}
-                onInput={(e) => {
-                  const minDate = new Date().toISOString().substring(0, 10); // get today's date
-                  if (e.target.value < minDate) {
-                    e.target.value = minDate; // set the date input value to today
-                  }
-                }}
                 disabled={kaZbritje}
+                onKeyDown={(e) => {
+                  ndrroField(e, "rabati");
+                }}
                 autoFocus
               />
             </Form.Group>
@@ -234,6 +272,9 @@ function ProduktiNeZbritje(props) {
                 min={0.01}
                 max={100}
                 disabled={kaZbritje}
+                onKeyDown={(e) => {
+                  ndrroField(e, "vendosZbritjen");
+                }}
               />
             </Form.Group>
             <Form.Group
@@ -257,7 +298,7 @@ function ProduktiNeZbritje(props) {
           <Button variant="secondary" onClick={() => props.mbyllZbritjen()}>
             Anulo <FontAwesomeIcon icon={faXmark} />
           </Button>
-          <Button className="Butoni" onClick={handleSubmit}>
+          <Button className="Butoni" onClick={handleSubmit} id="vendosZbritjen">
             Vendosni Zbritjen <FontAwesomeIcon icon={faPlus} />
           </Button>
         </Modal.Footer>

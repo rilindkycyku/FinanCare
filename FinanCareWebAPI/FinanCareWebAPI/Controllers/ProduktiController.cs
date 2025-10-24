@@ -393,6 +393,9 @@ namespace TechStoreWebAPI.Controllers
             var produktiIRi = await _context.Produkti.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliRi);
             var stokuQmimiIRi = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliRi);
 
+            var zbritjaIVjeter = await _context.ZbritjaQmimitProduktit.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliVjeter);
+            var zbritjaIRi = await _context.ZbritjaQmimitProduktit.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliRi);
+
             var faturatProduktiIVjeter = await _context.TeDhenatFaturat.Where(x => x.IDProduktit == IDArtikulliVjeter).ToListAsync();
 
             if (produktiIVjeter == null || stokuQmimiIVjeter == null || produktiIRi == null || stokuQmimiIRi == null)
@@ -405,6 +408,28 @@ namespace TechStoreWebAPI.Controllers
             {
                 fature.IDProduktit = IDArtikulliRi;
                 _context.TeDhenatFaturat.Update(fature);
+            }
+
+            // Transfer discount information if exists
+            if (zbritjaIVjeter != null)
+            {
+                if (zbritjaIRi != null)
+                {
+                    // Update existing discount for new product
+                    zbritjaIRi.DataZbritjes = zbritjaIVjeter.DataZbritjes;
+                    zbritjaIRi.DataSkadimit = zbritjaIVjeter.DataSkadimit;
+                    zbritjaIRi.Rabati = zbritjaIVjeter.Rabati;
+                    _context.ZbritjaQmimitProduktit.Update(zbritjaIRi);
+
+                    // Remove old discount
+                    _context.ZbritjaQmimitProduktit.Remove(zbritjaIVjeter);
+                }
+                else
+                {
+                    // Create new discount for new product
+                    zbritjaIVjeter.ProduktiID = IDArtikulliRi;
+                    _context.ZbritjaQmimitProduktit.Update(zbritjaIVjeter);
+                }
             }
 
             // Transfer stock and price information
