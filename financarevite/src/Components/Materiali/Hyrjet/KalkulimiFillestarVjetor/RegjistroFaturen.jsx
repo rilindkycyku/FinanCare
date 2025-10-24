@@ -48,7 +48,8 @@ function RegjistroFaturen(props) {
   const [siteName, setSiteName] = useState("FinanCare");
   const [produktetQmimore, setProduktetQmimore] = useState([]);
   const [kartelaMenaxherit, setKartelaMenaxherit] = useState("");
-  const [vendosKartelenMenaxherit, setVendosKartelenMenaxherit] = useState(false);
+  const [vendosKartelenMenaxherit, setVendosKartelenMenaxherit] =
+    useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [pendingId, setPendingId] = useState(null);
   const [numriPerditesimeve, setNumriPerditesimeve] = useState("");
@@ -330,7 +331,8 @@ function RegjistroFaturen(props) {
                 `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
                 authentikimi
               );
-              const dataRegjistrimit = response.data.regjistrimet.dataRegjistrimit;
+              const dataRegjistrimit =
+                response.data.regjistrimet.dataRegjistrimit;
               console.log("dataRegjistrimit:", dataRegjistrimit);
               const year = new Date(dataRegjistrimit).getFullYear();
               const previousYear = year - 1;
@@ -345,13 +347,17 @@ function RegjistroFaturen(props) {
               const saldot = [];
               for (const partneri of partneret) {
                 try {
-                  console.log(`Processing partner ${partneri.emriBiznesit} (ID: ${partneri.idPartneri})`);
+                  console.log(
+                    `Processing partner ${partneri.emriBiznesit} (ID: ${partneri.idPartneri})`
+                  );
                   const kartelaResponse = await axios.get(
                     `${API_BASE_URL}/api/Partneri/KartelaFinanciare?id=${partneri.idPartneri}`,
                     authentikimi
                   );
                   const kalkulimet = kartelaResponse.data.kalkulimet || [];
-                  console.log(`Retrieved ${kalkulimet.length} transactions for partner ${partneri.emriBiznesit}`);
+                  console.log(
+                    `Retrieved ${kalkulimet.length} transactions for partner ${partneri.emriBiznesit}`
+                  );
                   let saldo = 0;
                   kalkulimet.forEach((p, index) => {
                     const totaliPaTVSH = parseFloat(p.totaliPaTVSH) || 0;
@@ -359,17 +365,31 @@ function RegjistroFaturen(props) {
                     const rabati = parseFloat(p.rabati) || 0;
                     const vlera = totaliPaTVSH + tvsh - rabati;
                     console.log(
-                      `Transaction ${index + 1}: llojiKalkulimit=${p.llojiKalkulimit}, ` +
-                      `totaliPaTVSH=${totaliPaTVSH.toFixed(2)}, tvsh=${tvsh.toFixed(2)}, ` +
-                      `rabati=${rabati.toFixed(2)}, vlera=${vlera.toFixed(2)}`
+                      `Transaction ${index + 1}: llojiKalkulimit=${
+                        p.llojiKalkulimit
+                      }, ` +
+                        `totaliPaTVSH=${totaliPaTVSH.toFixed(
+                          2
+                        )}, tvsh=${tvsh.toFixed(2)}, ` +
+                        `rabati=${rabati.toFixed(2)}, vlera=${vlera.toFixed(2)}`
                     );
-                    if (["HYRJE", "FAT", "AS", "PARAGON"].includes(p.llojiKalkulimit)) {
+                    if (
+                      ["HYRJE", "FAT", "AS", "PARAGON"].includes(
+                        p.llojiKalkulimit
+                      )
+                    ) {
                       saldo += vlera;
-                    } else if (["FL", "KMSH", "KMB", "PAGES"].includes(p.llojiKalkulimit)) {
-                      saldo -= vlera;
+                    } else if (
+                      ["FL", "KMSH", "KMB", "PAGES"].includes(p.llojiKalkulimit)
+                    ) {
+                      vlera < 0 ? (saldo += vlera) : (saldo -= vlera);
                     }
                   });
-                  console.log(`Calculated saldo for ${partneri.emriBiznesit}: ${saldo.toFixed(2)}€`);
+                  console.log(
+                    `Calculated saldo for ${
+                      partneri.emriBiznesit
+                    }: ${saldo.toFixed(2)}€`
+                  );
                   if (saldo !== 0) {
                     saldot.push({
                       idPartneri: partneri.idPartneri,
@@ -377,10 +397,15 @@ function RegjistroFaturen(props) {
                       saldo: saldo,
                     });
                   } else {
-                    console.log(`No SALDO invoice needed for ${partneri.emriBiznesit} (saldo is 0)`);
+                    console.log(
+                      `No SALDO invoice needed for ${partneri.emriBiznesit} (saldo is 0)`
+                    );
                   }
                 } catch (error) {
-                  console.error(`Error calculating saldo for partner ${partneri.emriBiznesit} (ID: ${partneri.idPartneri}):`, error);
+                  console.error(
+                    `Error calculating saldo for partner ${partneri.emriBiznesit} (ID: ${partneri.idPartneri}):`,
+                    error
+                  );
                   if (error.response) {
                     console.error("Error response:", error.response.data);
                     console.error("Error status:", error.response.status);
@@ -406,33 +431,45 @@ function RegjistroFaturen(props) {
               // Step 3: Create SALDO invoices in the new database
               for (const { idPartneri, emriBiznesit, saldo } of saldot) {
                 try {
-                  console.log(`Creating SALDO invoice for ${emriBiznesit} in new database ${newDatabaseName}`);
+                  console.log(
+                    `Creating SALDO invoice for ${emriBiznesit} in new database ${newDatabaseName}`
+                  );
                   const invoiceData = {
                     dataRegjistrimit: new Date().toISOString(),
-                    stafiID: teDhenat.stafiID || getID,
-                    totaliPaTVSH: Math.abs(saldo),
+                    stafiID: teDhenat.perdoruesi.userID,
+                    totaliPaTVSH: parseFloat(Math.abs(saldo)).toFixed(3),
                     tvsh: 0,
                     idPartneri: idPartneri,
-                    statusiPageses: "PENDING",
-                    llojiPageses: "CASH",
+                    statusiPageses: "Pa Paguar",
+                    llojiPageses: "Borxh",
                     llojiKalkulimit: "SALDO",
                     nrFatures: `SALDO-${idPartneri}-${year}`,
-                    statusiKalkulimit: "OPEN",
-                    pershkrimShtese: `Saldo për partnerin ${emriBiznesit}: ${saldo.toFixed(2)}€`,
+                    statusiKalkulimit: "true",
+                    pershkrimShtese: `Saldo për partnerin ${emriBiznesit}: ${saldo.toFixed(
+                      2
+                    )}€`,
                     rabati: 0,
-                    nrRendorFatures: `SALDO-${Date.now()}-${idPartneri}`,
+                    nrRendorFatures: idPartneri,
                     idBonusKartela: null,
-                    databaseName: newDatabaseName, // Pass the new database name to the API
                   };
-                  console.log("Invoice data:", JSON.stringify(invoiceData, null, 2));
+                  console.log(
+                    "Invoice data:",
+                    JSON.stringify(invoiceData, null, 2)
+                  );
                   const response = await axios.post(
-                    `${API_BASE_URL}/api/Faturat/RegjistroFaturen`,
+                    `${API_BASE_URL}/api/Faturat/ruajKalkulimin`,
                     invoiceData,
                     authentikimi
                   );
-                  console.log(`SALDO invoice created for ${emriBiznesit} in ${newDatabaseName}:`, response.data);
+                  console.log(
+                    `SALDO invoice created for ${emriBiznesit} in ${newDatabaseName}:`,
+                    response.data
+                  );
                 } catch (error) {
-                  console.error(`Error creating SALDO invoice for ${emriBiznesit} (ID: ${idPartneri}) in ${newDatabaseName}:`, error);
+                  console.error(
+                    `Error creating SALDO invoice for ${emriBiznesit} (ID: ${idPartneri}) in ${newDatabaseName}:`,
+                    error
+                  );
                   if (error.response) {
                     console.error("Error response:", error.response.data);
                     console.error("Error status:", error.response.status);
@@ -489,7 +526,9 @@ function RegjistroFaturen(props) {
           } catch (error) {
             console.error("Error closing invoice:", error);
             setTipiMesazhit("danger");
-            setPershkrimiMesazhit("Ndodhi një gabim gjatë mbylljes së kalkulimit!");
+            setPershkrimiMesazhit(
+              "Ndodhi një gabim gjatë mbylljes së kalkulimit!"
+            );
             setShfaqMesazhin(true);
           }
         }
@@ -648,8 +687,9 @@ function RegjistroFaturen(props) {
       <div className="containerDashboardP">
         <Modal
           show={vendosKartelenMenaxherit}
-          onHide={() => !isLoadingKartela && setVendosKartelenMenaxherit(false)}
-        >
+          onHide={() =>
+            !isLoadingKartela && setVendosKartelenMenaxherit(false)
+          }>
           <Modal.Header closeButton={!isLoadingKartela}>
             <Modal.Title>Vendosni Kartelen</Modal.Title>
           </Modal.Header>

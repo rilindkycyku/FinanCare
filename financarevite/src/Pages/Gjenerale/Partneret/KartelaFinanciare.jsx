@@ -109,7 +109,7 @@ function KartelaFinanciare(props) {
               ? (p.totaliPaTVSH + p.tvsh - p.rabati) * -1
               : p.totaliPaTVSH + p.tvsh - p.rabati;
 
-          if (["HYRJE", "FAT", "AS", "PARAGON"].includes(p.llojiKalkulimit)) {
+          if (["HYRJE", "FAT", "AS", "PARAGON", "SALDO"].includes(p.llojiKalkulimit)) {
             faturimValue = parseFloat(vlera).toFixed(2);
             saldo += parseFloat(faturimValue);
           } else if (
@@ -128,7 +128,7 @@ function KartelaFinanciare(props) {
             "Lloji Fat.": p.llojiKalkulimit,
             "Nr. Fat": p.nrFatures,
             Pershkrimi: p.pershkrimShtese,
-            "Faturim €": ["HYRJE", "FAT", "AS", "PARAGON"].includes(
+            "Faturim €": ["HYRJE", "FAT", "AS", "PARAGON", "SALDO"].includes(
               p.llojiKalkulimit
             )
               ? faturimValue

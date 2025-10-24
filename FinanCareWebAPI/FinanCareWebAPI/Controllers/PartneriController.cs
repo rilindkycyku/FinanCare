@@ -174,7 +174,7 @@ namespace FinanCareWebAPI.Controllers
                     (x.LlojiKalkulimit.Equals("HYRJE")
                     || x.LlojiKalkulimit.Equals("FAT")
                     || x.LlojiKalkulimit.Equals("AS")
-                    
+                    || x.LlojiKalkulimit.Equals("SALDO")
                     || x.LlojiKalkulimit.Equals("PARAGON")
                     || x.LlojiKalkulimit.Equals("FATURIM")
                     ) && x.StatusiKalkulimit.Equals("true")
