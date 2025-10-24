@@ -549,6 +549,22 @@
   },
   {
     "ContainingType": "WebAPI.Controllers.FaturatController",
+    "Method": "ShfaqRegjistrimetNgaProdukti",
+    "RelativePath": "api/Faturat/shfaqRegjistrimetNgaProdukti",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.FaturatController",
     "Method": "GetByStatusi",
     "RelativePath": "api/Faturat/shfaqRegjistrimetSipasStatusit",
     "HttpMethod": "GET",

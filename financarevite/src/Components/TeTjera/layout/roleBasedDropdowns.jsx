@@ -56,10 +56,15 @@ export const roleBasedDropdowns = [
             path: "/KthimiMallitTeShitur",
             label: "Kthim i Mallit te Shitur",
           },
+          { isDivider: true },
           {
             roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist"],
             path: "/FleteLejimet",
             label: "Flete Lejimet",
+          },{
+            roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist"],
+            path: "/FleteLejimetAutomatike",
+            label: "Flete Lejimet Automatike",
           },
           { isDivider: true },
           {

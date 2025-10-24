@@ -4,6 +4,7 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/update-env.js",
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",

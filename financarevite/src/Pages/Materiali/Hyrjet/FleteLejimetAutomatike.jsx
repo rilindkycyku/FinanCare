@@ -4,21 +4,19 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import RegjistroFaturen from "../../../Components/Materiali/Hyrjet/FleteLejimet/RegjistroFaturen";
-import PerditesoStatusinKalk from "../../../Components/Materiali/Hyrjet/FleteLejimet/PerditesoStatusinKalk";
-import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/FleteLejimet/TeDhenatKalkulimit";
+import RegjistroFaturen from "../../../Components/Materiali/Hyrjet/FleteLejimetAutomatike/RegjistroFaturen";
+import PerditesoStatusinKalk from "../../../Components/Materiali/Hyrjet/FleteLejimetAutomatike/PerditesoStatusinKalk";
+import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/FleteLejimetAutomatike/TeDhenatKalkulimit";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
-function KalkulimiIMallit(props) {
+function FleteLejimetAutomatike(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
@@ -80,22 +78,21 @@ function KalkulimiIMallit(props) {
           authentikimi
         );
         const kalkulimet = kalkulimi.data.filter(
-          (item) => item.llojiKalkulimit === "FL"
+          (item) =>
+            item.llojiKalkulimit === "FL" && item.idPartneri === Partneri
         );
+        console.log(kalkulimi);
         setKalkulimet(
           kalkulimet.map((k) => ({
             ID: k.idRegjistrimit,
-            "Nr. Kalkulimit": k.nrRendorFatures,
             "Nr. Fatures": k.nrFatures,
             Partneri: k.emriBiznesit,
             "Totali Pa TVSH €": parseFloat(k.totaliPaTVSH).toFixed(2),
             "TVSH €": parseFloat(k.tvsh).toFixed(2),
             "Totali €": parseFloat(k.totaliPaTVSH + k.tvsh).toFixed(2),
             "Data e Fatures": new Date(k.dataRegjistrimit).toISOString(),
-            "Statusi Pageses": k.statusiPageses,
-            "Lloji Pageses": k.llojiPageses,
             "Statusi Kalkulimit":
-              k.statusiKalkulimit === "true" ? "I Mbyllur" : "I Hapur",
+              k.statusiKalkulimit == "true" ? "I Mbyllur" : "I Hapur",
           }))
         );
         setLoading(false);
@@ -106,7 +103,7 @@ function KalkulimiIMallit(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, Partneri]);
 
   useEffect(() => {
     if (getID) {
@@ -134,10 +131,23 @@ function KalkulimiIMallit(props) {
     const vendosPartnerin = async () => {
       try {
         const partneri = await axios.get(
-          `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
+          `${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`,
           authentikimi
         );
         setPartneret(partneri.data);
+
+        const fetchedoptions = partneri.data
+          .filter(
+            (item) =>
+              item.idPartneri !== 1 &&
+              item.idPartneri !== 2 &&
+              item.idPartneri !== 3
+          )
+          .map((item) => ({
+            value: item.idPartneri,
+            label: item.emriBiznesit,
+          }));
+        setOptions(fetchedoptions);
       } catch (err) {
         console.log(err);
       }
@@ -250,25 +260,6 @@ function KalkulimiIMallit(props) {
       zIndex: 1050, // Ensure this is higher than the z-index of the thead
     }),
   };
-  useEffect(() => {
-    axios
-      .get(
-        `${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`,
-        authentikimi
-      )
-      .then((response) => {
-        const fetchedoptions = response.data
-          .filter((item) => item.idPartneri !== 1 && item.idPartneri !== 2 && item.idPartneri !== 3)
-          .map((item) => ({
-            value: item.idPartneri,
-            label: item.emriBiznesit,
-          }));
-        setOptions(fetchedoptions);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
   const handleChange = async (partneri) => {
     setPartneri(partneri.value);
     setOptionsSelected(partneri);
@@ -285,7 +276,9 @@ function KalkulimiIMallit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Faturist"]} />
+      <KontrolloAksesinNeFaqe
+        roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Faturist"]}
+      />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -309,6 +302,7 @@ function KalkulimiIMallit(props) {
         )}
         {edito && (
           <PerditesoStatusinKalk
+            id={Partneri}
             show={() => ndryshoStatusin(true)}
             hide={() => ndryshoStatusin(false)}
           />
@@ -426,4 +420,4 @@ function KalkulimiIMallit(props) {
   );
 }
 
-export default KalkulimiIMallit;
+export default FleteLejimetAutomatike;

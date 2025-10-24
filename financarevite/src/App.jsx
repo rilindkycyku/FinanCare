@@ -36,6 +36,7 @@ import Stoqet from "./Pages/Materiali/Artikujt/Stoqet";
 import KalkulimiFillestarVjetor from "./Pages/Materiali/Hyrjet/KalkulimiFillestarVjetor";
 import ArtikujtPaStok from "./Pages/Njoftimet/Artikujt/ArtikujtPaStok";
 import AfatetESkadmit from "./Pages/Njoftimet/Artikujt/AfatetESkadmit";
+import FleteLejimetAutomatike from "./Pages/Materiali/Hyrjet/FleteLejimetAutomatike";
 
 function App() {
   useEffect(() => {
@@ -93,6 +94,7 @@ function App() {
         <Route path="/KalkulimiFillestarVjetor" element={<KalkulimiFillestarVjetor />} />
         <Route path="/ArtikujtPaStok" element={<ArtikujtPaStok />} />
         <Route path="/AfatetESkadmit" element={<AfatetESkadmit />} />
+        <Route path="/FleteLejimetAutomatike" element={<FleteLejimetAutomatike/>} />
 
         <Route path="/403" element={<NukKeniAkses />} />
         <Route path="/404" element={<NukUGjet />} />

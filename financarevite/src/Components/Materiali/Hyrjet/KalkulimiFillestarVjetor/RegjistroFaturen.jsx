@@ -23,8 +23,8 @@ function RegjistroFaturen(props) {
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
   const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
-  const [loading, setLoading] = useState(false); // For initial loading
-  const [isLoadingKartela, setIsLoadingKartela] = useState(false); // For VendosKartelenMenaxherit
+  const [loading, setLoading] = useState(false);
+  const [isLoadingKartela, setIsLoadingKartela] = useState(false);
   const [produktetNeKalkulim, setproduktetNeKalkulim] = useState([]);
   const [emriProduktit, setEmriProduktit] = useState("");
   const [produktiID, setproduktiID] = useState(0);
@@ -48,17 +48,13 @@ function RegjistroFaturen(props) {
   const [siteName, setSiteName] = useState("FinanCare");
   const [produktetQmimore, setProduktetQmimore] = useState([]);
   const [kartelaMenaxherit, setKartelaMenaxherit] = useState("");
-  const [vendosKartelenMenaxherit, setVendosKartelenMenaxherit] =
-    useState(false);
+  const [vendosKartelenMenaxherit, setVendosKartelenMenaxherit] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [pendingId, setPendingId] = useState(null);
-
   const [numriPerditesimeve, setNumriPerditesimeve] = useState("");
-
   const navigate = useNavigate();
   const getID = localStorage.getItem("id");
   const getToken = localStorage.getItem("token");
-
   const authentikimi = {
     headers: {
       Authorization: `Bearer ${getToken}`,
@@ -97,7 +93,6 @@ function RegjistroFaturen(props) {
             authentikimi
           );
           console.log(teDhenatKalkulimit.data);
-
           const teDhenatFatures = await axios.get(
             `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
             authentikimi
@@ -108,7 +103,7 @@ function RegjistroFaturen(props) {
               "Nr. Rendor": index + 1,
               Barkodi: k.barkodi,
               "Emri Produktit": k.emriProduktit,
-              "Numri Perditesmeve": parseInt(k.rabati2),
+              "Numri Perditesimeve": parseInt(k.rabati2),
               "Sasia Aktuale ne Stok": parseFloat(k.sasiaAktualeNeStok).toFixed(
                 2
               ),
@@ -221,7 +216,6 @@ function RegjistroFaturen(props) {
       const existingProduct = produktetNeKalkulim.find(
         (product) => product["Barkodi"] === optionsSelected?.item?.barkodi
       );
-
       if (existingProduct) {
         const sasiaNeKalkulim =
           parseFloat(existingProduct["Sasia ne Kalkulim"]) || 0;
@@ -229,7 +223,6 @@ function RegjistroFaturen(props) {
         const sasiaStokut = parseFloat(
           (sasiaNeKalkulim + sasiaNumerike).toFixed(2)
         );
-
         await axios
           .put(
             `${API_BASE_URL}/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${existingProduct.ID}`,
@@ -237,7 +230,7 @@ function RegjistroFaturen(props) {
               sasiaStokut,
               QmimiBleres: existingProduct["Qmimi Bleres + TVSH €"],
               QmimiShites: existingProduct["Qmimi Shites me Pakic + TVSH €"],
-              rabati2: existingProduct["Numri Perditesmeve"] + 1,
+              rabati2: existingProduct["Numri Perditesimeve"] + 1,
               QmimiShitesMeShumic:
                 existingProduct["Qmimi Shites me Shumic + TVSH €"],
             },
@@ -265,7 +258,6 @@ function RegjistroFaturen(props) {
             setPerditeso(Date.now());
           });
       }
-
       setproduktiID(0);
       setQmimiBleres("");
       setSasia("");
@@ -293,13 +285,12 @@ function RegjistroFaturen(props) {
   }
 
   async function VendosKartelenMenaxherit() {
-    setIsLoadingKartela(true); // Start spinner
+    setIsLoadingKartela(true);
     try {
       const kaKartele = await axios.get(
         `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaMenaxherit}`,
         authentikimi
       );
-
       if (kaKartele.data && kaKartele.data.llojiKarteles === "Fshirje") {
         if (pendingAction === "delete") {
           await axios.delete(
@@ -335,38 +326,132 @@ function RegjistroFaturen(props) {
               props.setPerditeso();
               props.mbyllPerkohesisht();
             } else {
-              // Fetch dataRegjistrimit to determine the year
               const response = await axios.get(
                 `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${props.idKalkulimitEdit}`,
                 authentikimi
               );
-              const dataRegjistrimit =
-                response.data.regjistrimet.dataRegjistrimit;
-              console.log("dataRegjistrimit:", dataRegjistrimit); // Debugging
-
-              // Extract the year and subtract 1
+              const dataRegjistrimit = response.data.regjistrimet.dataRegjistrimit;
+              console.log("dataRegjistrimit:", dataRegjistrimit);
               const year = new Date(dataRegjistrimit).getFullYear();
               const previousYear = year - 1;
+
+              // Step 1: Calculate saldo for each partner using the current database
+              const partneretResponse = await axios.get(
+                `${API_BASE_URL}/api/Partneri/shfaqPartneret`,
+                authentikimi
+              );
+              const partneret = partneretResponse.data;
+              console.log(`Retrieved ${partneret.length} partners`);
+              const saldot = [];
+              for (const partneri of partneret) {
+                try {
+                  console.log(`Processing partner ${partneri.emriBiznesit} (ID: ${partneri.idPartneri})`);
+                  const kartelaResponse = await axios.get(
+                    `${API_BASE_URL}/api/Partneri/KartelaFinanciare?id=${partneri.idPartneri}`,
+                    authentikimi
+                  );
+                  const kalkulimet = kartelaResponse.data.kalkulimet || [];
+                  console.log(`Retrieved ${kalkulimet.length} transactions for partner ${partneri.emriBiznesit}`);
+                  let saldo = 0;
+                  kalkulimet.forEach((p, index) => {
+                    const totaliPaTVSH = parseFloat(p.totaliPaTVSH) || 0;
+                    const tvsh = parseFloat(p.tvsh) || 0;
+                    const rabati = parseFloat(p.rabati) || 0;
+                    const vlera = totaliPaTVSH + tvsh - rabati;
+                    console.log(
+                      `Transaction ${index + 1}: llojiKalkulimit=${p.llojiKalkulimit}, ` +
+                      `totaliPaTVSH=${totaliPaTVSH.toFixed(2)}, tvsh=${tvsh.toFixed(2)}, ` +
+                      `rabati=${rabati.toFixed(2)}, vlera=${vlera.toFixed(2)}`
+                    );
+                    if (["HYRJE", "FAT", "AS", "PARAGON"].includes(p.llojiKalkulimit)) {
+                      saldo += vlera;
+                    } else if (["FL", "KMSH", "KMB", "PAGES"].includes(p.llojiKalkulimit)) {
+                      saldo -= vlera;
+                    }
+                  });
+                  console.log(`Calculated saldo for ${partneri.emriBiznesit}: ${saldo.toFixed(2)}€`);
+                  if (saldo !== 0) {
+                    saldot.push({
+                      idPartneri: partneri.idPartneri,
+                      emriBiznesit: partneri.emriBiznesit,
+                      saldo: saldo,
+                    });
+                  } else {
+                    console.log(`No SALDO invoice needed for ${partneri.emriBiznesit} (saldo is 0)`);
+                  }
+                } catch (error) {
+                  console.error(`Error calculating saldo for partner ${partneri.emriBiznesit} (ID: ${partneri.idPartneri}):`, error);
+                  if (error.response) {
+                    console.error("Error response:", error.response.data);
+                    console.error("Error status:", error.response.status);
+                  }
+                  setTipiMesazhit("danger");
+                  setPershkrimiMesazhit(
+                    `Ndodhi një gabim gjatë llogaritjes së saldove për partnerin ${partneri.emriBiznesit}: ${error.message}`
+                  );
+                  setShfaqMesazhin(true);
+                }
+              }
+
+              // Step 2: Create the new database
               const newDatabaseName = `FinanCareDB${previousYear}`;
-              const sourceDatabaseName = "FinanCareDB"; // Assuming this remains static
-
-              console.log("DatabazaeRe:", newDatabaseName); // Debugging
-
-              // Perform the database import with the dynamic name
+              const sourceDatabaseName = "FinanCareDB";
+              console.log("Creating new database:", newDatabaseName);
               await axios.post(
                 `${API_BASE_URL}/api/Database?newDatabaseName=${newDatabaseName}&sourceDatabaseName=${sourceDatabaseName}`,
                 null,
                 authentikimi
               );
 
+              // Step 3: Create SALDO invoices in the new database
+              for (const { idPartneri, emriBiznesit, saldo } of saldot) {
+                try {
+                  console.log(`Creating SALDO invoice for ${emriBiznesit} in new database ${newDatabaseName}`);
+                  const invoiceData = {
+                    dataRegjistrimit: new Date().toISOString(),
+                    stafiID: teDhenat.stafiID || getID,
+                    totaliPaTVSH: Math.abs(saldo),
+                    tvsh: 0,
+                    idPartneri: idPartneri,
+                    statusiPageses: "PENDING",
+                    llojiPageses: "CASH",
+                    llojiKalkulimit: "SALDO",
+                    nrFatures: `SALDO-${idPartneri}-${year}`,
+                    statusiKalkulimit: "OPEN",
+                    pershkrimShtese: `Saldo për partnerin ${emriBiznesit}: ${saldo.toFixed(2)}€`,
+                    rabati: 0,
+                    nrRendorFatures: `SALDO-${Date.now()}-${idPartneri}`,
+                    idBonusKartela: null,
+                    databaseName: newDatabaseName, // Pass the new database name to the API
+                  };
+                  console.log("Invoice data:", JSON.stringify(invoiceData, null, 2));
+                  const response = await axios.post(
+                    `${API_BASE_URL}/api/Faturat/RegjistroFaturen`,
+                    invoiceData,
+                    authentikimi
+                  );
+                  console.log(`SALDO invoice created for ${emriBiznesit} in ${newDatabaseName}:`, response.data);
+                } catch (error) {
+                  console.error(`Error creating SALDO invoice for ${emriBiznesit} (ID: ${idPartneri}) in ${newDatabaseName}:`, error);
+                  if (error.response) {
+                    console.error("Error response:", error.response.data);
+                    console.error("Error status:", error.response.status);
+                  }
+                  setTipiMesazhit("danger");
+                  setPershkrimiMesazhit(
+                    `Ndodhi një gabim gjatë krijimit të faturës SALDO për partnerin ${emriBiznesit} në databazën e re: ${error.message}`
+                  );
+                  setShfaqMesazhin(true);
+                }
+              }
+
+              // Step 4: Update product stock and prices
               for (let produkti of produktetNeKalkulim) {
                 console.log(produkti);
                 var prod = produktet.find(
                   (item) => item.emriProduktit == produkti["Emri Produktit"]
                 );
-
                 console.log(produktet);
-
                 await axios.put(
                   `${API_BASE_URL}/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${prod.produktiID}`,
                   {
@@ -374,16 +459,15 @@ function RegjistroFaturen(props) {
                     qmimiProduktit: produkti["Qmimi Shites me Pakic + TVSH €"],
                     sasiaNeStok: produkti["Sasia ne Kalkulim"],
                     qmimiMeShumic: produkti["Qmimi Shites me Shumic + TVSH €"],
+                    databaseName: newDatabaseName, // Optionally pass new database name if required
                   },
                   authentikimi
                 );
               }
-
               for (let produkti of produktet) {
                 const ekzistonNeKalkulim = produktetNeKalkulim.some(
                   (p) => p["Emri Produktit"] === produkti.emriProduktit
                 );
-
                 if (!ekzistonNeKalkulim) {
                   await axios.put(
                     `${API_BASE_URL}/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${produkti.produktiID}`,
@@ -392,6 +476,7 @@ function RegjistroFaturen(props) {
                       qmimiProduktit: 0,
                       sasiaNeStok: 0,
                       qmimiMeShumic: 0,
+                      databaseName: newDatabaseName, // Optionally pass new database name if required
                     },
                     authentikimi
                   );
@@ -402,33 +487,27 @@ function RegjistroFaturen(props) {
               props.mbyllKalkulimin();
             }
           } catch (error) {
-            console.error(
-              "Ndodhi nje gabim gjate mbylljes se kalkulimit!:",
-              error
-            );
+            console.error("Error closing invoice:", error);
             setTipiMesazhit("danger");
-            setPershkrimiMesazhit(
-              "Ndodhi nje gabim gjate mbylljes se kalkulimit!"
-            );
+            setPershkrimiMesazhit("Ndodhi një gabim gjatë mbylljes së kalkulimit!");
             setShfaqMesazhin(true);
           }
         }
-
         setVendosKartelenMenaxherit(false);
         setKartelaMenaxherit("");
         setPerditeso(Date.now());
       } else {
         setTipiMesazhit("danger");
-        setPershkrimiMesazhit("Kartela nuk eshte valide per kete funksion!");
+        setPershkrimiMesazhit("Kartela nuk është valide për këtë funksion!");
         setShfaqMesazhin(true);
       }
     } catch (error) {
       console.error("Error in VendosKartelenMenaxherit:", error);
       setTipiMesazhit("danger");
-      setPershkrimiMesazhit("Kartela nuk egziston!");
+      setPershkrimiMesazhit("Kartela nuk ekziston!");
       setShfaqMesazhin(true);
     } finally {
-      setIsLoadingKartela(false); // Stop spinner
+      setIsLoadingKartela(false);
     }
   }
 
@@ -450,7 +529,6 @@ function RegjistroFaturen(props) {
       setTipiMesazhit("danger");
       setShfaqMesazhin(true);
     } else {
-      console.log(sasiaNeStok);
       await axios
         .put(
           `${API_BASE_URL}/api/Faturat/ruajKalkulimin/PerditesoTeDhenat?id=${id}`,
@@ -497,10 +575,7 @@ function RegjistroFaturen(props) {
 
   useEffect(() => {
     axios
-      .get(
-        `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
-        authentikimi
-      )
+      .get(`${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data.map((item) => ({
           value: item.produktiID,
@@ -573,7 +648,7 @@ function RegjistroFaturen(props) {
       <div className="containerDashboardP">
         <Modal
           show={vendosKartelenMenaxherit}
-          onHide={() => !isLoadingKartela && setVendosKartelenMenaxherit(false)} // Disable close during loading
+          onHide={() => !isLoadingKartela && setVendosKartelenMenaxherit(false)}
         >
           <Modal.Header closeButton={!isLoadingKartela}>
             <Modal.Title>Vendosni Kartelen</Modal.Title>
@@ -619,7 +694,6 @@ function RegjistroFaturen(props) {
             </Button>
           </Modal.Footer>
         </Modal>
-
         {shfaqMesazhin && (
           <Mesazhi
             setShfaqMesazhin={setShfaqMesazhin}
@@ -675,9 +749,7 @@ function RegjistroFaturen(props) {
                 <Col>
                   <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="idDheEmri">
-                      <Form.Label>
-                        Produkti
-                      </Form.Label>
+                      <Form.Label>Produkti</Form.Label>
                       <Select
                         value={optionsSelected}
                         onChange={handleChange}
@@ -689,9 +761,7 @@ function RegjistroFaturen(props) {
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>
-                        Sasia - {njesiaMatese}
-                      </Form.Label>
+                      <Form.Label>Sasia - {njesiaMatese}</Form.Label>
                       <Form.Control
                         id="sasia"
                         type="number"
@@ -703,11 +773,11 @@ function RegjistroFaturen(props) {
                       />
                     </Form.Group>
                     {edito && (
-                          <span className="text-danger fw-bold">
-                            KUJDES: Ndryshimi aplikohet për të gjithë sasinë
-                            në kalkulim
-                          </span>
-                        )}
+                      <span className="text-danger fw-bold">
+                        KUJDES: Ndryshimi aplikohet për të gjithë sasinë në
+                        kalkulim
+                      </span>
+                    )}
                     <br />
                     <div style={{ display: "flex", gap: "0.3em" }}>
                       <Button

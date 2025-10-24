@@ -288,6 +288,28 @@
         }
       }
     },
+    "/api/Faturat/shfaqRegjistrimetNgaProdukti": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Faturat/shfaqTeDhenatKalkulimit": {
       "get": {
         "tags": [

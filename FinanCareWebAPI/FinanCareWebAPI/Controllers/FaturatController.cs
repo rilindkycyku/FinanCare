@@ -73,6 +73,7 @@ namespace WebAPI.Controllers
                     x.StafiID,
                     x.Stafi.Username,
                     x.NrFatures,
+                    x.Partneri.IDPartneri,
                     x.Partneri.EmriBiznesit,
                     x.LlojiKalkulimit,
                     x.LlojiPageses,
@@ -244,6 +245,171 @@ namespace WebAPI.Controllers
                 totTVSH18,
                 totTVSH8,
                 QmimiTotalShites
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("shfaqRegjistrimetNgaProdukti")]
+        public async Task<IActionResult> ShfaqRegjistrimetNgaProdukti(int id)
+        {
+            // Fetch invoice data based on IDProduktit
+            var regjistrimet = await _context.TeDhenatFaturat
+                .Include(x => x.Faturat)
+                .ThenInclude(x => x.BonusKartela)
+                .ThenInclude(x => x.Partneri)
+                .Where(x => x.IDProduktit == id)
+                .Select(x => new
+                {
+                    IDRegjistrimit = x.Faturat.IDRegjistrimit,
+                    TotaliPaTVSH = x.Faturat.TotaliPaTVSH,
+                    TVSH = x.Faturat.TVSH,
+                    DataRegjistrimit = x.Faturat.DataRegjistrimit,
+                    StafiID = x.Faturat.StafiID,
+                    Username = x.Faturat.Stafi.Username,
+                    NrFatures = x.Faturat.NrFatures,
+                    EmriBiznesit = x.Faturat.Partneri.EmriBiznesit,
+                    Adresa = x.Faturat.Partneri.Adresa,
+                    NRF = x.Faturat.Partneri.NRF,
+                    NUI = x.Faturat.Partneri.NUI,
+                    PartneriTVSH = x.Faturat.Partneri.TVSH,
+                    IDPartneri = x.Faturat.Partneri.IDPartneri,
+                    ShkurtesaPartnerit = x.Faturat.Partneri.ShkurtesaPartnerit,
+                    Email = x.Faturat.Partneri.Email,
+                    NrKontaktit = x.Faturat.Partneri.NrKontaktit,
+                    LlojiKalkulimit = x.Faturat.LlojiKalkulimit,
+                    LlojiPageses = x.Faturat.LlojiPageses,
+                    StatusiPageses = x.Faturat.StatusiPageses,
+                    StatusiKalkulimit = x.Faturat.StatusiKalkulimit,
+                    PershkrimShtese = x.Faturat.PershkrimShtese,
+                    Rabati = x.Faturat.Rabati,
+                    NrRendorFatures = x.Faturat.NrRendorFatures,
+                    EshteFaturuarOferta = x.Faturat.EshteFaturuarOferta,
+                    IDBonusKartela = x.Faturat.IDBonusKartela,
+                    BonusKartela = x.Faturat.BonusKartela
+                })
+                .ToListAsync();
+
+            if (!regjistrimet.Any())
+            {
+                return NotFound("No invoices found for the given product ID.");
+            }
+
+            // Calculate VAT totals for 18% and 8%
+            var totTVSH18 = await _context.TeDhenatFaturat
+                .Include(x => x.Produkti)
+                .Where(x => x.IDProduktit == id && x.Produkti.LlojiTVSH == 18)
+                .ToListAsync();
+            var totTVSH8 = await _context.TeDhenatFaturat
+                .Include(x => x.Produkti)
+                .Where(x => x.IDProduktit == id && x.Produkti.LlojiTVSH == 8)
+                .ToListAsync();
+
+            decimal TotaliMeTVSH18 = 0;
+            decimal TotaliMeTVSH8 = 0;
+            decimal TotaliPaTVSH18 = 0;
+            decimal TotaliPaTVSH8 = 0;
+            decimal Rabati = 0;
+            decimal QmimiTotalShites = 0;
+
+            foreach (var teDhenat in totTVSH18)
+            {
+                decimal rabati1 = teDhenat.Rabati1 ?? 0;
+                decimal rabati2 = teDhenat.Rabati2 ?? 0;
+                decimal rabati3 = teDhenat.Rabati3 ?? 0;
+                decimal rabati = rabati1 + rabati2 + rabati3;
+                decimal vatRate = 0.18m;
+                decimal totalBeforeVAT = 0.00m;
+                decimal vatAmount = 0.00m;
+
+                var llojiKalkulimit = teDhenat.Faturat?.LlojiKalkulimit ?? "Unknown";
+                if (llojiKalkulimit.Equals("KLFV"))
+                {
+                    QmimiTotalShites += Convert.ToDecimal(teDhenat.QmimiShites * teDhenat.SasiaStokut);
+                }
+                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                    llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
+                {
+                    totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites -
+                        teDhenat.QmimiShites * (rabati1 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
+                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                }
+                else
+                {
+                    totalBeforeVAT = Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut -
+                        (teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100));
+                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                }
+                TotaliMeTVSH18 += totalBeforeVAT;
+                TotaliPaTVSH18 += totalBeforeVAT - vatAmount;
+
+                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                    llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
+                {
+                    Rabati += Convert.ToDecimal((teDhenat.QmimiShites * (rabati1 / 100) +
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) +
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
+                }
+                else
+                {
+                    Rabati += Convert.ToDecimal((teDhenat.QmimiBleres * teDhenat.SasiaStokut) * rabati / 100);
+                }
+            }
+
+            foreach (var teDhenat in totTVSH8)
+            {
+                decimal rabati1 = teDhenat.Rabati1 ?? 0;
+                decimal rabati2 = teDhenat.Rabati2 ?? 0;
+                decimal rabati3 = teDhenat.Rabati3 ?? 0;
+                decimal rabati = rabati1 + rabati2 + rabati3;
+                decimal vatRate = 0.08m;
+                decimal totalBeforeVAT = 0.00m;
+                decimal vatAmount = 0.00m;
+
+                var llojiKalkulimit = teDhenat.Faturat?.LlojiKalkulimit ?? "Unknown";
+                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                    llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
+                {
+                    totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites -
+                        teDhenat.QmimiShites * (rabati1 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
+                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                }
+                else
+                {
+                    totalBeforeVAT = Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut -
+                        (teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100));
+                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                }
+                TotaliMeTVSH8 += totalBeforeVAT;
+                TotaliPaTVSH8 += totalBeforeVAT - vatAmount;
+
+                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                    llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
+                {
+                    Rabati += Convert.ToDecimal((teDhenat.QmimiShites * (rabati1 / 100) +
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) +
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
+                        (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
+                }
+                else
+                {
+                    Rabati += Convert.ToDecimal((teDhenat.QmimiBleres * teDhenat.SasiaStokut) * rabati / 100);
+                }
+            }
+
+            decimal TotaliPaTVSH = TotaliPaTVSH18 + TotaliPaTVSH8;
+            decimal TotaliMeTVSH = TotaliPaTVSH + (TotaliMeTVSH18 - TotaliPaTVSH18) + (TotaliMeTVSH8 - TotaliPaTVSH8);
+
+            return Ok(new
+            {
+                regjistrimet
             });
         }
 
