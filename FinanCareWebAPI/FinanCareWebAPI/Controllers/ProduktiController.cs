@@ -393,12 +393,21 @@ namespace TechStoreWebAPI.Controllers
             var produktiIRi = await _context.Produkti.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliRi);
             var stokuQmimiIRi = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(x => x.ProduktiID == IDArtikulliRi);
 
+            var faturatProduktiIVjeter = await _context.TeDhenatFaturat.Where(x => x.IDProduktit == IDArtikulliVjeter).ToListAsync();
+
             if (produktiIVjeter == null || stokuQmimiIVjeter == null || produktiIRi == null || stokuQmimiIRi == null)
             {
                 return BadRequest("Produkti me këtë ID nuk ekziston");
             }
 
+            // Update all invoice details to point to the new product (only change Product ID)
+            foreach (var fature in faturatProduktiIVjeter)
+            {
+                fature.IDProduktit = IDArtikulliRi;
+                _context.TeDhenatFaturat.Update(fature);
+            }
 
+            // Transfer stock and price information
             if (stokuQmimiIVjeter != null)
             {
                 if (stokuQmimiIVjeter.QmimiProduktit != null)
@@ -422,6 +431,7 @@ namespace TechStoreWebAPI.Controllers
                 }
             }
 
+            // Reset old product stock and prices
             if (stokuQmimiIVjeter != null)
             {
                 if (stokuQmimiIVjeter.QmimiProduktit != null)
@@ -445,12 +455,12 @@ namespace TechStoreWebAPI.Controllers
                 }
             }
 
-            //_context.Produkti.Update(produkti);
+            // Update all entities
             _context.StokuQmimiProduktit.Update(stokuQmimiIRi);
             _context.StokuQmimiProduktit.Update(stokuQmimiIVjeter);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok("Artikulli u bart me sukses");
         }
 
         [Authorize]

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FinanCareWebAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5e2a6ba32565932a3df3cd224b4c93bfcb44967")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a2e328e6bc384294205afad4a5e8ed7d2bb96f95")]
 [assembly: System.Reflection.AssemblyProductAttribute("FinanCareWebAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FinanCareWebAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
