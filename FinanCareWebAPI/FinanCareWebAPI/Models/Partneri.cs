@@ -17,6 +17,8 @@ public partial class Partneri
     public string? NrKontaktit { get; set; }
     public string? LlojiPartnerit { get; set; }
     public string? ShkurtesaPartnerit { get; set; }
+    public string? Username { get; set; }
+    public string? Password { get; set; }
     public string? isDeleted { get; set; } = "false";
 
     public virtual ICollection<Faturat> Faturat { get; set; } = new List<Faturat>();

@@ -17,7 +17,8 @@ public partial class Produkti
     public int? LlojiTVSH { get; set; }
     public int? IDGrupiProduktit { get; set; }
     public decimal? SasiaShumices { get; set; }
-
+    public string? FotoProduktit { get; set; } = "ProduktPaFoto.png";
+    public string? perfshiNeOnline { get; set; } = "false";
     public string? isDeleted { get; set; } = "false";
 
     [ForeignKey(nameof(IDNjesiaMatese))]

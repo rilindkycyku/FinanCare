@@ -37,6 +37,12 @@ import KalkulimiFillestarVjetor from "./Pages/Materiali/Hyrjet/KalkulimiFillesta
 import ArtikujtPaStok from "./Pages/Njoftimet/Artikujt/ArtikujtPaStok";
 import AfatetESkadmit from "./Pages/Njoftimet/Artikujt/AfatetESkadmit";
 import FleteLejimetAutomatike from "./Pages/Materiali/Hyrjet/FleteLejimetAutomatike";
+import SugjerimiPorosis from "./Pages/Njoftimet/Porosite/SugjerimiPorosis";
+import DitetEFurnizimit from "./Pages/Njoftimet/Furnitoret/DitetEFurnizimit";
+import SugjerimiPorosiseSipasFurnitorit from "./Pages/Njoftimet/Porosite/SugjerimiPorosiseSipasFurnitorit";
+import BarazoArken from "./Pages/Materiali/Shitjet/BarazoArken";
+import ListaBarazimeve from "./Pages/Materiali/Shitjet/ListaBarazimeve";
+import BartTeDhenat from "./Pages/BartTeDhenat";
 
 function App() {
   useEffect(() => {
@@ -95,6 +101,12 @@ function App() {
         <Route path="/ArtikujtPaStok" element={<ArtikujtPaStok />} />
         <Route path="/AfatetESkadmit" element={<AfatetESkadmit />} />
         <Route path="/FleteLejimetAutomatike" element={<FleteLejimetAutomatike/>} />
+        <Route path="/SugjerimiPorosis" element={<SugjerimiPorosis/>} />
+        <Route path="/DitetEFurnizimit" element={<DitetEFurnizimit/>} />
+        <Route path="/SugjerimiPorosiseSipasFurnitorit" element={<SugjerimiPorosiseSipasFurnitorit/>} />
+        <Route path="/BarazoArken" element={<BarazoArken/>} />
+        <Route path="/ListaBarazimeve" element={<ListaBarazimeve/>} />
+        <Route path="/BartTeDhenat" element={<BartTeDhenat/>} />
 
         <Route path="/403" element={<NukKeniAkses />} />
         <Route path="/404" element={<NukUGjet />} />

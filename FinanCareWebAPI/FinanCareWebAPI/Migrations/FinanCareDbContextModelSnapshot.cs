@@ -70,6 +70,83 @@ namespace FinanCareWebAPI.Migrations
                     b.ToTable("Bankat");
                 });
 
+            modelBuilder.Entity("FinanCareWebAPI.Models.BarazoArken", b =>
+                {
+                    b.Property<int>("IDBarazoArken")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDBarazoArken"));
+
+                    b.Property<decimal?>("Banka")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Borxhe")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Cash")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("FillimiArkes")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("IDArkatari")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IDPersoniPergjegjes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("KohaBarazimit")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Monedha")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PagesFatura")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PershkrimiTjera")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TeShtuaraNeArke")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Tjera")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotaliShitjeve")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("IDBarazoArken");
+
+                    b.HasIndex("IDArkatari");
+
+                    b.HasIndex("IDPersoniPergjegjes");
+
+                    b.ToTable("BarazoArken");
+                });
+
+            modelBuilder.Entity("FinanCareWebAPI.Models.DitaFurnizimit", b =>
+                {
+                    b.Property<int>("IDDitaFurnizimit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDDitaFurnizimit"));
+
+                    b.Property<string>("DitaEFurnizimit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("IDPartneri")
+                        .HasColumnType("int");
+
+                    b.HasKey("IDDitaFurnizimit");
+
+                    b.HasIndex("IDPartneri");
+
+                    b.ToTable("DitaFurnizimit");
+                });
+
             modelBuilder.Entity("FinanCareWebAPI.Models.Faturat", b =>
                 {
                     b.Property<int>("IDRegjistrimit")
@@ -295,10 +372,16 @@ namespace FinanCareWebAPI.Migrations
                     b.Property<string>("NrKontaktit")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ShkurtesaPartnerit")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TVSH")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("isDeleted")
@@ -354,6 +437,9 @@ namespace FinanCareWebAPI.Migrations
                     b.Property<string>("EmriProduktit")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FotoProduktit")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("IDGrupiProduktit")
                         .HasColumnType("int");
 
@@ -373,6 +459,9 @@ namespace FinanCareWebAPI.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("isDeleted")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("perfshiNeOnline")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProduktiID");
@@ -785,6 +874,30 @@ namespace FinanCareWebAPI.Migrations
                     b.Navigation("PersoniPergjegjes");
 
                     b.Navigation("Produkti");
+                });
+
+            modelBuilder.Entity("FinanCareWebAPI.Models.BarazoArken", b =>
+                {
+                    b.HasOne("FinanCareWebAPI.Models.Perdoruesi", "Arkatari")
+                        .WithMany()
+                        .HasForeignKey("IDArkatari");
+
+                    b.HasOne("FinanCareWebAPI.Models.Perdoruesi", "PersoniPergjejes")
+                        .WithMany()
+                        .HasForeignKey("IDPersoniPergjegjes");
+
+                    b.Navigation("Arkatari");
+
+                    b.Navigation("PersoniPergjejes");
+                });
+
+            modelBuilder.Entity("FinanCareWebAPI.Models.DitaFurnizimit", b =>
+                {
+                    b.HasOne("FinanCareWebAPI.Models.Partneri", "Partneri")
+                        .WithMany()
+                        .HasForeignKey("IDPartneri");
+
+                    b.Navigation("Partneri");
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Faturat", b =>

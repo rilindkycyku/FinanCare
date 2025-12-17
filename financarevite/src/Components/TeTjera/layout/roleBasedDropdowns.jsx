@@ -119,6 +119,17 @@ export const roleBasedDropdowns = [
             label: "POS",
             shfaqNeDashboard: true,
           },
+          { isDivider: true },{
+            roles: ["Menaxher"],
+            path: "/ListaBarazimeve",
+            label: "Lista e Barazimeve",
+            shfaqNeDashboard: true,
+          },{
+            roles: ["Arkatar", "Menaxher"],
+            path: "/BarazoArken",
+            label: "Barazo Arken",
+            shfaqNeDashboard: true,
+          },
         ],
       },
     ],
@@ -150,6 +161,13 @@ export const roleBasedDropdowns = [
             roles: ["User"],
             path: "/LlogaritBankareBiznesit",
             label: "Llogarit e Biznesit",
+          },
+          { isDivider: true },
+          {
+            roles: ["Menaxher"],
+            path: "/BartTeDhenat",
+            label: "Bart te Dhenat - Online",
+            shfaqNeDashboard: true,
           },
         ],
       },
@@ -229,11 +247,27 @@ export const roleBasedDropdowns = [
         label: "Furnitoret",
         subItems: [
           {
-            roles: ["Menaxher", "Kalkulant", "Komercialist"],
-            path: "/",
-            label: "",
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
+            path: "/DitetEFurnizimit",
+            label: "Ditet e Furnizimit",
+            shfaqNeDashboard: true,
           },
           { isDivider: true },
+        ],
+      },
+      {
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant"],
+        label: "Porosite",
+        subItems: [
+          {
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
+            path: "/SugjerimiPorosiseSipasFurnitorit",
+            label: "Sugjerimi Porosise sipas Furnitorit",
+          },{
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
+            path: "/SugjerimiPorosis",
+            label: "Sugjerimi Porosis",
+          },
         ],
       },
     ],

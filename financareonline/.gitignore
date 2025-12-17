@@ -1,0 +1,72 @@
+# ======================
+#  ENVIRONMENT FILES
+# ======================
+# Keep ALL .env files out of Git – they contain secrets!
+.env
+.env.local
+.env.*.local
+
+# Your specific files – **never commit**
+.env.development
+.env.production
+
+# Optional: allow a safe example file (for docs)
+!.env.example
+
+# ======================
+#  NODE / VITE
+# ======================
+node_modules/
+dist/
+.vite/
+.cache/
+.cache-loader/
+
+# ======================
+#  BUILD OUTPUT
+# ======================
+/build
+/public/build
+/public/assets
+
+# ======================
+#  LOGS & TEMP
+# ======================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ======================
+#  IDE / OS
+# ======================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ======================
+#  TESTING
+# ======================
+/coverage
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# ======================
+#  DEPLOYMENT
+# ======================
+.vercel
+.netlify
+.vercel_build_output
+
+# ======================
+#  MISC
+# ======================
+*.tgz
+*.tmp
+*.temp
+.emailjs

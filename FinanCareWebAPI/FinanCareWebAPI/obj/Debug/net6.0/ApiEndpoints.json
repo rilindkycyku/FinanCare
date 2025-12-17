@@ -137,6 +137,74 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "Method": "Delete",
+    "RelativePath": "api/BarazoArken/fshijBarazimin/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "Method": "ShfaqArkataretPerSot",
+    "RelativePath": "api/BarazoArken/shfaqArkataretPerSot",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "Method": "GetById",
+    "RelativePath": "api/BarazoArken/shfaqBaraziminSipasIDs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "Method": "GetAll",
+    "RelativePath": "api/BarazoArken/shfaqTeGjithaBarazimet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "Method": "Post",
+    "RelativePath": "api/BarazoArken/shtoBarazimin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "barazoArken",
+        "Type": "FinanCareWebAPI.Models.BarazoArken",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "FinanCareWebAPI.Controllers.DatabaseController",
     "Method": "CreateAndImportDatabase",
     "RelativePath": "api/Database",
@@ -155,6 +223,125 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "Method": "Delete",
+    "RelativePath": "api/DitaFurnizimit/fshijDitenEFurnizimit",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "Method": "Put",
+    "RelativePath": "api/DitaFurnizimit/perditesoDitenEFurnizimit",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "k",
+        "Type": "FinanCareWebAPI.Models.DitaFurnizimit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "Method": "Get",
+    "RelativePath": "api/DitaFurnizimit/shfaqDitenEFurnizimitSipasIDs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "Method": "Get",
+    "RelativePath": "api/DitaFurnizimit/shfaqDitetEFurnizimit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "Method": "Post",
+    "RelativePath": "api/DitaFurnizimit/shtoDitenEFurnizimit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ditaEFurnizimit",
+        "Type": "FinanCareWebAPI.Models.DitaFurnizimit",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "Method": "BartTeDhenatEBiznesit",
+    "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEBiznesit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "Method": "BartTeDhenatEKategorive",
+    "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEKategorive",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "Method": "BartTeDhenatEPerdorueseve",
+    "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEPerdorueseve",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "Method": "BartTeDhenatEProdukteve",
+    "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEProdukteve",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -927,6 +1114,37 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "Method": "SuggestOrder",
+    "RelativePath": "api/Njoftimet/suggest-order/{productId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "leadTimeWeeks",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "desiredWeeksCoverage",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "safetyStockWeeks",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
     "Method": "Delete",
     "RelativePath": "api/Partneri/fshijPartnerin",
@@ -1612,6 +1830,27 @@
         "Name": "banka",
         "Type": "FinanCareWebAPI.Models.LlogaritEBiznesit",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.VendosFototController",
+    "Method": "EditoProduktin",
+    "RelativePath": "api/VendosFotot/EditoProduktin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "foto",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "fotoVjeterProduktit",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

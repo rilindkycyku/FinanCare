@@ -1263,3 +1263,4 @@ D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\rjimswa.dswa.cache.json
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\rjsmrazor.dswa.cache.json
 D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\rjsmcshtml.dswa.cache.json
+D:\Programim\GitHubProjekte\FinanCare\FinanCareWebAPI\FinanCareWebAPI\obj\Debug\net6.0\swae.build.ex.cache

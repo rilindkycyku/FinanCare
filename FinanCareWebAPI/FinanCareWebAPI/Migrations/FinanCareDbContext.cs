@@ -30,4 +30,6 @@ public partial class FinanCareDbContext : IdentityDbContext
     public DbSet<LlogaritEBiznesit> LlogaritEBiznesit { get; set; }
     public DbSet<HistoriaZbritjeveProduktit> HistoriaZbritjeveProduktit { get; set; }
     public DbSet<AfatetESkadimit> AfatetESkadimit { get; set; }
+    public DbSet<DitaFurnizimit> DitaFurnizimit { get; set; }
+    public DbSet<BarazoArken> BarazoArken { get; set; }
 }

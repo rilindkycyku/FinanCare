@@ -1,0 +1,53 @@
+[
+  {
+    "IDPartneri": 1,
+    "EmriBiznesit": "Bleres Qytetar",
+    "NUI": "112233445",
+    "NRF": "112233445",
+    "TVSH": "112233445",
+    "Email": "info@financare.com",
+    "Adresa": "P.A., Prishtine, 10000 Kosove",
+    "NrKontaktit": "38344111222",
+    "ShkurtesaPartnerit": "BQ",
+    "Username": "",
+    "Password": "",
+    "isDeleted": "false",
+    "LlojiKarteles": null,
+    "KodiKartela": null,
+    "Rabati": null
+  },
+  {
+    "IDPartneri": 14,
+    "EmriBiznesit": "BESA NJË SH.P.K.",
+    "NUI": "812085688",
+    "NRF": "0",
+    "TVSH": "0",
+    "Email": "supermarketbesa1978@gmail.com",
+    "Adresa": "Rr. Agim Bajrami, P.N., Kaçanik",
+    "NrKontaktit": "+38344279504",
+    "ShkurtesaPartnerit": "BESA",
+    "Username": "c",
+    "Password": "c",
+    "isDeleted": "false",
+    "LlojiKarteles": "Bonus",
+    "KodiKartela": "B000014000003",
+    "Rabati": 2.00
+  },
+  {
+    "IDPartneri": 15,
+    "EmriBiznesit": "Rilind Kyçyku",
+    "NUI": "0",
+    "NRF": "0",
+    "TVSH": "0",
+    "Email": "rilindkycyku@gmail.com",
+    "Adresa": "Komandant Zefi 69, Kaçanik",
+    "NrKontaktit": "+38343710410",
+    "ShkurtesaPartnerit": "RK",
+    "Username": "b",
+    "Password": "b",
+    "isDeleted": "false",
+    "LlojiKarteles": "Bonus",
+    "KodiKartela": "B000015000004",
+    "Rabati": 4.00
+  }
+]

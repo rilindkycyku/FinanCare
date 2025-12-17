@@ -49,6 +49,8 @@ namespace TechStoreWebAPI.Controllers
                    p.SasiaShumices,
                    p.IDGrupiProduktit,
                    p.GrupiProduktit.GrupiIProduktit,
+                   p.FotoProduktit,
+                   p.perfshiNeOnline,
                })
                .ToListAsync();
 
@@ -84,6 +86,8 @@ namespace TechStoreWebAPI.Controllers
                    p.SasiaShumices,
                    p.IDGrupiProduktit,
                    p.GrupiProduktit.GrupiIProduktit,
+                   p.FotoProduktit,
+                   p.perfshiNeOnline,
                }).Where(x => x.ProduktiID == id)
                .FirstOrDefaultAsync();
 
@@ -124,6 +128,8 @@ namespace TechStoreWebAPI.Controllers
                    p.SasiaShumices,
                    p.IDGrupiProduktit,
                    p.GrupiProduktit.GrupiIProduktit,
+                   p.FotoProduktit,
+                   p.perfshiNeOnline,
                })
                .ToListAsync();
 
@@ -195,6 +201,8 @@ namespace TechStoreWebAPI.Controllers
                     p.ZbritjaQmimitProduktit.Rabati,
                     p.SasiaShumices,
                     p.GrupiProduktit.GrupiIProduktit,
+                    p.FotoProduktit,
+                    p.perfshiNeOnline,
                 })
                 .FirstOrDefaultAsync();
 
@@ -351,6 +359,16 @@ namespace TechStoreWebAPI.Controllers
             if (p.IDGrupiProduktit != null)
             {
                 produkti.IDGrupiProduktit = p.IDGrupiProduktit;
+            }
+
+            if (!p.perfshiNeOnline.IsNullOrEmpty())
+            {
+                produkti.perfshiNeOnline = p.perfshiNeOnline;
+            }
+
+            if (!p.FotoProduktit.IsNullOrEmpty())
+            {
+                produkti.FotoProduktit = p.FotoProduktit;
             }
 
             if (p.StokuQmimiProduktit != null)

@@ -205,6 +205,106 @@
         }
       }
     },
+    "/api/BarazoArken/shfaqBaraziminSipasIDs": {
+      "get": {
+        "tags": [
+          "BarazoArken"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/BarazoArken/shfaqArkataretPerSot": {
+      "get": {
+        "tags": [
+          "BarazoArken"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/BarazoArken/shfaqTeGjithaBarazimet": {
+      "get": {
+        "tags": [
+          "BarazoArken"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/BarazoArken/shtoBarazimin": {
+      "post": {
+        "tags": [
+          "BarazoArken"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BarazoArken"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BarazoArken"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BarazoArken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/BarazoArken/fshijBarazimin/{id}": {
+      "delete": {
+        "tags": [
+          "BarazoArken"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Database": {
       "post": {
         "tags": [
@@ -225,6 +325,182 @@
               "type": "string"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/DitaFurnizimit/shfaqDitenEFurnizimitSipasIDs": {
+      "get": {
+        "tags": [
+          "DitaFurnizimit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/DitaFurnizimit/shfaqDitetEFurnizimit": {
+      "get": {
+        "tags": [
+          "DitaFurnizimit"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/DitaFurnizimit/shtoDitenEFurnizimit": {
+      "post": {
+        "tags": [
+          "DitaFurnizimit"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DitaFurnizimit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DitaFurnizimit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DitaFurnizimit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/DitaFurnizimit/perditesoDitenEFurnizimit": {
+      "put": {
+        "tags": [
+          "DitaFurnizimit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DitaFurnizimit"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DitaFurnizimit"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DitaFurnizimit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/DitaFurnizimit/fshijDitenEFurnizimit": {
+      "delete": {
+        "tags": [
+          "DitaFurnizimit"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/ExportoTeDhenatTekKlienti/BartTeDhenatEProdukteve": {
+      "post": {
+        "tags": [
+          "ExportoTeDhenatTekKlienti"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/ExportoTeDhenatTekKlienti/BartTeDhenatEPerdorueseve": {
+      "post": {
+        "tags": [
+          "ExportoTeDhenatTekKlienti"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/ExportoTeDhenatTekKlienti/BartTeDhenatEKategorive": {
+      "post": {
+        "tags": [
+          "ExportoTeDhenatTekKlienti"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/ExportoTeDhenatTekKlienti/BartTeDhenatEBiznesit": {
+      "post": {
+        "tags": [
+          "ExportoTeDhenatTekKlienti"
         ],
         "responses": {
           "200": {
@@ -1413,6 +1689,56 @@
         }
       }
     },
+    "/api/Njoftimet/suggest-order/{productId}": {
+      "post": {
+        "tags": [
+          "Njoftimet"
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "leadTimeWeeks",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "desiredWeeksCoverage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 2
+            }
+          },
+          {
+            "name": "safetyStockWeeks",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Njoftimet/fshijAfatetESkadimit": {
       "delete": {
         "tags": [
@@ -2499,6 +2825,47 @@
         }
       }
     },
+    "/api/VendosFotot/EditoProduktin": {
+      "post": {
+        "tags": [
+          "VendosFotot"
+        ],
+        "parameters": [
+          {
+            "name": "fotoVjeterProduktit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "foto": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "foto": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/ZbritjaQmimitProduktit/shfaqZbritjet": {
       "get": {
         "tags": [
@@ -2616,6 +2983,108 @@
           "isDeleted": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BarazoArken": {
+        "type": "object",
+        "properties": {
+          "idBarazoArken": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "idArkatari": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totaliShitjeve": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fillimiArkes": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "teShtuaraNeArke": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cash": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "monedha": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "borxhe": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "banka": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "pagesFatura": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "tjera": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "pershkrimiTjera": {
+            "type": "string",
+            "nullable": true
+          },
+          "kohaBarazimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "idPersoniPergjegjes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "arkatari": {
+            "$ref": "#/components/schemas/Perdoruesi"
+          },
+          "personiPergjejes": {
+            "$ref": "#/components/schemas/Perdoruesi"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DitaFurnizimit": {
+        "type": "object",
+        "properties": {
+          "idDitaFurnizimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "idPartneri": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ditaEFurnizimit": {
+            "type": "string",
+            "nullable": true
+          },
+          "partneri": {
+            "$ref": "#/components/schemas/Partneri"
           }
         },
         "additionalProperties": false
@@ -2964,6 +3433,14 @@
             "type": "string",
             "nullable": true
           },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
           "isDeleted": {
             "type": "string",
             "nullable": true
@@ -3078,6 +3555,14 @@
           "sasiaShumices": {
             "type": "number",
             "format": "double",
+            "nullable": true
+          },
+          "fotoProduktit": {
+            "type": "string",
+            "nullable": true
+          },
+          "perfshiNeOnline": {
+            "type": "string",
             "nullable": true
           },
           "isDeleted": {

@@ -123,8 +123,8 @@ function POS(props) {
           qmimiPaRabatBonus: 0,
         },
       }));
-        setSelectedInvoice(newInvoiceId);
-        
+      setSelectedInvoice(newInvoiceId);
+
       setPerditeso(Date.now());
     } catch (err) {
       console.error("Error creating new invoice:", err);
@@ -134,8 +134,7 @@ function POS(props) {
       );
       setShfaqMesazhin(true);
     } finally {
-      
-        document.getElementById("barkodiSelect-input").focus();
+      document.getElementById("barkodiSelect-input").focus();
     }
   };
 
@@ -386,7 +385,11 @@ function POS(props) {
         setKalkEditID(p.data[0].id);
         setNjesiaMatese(p.data[0].emriNjesiaMatese);
         setSasiaAktualeNeStok(p.data[0].sasiaNeStok);
-        document.getElementById("sasia").focus();
+        setTimeout(() => {
+          const sasiaInput = document.getElementById("sasia");
+          sasiaInput.focus();
+          sasiaInput.select();
+        }, 0);
       });
   }
 
@@ -410,6 +413,11 @@ function POS(props) {
       setOptionsBarkodiSelected(null);
       setEdito(false);
       setPerditesoFat(Date.now());
+      setTimeout(() => {
+        const barkodiInput = document.getElementById("barkodiSelect-input");
+        barkodiInput.focus();
+        barkodiInput.select();
+      }, 0);
     }
   }
 
@@ -492,16 +500,16 @@ function POS(props) {
   };
 
   const handleKaloTekPagesa = (event) => {
-  if (event.key === "Escape") {
-    event.preventDefault();
-    document.getElementById("shumaPageses").focus();
-  } else if (event.key === "F1") {
-    event.preventDefault();
-    if (IDProduktiFunditShtuar !== null) {
-      handleEdit(IDProduktiFunditShtuar);
+    if (event.key === "Escape") {
+      event.preventDefault();
+      document.getElementById("shumaPageses").focus();
+    } else if (event.key === "F1") {
+      event.preventDefault();
+      if (IDProduktiFunditShtuar !== null) {
+        handleEdit(IDProduktiFunditShtuar);
+      }
     }
-  }
-};
+  };
 
   const handleMenaxhoTastetPagesa = (event) => {
     if (event.key === "F4") {
@@ -882,7 +890,6 @@ function POS(props) {
           );
           setShfaqMesazhin(true);
         } else {
-          
           await axios
             .put(
               `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
@@ -906,7 +913,6 @@ function POS(props) {
               authentikimi
             )
             .then(async () => {
-              
               addNewCustomer();
               for (let produkti of produktetNeKalkulim) {
                 await axios.put(
@@ -923,8 +929,7 @@ function POS(props) {
                     stafiID: r.data.regjistrimet.stafiID,
                     totaliPaTVSH: parseFloat(
                       r.data.regjistrimet.totaliPaTVSH +
-                        r.data.regjistrimet.tvsh -
-                        r.data.rabati
+                        r.data.regjistrimet.tvsh 
                     ),
                     tvsh: 0,
                     idPartneri: r.data.regjistrimet.idPartneri,
@@ -950,8 +955,8 @@ function POS(props) {
               setActiveInvoices(updatedInvoices);
               setSelectedInvoice(updatedInvoices[0] || null);
               setPerditeso(Date.now());
-              
-        document.getElementById("barkodiSelect-input").focus();
+
+              document.getElementById("barkodiSelect-input").focus();
             });
           const data = {
             invoiceNumber: r?.data?.regjistrimet?.nrFatures,

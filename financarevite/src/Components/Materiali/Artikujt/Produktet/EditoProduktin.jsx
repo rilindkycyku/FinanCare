@@ -1,59 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Col, Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Tabs, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faXmark,
+  faPenToSquare,
+  faGlobe,
+} from "@fortawesome/free-solid-svg-icons";
 import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoProduktin(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-  const [produkti, setProdukti] = useState([]);
+  const [produkti, setProdukti] = useState({});
 
-  const [perditeso, setPerditeso] = useState("");
-  const [produktet, setProduktet] = useState([]);
-  const [grupetEProduktev, setGrupetEProduktev] = useState([]);
-  const [partneret, setPartneret] = useState([]);
-  const [njesitMatese, setNjesitMatese] = useState([]);
   const [kontrolloProduktin, setKontrolloProduktin] = useState(false);
-  const [konfirmoProduktin, setKonfirmoProduktin] = useState(false);
   const [fushatEZbrazura, setFushatEZbrazura] = useState(false);
 
-  const [inputGrupiProduktit, setInputGrupiProduktit] = useState("");
-  const [inputPartneri, setInputPartneri] = useState("");
-  const [inputNjesiaMatese, setInputNjesiaMatese] = useState("");
-  const [filtrimiGrupiProduktit, setFiltrimiGrupiProduktit] =
-    useState(produktet);
-  const [filtrimiPartneri, setFiltrimiPartneri] = useState(partneret);
-  const [filtrimiNjesiaMatese, setFiltrimiNjesiaMatese] =
-    useState(njesitMatese);
-
-  const getToken = localStorage.getItem("token");
-
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
-
-  useEffect(() => {
-    const vendosTeDhenat = async () => {
-      try {
-        const produktet = await axios.get(
-          `${API_BASE_URL}/api/Produkti/Products`,
-          authentikimi
-        );
-        setProduktet(produktet.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    vendosTeDhenat();
-  }, [perditeso]);
-
+  // Select states
   const [optionsGrupiProduktit, setOptionsGrupiProduktit] = useState([]);
   const [optionsSelectedGrupiProduktit, setOptionsSelectedGrupiProduktit] =
     useState(null);
@@ -65,208 +30,248 @@ function EditoProduktin(props) {
   const [optionsLlojiTVSH, setOptionsLlojiTVSH] = useState([]);
   const [optionsSelectedLlojiTVSH, setOptionsSelectedLlojiTVSH] =
     useState(null);
+
+  const [produktet, setProduktet] = useState([]); // For duplicate check
+
+  // Image upload
+  const fileInputRef = useRef(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+
   const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
+    menu: (provided) => ({ ...provided, zIndex: 1050 }),
   };
+
+  const getToken = localStorage.getItem("token");
+  const authentikimi = {
+    headers: { Authorization: `Bearer ${getToken}` },
+  };
+
+  // Fetch dropdowns
   useEffect(() => {
-    axios
-      .get(
-        `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
-        authentikimi
-      )
-      .then((response) => {
-        console.log(response);
-        const fetchedoptions = response.data.map((item) => ({
-          value: item.idGrupiProduktit,
-          label: item.grupiIProduktit,
-        }));
-        setOptionsGrupiProduktit(fetchedoptions);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-    axios
-      .get(
-        `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
-        authentikimi
-      )
-      .then((response) => {
-        console.log(response);
-        const fetchedoptions = response.data.filter((item) => item.idPartneri != 1 && item.idPartneri != 2 && item.idPartneri != 3).map((item) => ({
-          value: item.idPartneri,
-          label: item.emriBiznesit,
-        }));
-        setOptionsPartneri(fetchedoptions);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-    axios
-      .get(
-        `${API_BASE_URL}/api/NjesiaMatese/shfaqNjesiteMatese`,
-        authentikimi
-      )
-      .then((response) => {
-        console.log(response);
-        const fetchedoptions = response.data.map((item) => ({
-          value: item.idNjesiaMatese,
-          label: item.njesiaMatese,
-        }));
-        setOptionsNjesiaMatese(fetchedoptions);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-    setOptionsLlojiTVSH([
-      { label: "0%", value: "0" },
-      { label: "8%", value: "8" },
-      { label: "18%", value: "18" },
-    ]);
+    const fetchDropdowns = async () => {
+      try {
+        const [grupe, partneret, njesi] = await Promise.all([
+          axios.get(
+            `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
+            authentikimi
+          ),
+          axios.get(
+            `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
+            authentikimi
+          ),
+          axios.get(
+            `${API_BASE_URL}/api/NjesiaMatese/shfaqNjesiteMatese`,
+            authentikimi
+          ),
+        ]);
+
+        setOptionsGrupiProduktit(
+          grupe.data.map((g) => ({
+            value: g.idGrupiProduktit,
+            label: g.grupiIProduktit,
+          }))
+        );
+        setOptionsPartneri(
+          partneret.data
+            .filter((p) => ![1, 2, 3].includes(p.idPartneri))
+            .map((p) => ({ value: p.idPartneri, label: p.emriBiznesit }))
+        );
+        setOptionsNjesiaMatese(
+          njesi.data.map((n) => ({
+            value: n.idNjesiaMatese,
+            label: n.njesiaMatese,
+          }))
+        );
+        setOptionsLlojiTVSH([
+          { label: "0%", value: 0 },
+          { label: "8%", value: 8 },
+          { label: "18%", value: 18 },
+        ]);
+      } catch (err) {
+        console.error("Error loading dropdowns:", err);
+      }
+    };
+    fetchDropdowns();
   }, []);
 
+  // Load product
   useEffect(() => {
-    const shfaqProduktin = async () => {
+    const loadProduct = async () => {
+      if (!props.id) return;
       try {
-        const produkti = await axios.get(
+        const res = await axios.get(
           `${API_BASE_URL}/api/Produkti/ShfaqProduktinNgaID?id=${props.id}`,
           authentikimi
         );
-        setProdukti(produkti.data);
-        console.log(produkti);
+        const data = res.data;
+        setProdukti(data);
+
         setOptionsSelectedGrupiProduktit(
-          optionsGrupiProduktit.filter(
-            (item) => item.value == produkti?.data?.idGrupiProduktit
-          )
-        );
-        setOptionsSelectedNjesiaMatese(
-          optionsNjesiaMatese.filter(
-            (item) => item.value == produkti?.data?.idNjesiaMatese
-          )
+          optionsGrupiProduktit.find(
+            (o) => o.value === data.idGrupiProduktit
+          ) || null
         );
         setOptionsSelectedPartneri(
-          optionsPartneri.filter(
-            (item) => item.value == produkti?.data?.idPartneri
-          )
+          optionsPartneri.find((o) => o.value === data.idPartneri) || null
+        );
+        setOptionsSelectedNjesiaMatese(
+          optionsNjesiaMatese.find((o) => o.value === data.idNjesiaMatese) ||
+            null
         );
         setOptionsSelectedLlojiTVSH(
-          optionsLlojiTVSH.filter(
-            (item) => item.value == produkti?.data?.llojiTVSH
-          )
+          optionsLlojiTVSH.find((o) => o.value === data.llojiTVSH) || null
         );
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
-
-    shfaqProduktin();
+    if (optionsGrupiProduktit.length > 0) loadProduct();
   }, [
-    optionsLlojiTVSH,
+    props.id,
+    optionsGrupiProduktit,
     optionsPartneri,
     optionsNjesiaMatese,
-    optionsGrupiProduktit,
+    optionsLlojiTVSH,
   ]);
+
+  // Load all products for duplicate check
+  useEffect(() => {
+    axios
+      .get(`${API_BASE_URL}/api/Produkti/Products`, authentikimi)
+      .then((res) => setProduktet(res.data))
+      .catch(console.log);
+  }, []);
 
   const onChange = (e) => {
     setProdukti({ ...produkti, [e.target.name]: e.target.value });
   };
 
-  function isNullOrEmpty(value) {
-    return value === null || value === "" || value === undefined;
-  }
-
-  async function handleSubmit() {
-    try {
-      console.log(produkti);
-      await axios
-        .put(
-          `${API_BASE_URL}/api/Produkti/` + props.id,
-          produkti,
-          authentikimi
-        )
-        .then((x) => {
-          props.setTipiMesazhit("success");
-          props.setPershkrimiMesazhit("Produkti u Perditesua me sukses!");
-          props.perditesoTeDhenat();
-          props.hide();
-          props.shfaqmesazhin();
-        })
-        .catch((error) => {
-          console.error("Error saving the product:", error);
-          props.setTipiMesazhit("danger");
-          props.setPershkrimiMesazhit(
-            "Ndodhi nje gabim gjate perditesimit te produktit!"
-          );
-          props.perditesoTeDhenat();
-          props.shfaqmesazhin();
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  const handleKontrolli = () => {
-    if (isNullOrEmpty(produkti.emriProduktit)) {
-      setFushatEZbrazura(true);
-    } else {
-      if (
-        konfirmoProduktin == false &&
-        produktet.filter(
-          (item) => item.emriProduktit === produkti.emriProduktit
-        ).length !== 0
-      ) {
-        setKontrolloProduktin(true);
-      } else {
-        handleSubmit();
-      }
-    }
-  };
-
-  const ndrroField = (e, tjetra) => {
+  // Focus navigation helper
+  const ndrroField = (e, nextId) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const next = document.getElementById(nextId);
+      if (next) next.focus();
     }
   };
 
-  const handleChangeGrupiProduktit = async (partneri) => {
-    setOptionsSelectedGrupiProduktit(partneri);
-    setProdukti({ ...produkti, idGrupiProduktit: partneri.value });
-    document.getElementById("partneriSelect-input").focus();
+  // Handle all select changes with focus movement
+  const handleChangeGrupiProduktit = (selected) => {
+    setOptionsSelectedGrupiProduktit(selected);
+    setProdukti((prev) => ({
+      ...prev,
+      idGrupiProduktit: selected ? selected.value : null,
+    }));
+    setTimeout(
+      () => document.getElementById("partneriSelect-input")?.focus(),
+      100
+    );
   };
-  const handleChangePartneri = async (partneri) => {
-    setOptionsSelectedPartneri(partneri);
 
-    await axios
-      .get(
-        `${API_BASE_URL}/api/Produkti/GetKodiProduktitPerRegjistrim?idPartneri=${partneri.value}`,
+  const handleChangePartneri = (selected) => {
+    setOptionsSelectedPartneri(selected);
+    const id = selected ? selected.value : null;
+    setProdukti((prev) => ({ ...prev, idPartneri: id }));
+
+    if (id) {
+      axios
+        .get(
+          `${API_BASE_URL}/api/Produkti/GetKodiProduktitPerRegjistrim?idPartneri=${id}`,
+          authentikimi
+        )
+        .then((res) =>
+          setProdukti((prev) => ({ ...prev, kodiProduktit: res.data }))
+        );
+    }
+
+    setTimeout(
+      () => document.getElementById("njesiaMateseSelect-input")?.focus(),
+      100
+    );
+  };
+
+  const handleChangeNjesiaMatese = (selected) => {
+    setOptionsSelectedNjesiaMatese(selected);
+    setProdukti((prev) => ({
+      ...prev,
+      idNjesiaMatese: selected ? selected.value : null,
+    }));
+    setTimeout(
+      () => document.getElementById("llojiTVSHSelect-input")?.focus(),
+      100
+    );
+  };
+
+  const handleChangeLlojiTVSH = (selected) => {
+    setOptionsSelectedLlojiTVSH(selected);
+    setProdukti((prev) => ({
+      ...prev,
+      llojiTVSH: selected ? selected.value : null,
+    }));
+    setTimeout(() => document.getElementById("sasiaShumices")?.focus(), 100);
+  };
+
+  // Handle Online switch (save as string "true"/"false")
+  const handleOnlineToggle = (e) => {
+    const checked = e.target.checked;
+    setProdukti((prev) => ({
+      ...prev,
+      perfshiNeOnline: checked ? "true" : "false",
+    }));
+  };
+
+  const isOnline = produkti.perfshiNeOnline === "true";
+
+  // Image handling
+  const handleFiles = (files) => {
+    const validFiles = Array.from(files).filter(
+      (file) => file.type.startsWith("image/") && file.size <= 5 * 1024 * 1024
+    );
+    setSelectedImages((prev) => [...prev, ...validFiles]);
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await axios.put(
+        `${API_BASE_URL}/api/Produkti/${props.id}`,
+        produkti,
         authentikimi
-      )
-      .then((response) => {
-        setProdukti({
-          ...produkti,
-          idPartneri: partneri.value,
-          kodiProduktit: response.data,
-        });
-      });
-
-    document.getElementById("njesiaMateseSelect-input").focus();
-  };
-  const handleChangeNjesiaMatese = async (partneri) => {
-    setOptionsSelectedNjesiaMatese(partneri);
-    setProdukti({ ...produkti, idNjesiaMatese: partneri.value });
-    document.getElementById("llojiTVSHSelect-input").focus();
-  };
-  const handleChangeLlojiTVSH = async (partneri) => {
-    setOptionsSelectedLlojiTVSH(partneri);
-    setProdukti({ ...produkti, llojiTVSH: partneri.value });
-    document.getElementById("sasiaShumices").focus();
+      );
+      props.setTipiMesazhit("success");
+      props.setPershkrimiMesazhit("Produkti u përditësua me sukses!");
+      props.perditesoTeDhenat();
+      props.hide();
+      props.shfaqmesazhin();
+    } catch (error) {
+      props.setTipiMesazhit("danger");
+      props.setPershkrimiMesazhit("Gabim gjatë ruajtjes!");
+      props.shfaqmesazhin();
+      console.log(error);
+    }
   };
 
-  const handleMenaxhoTastetPagesa = (event) => {
-    if (event.key === "Enter") {
+  const handleKontrolli = () => {
+    if (!produkti.emriProduktit?.trim()) {
+      setFushatEZbrazura(true);
+      return;
+    }
+
+    const duplicate = produktet.some(
+      (p) => p.emriProduktit === produkti.emriProduktit && p.id !== props.id
+    );
+    if (duplicate) {
+      setKontrolloProduktin(true);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleMenaxhoTastetPagesa = (e) => {
+    if (e.key === "Enter") {
       handleKontrolli();
     }
   };
@@ -275,224 +280,326 @@ function EditoProduktin(props) {
     <>
       <KontrolloAksesinNeFunksione
         roletELejuara={["Menaxher", "Kalkulant"]}
-        largo={() => props.largo()}
-        shfaqmesazhin={() => props.shfaqmesazhin()}
-        perditesoTeDhenat={() => props.perditesoTeDhenat()}
-        setTipiMesazhit={(e) => props.setTipiMesazhit(e)}
-        setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
+        largo={props.largo}
+        shfaqmesazhin={props.shfaqmesazhin}
+        perditesoTeDhenat={props.perditesoTeDhenat}
+        setTipiMesazhit={props.setTipiMesazhit}
+        setPershkrimiMesazhit={props.setPershkrimiMesazhit}
       />
-      {fushatEZbrazura && (
-        <Modal
-          size="sm"
-          show={fushatEZbrazura}
-          onHide={() => setFushatEZbrazura(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title style={{ color: "red" }} as="h6">
-              Ndodhi nje gabim
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <strong style={{ fontSize: "10pt" }}>
-              Ju lutemi plotesoni te gjitha fushat me{" "}
-              <span style={{ color: "red" }}>*</span>
-            </strong>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              size="sm"
-              onClick={() => setFushatEZbrazura(false)}
-              variant="secondary">
-              Mbylle <FontAwesomeIcon icon={faXmark} />
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
-      {kontrolloProduktin && (
-        <Modal
-          size="sm"
-          show={kontrolloProduktin}
-          onHide={() => setKontrolloProduktin(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title as="h6">Konfirmo vendosjen</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <span style={{ fontSize: "10pt" }}>
-              Nje produkt me te njejtin emer ekziston ne sistem!
-            </span>
-            <br />
-            <strong style={{ fontSize: "10pt" }}>
-              A jeni te sigurt qe deshironi te vazhdoni?
-            </strong>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => setKontrolloProduktin(false)}>
-              Korrigjo <FontAwesomeIcon icon={faXmark} />
-            </Button>
-            <Button
-              size="sm"
-              variant="warning"
-              onClick={() => {
-                handleSubmit();
-              }}>
-              Vazhdoni
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+
+      {/* Warning Modals */}
       <Modal
-        className="modalEditShto"
-        size="lg"
-        style={{ marginTop: "3em" }}
-        show={props.show}
-        onHide={props.hide}>
+        size="sm"
+        show={fushatEZbrazura}
+        onHide={() => setFushatEZbrazura(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ color: "red" }}>Gabim</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Plotësoni të gjitha fushat e detyrueshme!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setFushatEZbrazura(false)}>
+            Mbyll
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        size="sm"
+        show={kontrolloProduktin}
+        onHide={() => setKontrolloProduktin(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmim</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Ekziston një produkt me të njëjtin emër. Vazhdo?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setKontrolloProduktin(false)}>
+            Anulo
+          </Button>
+          <Button variant="warning" onClick={handleSubmit}>
+            Vazhdo
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Main Modal */}
+      <Modal size="xl" show={props.show} onHide={props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Edito Produktin</Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
-          <MDBRow className="g-3">
-            <MDBCol md="6">
-              <MDBInput
-                onChange={onChange}
-                value={produkti.barkodi}
-                name="barkodi"
-                id="barkodi"
-                type="text"
-                placeholder="Barkodi"
-                autoFocus
-                onKeyDown={(e) => ndrroField(e, "emriProduktit")}
-                label={
-                  <span>
-                    Barkodi<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
-                autoComplete={false}
-              />
-            </MDBCol>
-            <MDBCol md="6">
-              <MDBInput
-                onChange={onChange}
-                value={produkti.emriProduktit}
-                name="emriProduktit"
-                id="emriProduktit"
-                type="text"
-                placeholder="Emri Produktit"
-                onKeyDown={(e) => ndrroField(e, "grupiProduktitSelect-input")}
-                label={
-                  <span>
-                    Emri Produktit<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
-                autoComplete={false}
-              />
-            </MDBCol>
-            <Form.Group as={Col} controlId="grupiProduktit" md="4">
-              <Select
-                value={optionsSelectedGrupiProduktit}
-                onChange={handleChangeGrupiProduktit}
-                options={optionsGrupiProduktit}
-                id="grupiProduktitSelect" // Setting the id attribute
-                inputId="grupiProduktitSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+          <Tabs defaultActiveKey="gjenerale" className="mb-4">
+            {/* General Tab */}
+            <Tab eventKey="gjenerale" title="Të Dhënat Gjenerale">
+              <MDBRow className="g-4 align-items-end">
+                {/* Row 1 */}
+                <MDBCol md="6">
+                  <MDBInput
+                    label={
+                      <>
+                        Barkodi <span className="text-danger">*</span>
+                      </>
+                    }
+                    name="barkodi"
+                    value={produkti.barkodi || ""}
+                    onChange={onChange}
+                    onKeyDown={(e) => ndrroField(e, "emriProduktit")}
+                    autoFocus
+                    autoComplete="off"
+                  />
+                </MDBCol>
+                <MDBCol md="6">
+                  <MDBInput
+                    label={
+                      <>
+                        Emri i Produktit <span className="text-danger">*</span>
+                      </>
+                    }
+                    name="emriProduktit"
+                    id="emriProduktit"
+                    value={produkti.emriProduktit || ""}
+                    onChange={onChange}
+                    onKeyDown={(e) =>
+                      ndrroField(e, "grupiProduktitSelect-input")
+                    }
+                    autoComplete="off"
+                  />
+                </MDBCol>
 
-              <Form.Label>
-                Grupi Produktit<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
+                {/* Row 2 */}
+                <MDBCol md="4">
+                  <Form.Label className="fw-bold text-center d-block mb-2">
+                    Grupi i Produktit <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Select
+                    value={optionsSelectedGrupiProduktit}
+                    onChange={handleChangeGrupiProduktit}
+                    options={optionsGrupiProduktit}
+                    inputId="grupiProduktitSelect-input"
+                    styles={customStyles}
+                    placeholder="Zgjidh..."
+                  />
+                </MDBCol>
 
-            <Form.Group as={Col} controlId="partneri" md="4">
-              <Select
-                value={optionsSelectedPartneri}
-                onChange={handleChangePartneri}
-                options={optionsPartneri}
-                id="partneriSelect" // Setting the id attribute
-                inputId="partneriSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+                <MDBCol md="4">
+                  <Form.Label className="fw-bold text-center d-block mb-2">
+                    Partneri <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Select
+                    value={optionsSelectedPartneri}
+                    onChange={handleChangePartneri}
+                    options={optionsPartneri}
+                    inputId="partneriSelect-input"
+                    styles={customStyles}
+                    placeholder="Zgjidh..."
+                  />
+                </MDBCol>
 
-              <Form.Label>
-                Partneri<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} controlId="njesiaMatese" md="4">
-              <Select
-                value={optionsSelectedNjesiaMatese}
-                onChange={handleChangeNjesiaMatese}
-                options={optionsNjesiaMatese}
-                id="njesiaMateseSelect" // Setting the id attribute
-                inputId="njesiaMateseSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+                <MDBCol md="4">
+                  <Form.Label className="fw-bold text-center d-block mb-2">
+                    Njësia Matëse <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Select
+                    value={optionsSelectedNjesiaMatese}
+                    onChange={handleChangeNjesiaMatese}
+                    options={optionsNjesiaMatese}
+                    inputId="njesiaMateseSelect-input"
+                    styles={customStyles}
+                    placeholder="Zgjidh..."
+                  />
+                </MDBCol>
 
-              <Form.Label>
-                Njesia Matese<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} controlId="partneri" md="4">
-              <Select
-                value={optionsSelectedLlojiTVSH}
-                onChange={handleChangeLlojiTVSH}
-                options={optionsLlojiTVSH}
-                id="llojiTVSHSelect" // Setting the id attribute
-                inputId="llojiTVSHSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+                {/* Row 3 */}
+                <MDBCol md="4">
+                  <Form.Label className="fw-bold text-center d-block mb-2">
+                    TVSH % <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Select
+                    value={optionsSelectedLlojiTVSH}
+                    onChange={handleChangeLlojiTVSH}
+                    options={optionsLlojiTVSH}
+                    inputId="llojiTVSHSelect-input"
+                    styles={customStyles}
+                    placeholder="Zgjidh..."
+                  />
+                </MDBCol>
 
-              <Form.Label>
-                TVSH %<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
-            <MDBCol md="4">
-              <MDBInput
-                onChange={onChange}
-                name="sasiaShumices"
-                id="sasiaShumices"
-                value={produkti.sasiaShumices}
-                type="text"
-                placeholder="Sasia e Shumices"
-                label={
-                  <span>
-                    Sasia e Shumices<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
-                autoComplete={false}
-                onKeyDown={handleMenaxhoTastetPagesa}
-              />
-            </MDBCol>
-            <MDBCol md="4" id="kodiProduktit">
-              <MDBTooltip
-                placement="bottom"
-                title="Gjenerohet automatikisht pas zgjedhjes se partnerit"
-                wrapperClass="mdb-tooltip mdb-tooltip-content">
-                <MDBInput
-                  onChange={onChange}
-                  value={produkti.kodiProduktit}
-                  name="kodiProduktit"
-                  type="text"
-                  placeholder="Kodi Produktit"
-                  onKeyDown={(e) => ndrroField(e, "llojiTVSH")}
-                  label={
-                    <span>
-                      Kodi Produktit<span style={{ color: "red" }}>*</span>
-                    </span>
-                  }
-                  disabled
+                <MDBCol md="4">
+                  <Form.Label className="fw-bold text-center d-block mb-2">
+                    Sasia e Shumicës <span className="text-danger">*</span>
+                  </Form.Label>
+                  <MDBInput
+                    name="sasiaShumices"
+                    value={produkti.sasiaShumices || ""}
+                    onChange={onChange}
+                    onKeyDown={handleMenaxhoTastetPagesa}
+                    autoComplete="off"
+                    id="sasiaShumices"
+                  />
+                </MDBCol>
+
+                <MDBCol md="4" id="kodiProduktit">
+                  <Form.Label className="fw-bold text-center d-block mb-2">
+                    Kodi Produktit <span className="text-danger">*</span>
+                  </Form.Label>
+                  <MDBTooltip
+                    placement="bottom"
+                    title="Gjenerohet automatikisht pas zgjedhjes se partnerit"
+                    wrapperClass="mdb-tooltip mdb-tooltip-content">
+                    <MDBInput
+                      onChange={onChange}
+                      value={produkti.kodiProduktit}
+                      name="kodiProduktit"
+                      type="text"
+                      placeholder="Kodi Produktit"
+                      onKeyDown={(e) => ndrroField(e, "llojiTVSH")}
+                      disabled
+                    />
+                  </MDBTooltip>
+                </MDBCol>
+              </MDBRow>
+            </Tab>
+
+            {/* Online Tab */}
+            <Tab
+              eventKey="online"
+              title={
+                <>
+                  <FontAwesomeIcon icon={faGlobe} className="me-2" />
+                  Online
+                </>
+              }>
+              <div className="p-4 bg-light rounded">
+                <Form.Check
+                  type="switch"
+                  id="perfshiNeOnline"
+                  label="Përfshi këtë produkt në dyqanin online (shfaqet në ueb)"
+                  checked={isOnline}
+                  onChange={handleOnlineToggle}
+                  className="mb-4 fs-5 fw-medium"
                 />
-              </MDBTooltip>
-            </MDBCol>
-          </MDBRow>
+
+                {isOnline && (
+                  <Form.Group>
+                    <Form.Label className="fw-bold">
+                      Fotot e Produktit për Online
+                    </Form.Label>
+
+                    <div
+                      className="border rounded-3 p-5 text-center bg-white shadow-sm position-relative"
+                      style={{
+                        borderStyle: "dashed",
+                        borderColor: "#ccc",
+                        cursor: "pointer",
+                        transition: "border-color 0.3s",
+                      }}
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = "#009879";
+                      }}
+                      onDragLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#ccc";
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = "#ccc";
+                        handleFiles(e.dataTransfer.files);
+                      }}>
+                      <i className="bi bi-camera fs-1 text-muted mb-3"></i>
+                      <p className="text-muted mb-4">
+                        Kliko këtu ose tërhiq fotot për të ngarkuar
+                      </p>
+                      <Button variant="success">
+                        <i className="bi bi-upload me-2"></i>
+                        Zgjidh dhe Ngarko Foto
+                      </Button>
+                      <small className="d-block text-muted mt-3">
+                        Formate: JPG, PNG • Max 5MB • Rekomandohet 800x800px
+                      </small>
+
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        style={{ display: "none" }}
+                        onChange={(e) =>
+                          e.target.files && handleFiles(e.target.files)
+                        }
+                      />
+                    </div>
+
+                    {(selectedImages.length > 0 || produkti.fotoProduktit) && (
+                      <div className="mt-4">
+                        <h6 className="fw-bold mb-3">Parapamja e Fotove</h6>
+                        <div className="row g-3">
+                          {produkti.fotoProduktit && (
+                            <div className="col-md-3 col-sm-4 col-6">
+                              <div className="position-relative">
+                                <img
+                                  src={`${API_BASE_URL}/images/products/${produkti.fotoProduktit}`}
+                                  alt="Foto aktuale"
+                                  className="img-thumbnail w-100"
+                                  style={{
+                                    height: "150px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                                <span className="badge bg-success position-absolute top-0 start-0 m-2">
+                                  Aktuale
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {selectedImages.map((file, index) => (
+                            <div
+                              key={index}
+                              className="col-md-3 col-sm-4 col-6">
+                              <div className="position-relative">
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={`Parapamje ${index + 1}`}
+                                  className="img-thumbnail w-100"
+                                  style={{
+                                    height: "150px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                                <Button
+                                  variant="danger"
+                                  size="sm"
+                                  className="position-absolute top-0 end-0 m-2"
+                                  onClick={() => removeImage(index)}>
+                                  <i className="bi bi-x"></i>
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </Form.Group>
+                )}
+              </div>
+            </Tab>
+          </Tabs>
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={props.hide}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+            Anulo <FontAwesomeIcon icon={faXmark} className="ms-2" />
           </Button>
           <Button
             style={{ backgroundColor: "#009879", border: "none" }}
             onClick={handleKontrolli}>
-            Edito Produktin <FontAwesomeIcon icon={faPenToSquare} />
+            Ruaj Ndryshimet{" "}
+            <FontAwesomeIcon icon={faPenToSquare} className="ms-2" />
           </Button>
         </Modal.Footer>
       </Modal>
