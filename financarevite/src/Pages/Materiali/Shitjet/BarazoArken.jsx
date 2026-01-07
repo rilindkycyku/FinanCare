@@ -7,7 +7,15 @@ import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form, Alert, Card, Row, Col, InputGroup } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Alert,
+  Card,
+  Row,
+  Col,
+  InputGroup,
+} from "react-bootstrap";
 import Select from "react-select";
 import CalculatorModal from "../../../Components/TeTjera/CalculatorModal";
 import Titulli from "../../../Components/TeTjera/Titulli";
@@ -104,7 +112,10 @@ function BarazimiArkes() {
   useEffect(() => {
     if (!loadingUser && teDhenat.perdoruesi) {
       axios
-        .get(`${API_BASE_URL}/api/BarazoArken/shfaqArkataretPerSot`, authentikimi)
+        .get(
+          `${API_BASE_URL}/api/BarazoArken/shfaqArkataretPerSot`,
+          authentikimi
+        )
         .then((res) => {
           setArkataret(res.data);
           setLoading(false);
@@ -188,10 +199,15 @@ function BarazimiArkes() {
     if (parseAmount(form.tjera) > 0 && !form.pershkrimiTjera.trim())
       return alert("Plotësoni përshkrimin për 'Tjera'!");
 
-    const selectedArkatar = arkataret.find((a) => a.stafiID === form.idArkatari);
+    const selectedArkatar = arkataret.find(
+      (a) => a.stafiID === form.idArkatari
+    );
     if (!selectedArkatar) return;
 
-    const income = selectedArkatar.totaliShitjeve + parseAmount(form.fillimiArkes) + parseAmount(form.teShtuaraNeArke);
+    const income =
+      selectedArkatar.totaliShitjeve +
+      parseAmount(form.fillimiArkes) +
+      parseAmount(form.teShtuaraNeArke);
     const outcome =
       parseAmount(form.cash) +
       parseAmount(form.monedha) +
@@ -213,16 +229,23 @@ function BarazimiArkes() {
       Banka: parseAmount(form.banka),
       PagesFatura: parseAmount(form.pagesFatura),
       Tjera: parseAmount(form.tjera),
-      PershkrimiTjera: parseAmount(form.tjera) > 0 ? form.pershkrimiTjera : null,
+      PershkrimiTjera:
+        parseAmount(form.tjera) > 0 ? form.pershkrimiTjera : null,
       KohaBarazimit: new Date().toISOString(),
       IDPersoniPergjegjes: idPersoniPergjegjes,
     };
 
     try {
-      await axios.post(`${API_BASE_URL}/api/BarazoArken/shtoBarazimin`, payload, authentikimi);
+      await axios.post(
+        `${API_BASE_URL}/api/BarazoArken/shtoBarazimin`,
+        payload,
+        authentikimi
+      );
 
       setTipiMesazhit("success");
-      setPershkrimiMesazhit(`Barazimi u regjistrua me sukses! Dallimi: ${difference.toFixed(2)} €`);
+      setPershkrimiMesazhit(
+        `Barazimi u regjistrua me sukses! Dallimi: ${difference.toFixed(2)} €`
+      );
       setShfaqMesazhin(true);
 
       // Reset form
@@ -255,11 +278,9 @@ function BarazimiArkes() {
     );
   }
 
-  if (error) return <Alert variant="danger" className="m-4">{error}</Alert>;
-
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher",  "Arkatar"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Arkatar"]} />
       <NavBar />
       <Titulli titulli={"Barazo Arken"} />
 
@@ -271,7 +292,11 @@ function BarazimiArkes() {
             tipi={tipiMesazhit}
           />
         )}
-
+        {error && (
+          <Alert variant="danger" className="m-4">
+            {error}
+          </Alert>
+        )}
         <div className="text-center mb-4">
           <h1 className="h3 fw-bold text-primary">Barazimi i Arkës</h1>
           <p className="text-muted small">
@@ -284,8 +309,12 @@ function BarazimiArkes() {
           </p>
         </div>
 
-        <Card className="shadow border-0 rounded-3 mx-auto" style={{ maxWidth: "1000px" }}>
-          <Card.Header className="bg-gradient text-white py-3 text-center" style={{ background: "linear-gradient(135deg, #007bff, #009879)" }}>
+        <Card
+          className="shadow border-0 rounded-3 mx-auto"
+          style={{ maxWidth: "1000px" }}>
+          <Card.Header
+            className="bg-gradient text-white py-3 text-center"
+            style={{ background: "linear-gradient(135deg, #007bff, #009879)" }}>
             <h4 className="mb-0">Regjistrimi i Barazimit</h4>
           </Card.Header>
 
@@ -293,14 +322,19 @@ function BarazimiArkes() {
             <Form>
               <Row className="mb-4">
                 <Col>
-                  <Form.Label className="fw-bold text-primary">Zgjidh Arkëtarin</Form.Label>
+                  <Form.Label className="fw-bold text-primary">
+                    Zgjidh Arkëtarin
+                  </Form.Label>
                   <Select
                     ref={selectRef}
                     options={arkatarOptions}
                     value={selectedOption}
                     onChange={(option) => {
                       setSelectedOption(option);
-                      setForm({ ...form, idArkatari: option ? option.value : null });
+                      setForm({
+                        ...form,
+                        idArkatari: option ? option.value : null,
+                      });
                       fillimiRef.current?.focus();
                     }}
                     placeholder="Kërko arkëtarin..."
@@ -331,14 +365,21 @@ function BarazimiArkes() {
                     <Card.Body className="p-3">
                       <div className="d-grid gap-3">
                         <Form.Group>
-                          <Form.Label className="small fw-semibold">Fillimi i Arkës</Form.Label>
+                          <Form.Label className="small fw-semibold">
+                            Fillimi i Arkës
+                          </Form.Label>
                           <InputGroup>
                             <Form.Control
                               ref={fillimiRef}
                               type="text"
                               inputMode="decimal"
                               value={form.fillimiArkes}
-                              onChange={(e) => setForm({ ...form, fillimiArkes: e.target.value })}
+                              onChange={(e) =>
+                                setForm({
+                                  ...form,
+                                  fillimiArkes: e.target.value,
+                                })
+                              }
                               onKeyDown={(e) => handleKeyDown(e, teShtuaraRef)}
                               placeholder="0.00"
                               className="fw-bold text-end"
@@ -348,22 +389,28 @@ function BarazimiArkes() {
                               ref={calcButtonRefs.fillimiArkes}
                               variant="outline-success"
                               size="sm"
-                              onClick={() => openCalculator("fillimiArkes")}
-                            >
+                              onClick={() => openCalculator("fillimiArkes")}>
                               🧮
                             </Button>
                           </InputGroup>
                         </Form.Group>
 
                         <Form.Group>
-                          <Form.Label className="small fw-semibold">Të Shtuara në Arkë</Form.Label>
+                          <Form.Label className="small fw-semibold">
+                            Të Shtuara në Arkë
+                          </Form.Label>
                           <InputGroup>
                             <Form.Control
                               ref={teShtuaraRef}
                               type="text"
                               inputMode="decimal"
                               value={form.teShtuaraNeArke}
-                              onChange={(e) => setForm({ ...form, teShtuaraNeArke: e.target.value })}
+                              onChange={(e) =>
+                                setForm({
+                                  ...form,
+                                  teShtuaraNeArke: e.target.value,
+                                })
+                              }
                               onKeyDown={(e) => handleKeyDown(e, cashRef)}
                               placeholder="0.00"
                               className="fw-bold text-end"
@@ -373,8 +420,7 @@ function BarazimiArkes() {
                               ref={calcButtonRefs.teShtuaraNeArke}
                               variant="outline-success"
                               size="sm"
-                              onClick={() => openCalculator("teShtuaraNeArke")}
-                            >
+                              onClick={() => openCalculator("teShtuaraNeArke")}>
                               🧮
                             </Button>
                           </InputGroup>
@@ -391,13 +437,28 @@ function BarazimiArkes() {
                     </Card.Header>
                     <Card.Body className="p-3">
                       <div className="d-grid gap-3">
-                        {["cash", "monedha", "borxhe", "banka", "pagesFatura", "tjera"].map((field, idx) => {
-                          const refs = [cashRef, monedhaRef, borxheRef, bankaRef, pagesFaturaRef, tjeraRef];
-                          const nextRef = idx < 5
-                            ? refs[idx + 1]
-                            : parseAmount(form.tjera) > 0
-                            ? pershkrimiRef
-                            : submitRef;
+                        {[
+                          "cash",
+                          "monedha",
+                          "borxhe",
+                          "banka",
+                          "pagesFatura",
+                          "tjera",
+                        ].map((field, idx) => {
+                          const refs = [
+                            cashRef,
+                            monedhaRef,
+                            borxheRef,
+                            bankaRef,
+                            pagesFaturaRef,
+                            tjeraRef,
+                          ];
+                          const nextRef =
+                            idx < 5
+                              ? refs[idx + 1]
+                              : parseAmount(form.tjera) > 0
+                              ? pershkrimiRef
+                              : submitRef;
 
                           const labels = {
                             cash: "Cash (karta/kuponë)",
@@ -410,14 +471,21 @@ function BarazimiArkes() {
 
                           return (
                             <Form.Group key={field}>
-                              <Form.Label className="small fw-semibold">{labels[field]}</Form.Label>
+                              <Form.Label className="small fw-semibold">
+                                {labels[field]}
+                              </Form.Label>
                               <InputGroup>
                                 <Form.Control
                                   ref={refs[idx]}
                                   type="text"
                                   inputMode="decimal"
                                   value={form[field]}
-                                  onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                                  onChange={(e) =>
+                                    setForm({
+                                      ...form,
+                                      [field]: e.target.value,
+                                    })
+                                  }
                                   onKeyDown={(e) => handleKeyDown(e, nextRef)}
                                   placeholder="0.00"
                                   className="fw-bold text-end"
@@ -427,8 +495,7 @@ function BarazimiArkes() {
                                   ref={calcButtonRefs[field]}
                                   variant="outline-danger"
                                   size="sm"
-                                  onClick={() => openCalculator(field)}
-                                >
+                                  onClick={() => openCalculator(field)}>
                                   🧮
                                 </Button>
                               </InputGroup>
@@ -445,13 +512,17 @@ function BarazimiArkes() {
                 <Row className="mt-3">
                   <Col>
                     <Form.Group>
-                      <Form.Label className="fw-semibold text-danger small">Përshkrimi për "Tjera"</Form.Label>
+                      <Form.Label className="fw-semibold text-danger small">
+                        Përshkrimi për "Tjera"
+                      </Form.Label>
                       <Form.Control
                         ref={pershkrimiRef}
                         as="textarea"
                         rows={2}
                         value={form.pershkrimiTjera}
-                        onChange={(e) => setForm({ ...form, pershkrimiTjera: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, pershkrimiTjera: e.target.value })
+                        }
                         onKeyDown={(e) => handleKeyDown(e, submitRef)}
                       />
                     </Form.Group>
@@ -460,7 +531,13 @@ function BarazimiArkes() {
               )}
 
               <div className="text-center mt-4">
-                <Button ref={submitRef} variant="success" size="lg" className="px-5 shadow-sm" onClick={handleSubmit}>
+                <Button
+                  ref={submitRef}
+                  variant="success"
+                  size="lg"
+                  className="px-5 shadow-sm"
+                  disabled={error}
+                  onClick={handleSubmit}>
                   Regjistro Barazimin
                 </Button>
               </div>

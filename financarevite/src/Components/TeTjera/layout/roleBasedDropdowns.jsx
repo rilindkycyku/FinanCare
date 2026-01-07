@@ -42,7 +42,7 @@ export const roleBasedDropdowns = [
         ],
       },
       {
-        roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist", "Arkatar"],
+        roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist", "Arkatar", "Pergjegjes i Porosive"],
         label: "Hyrjet",
         subItems: [
           {
@@ -55,6 +55,12 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Kalkulant", "Arkatar"],
             path: "/KthimiMallitTeShitur",
             label: "Kthim i Mallit te Shitur",
+          },
+          {
+            roles: ["Menaxher", "Kalkulant", "Pergjegjes i Porosive"],
+            path: "/PranimiIMallit",
+            label: "Pranimi i Mallit",
+            shfaqNeDashboard: true,
           },
           { isDivider: true },
           {
@@ -188,11 +194,11 @@ export const roleBasedDropdowns = [
         ],
       },
       {
-        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant"],
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "Pergjegjes i Porosive"],
         label: "Partneret",
         subItems: [
           {
-            roles: ["Menaxher", "Kalkulant", "Komercialist"],
+            roles: ["Menaxher", "Kalkulant", "Komercialist", "Pergjegjes i Porosive"],
             path: "/TabelaEPartnereve",
             label: "Lista e Partnereve",
           },

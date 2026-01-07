@@ -1021,6 +1021,36 @@
         }
       }
     },
+    "/api/Faturat/BartNgaPranimiMallitKalkulim": {
+      "put": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "idPartneri",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Faturat/FaturoOferten": {
       "put": {
         "tags": [

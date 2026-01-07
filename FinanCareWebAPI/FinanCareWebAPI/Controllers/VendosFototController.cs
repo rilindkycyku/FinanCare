@@ -67,9 +67,7 @@ namespace WebAPI.Controllers
         [HttpPost("EditoProduktin")]
         public async Task<IActionResult> EditoProduktin(IFormFile? foto, string? fotoVjeterProduktit = null)
         {
-            // 1. Folderi absolut – gjithmonë i saktë!
-            var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "besasalesystemklient", "public");
-            var follderi = Path.Combine(webRootPath, "img", "products");
+            var follderi = Path.Combine("..", "..", "financareonline", "public", "img", "products");
 
             // Sigurohu që folderi ekziston
             if (!Directory.Exists(follderi))

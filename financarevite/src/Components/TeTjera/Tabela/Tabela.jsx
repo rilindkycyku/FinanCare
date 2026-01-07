@@ -35,6 +35,7 @@ function Tabela({
   funksionShfaqFature,
   funksioniEditoStokunQmimin,
   funksionNdryshoStatusinEFatures,
+  funksionImportoNgaPranimiMallit,
   funksionFaturoOferten,
   dateField, // Field for single date filtering
   startDateField, // Start date field for range filtering
@@ -182,6 +183,16 @@ function Tabela({
                             variant="success"
                             onClick={() => funksionNdryshoStatusinEFatures()}>
                             Ndrysho Statusin e Fatures{" "}
+                            <FontAwesomeIcon icon={faPenToSquare} />
+                          </Button>
+                        </Col>
+                      )}
+                      {funksionImportoNgaPranimiMallit && (
+                        <Col xs="auto" className="pe-0">
+                          <Button
+                            variant="success"
+                            onClick={() => funksionImportoNgaPranimiMallit()}>
+                            Importo nga Pranimi i Mallit{" "}
                             <FontAwesomeIcon icon={faPenToSquare} />
                           </Button>
                         </Col>

@@ -243,7 +243,7 @@ function ShtoPartnerin(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant", "Komercialist"]}
+        roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Pergjegjes i Porosive"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

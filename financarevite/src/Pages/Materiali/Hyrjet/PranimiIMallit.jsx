@@ -10,14 +10,12 @@ import {
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import RegjistroFaturen from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/RegjistroFaturen";
-import PerditesoStatusinKalk from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/PerditesoStatusinKalk";
-import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/TeDhenatKalkulimit";
+import RegjistroFaturen from "../../../Components/Materiali/Hyrjet/PranimiIMallit/RegjistroFaturen";
+import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/PranimiIMallit/TeDhenatKalkulimit";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
-import ImportoNgaPranimiMallit from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/ImportoNgaPranimiMallit";
 
 function KalkulimiIMallit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -35,7 +33,7 @@ function KalkulimiIMallit(props) {
   const initialDate = today.toISOString().split("T")[0]; // Format as 'yyyy-MM-dd'
   const [dataEFatures, setDataEFatures] = useState(initialDate);
   const [llojiIPageses, setLlojiIPageses] = useState("Cash");
-  const [statusiIPageses, setStatusiIPageses] = useState("E Paguar");
+  const [statusiIPageses, setStatusiIPageses] = useState("Pa Paguar");
   const [totPaTVSH, setTotPaTVSH] = useState("0.00");
   const [TVSH, setTVSH] = useState("0.00");
 
@@ -48,8 +46,6 @@ function KalkulimiIMallit(props) {
   const [idKalkulimitEdit, setIdKalkulimitEdit] = useState(0);
 
   const [edito, setEdito] = useState(false);
-  
-  const [importo, setImporto] = useState(false);
 
   const [teDhenat, setTeDhenat] = useState([]);
 
@@ -82,7 +78,7 @@ function KalkulimiIMallit(props) {
           authentikimi
         );
         const kalkulimet = kalkulimi.data.filter(
-          (item) => item.llojiKalkulimit === "HYRJE"
+          (item) => item.llojiKalkulimit === "PRM"
         );
         setKalkulimet(
           kalkulimet.map((k) => ({
@@ -93,12 +89,7 @@ function KalkulimiIMallit(props) {
             "Totali Pa TVSH €": parseFloat(k.totaliPaTVSH).toFixed(2),
             "TVSH €": parseFloat(k.tvsh).toFixed(2),
             "Totali €": parseFloat(k.totaliPaTVSH + k.tvsh).toFixed(2),
-            "Tot. nga Regjistrimi": k.pershkrimShtese,
             "Data e Fatures": new Date(k.dataRegjistrimit).toISOString(),
-            "Statusi Pageses": k.statusiPageses,
-            "Lloji Pageses": k.llojiPageses,
-            "Statusi Kalkulimit":
-              k.statusiKalkulimit === "true" ? "I Mbyllur" : "I Hapur",
           }))
         );
         setLoading(false);
@@ -153,7 +144,7 @@ function KalkulimiIMallit(props) {
     const vendosNrFaturesMeRradhe = async () => {
       try {
         const nrFat = await axios.get(
-          `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=HYRJE`,
+          `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=PRM`,
           authentikimi
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
@@ -187,7 +178,7 @@ function KalkulimiIMallit(props) {
             llojiPageses: llojiIPageses,
             nrFatures: nrFatures,
             nrRendorFatures: nrRendorKalkulimit + 1,
-            llojiKalkulimit: "HYRJE",
+            llojiKalkulimit: "PRM",
           },
           authentikimi
         )
@@ -268,15 +259,6 @@ function KalkulimiIMallit(props) {
     setPerditeso(Date.now());
   }
 
-  function ndryshoImporto(shfaq) {
-    if (shfaq === true) {
-      setImporto(true);
-    } else {
-      setImporto(false);
-    }
-    setPerditeso(Date.now());
-  }
-
   const mbyllTeDhenat = () => {
     setMbyllFaturen(true);
     setShfaqTeDhenat(false);
@@ -325,7 +307,7 @@ function KalkulimiIMallit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant",  "Pergjegjes i Porosive"]} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -353,12 +335,6 @@ function KalkulimiIMallit(props) {
             hide={() => ndryshoStatusin(false)}
           />
         )}
-        {importo && (
-          <ImportoNgaPranimiMallit
-            show={() => ndryshoImporto(true)}
-            hide={() => ndryshoImporto(false)}
-          />
-        )}
         {loading ? (
           <div className="Loader">
             <TailSpin
@@ -376,7 +352,7 @@ function KalkulimiIMallit(props) {
           !regjistroKalkulimin &&
           !shfaqTeDhenat && (
             <>
-              <h1 className="title">Kalkulimi i Mallit</h1>
+              <h1 className="title">Pranimi i Mallit</h1>
 
               <Container fluid>
                 <Row>
@@ -450,7 +426,7 @@ function KalkulimiIMallit(props) {
                           }
                         }}
                         onKeyDown={(e) => {
-                          ndrroField(e, "statusiIPageses");
+                          ndrroField(e, "totPaTVSH");
                         }}>
                         <option defaultValue value={0} key={0} disabled>
                           Zgjedhni Llojin e Pageses
@@ -463,31 +439,6 @@ function KalkulimiIMallit(props) {
                         </option>
                         <option key={3} value="Borxh">
                           Borxh
-                        </option>
-                      </select>
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Statusi i Pageses</Form.Label>
-                      <select
-                        id="statusiIPageses"
-                        placeholder="Statusi i Pageses"
-                        className="form-select"
-                        value={statusiIPageses}
-                        onChange={(e) => {
-                          setStatusiIPageses(e.target.value);
-                        }}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "totPaTVSH");
-                        }}
-                        disabled={llojiIPageses === "Borxh" ? true : false}>
-                        <option defaultValue value={0} key={0} disabled>
-                          Zgjedhni Statusin e Pageses
-                        </option>
-                        <option key={1} value="E Paguar">
-                          E Paguar
-                        </option>
-                        <option key={2} value="Pa Paguar">
-                          Pa Paguar
                         </option>
                       </select>
                     </Form.Group>
@@ -533,8 +484,6 @@ function KalkulimiIMallit(props) {
                     tableName="Lista e Kalkulimeve"
                     kaButona={true}
                     funksionShfaqFature={(e) => handleShfaqTeDhenat(e)}
-                    funksionNdryshoStatusinEFatures={() => setEdito(true)}
-                    funksionImportoNgaPranimiMallit={() => setImporto(true)}
                     funksionButonEdit={(e) => {
                       setIdKalkulimitEdit(e);
                       setNrRendorKalkulimit(e);

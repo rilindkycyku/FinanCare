@@ -870,6 +870,35 @@ namespace WebAPI.Controllers
 
         [Authorize]
         [HttpPut]
+        [Route("BartNgaPranimiMallitKalkulim")]
+        public async Task<IActionResult> BartNgaPranimiMallitKalkulim(int id, int idPartneri)
+        {
+            var kalkulimi = await _context.Faturat.FindAsync(id);
+            var nrRendorFatures = await _context.Faturat.Where(x => x.LlojiKalkulimit == "HYRJE").CountAsync();
+
+            if (kalkulimi == null)
+            {
+                return NotFound();
+            }
+
+            kalkulimi.LlojiKalkulimit = "HYRJE";
+            kalkulimi.NrRendorFatures = nrRendorFatures + 1;
+            kalkulimi.StafiID = idPartneri;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return Ok(kalkulimi);
+        }
+
+        [Authorize]
+        [HttpPut]
         [Route("FaturoOferten")]
         public async Task<IActionResult> FaturoOferten(int id)
         {

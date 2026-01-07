@@ -37,6 +37,8 @@ function EditoProduktin(props) {
   const fileInputRef = useRef(null);
   const [selectedImages, setSelectedImages] = useState([]);
 
+  const [removeCurrentPhoto, setRemoveCurrentPhoto] = useState(false);
+
   const customStyles = {
     menu: (provided) => ({ ...provided, zIndex: 1050 }),
   };
@@ -45,6 +47,13 @@ function EditoProduktin(props) {
   const authentikimi = {
     headers: { Authorization: `Bearer ${getToken}` },
   };
+
+  useEffect(() => {
+  if (!props.show) {
+    setSelectedImages([]);
+    setRemoveCurrentPhoto(false);
+  }
+}, [props.show]);
 
   // Fetch dropdowns
   useEffect(() => {
@@ -235,22 +244,60 @@ function EditoProduktin(props) {
   };
 
   const handleSubmit = async () => {
+    let finalFotoName = produkti.fotoProduktit; // default: keep old
+
     try {
+      // Case 1: User removed current photo and uploaded nothing → use default
+      if (removeCurrentPhoto && selectedImages.length === 0) {
+        finalFotoName = "ProduktPaFoto.png";
+      }
+      // Case 2: User uploaded new photo(s) → upload the FIRST one only
+      else if (selectedImages.length > 0) {
+        const formData = new FormData();
+        formData.append("foto", selectedImages[0]); // Only first image
+
+        const uploadRes = await axios.post(
+          `${API_BASE_URL}/api/VendosFotot/EditoProduktin?fotoVjeterProduktit=${removeCurrentPhoto ? "" : produkti.fotoProduktit}`, // Your dedicated endpoint
+          formData,
+          {
+            headers: {
+              ...authentikimi.headers,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        finalFotoName = uploadRes.data; // Backend returns new filename
+      }
+      // Case 3: User removed current photo but didn't upload new → default
+      else if (removeCurrentPhoto) {
+        finalFotoName = "ProduktPaFoto.png";
+      }
+      // Else: keep existing photo
+
+      // Now update the product with the correct fotoProduktit
+      const updatedProduct = {
+        ...produkti,
+        fotoProduktit: finalFotoName,
+      };
+
+      // Final PUT to update the product
       await axios.put(
         `${API_BASE_URL}/api/Produkti/${props.id}`,
-        produkti,
+        updatedProduct,
         authentikimi
       );
+
       props.setTipiMesazhit("success");
       props.setPershkrimiMesazhit("Produkti u përditësua me sukses!");
       props.perditesoTeDhenat();
       props.hide();
       props.shfaqmesazhin();
     } catch (error) {
+      console.error("Error updating product:", error);
       props.setTipiMesazhit("danger");
-      props.setPershkrimiMesazhit("Gabim gjatë ruajtjes!");
+      props.setPershkrimiMesazhit("Gabim gjatë ruajtjes së produktit!");
       props.shfaqmesazhin();
-      console.log(error);
     }
   };
 
