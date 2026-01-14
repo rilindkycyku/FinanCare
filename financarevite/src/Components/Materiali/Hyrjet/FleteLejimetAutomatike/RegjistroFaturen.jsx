@@ -50,7 +50,7 @@ function RegjistroFaturen(props) {
   const [konfirmoMbylljenFatures, setKonfirmoMbylljenFatures] = useState(false);
   const [shikoFaturatEShitjesPartneri, setShikoFaturatEShitjesPartneri] =
     useState(false);
-     const [shikoFaturatEShitjesProdukti, setShikoFaturatEShitjesProdukti] =
+  const [shikoFaturatEShitjesProdukti, setShikoFaturatEShitjesProdukti] =
     useState(false);
 
   const [teDhenat, setTeDhenat] = useState([]);
@@ -389,6 +389,7 @@ function RegjistroFaturen(props) {
             hide={() => setShikoFaturatEShitjesPartneri(false)}
             perditeso={() => setPerditeso(Date.now())}
             id={props.idKalkulimitEdit}
+            pID={props.pId}
           />
         )}
         {shikoFaturatEShitjesProdukti && (
@@ -397,6 +398,7 @@ function RegjistroFaturen(props) {
             hide={() => setShikoFaturatEShitjesProdukti(false)}
             perditeso={() => setPerditeso(Date.now())}
             id={props.idKalkulimitEdit}
+            pID={props.pId}
           />
         )}
         {loading ? (
@@ -422,7 +424,10 @@ function RegjistroFaturen(props) {
                   <Col md={6}>
                     <Button
                       className="mb-3 w-100"
-                      style={{ backgroundColor: '#009879', borderColor: '#009879' }}
+                      style={{
+                        backgroundColor: "#009879",
+                        borderColor: "#009879",
+                      }}
                       onClick={() => setShikoFaturatEShitjesPartneri(true)}>
                       Faturat <FontAwesomeIcon icon={faFileInvoice} />
                     </Button>
@@ -430,7 +435,10 @@ function RegjistroFaturen(props) {
                   <Col md={6}>
                     <Button
                       className="mb-3 w-100"
-                      style={{ backgroundColor: '#009879', borderColor: '#009879' }}
+                      style={{
+                        backgroundColor: "#009879",
+                        borderColor: "#009879",
+                      }}
                       onClick={() => setShikoFaturatEShitjesProdukti(true)}>
                       Produkti <FontAwesomeIcon icon={faCookieBite} />
                     </Button>

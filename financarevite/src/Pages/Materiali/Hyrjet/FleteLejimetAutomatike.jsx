@@ -298,6 +298,7 @@ function FleteLejimetAutomatike(props) {
             nrRendorKalkulimit={idKalkulimitEdit}
             setPerditeso={() => setPerditeso(Date.now())}
             idKalkulimitEdit={idKalkulimitEdit}
+            pId={Partneri}
           />
         )}
         {edito && (

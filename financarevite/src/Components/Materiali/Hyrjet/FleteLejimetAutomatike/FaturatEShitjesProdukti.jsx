@@ -83,9 +83,10 @@ function PerditesoStatusinKalk(props) {
             )
           : [];
         setKalkulimet(kalkulimet);
+        
         setKalkulimetEFiltruara(
           kalkulimet.filter((k) =>
-            k.emriBiznesit?.toLowerCase().includes(partnerFilter.toLowerCase())
+            (k.emriBiznesit?.toLowerCase().includes(partnerFilter.toLowerCase())) && k.idPartneri === props.pID
           )
         );
         if (kalkulimet.length === 0) {

@@ -158,7 +158,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -171,19 +171,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ExportoTeDhenatTekKlientiController.cs",
-              "DocumentMoniker": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
-              "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
-              "ToolTip": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
-              "RelativeToolTip": "FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
-              "ViewState": "AgIAAGgAAAAAAAAAAAAUwHkAAAAuAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T20:24:09.759Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -211,19 +198,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "FaturatController.cs",
-              "DocumentMoniker": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\FaturatController.cs",
-              "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\FaturatController.cs",
-              "ToolTip": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\FaturatController.cs",
-              "RelativeToolTip": "FinanCareWebAPI\\Controllers\\FaturatController.cs",
-              "ViewState": "AgIAAG0DAAAAAAAAAAAmwHgDAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-06T09:15:32.709Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "VendosFototController.cs",
               "DocumentMoniker": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\VendosFototController.cs",
@@ -234,6 +208,30 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-03T11:51:44.337Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ExportoTeDhenatTekKlientiController.cs",
+              "DocumentMoniker": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
+              "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
+              "ToolTip": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
+              "RelativeToolTip": "FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
+              "ViewState": "AgIAAGgAAAAAAAAAAAAUwHkAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T20:24:09.759Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "FaturatController.cs",
+              "DocumentMoniker": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\FaturatController.cs",
+              "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\FaturatController.cs",
+              "ToolTip": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\FaturatController.cs",
+              "RelativeToolTip": "FinanCareWebAPI\\Controllers\\FaturatController.cs",
+              "ViewState": "AgIAAG0DAAAAAAAAAAAmwHgDAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-06T09:15:32.709Z"
             },
             {
               "$type": "Document",
@@ -618,6 +616,10 @@
               "ViewState": "AgIAAKkAAAAAAAAAAAAQwHMAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-30T17:11:29.946Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             }
           ]
         }

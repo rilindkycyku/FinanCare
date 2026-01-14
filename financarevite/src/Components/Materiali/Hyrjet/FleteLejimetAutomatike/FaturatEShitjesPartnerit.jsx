@@ -72,7 +72,8 @@ function PerditesoStatusinKalk(props) {
           authentikimi
         );
         const kalkulimet = kalkulimi.data.filter(
-          (item) => item.llojiKalkulimit === "FAT"
+          (item) =>
+            item.llojiKalkulimit === "FAT" && item.idPartneri === props.pID
         );
         setKalkulimetEFiltruara(kalkulimet);
       } catch (err) {
@@ -171,9 +172,7 @@ function PerditesoStatusinKalk(props) {
         show={props.show}
         onHide={props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>
-              Lista e Kalkulimeve
-          </Modal.Title>
+          <Modal.Title>Lista e Kalkulimeve</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {error && <div className="error-message">{error}</div>}
