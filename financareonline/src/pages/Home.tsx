@@ -1,77 +1,68 @@
-// src/pages/Home.tsx → VETËM PRODUKTE ME OFERTË / ÇMIM SPECIAL (MAX 15)
+// src/pages/Home.tsx - Shows only products with active Rabati discounts (max 15)
 import { useEffect, useState } from "react";
 import productsData from "../data/products.json";
 import businessData from "../data/business.json";
 import ProductCard from "../components/ProductCard";
-import { useAuth } from "../context/AuthContext";
 import { getDisplayPrice } from "../context/CartContext";
 import type { Produkti } from "../types";
 import Titulli from "../components/Titulli";
 
+// Helper to check if product discount is active
+// Product is on offer if: Rabati > 0 AND not expired
+const isProductDiscountActive = (product: any): boolean => {
+  const discount = product.ZbritjaQmimitProduktit;
+  
+  if (!discount || discount.Rabati <= 0) return false;
+  
+  if (discount.DataSkadimit) {
+    const expiryDate = new Date(discount.DataSkadimit);
+    const now = new Date();
+    if (now > expiryDate) return false;
+  }
+  
+  return true;
+};
+
 export default function Home() {
-  const { user } = useAuth();
   const [products, setProducts] = useState<Produkti[]>([]);
 
-  const categoryID = Number(user?.IDKategoritEPartnerit ?? 0);
-
   useEffect(() => {
-    const activeProducts = productsData
-      .filter((p: any) => p.isDeleted !== "true");
+    const activeProducts = productsData.filter((p: any) => p.isDeleted !== "true");
 
-    // Logjika: cilat produkte kanë zbritje?
     const discountedProducts = activeProducts
       .map((p: any) => {
-        const finalPrice = getDisplayPrice(p, categoryID);
+        const finalPrice = getDisplayPrice(p);
         const basePrice = Number(p.StokuQmimiProduktit?.QmimiProduktit ?? 0);
-        const globalOffer = p.StokuQmimiProduktit?.EshteNeOfert === "true";
-
-        let isDiscounted = false;
-        let discountType = "";
-
-        // 1. Ofertë globale
-        if (globalOffer && finalPrice < basePrice) {
-          isDiscounted = true;
-          discountType = "global";
-        }
-        // 2. Ofertë sipas kategorisë së klientit
-        else if (categoryID > 0) {
-          const categoryEntry = (p.QmimiProduktitPerKategori || []).find(
-            (cp: any) => Number(cp.IdKategoritEPartnerit) === categoryID
-          );
-          if (categoryEntry?.EshteNeOfert === "true") {
-            isDiscounted = true;
-            discountType = "categoryOffer";
-          }
-          // 3. Çmim special për kategorinë (jo ofertë zyrtare, por më i ulët)
-          else if (finalPrice < basePrice && finalPrice > 0) {
-            isDiscounted = true;
-            discountType = "categoryDiscount";
-          }
-        }
+        
+        // Check if product has active discount (Rabati > 0 and not expired)
+        const hasActiveDiscount = isProductDiscountActive(p);
+        const discountPercentage = hasActiveDiscount 
+          ? Number(p.ZbritjaQmimitProduktit?.Rabati ?? 0)
+          : 0;
 
         return {
           ...p,
           QmimiFinal: finalPrice,
-          isDiscounted,
-          discountType,
+          isDiscounted: hasActiveDiscount,
+          discountPercentage,
         };
       })
-      // Vetëm ato me zbritje
+      // Only show products with active discounts (Rabati > 0 and not expired)
       .filter((p: any) => p.isDiscounted)
-      // Rendit sipas ID (më të rejat së pari)
+      // Sort by newest first
       .sort((a: any, b: any) => b.ProduktiID - a.ProduktiID)
-      // Max 15 produkte
+      // Show max 15 products
       .slice(0, 15);
 
     setProducts(discountedProducts as Produkti[]);
-  }, [categoryID]);
+  }, []);
 
   return (
     <>
       <Titulli titulli="Ballina" />
 
       <div className="min-h-screen bg-gray-50">
-        {/* HERO – I njëjti */}
+        {/* HERO SECTION */}
         <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0 bg-[url('/grid.svg')]"></div>
@@ -110,14 +101,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* OFERTAT E VEÇANTA */}
+        {/* SPECIAL OFFERS SECTION - Only shows products with Rabati > 0 and not expired */}
         <div className="max-w-7xl mx-auto px-6 py-12">
           {products.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-600 text-xl font-medium">
                 Momentalisht nuk ka oferta aktive.
               </p>
-              <a href="/products" className="mt-6 inline-block px-8 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition">
+              <a
+                href="/products"
+                className="mt-6 inline-block px-8 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition">
                 Shiko të gjitha produktet
               </a>
             </div>
@@ -125,13 +118,16 @@ export default function Home() {
             <>
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-800 flex items-center gap-3">
-                  <span className="text-red-600 animate-pulse text-4xl">★</span>
+                  <span className="text-red-600 animate-pulse text-4xl">🔥</span>
                   Ofertat e veçanta për ty
                 </h2>
                 <a
                   href="/products"
                   className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-2 transition-colors">
                   Shiko të gjitha
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </a>
               </div>
 

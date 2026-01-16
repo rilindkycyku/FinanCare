@@ -1,14 +1,15 @@
+using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Net;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using WebAPI.Configurations;
-using Microsoft.OpenApi.Models;
-using FinanCareWebAPI.Migrations;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -103,6 +104,8 @@ builder.Services.AddSwaggerGen(c => {
         }
     });
 });
+
+builder.Services.AddScoped<KartelaService>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {

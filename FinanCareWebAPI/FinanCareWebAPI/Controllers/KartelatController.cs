@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FinanCareWebAPI.Models;
-using FinanCareWebAPI.Migrations;
 
 namespace FinanCareWebAPI.Controllers
 {
@@ -13,10 +14,12 @@ namespace FinanCareWebAPI.Controllers
     public class KartelatController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly KartelaService _kartelaService;
 
-        public KartelatController(FinanCareDbContext context)
+        public KartelatController(FinanCareDbContext context, KartelaService kartelaService)
         {
             _context = context;
+            _kartelaService = kartelaService;
         }
 
         [Authorize]
@@ -83,25 +86,19 @@ namespace FinanCareWebAPI.Controllers
         [Route("ShtoKartelenBonus")]
         public async Task<IActionResult> ShtoKartelenBonus(int idPartneri, int stafiID, int rabati)
         {
-            var kartelaCount = await _context.Kartelat.CountAsync();
-
-            var kodiKartela = $"B{idPartneri.ToString().PadLeft(6, '0')}{(kartelaCount + 1).ToString().PadLeft(6, '0')}";
-
-            Kartelat kartela = new Kartelat
+            try
             {
-                DataKrijimit = DateTime.Now,
-                LlojiKarteles = "Bonus",
-                Rabati = rabati,
-                PartneriID = idPartneri,
-                KodiKartela = kodiKartela,
-                StafiID = stafiID,
-            };
-
-            _context.Kartelat.Add(kartela);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(kartela);
+                var kartela = await _kartelaService.ShtoKartelenBonus(idPartneri, stafiID, rabati);
+                return Ok(kartela);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Gabim: {ex.Message}");
+            }
         }
 
         [Authorize]
@@ -147,7 +144,7 @@ namespace FinanCareWebAPI.Controllers
                 kartela.StafiID = k.StafiID;
             }
 
-            if (k.Rabati > 0)
+            if (k.Rabati >= 0)
             {
                 kartela.Rabati = k.Rabati;
             }

@@ -1930,6 +1930,14 @@
         ],
         "parameters": [
           {
+            "name": "stafiID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
             "name": "id",
             "in": "query",
             "schema": {

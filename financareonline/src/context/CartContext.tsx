@@ -1,54 +1,68 @@
 // src/context/CartContext.tsx
 import { createContext, useContext, useReducer, useEffect } from "react";
-import { useAuth } from "./AuthContext";
 import cartReducer from "./cartReducer";
 import type { CartState, CartItem } from "./cartReducer";
 import type { Produkti } from "../types";
 
-export const getDisplayPrice = (
-  product: Produkti,
-  partnerCategoryId: number = 0
-): number => {
-  const basePrice = Number(product.StokuQmimiProduktit?.QmimiProduktit ?? 0);
-
-  // Nëse nuk ka kategori partnere → kthe çmimin bazë
-  if (!partnerCategoryId || partnerCategoryId <= 0) {
-    return basePrice;
+// Helper function to check if discount is active
+// Discount is active if: Rabati > 0 AND (no expiry date OR not expired)
+const isDiscountActive = (product: Produkti): boolean => {
+  const discount = product.ZbritjaQmimitProduktit;
+  
+  // No discount object or Rabati is 0 or less
+  if (!discount || discount.Rabati <= 0) return false;
+  
+  // Check if discount has expired
+  if (discount.DataSkadimit) {
+    const expiryDate = new Date(discount.DataSkadimit);
+    const now = new Date();
+    if (now > expiryDate) return false;
   }
-
-  const categoryPrices = product.QmimiProduktitPerKategori || [];
-
-  // 1. Kontrollo nëse ka çmim EKZAKT për këtë kategori
-  const exactMatch = categoryPrices.find(
-    (p) => Number(p.IdKategoritEPartnerit) === partnerCategoryId
-  );
-
-  // Nëse ka çmim për këtë kategori → përdore atë (edhe nëse është 0 ose më i lartë)
-  if (exactMatch !== undefined) {
-    const categoryPrice = Number(exactMatch.QmimiProduktit);
-    return categoryPrice > 0 ? categoryPrice : basePrice;
-  }
-
-  // 2. Nëse NUK ka çmim për këtë kategori → kthe çmimin bazë (JO më të ulëtin nga të tjerët!)
-  return basePrice;
+  
+  // Discount is active: Rabati > 0 and not expired
+  return true;
 };
-const initialState: CartState = { cart: [] }; // Fillojmë bosh
 
-const CartContext = createContext<{
-  cart: CartItem[];
-  addToCart: (product: Produkti) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
-  clearCart: () => void;
-  total: number;
-  totalItems: number;
-} | undefined>(undefined);
+// Calculate display price with discount logic
+export const getDisplayPrice = (product: Produkti): number => {
+  const qmimiBaze = Number(product.StokuQmimiProduktit?.QmimiProduktit ?? 0);
+  
+  if (qmimiBaze <= 0) return 0;
+
+  // Check if product has active discount (Rabati > 0 and not expired)
+  if (isDiscountActive(product)) {
+    const rabati = Number(product.ZbritjaQmimitProduktit?.Rabati ?? 0);
+    
+    if (rabati > 0) {
+      // Calculate discounted price: base price - (base price * discount percentage / 100)
+      const qmimiMeZbritje = qmimiBaze - (qmimiBaze * (rabati / 100));
+      return Number(qmimiMeZbritje.toFixed(2));
+    }
+  }
+
+  // Return base price if no active discount
+  return qmimiBaze;
+};
+
+const initialState: CartState = { cart: [] };
+
+const CartContext = createContext<
+  | {
+      cart: CartItem[];
+      addToCart: (product: Produkti) => void;
+      removeFromCart: (id: number) => void;
+      updateQuantity: (id: number, quantity: number) => void;
+      clearCart: () => void;
+      total: number;
+      totalItems: number;
+    }
+  | undefined
+>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-  const { user } = useAuth();
 
-  // FIX-I KRYESOR: Lexo cart nga localStorage në fillim
+  // Load cart from localStorage on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem("cart");
@@ -63,42 +77,34 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const addToCart = (product: Produkti) => {
-  const categoryID = Number(user?.IDKategoritEPartnerit ?? 0);
-  const finalPrice = getDisplayPrice(product, categoryID);
+    const finalPrice = getDisplayPrice(product);
 
-  const globalOffer = product.StokuQmimiProduktit?.EshteNeOfert === "true";
-  let categoryOffer = false;
-  if (categoryID > 0) {
-    const usedPriceEntry = (product.QmimiProduktitPerKategori || []).find(
-      (p) =>
-        Number(p.IdKategoritEPartnerit) === categoryID &&
-        Number(p.QmimiProduktit) === finalPrice
-    );
-    categoryOffer = usedPriceEntry?.EshteNeOfert === "true";
-  }
+    // Check if product has active discount (Rabati > 0 and not expired)
+    const hasProductDiscount = isDiscountActive(product);
+    const discountPercentage = hasProductDiscount 
+      ? Number(product.ZbritjaQmimitProduktit?.Rabati ?? 0)
+      : 0;
 
-  const isOfficialOffer = globalOffer || categoryOffer;
-  const isCategoryDiscount =
-    !isOfficialOffer && finalPrice < Number(product.StokuQmimiProduktit?.QmimiProduktit ?? 0);
+    // Get current stock
+    const stock = Number(product.StokuQmimiProduktit?.SasiaNeStok ?? 999);
 
-  // MARRIM STOKUN AKTUALE
-  const stock = Number(product.StokuQmimiProduktit?.SasiaNeStok ?? 999);
+    dispatch({
+      type: "ADD_TO_CART",
+      product,
+      displayPrice: finalPrice,
+      hasProductDiscount,
+      discountPercentage,
+      Barkodi: product.Barkodi,
+      SasiaNeStok: stock,
+    });
+  };
 
-  dispatch({
-    type: "ADD_TO_CART",
-    product,
-    displayPrice: finalPrice,
-    isCategoryDiscount,
-    isOfficialOffer,
-    Barkodi: product.Barkodi,
-    // SHTOJMË STOKUN KËTU
-    SasiaNeStok: stock,
-  });
-};
-
-  const removeFromCart = (id: number) => dispatch({ type: "REMOVE_FROM_CART", id });
+  const removeFromCart = (id: number) =>
+    dispatch({ type: "REMOVE_FROM_CART", id });
+  
   const updateQuantity = (id: number, quantity: number) =>
     dispatch({ type: "UPDATE_QUANTITY", id, quantity });
+  
   const clearCart = () => dispatch({ type: "CLEAR_CART" });
 
   const total = Number(
@@ -116,8 +122,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         clearCart,
         total,
         totalItems,
-      }}
-    >
+      }}>
       {children}
     </CartContext.Provider>
   );

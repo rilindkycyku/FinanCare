@@ -52,8 +52,15 @@ namespace TechStoreWebAPI.Controllers
                             QmimiProduktit = p.StokuQmimiProduktit != null
             ? p.StokuQmimiProduktit.QmimiProduktit ?? 0m
             : 0m,
-                        }
+                        },
 
+                        ZbritjaQmimitProduktit = new
+                        {
+
+                            Rabati = p.ZbritjaQmimitProduktit.Rabati ?? 0,
+                            DataZbritjes = p.ZbritjaQmimitProduktit.DataZbritjes,
+                            DataSkadimit = p.ZbritjaQmimitProduktit.DataSkadimit,
+                        }
                     })
 .OrderByDescending(p => p.StokuQmimiProduktit.SasiaNeStok)
 .ThenByDescending(p => p.ProduktiID)

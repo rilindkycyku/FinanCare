@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FinanCareWebAPI.Models;
-using FinanCareWebAPI.Migrations;
 
 namespace FinanCareWebAPI.Controllers
 {
@@ -13,10 +14,12 @@ namespace FinanCareWebAPI.Controllers
     public class PartneriController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly KartelaService _kartelaService;
 
-        public PartneriController(FinanCareDbContext context)
+        public PartneriController(FinanCareDbContext context, KartelaService kartelaService)
         {
             _context = context;
+            _kartelaService = kartelaService;
         }
 
         [Authorize]
@@ -232,7 +235,7 @@ namespace FinanCareWebAPI.Controllers
         [Authorize]
         [HttpPut]
         [Route("perditesoPartnerin")]
-        public async Task<IActionResult> Put(int id, [FromBody] Partneri k)
+        public async Task<IActionResult> Put(int stafiID, int id, [FromBody] Partneri k)
         {
             var partneri = await _context.Partneri.FirstOrDefaultAsync(x => x.IDPartneri == id);
             if (id < 0)
@@ -268,13 +271,109 @@ namespace FinanCareWebAPI.Controllers
             {
                 partneri.NrKontaktit = k.NrKontaktit;
             }
-            if (!k.LlojiPartnerit.IsNullOrEmpty())
-            {
-                partneri.LlojiPartnerit = k.LlojiPartnerit;
-            }
             if (!k.ShkurtesaPartnerit.IsNullOrEmpty())
             {
                 partneri.ShkurtesaPartnerit = k.ShkurtesaPartnerit;
+            }
+            if (!string.IsNullOrEmpty(k.LlojiPartnerit))
+            {
+                // Case 1: Changing to Blerës (Buyer) - should have bonus card
+                if (k.LlojiPartnerit == "B" || k.LlojiPartnerit == "B/F")
+                {
+                    partneri.LlojiPartnerit = k.LlojiPartnerit;
+
+                    // Check if partner already has a bonus card
+                    var kaKartelaBonus = await _kartelaService.PartnerKaKartelaBonus(id);
+
+                    if (!kaKartelaBonus)
+                    {
+
+                        try
+                        {
+                            // Save partner changes first
+                            _context.Partneri.Update(partneri);
+                            await _context.SaveChangesAsync();
+
+                            // Create bonus card
+                            var kartela = await _kartelaService.ShtoKartelenBonus(id, stafiID,  0);
+
+                            return Ok(new
+                            {
+                                partneri = partneri,
+                                kartela = kartela,
+                                message = "Partneri u perditesua dhe kartela bonus u krijua me sukses"
+                            });
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            return BadRequest(ex.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            return StatusCode(500, $"Gabim gjate krijimit te karteles: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        // Just update the partner, card already exists
+                        _context.Partneri.Update(partneri);
+                        await _context.SaveChangesAsync();
+
+                        return Ok(new
+                        {
+                            partneri = partneri,
+                            message = "Partneri u perditesua. Kartela bonus ekziston tashme"
+                        });
+                    }
+                }
+                // Case 2: Changing to Furnitor (Supplier) - should NOT have bonus card
+                else if (k.LlojiPartnerit == "F")
+                {
+                    partneri.LlojiPartnerit = "F";
+
+                    // Check if partner has a bonus card
+                    var existingKartela = await _context.Kartelat
+                        .FirstOrDefaultAsync(kar => kar.PartneriID == id && kar.LlojiKarteles == "Bonus");
+
+                    if (existingKartela != null)
+                    {
+                        // Delete the bonus card since suppliers don't have them
+                        try
+                        {
+                            await _kartelaService.FshijKartelenMeID(existingKartela.IDKartela);
+
+                            _context.Partneri.Update(partneri);
+                            await _context.SaveChangesAsync();
+
+                            return Ok(new
+                            {
+                                partneri = partneri,
+                                message = "Partneri u perditesua dhe kartela bonus u fshi (furnitoret nuk kane kartela bonus)"
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            return BadRequest($"Gabim gjate fshirjes se karteles: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        // No bonus card exists, just update
+                        _context.Partneri.Update(partneri);
+                        await _context.SaveChangesAsync();
+
+                        return Ok(new
+                        {
+                            partneri = partneri,
+                            message = "Partneri u perditesua si furnitor"
+                        });
+                    }
+                }
+                else
+                {
+                    // Other partner types
+                    partneri.LlojiPartnerit = k.LlojiPartnerit;
+                }
             }
 
             _context.Partneri.Update(partneri);

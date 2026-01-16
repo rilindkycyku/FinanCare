@@ -1,4 +1,4 @@
-// src/components/ProductCard.tsx → VERSIONI PËRFUNDIMTAR & PERFECT
+// src/components/ProductCard.tsx - Final Simplified Version
 import type { Produkti } from "../types/index";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -18,52 +18,44 @@ export default function ProductCard({ product }: Props) {
   const navigate = useNavigate();
   const [sasia, setSasia] = useState(1);
 
-  const categoryID = Number(user?.IDKategoritEPartnerit ?? 0);
-  const finalPrice = getDisplayPrice(product, categoryID);
+  const finalPrice = getDisplayPrice(product);
   const basePrice = Number(product.StokuQmimiProduktit?.QmimiProduktit ?? 0);
 
-  let isOfficialOffer = false;
+  // Check if product has active discount (Rabati > 0 and not expired)
+  const discount = product.ZbritjaQmimitProduktit;
+  let hasDiscount = false;
+  let discountPercentage = 0;
 
-  // 1. Nëse ka kategori partnere
-  if (categoryID > 0) {
-    const catPriceEntry = (product.QmimiProduktitPerKategori || []).find(
-      (p: any) => Number(p.IdKategoritEPartnerit) === categoryID
-    );
-
-    // Nëse ka çmim special për këtë kategori DHE është ai që po përdoret
-    if (catPriceEntry && Number(catPriceEntry.QmimiProduktit) === finalPrice) {
-      isOfficialOffer = catPriceEntry.EshteNeOfert === "true";
-    }
-    // Nëse nuk ka çmim special → përdoret çmimi bazë
-    else if (finalPrice === basePrice) {
-      isOfficialOffer = product.StokuQmimiProduktit?.EshteNeOfert === "true";
+  if (discount && discount.Rabati > 0) {
+    if (!discount.DataSkadimit) {
+      hasDiscount = true;
+      discountPercentage = discount.Rabati;
+    } else {
+      const expiryDate = new Date(discount.DataSkadimit);
+      const now = new Date();
+      if (now <= expiryDate) {
+        hasDiscount = true;
+        discountPercentage = discount.Rabati;
+      }
     }
   }
-  // 2. Klient pa kategori → gjithmonë çmimi bazë
-  else {
-    isOfficialOffer = product.StokuQmimiProduktit?.EshteNeOfert === "true";
-  }
-
-  const isCategoryDiscount =
-    !isOfficialOffer && finalPrice < basePrice && finalPrice > 0;
-  const hasDiscount = isOfficialOffer || isCategoryDiscount;
 
   const stock = Number(product.StokuQmimiProduktit?.SasiaNeStok ?? 0);
   const isOutOfStock = stock <= 0;
   const isLowStock = stock > 0 && stock <= 5;
 
-  // LLOGARIS SASINË AKTUALE NË SHPORTE
+  // Calculate current quantity in cart
   const currentInCart = cart.reduce((total, item) => {
     return item.ProduktiID === product.ProduktiID
       ? total + item.quantity
       : total;
   }, 0);
 
-  // SASIA MAKSIMALE QË MUND TË SHTOHET
+  // Maximum quantity that can be added
   const maxAllowed = isOutOfStock ? 0 : stock - currentInCart;
   const canAddMore = maxAllowed > 0;
 
-  // Rikthe sasinë nëse kalon limitin (p.sh. kur ndryshon stoku)
+  // Reset quantity if it exceeds limit
   useEffect(() => {
     if (sasia > maxAllowed && maxAllowed > 0) {
       setSasia(maxAllowed);
@@ -86,6 +78,7 @@ export default function ProductCard({ product }: Props) {
       return;
     }
 
+    // Add item multiple times based on quantity
     for (let i = 0; i < sasia; i++) {
       addToCart(product);
     }
@@ -127,7 +120,7 @@ export default function ProductCard({ product }: Props) {
       }
     );
 
-    setSasia(1); // rikthe në 1 pas shtimit
+    setSasia(1); // Reset to 1 after adding
   };
 
   const ndryshoSasine = (delta: number) => {
@@ -136,7 +129,7 @@ export default function ProductCard({ product }: Props) {
       if (eRe < 1) return 1;
       if (eRe > maxAllowed) {
         toast.error(`Mund të shtosh vetëm ${maxAllowed} copë më shumë!`, {
-          icon: "Stock Limit",
+          icon: "⚠️",
           style: { background: "#fef3c7", color: "#92400e" },
         });
         return prev;
@@ -147,7 +140,7 @@ export default function ProductCard({ product }: Props) {
 
   return (
     <div className="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-      {/* IMAZHI */}
+      {/* IMAGE */}
       <div className="aspect-square relative bg-gray-50 overflow-hidden">
         <img
           src={imageSrc}
@@ -156,14 +149,22 @@ export default function ProductCard({ product }: Props) {
           loading="lazy"
         />
 
+        {/* Discount Badge */}
+        {hasDiscount && (
+          <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+            <Star className="w-3.5 h-3.5 fill-current" />
+            -{discountPercentage}%
+          </div>
+        )}
+
         {/* Low Stock Badge */}
         {isLowStock && !isOutOfStock && (
-          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+          <div className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
             Vetëm {stock}!
           </div>
         )}
 
-        {/* Jashtë Stokut */}
+        {/* Out of Stock Overlay */}
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
             <span className="text-white font-bold text-lg">Jashtë Stokut</span>
@@ -171,13 +172,13 @@ export default function ProductCard({ product }: Props) {
         )}
       </div>
 
-      {/* PËRMBATJA */}
+      {/* CONTENT */}
       <div className="p-3">
         <h3 className="font-bold text-gray-800 text-sm line-clamp-2 h-10 leading-tight">
           {product.EmriProduktit}
         </h3>
 
-        {/* ÇMIMI */}
+        {/* PRICE */}
         <div className="mt-3">
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-black text-indigo-600">
@@ -190,27 +191,18 @@ export default function ProductCard({ product }: Props) {
             )}
           </div>
 
-          {/* OFERTA APO ZBRITJA – LOGJIKA E RE */}
+          {/* DISCOUNT BADGE */}
           {hasDiscount && (
             <div className="mt-2">
-              {isOfficialOffer ? (
-                // SHFAQET VETËM KUR ÇMIMI AKTUAL KA OFERTË ZYRTAR
-                <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md animate-pulse">
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  OFERTË SPECIALE
-                </div>
-              ) : (
-                // Zbritje e thjeshtë për kategori (pa ofertë zyrtare)
-                <p className="text-xs text-emerald-600 font-bold flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-emerald-600" />
-                  Çmim special për {user?.EmriKategoris || "klientët tanë"}
-                </p>
-              )}
+              <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                <Star className="w-3.5 h-3.5 fill-current" />
+                OFERTË SPECIALE
+              </div>
             </div>
           )}
         </div>
 
-        {/* SASIA + SHTO NË SHPORTE */}
+        {/* QUANTITY + ADD TO CART */}
         {!isOutOfStock ? (
           <div className="mt-4 flex items-center gap-2">
             <div className="flex items-center bg-gray-100 rounded-xl shadow-sm">
@@ -249,6 +241,8 @@ export default function ProductCard({ product }: Props) {
             </span>
           </div>
         )}
+
+        {/* CART INFO */}
         {currentInCart > 0 && (
           <div className="mt-2 text-center">
             <p className="text-xs text-gray-500">

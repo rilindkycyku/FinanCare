@@ -1,38 +1,10 @@
 // src/context/AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
+import { CheckCircle } from "lucide-react";
 import users from "../data/users.json";
 import toast from "react-hot-toast";
-
-export interface User {
-  IDPartneri: number;
-
-  // Core info
-  EmriBiznesit: string;
-  Username: string;
-  Password?: string; // Only during login – never stored after
-
-  // Fiscal & Contact
-  NUI?: string;
-  NRF?: string;
-  TVSH?: string;
-  Email?: string;
-  Adresa?: string;
-  NrKontaktit?: string;
-  ShkurtesaPartnerit?: string;
-
-  // Rabat / Bonus Program (new system)
-  Rabati?: number;                // e.g. 2.00, 4.00, or undefined/0 if no discount
-  LlojiKarteles?: string | null;  // e.g. "Bonus"
-  KodiKartela?: string | null;    // e.g. "B000014000003"
-
-  // System flags
-  isDeleted?: string; // "false" or "true" as in JSON
-
-  // For self-registered users waiting for approval
-  isPendingApproval?: boolean;
-  pendingSince?: string; // ISO date string
-}
+import type { User } from "../types";
 
 interface AuthContextType {
   user: User | null;
@@ -70,9 +42,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         Rabati: parsed.Rabati !== undefined ? Number(parsed.Rabati) : undefined,
         LlojiKarteles: parsed.LlojiKarteles ?? undefined,
         KodiKartela: parsed.KodiKartela ?? undefined,
+        LlojiPartnerit: parsed.LlojiPartnerit ?? undefined,
         isDeleted: parsed.isDeleted,
         isPendingApproval: parsed.isPendingApproval === true,
-        pendingSince: parsed.pendingSince,
       };
 
       setUser(loadedUser);
@@ -89,8 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 className="w-7 h-7 text-amber-600 flex-shrink-0 animate-pulse"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+                viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -159,16 +130,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       Rabati: safeUser.Rabati !== undefined ? Number(safeUser.Rabati) : undefined,
       LlojiKarteles: safeUser.LlojiKarteles ?? undefined,
       KodiKartela: safeUser.KodiKartela ?? undefined,
+      LlojiPartnerit: (safeUser as any).LlojiPartnerit ?? undefined,
       isDeleted: safeUser.isDeleted,
-      // If you want to support pending users from JSON, add logic here
-      // isPendingApproval: false, // usually false for official users
+      isPendingApproval: false, // Official users from JSON are not pending
     };
 
     setUser(loggedInUser);
     localStorage.setItem("user", JSON.stringify(loggedInUser));
 
     toast.success(`Mirë se erdhe, ${loggedInUser.EmriBiznesit}!`, {
-      icon: "👋",
+      icon: <CheckCircle className="w-5 h-5 text-green-500" />,
       duration: 5000,
     });
 
@@ -179,7 +150,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("pendingToastLastShown");
-    toast.success("Ke dal me sukses nga llogaria", { icon: "👋" });
+    
+    toast.success("Ke dal me sukses nga llogaria", { 
+      icon: "👋",
+      duration: 3000,
+    });
   };
 
   const isAuthenticated = !!user;

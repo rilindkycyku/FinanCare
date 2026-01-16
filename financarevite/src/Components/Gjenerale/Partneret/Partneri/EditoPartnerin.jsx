@@ -20,6 +20,11 @@ function EditoKompanin(props) {
 
   const [key, setKey] = useState("teDhenat");
 
+  const [teDhenat, setTeDhenat] = useState([]);
+
+  const [perditeso, setPerditeso] = useState(Date.now());
+
+  const getID = localStorage.getItem("id");
   const getToken = localStorage.getItem("token");
 
   const authentikimi = {
@@ -27,6 +32,21 @@ function EditoKompanin(props) {
       Authorization: `Bearer ${getToken}`,
     },
   };
+
+  useEffect(() => {
+    const vendosTeDhenat = async () => {
+      try {
+        const perdoruesi = await axios.get(
+          `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+          authentikimi
+        );
+        setTeDhenat(perdoruesi.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    vendosTeDhenat();
+  }, [perditeso]);
 
   useEffect(() => {
     const shfaqpartneret = async () => {
@@ -69,7 +89,7 @@ function EditoKompanin(props) {
     try {
       await axios
         .put(
-          `${API_BASE_URL}/api/Partneri/perditesoPartnerin?id=${props.id}`,
+          `${API_BASE_URL}/api/Partneri/perditesoPartnerin?stafiID=${teDhenat.perdoruesi.userID}&id=${props.id}`,
           {
             emriBiznesit: partneri.emriBiznesit,
             nui: partneri.nui,
@@ -94,7 +114,7 @@ function EditoKompanin(props) {
           console.error("Error saving partneri:", error);
           props.setTipiMesazhit("danger");
           props.setPershkrimiMesazhit(
-            "Ndodhi nje gabim gjate perditesimit te kompanis!"
+            "Ndodhi nje gabim gjate perditesimit te partnerit!"
           );
           props.perditesoTeDhenat();
           props.shfaqmesazhin();
@@ -143,7 +163,7 @@ function EditoKompanin(props) {
           console.error("Error saving partneri:", error);
           props.setTipiMesazhit("danger");
           props.setPershkrimiMesazhit(
-            "Ndodhi nje gabim gjate perditesimit te kompanis!"
+            "Ndodhi nje gabim gjate perditesimit te karteles!"
           );
           props.perditesoTeDhenat();
           props.shfaqmesazhin();
