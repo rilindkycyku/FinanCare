@@ -19,6 +19,139 @@
     }
   },
   {
+    "ProduktiID": 21,
+    "EmriProduktit": "Chips Classic 130g",
+    "Barkodi": "3902634650637",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 96.00,
+      "QmimiProduktit": 1.19
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 7,
+    "EmriProduktit": "Vanille 5+1 8g Dr. Oetker",
+    "Barkodi": "5997381367240",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 56.00,
+      "QmimiProduktit": 0.79
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 13,
+    "EmriProduktit": "HOPLA pa sheqel 1L",
+    "Barkodi": "8000005430019",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 48.00,
+      "QmimiProduktit": 4.19
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 12,
+    "EmriProduktit": "GULLON Biskota me Fruta 300gr",
+    "Barkodi": "841037640425",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 32.00,
+      "QmimiProduktit": 1.80
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 18,
+    "EmriProduktit": "Vaj luledielli 1/1 Zvijezda",
+    "Barkodi": "3858882219617",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 8,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 31.00,
+      "QmimiProduktit": 1.65
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 8,
+    "EmriProduktit": "Puding Vanilla 38gr Dr. Oetker",
+    "Barkodi": "5997381312363",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 30.00,
+      "QmimiProduktit": 0.39
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 14,
+    "EmriProduktit": "FRONDI maxi limon 250gr",
+    "Barkodi": "3850102002283",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 24.00,
+      "QmimiProduktit": 2.25
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
     "ProduktiID": 6,
     "EmriProduktit": "Xtreme3 Myl Comfort 12's Tear Strip",
     "Barkodi": "4027800319107",
@@ -30,6 +163,348 @@
     "StokuQmimiProduktit": {
       "SasiaNeStok": 20.00,
       "QmimiProduktit": 1.49
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 23,
+    "EmriProduktit": "Schmand Magic Ice 400gr 18%",
+    "Barkodi": "3901470400956",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 8,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 12.00,
+      "QmimiProduktit": 1.55
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 3,
+    "EmriProduktit": "STR8 Deo Original150ml LF",
+    "Barkodi": "5201314153542",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 5,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 12.00,
+      "QmimiProduktit": 3.25
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 17,
+    "EmriProduktit": "Mish pule pjek Kotanyi 40g",
+    "Barkodi": "9001414501696",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 9.00,
+      "QmimiProduktit": 0.95
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 24,
+    "EmriProduktit": "Schmand Magic Ice 180gr 18%",
+    "Barkodi": "3901470400963",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 8,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 8.00,
+      "QmimiProduktit": 0.75
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 20,
+    "EmriProduktit": "Mish pule pjek Kotanyi 110g",
+    "Barkodi": "9001414502167",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 4.00,
+      "QmimiProduktit": 1.55
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 27,
+    "EmriProduktit": "asf",
+    "Barkodi": "asf",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 0,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 0.00
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 26,
+    "EmriProduktit": "Perutnina stejk pule 900gr",
+    "Barkodi": "3838977019704",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 0.00
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 25,
+    "EmriProduktit": "Perutnina copeza pule 400gr",
+    "Barkodi": "3838977041460",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 0.00
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 22,
+    "EmriProduktit": "Chips Ribbed Ketchup 130g",
+    "Barkodi": "3902634650095",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 0.00
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 16,
+    "EmriProduktit": "ALBRED Slim Tea Blueberry",
+    "Barkodi": "3904434241268",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 0.00
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 15,
+    "EmriProduktit": "ALBRED Slim Tea Acai Berry",
+    "Barkodi": "3904424231251",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 0.00
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 4,
+    "EmriProduktit": "STR8 Deo Original 150ml LF",
+    "Barkodi": "5201314153573",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 5,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 3.25
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 1,
+    "EmriProduktit": "STR8 Deo Rise 150ml",
+    "Barkodi": "5201314107231",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 5,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": 0.00,
+      "QmimiProduktit": 3.25
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 11,
+    "EmriProduktit": "Lezita Chicken Nugget 1KG",
+    "Barkodi": "8696425017789",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": -2.00,
+      "QmimiProduktit": 5.09
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 10,
+    "EmriProduktit": "Lezita Chicken Nugget 500gr",
+    "Barkodi": "8696425017796",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": -4.00,
+      "QmimiProduktit": 2.59
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 9,
+    "EmriProduktit": "Beer Tuborg 0.5L",
+    "Barkodi": "3890000508180",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 8,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": -5.00,
+      "QmimiProduktit": 1.25
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 5,
+    "EmriProduktit": "STR8 Deo Spray Game 150ml 23",
+    "Barkodi": "5201314170457",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 5,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": -16.00,
+      "QmimiProduktit": 3.25
+    },
+    "ZbritjaQmimitProduktit": {
+      "Rabati": 0.00,
+      "DataZbritjes": null,
+      "DataSkadimit": null
+    }
+  },
+  {
+    "ProduktiID": 19,
+    "EmriProduktit": "Hudhra Kotanyi 70g",
+    "Barkodi": "9001414502129",
+    "FotoProduktit": "ProduktPaFoto.png",
+    "IDGrupiProduktit": 1,
+    "IDNjesiaMatese": 2,
+    "LlojiTVSH": 18,
+    "isDeleted": "false",
+    "StokuQmimiProduktit": {
+      "SasiaNeStok": -100.00,
+      "QmimiProduktit": 2.15
     },
     "ZbritjaQmimitProduktit": {
       "Rabati": 0.00,

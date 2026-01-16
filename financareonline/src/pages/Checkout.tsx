@@ -23,9 +23,7 @@ export default function Checkout() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<
-    "cash" | "card" | "transfer"
-  >("cash");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card">("cash");
 
   const clientName = user?.EmriBiznesit || user?.Username || "Klient";
 
@@ -97,11 +95,7 @@ export default function Checkout() {
     formData.append(
       "caption",
       `*Faturë e Re!*\n\n*Klienti:* _${clientName}_\n*Numri:* \`${invoiceNumber}\`\n*Pagesa:* ${
-        paymentMethod === "cash"
-          ? "Cash"
-          : paymentMethod === "card"
-          ? "Kartelë"
-          : "Transfer"
+        paymentMethod === "cash" ? "Cash" : "Kartelë"
       }\n*Data:* ${new Date().toLocaleDateString(
         "sq-AL"
       )}\n*Totali:* *${calc.grandTotal.toFixed(
@@ -119,12 +113,7 @@ export default function Checkout() {
       NrFatures: invoiceNumber,
       Data: new Date().toISOString().split("T")[0],
       IDKlienti: user?.IDPartneri || 1,
-      LlojiPageses:
-        paymentMethod === "cash"
-          ? "Cash"
-          : paymentMethod === "card"
-          ? "Banke"
-          : "Borxh",
+      LlojiPageses: paymentMethod === "cash" ? "Cash" : "Banke",
       TotaliPaTVSH: Number(calc.subtotalNet.toFixed(2)),
       TVSH: Number(calc.totalVAT.toFixed(2)),
       Produktet: items,
@@ -166,6 +155,8 @@ export default function Checkout() {
           totalVAT={calc.totalVAT}
           grandTotal={calc.grandTotal}
           paymentMethod={paymentMethod}
+          transporti={calc.transporti}
+          rabati={calc.rabati}
         />
       ).toBlob();
 
@@ -324,14 +315,11 @@ export default function Checkout() {
               <select
                 value={paymentMethod}
                 onChange={(e) =>
-                  setPaymentMethod(
-                    e.target.value as "cash" | "card" | "transfer"
-                  )
+                  setPaymentMethod(e.target.value as "cash" | "card")
                 }
                 className="w-full px-3 py-2 border-2 border-indigo-200 rounded-xl text-sm font-medium focus:border-indigo-500 focus:outline-none transition">
                 <option value="cash">Cash</option>
                 <option value="card">Bankë</option>
-                <option value="transfer">Borxh</option>
               </select>
 
               {/* Summary Box */}
@@ -517,7 +505,6 @@ export default function Checkout() {
                     className="w-full px-5 py-4 rounded-2xl text-lg font-medium text-gray-800 bg-white/90 focus:outline-none focus:ring-4 focus:ring-white/50">
                     <option value="cash">Cash (Para në Dorë)</option>
                     <option value="card">Bankë</option>
-                    <option value="transfer">Borxh</option>
                   </select>
                 </div>
                 <button

@@ -161,6 +161,24 @@ const styles = StyleSheet.create({
     fontSize: 8.8,
     color: "#94a3b8",
   },
+  discountRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 8.5,
+    paddingHorizontal: 14,
+    borderBottomWidth: 0.9,
+    borderBottomColor: "#e2e8f0",
+  },
+  discountLabel: {
+    fontSize: 10.6,
+    color: "#b91c1c",
+    fontWeight: "600",
+  },
+  discountValue: {
+    fontSize: 10.8,
+    color: "#b91c1c",
+    fontWeight: "700",
+  },
 });
 
 export type InvoiceItem = {
@@ -183,7 +201,9 @@ type InvoicePDFProps = {
   subtotalNet: number;
   totalVAT: number;
   grandTotal: number;
-  paymentMethod: "cash" | "card" | "transfer"; // ← SHTO
+  paymentMethod: "cash" | "card" ;
+  transporti: number;
+  rabati: number;
 };
 
 export default function InvoicePDF({
@@ -194,12 +214,14 @@ export default function InvoicePDF({
   subtotalNet,
   totalVAT,
   grandTotal,
-  paymentMethod = "cash", // default
+  paymentMethod = "cash",
+  transporti = 1.5,
+  rabati = 0,
 }: InvoicePDFProps) {
   const ITEMS_PER_PAGE = 22;
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const lastPageCount = items.length % ITEMS_PER_PAGE || ITEMS_PER_PAGE;
-  const moveTotalsToNewPage = lastPageCount > 14;
+  const moveTotalsToNewPage = lastPageCount > 13;
 
   return (
     <Document>
@@ -285,8 +307,6 @@ export default function InvoicePDF({
                       ? "CASH"
                       : paymentMethod === "card"
                       ? "BANK"
-                      : paymentMethod === "transfer"
-                      ? "BORXH"
                       : "CASH"}
                   </Text>
                 </Text>
@@ -459,7 +479,8 @@ export default function InvoicePDF({
                         fontWeight: "bold",
                         color: "#1e293b",
                         marginBottom: 9,
-                      }}>
+                      }}
+                    >
                       Totalet
                     </Text>
                     <View
@@ -468,7 +489,9 @@ export default function InvoicePDF({
                         borderColor: "#60a5fa",
                         borderRadius: 9,
                         overflow: "hidden",
-                      }}>
+                      }}
+                    >
+                      {/* Subtotal pa TVSH */}
                       <View
                         style={{
                           flexDirection: "row",
@@ -477,13 +500,15 @@ export default function InvoicePDF({
                           paddingHorizontal: 14,
                           borderBottomWidth: 0.9,
                           borderBottomColor: "#e2e8f0",
-                        }}>
+                        }}
+                      >
                         <Text
                           style={{
                             fontSize: 11,
                             color: "#475569",
                             fontWeight: "600",
-                          }}>
+                          }}
+                        >
                           Totali pa TVSH
                         </Text>
                         <Text
@@ -491,10 +516,13 @@ export default function InvoicePDF({
                             fontSize: 11,
                             color: "#1e293b",
                             fontWeight: "bold",
-                          }}>
+                          }}
+                        >
                           {subtotalNet.toFixed(2)} €
                         </Text>
                       </View>
+
+                      {/* TVSH */}
                       <View
                         style={{
                           flexDirection: "row",
@@ -503,13 +531,15 @@ export default function InvoicePDF({
                           paddingHorizontal: 14,
                           borderBottomWidth: 0.9,
                           borderBottomColor: "#e2e8f0",
-                        }}>
+                        }}
+                      >
                         <Text
                           style={{
                             fontSize: 11,
                             color: "#475569",
                             fontWeight: "600",
-                          }}>
+                          }}
+                        >
                           TVSH totale
                         </Text>
                         <Text
@@ -517,39 +547,97 @@ export default function InvoicePDF({
                             fontSize: 11,
                             color: "#1e293b",
                             fontWeight: "bold",
-                          }}>
+                          }}
+                        >
                           {totalVAT.toFixed(2)} €
                         </Text>
                       </View>
+
+                      {/* Transporti */}
                       <View
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
-                          paddingVertical: 11,
+                          paddingVertical: 9,
                           paddingHorizontal: 14,
-                          backgroundColor: "rgba(96,165,250,0.09)",
-                          borderTopWidth: 1.8,
-                          borderTopColor: "#60a5fa",
-                        }}>
+                          borderBottomWidth: 0.9,
+                          borderBottomColor: "#e2e8f0",
+                        }}
+                      >
                         <Text
                           style={{
-                            fontSize: 12.8,
-                            fontWeight: "900",
-                            color: "#1e40af",
-                          }}>
-                          TOTALI
+                            fontSize: 11,
+                            color: "#475569",
+                            fontWeight: "600",
+                          }}
+                        >
+                          Transporti
                         </Text>
                         <Text
                           style={{
-                            fontSize: 14.5,
+                            fontSize: 11,
+                            color: "#1e293b",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {transporti.toFixed(2)} €
+                        </Text>
+                      </View>
+
+                      {/* Rabati - only show if exists */}
+                      {rabati > 0 && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingVertical: 9,
+                            paddingHorizontal: 14,
+                            borderBottomWidth: 0.9,
+                            borderBottomColor: "#e2e8f0",
+                          }}
+                        >
+                          <Text style={styles.discountLabel}>
+                            Rabati (−{user?.Rabati || 0}%)
+                          </Text>
+                          <Text style={styles.discountValue}>
+                            −{rabati.toFixed(2)} €
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* FINAL TOTAL */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 12,
+                          paddingHorizontal: 14,
+                          backgroundColor: "rgba(96,165,250,0.11)",
+                          borderTopWidth: 1.8,
+                          borderTopColor: "#60a5fa",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 13.2,
                             fontWeight: "900",
                             color: "#1e40af",
-                          }}>
+                          }}
+                        >
+                          TOTALI PËR PAGESË
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 15.2,
+                            fontWeight: "900",
+                            color: "#1e40af",
+                          }}
+                        >
                           {grandTotal.toFixed(2)} €
                         </Text>
                       </View>
                     </View>
-                  </View>
+                    </View>
                 </View>
 
                 {/* SIGNATURE LINES – ONLY ONCE, AT THE VERY END */}
@@ -832,103 +920,171 @@ export default function InvoicePDF({
 
               {/* RIGHT: Totals – SAME COMPACT STYLE */}
               <View style={{ width: "42%" }}>
-                <Text
-                  style={{
-                    fontSize: 10.8,
-                    fontWeight: "bold",
-                    color: "#1e293b",
-                    marginBottom: 9,
-                  }}>
-                  Totalet
-                </Text>
-                <View
-                  style={{
-                    borderWidth: 1.4,
-                    borderColor: "#60a5fa",
-                    borderRadius: 9,
-                    overflow: "hidden",
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 9,
-                      paddingHorizontal: 14,
-                      borderBottomWidth: 0.9,
-                      borderBottomColor: "#e2e8f0",
-                    }}>
                     <Text
                       style={{
-                        fontSize: 11,
-                        color: "#475569",
-                        fontWeight: "600",
-                      }}>
-                      Totali pa TVSH
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 11,
-                        color: "#1e293b",
+                        fontSize: 10.8,
                         fontWeight: "bold",
-                      }}>
-                      {subtotalNet.toFixed(2)} €
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 9,
-                      paddingHorizontal: 14,
-                      borderBottomWidth: 0.9,
-                      borderBottomColor: "#e2e8f0",
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: 11,
-                        color: "#475569",
-                        fontWeight: "600",
-                      }}>
-                      TVSH totale
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 11,
                         color: "#1e293b",
-                        fontWeight: "bold",
-                      }}>
-                      {totalVAT.toFixed(2)} €
+                        marginBottom: 9,
+                      }}
+                    >
+                      Totalet
                     </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 11,
-                      paddingHorizontal: 14,
-                      backgroundColor: "rgba(96,165,250,0.09)",
-                      borderTopWidth: 1.8,
-                      borderTopColor: "#60a5fa",
-                    }}>
-                    <Text
+                    <View
                       style={{
-                        fontSize: 12.8,
-                        fontWeight: "900",
-                        color: "#1e40af",
-                      }}>
-                      TOTALI
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 14.5,
-                        fontWeight: "900",
-                        color: "#1e40af",
-                      }}>
-                      {grandTotal.toFixed(2)} €
-                    </Text>
-                  </View>
-                </View>
-              </View>
+                        borderWidth: 1.4,
+                        borderColor: "#60a5fa",
+                        borderRadius: 9,
+                        overflow: "hidden",
+                      }}
+                    >
+                      {/* Subtotal pa TVSH */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 9,
+                          paddingHorizontal: 14,
+                          borderBottomWidth: 0.9,
+                          borderBottomColor: "#e2e8f0",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: "#475569",
+                            fontWeight: "600",
+                          }}
+                        >
+                          Totali pa TVSH
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: "#1e293b",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {subtotalNet.toFixed(2)} €
+                        </Text>
+                      </View>
+
+                      {/* TVSH */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 9,
+                          paddingHorizontal: 14,
+                          borderBottomWidth: 0.9,
+                          borderBottomColor: "#e2e8f0",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: "#475569",
+                            fontWeight: "600",
+                          }}
+                        >
+                          TVSH totale
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: "#1e293b",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {totalVAT.toFixed(2)} €
+                        </Text>
+                      </View>
+
+                      {/* Transporti */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 9,
+                          paddingHorizontal: 14,
+                          borderBottomWidth: 0.9,
+                          borderBottomColor: "#e2e8f0",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: "#475569",
+                            fontWeight: "600",
+                          }}
+                        >
+                          Transporti
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            color: "#1e293b",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {transporti.toFixed(2)} €
+                        </Text>
+                      </View>
+
+                      {/* Rabati - only show if exists */}
+                      {rabati > 0 && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingVertical: 9,
+                            paddingHorizontal: 14,
+                            borderBottomWidth: 0.9,
+                            borderBottomColor: "#e2e8f0",
+                          }}
+                        >
+                          <Text style={styles.discountLabel}>
+                            Rabati (−{user?.Rabati || 0}%)
+                          </Text>
+                          <Text style={styles.discountValue}>
+                            −{rabati.toFixed(2)} €
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* FINAL TOTAL */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 12,
+                          paddingHorizontal: 14,
+                          backgroundColor: "rgba(96,165,250,0.11)",
+                          borderTopWidth: 1.8,
+                          borderTopColor: "#60a5fa",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 13.2,
+                            fontWeight: "900",
+                            color: "#1e40af",
+                          }}
+                        >
+                          TOTALI PËR PAGESË
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 15.2,
+                            fontWeight: "900",
+                            color: "#1e40af",
+                          }}
+                        >
+                          {grandTotal.toFixed(2)} €
+                        </Text>
+                      </View>
+                    </View>
+                    </View>
             </View>
 
             {/* SIGNATURE LINES – ONLY ONCE, AT THE VERY END */}

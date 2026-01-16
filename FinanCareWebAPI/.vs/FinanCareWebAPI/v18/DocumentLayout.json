@@ -202,8 +202,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\PartneriController.cs",
               "ViewState": "AgIAAG4BAAAAAAAAAAAiwIwBAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-22T18:56:41.568Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-22T18:56:41.568Z"
             },
             {
               "$type": "Document",
@@ -213,7 +212,7 @@
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
               "ToolTip": "D:\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\ExportoTeDhenatTekKlientiController.cs",
-              "ViewState": "AgIAABoAAAAAAAAAAAAqwD8AAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAABcBAAAAAAAAAAAmwCkBAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-17T20:24:09.759Z",
               "EditorCaption": ""
@@ -228,8 +227,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Models\\ZbritjaQmimitProduktit.cs",
               "ViewState": "AgIAAAEAAAAAAAAAAAAwwAsAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-24T19:23:25.101Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-24T19:23:25.101Z"
             },
             {
               "$type": "Document",
@@ -241,8 +239,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Services\\KartelaService.cs",
               "ViewState": "AgIAABQAAAAAAAAAAAA3wBkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T19:22:19.177Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-15T19:22:19.177Z"
             },
             {
               "$type": "Document",
@@ -254,8 +251,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\KartelatController.cs",
               "ViewState": "AgIAAA4AAAAAAAAAAAAAwKgAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T19:01:22.077Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-15T19:01:22.077Z"
             },
             {
               "$type": "Document",
@@ -267,8 +263,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Models\\Kartelat.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T19:30:41.151Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-15T19:30:41.151Z"
             },
             {
               "$type": "Document",
@@ -280,8 +275,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Program.cs",
               "ViewState": "AgIAAGEAAAAAAAAAAAAAAGsAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T19:30:00.705Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-15T19:30:00.705Z"
             },
             {
               "$type": "Document",
@@ -293,8 +287,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeDhenatBiznesitController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T19:23:13.438Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-15T19:23:13.438Z"
             },
             {
               "$type": "Document",
@@ -306,8 +299,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\VendosFototController.cs",
               "ViewState": "AgIAAFAAAAAAAAAAAAAgwF4AAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T11:51:44.337Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-03T11:51:44.337Z"
             },
             {
               "$type": "Document",
@@ -319,8 +311,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\PerdoruesiController.cs",
               "ViewState": "AgIAANYAAAAAAAAAAAAuwMoAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T17:35:54.95Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-12T17:35:54.95Z"
             },
             {
               "$type": "Document",
@@ -332,8 +323,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Models\\AfatetESkadimit.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T17:57:08.371Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T17:57:08.371Z"
             },
             {
               "$type": "Document",
