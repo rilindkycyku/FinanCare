@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FinanCareWebAPI.Models;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using FinanCareWebAPI.Migrations;
 
-namespace TechStoreWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.TeNdryshme
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -14,10 +16,23 @@ namespace TechStoreWebAPI.Controllers
     public class NjoftimetController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public NjoftimetController(FinanCareDbContext context)
+        public NjoftimetController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "Njoftimet", entityId, description);
+            }
         }
 
         [Authorize]
@@ -80,6 +95,8 @@ namespace TechStoreWebAPI.Controllers
             await _context.SaveChangesAsync();
 
             var response = new { Message = "Success", Data = afatetESkadimit };
+
+            await LogAdminActionAsync("Shto", afatetESkadimit.ID.ToString(), $"Eshte shtuar afati i skadimit per: {afatetESkadimit.Produkti.EmriProduktit} - {afatetESkadimit.DataSkadimit}");
             return Ok(response);
         }
 
@@ -252,13 +269,15 @@ namespace TechStoreWebAPI.Controllers
         [Route("fshijAfatetESkadimit")]
         public async Task<IActionResult> Delete(int id)
         {
-            var afatiSkadimit = await _context.AfatetESkadimit.FirstOrDefaultAsync(x => x.ID == id);
+            var afatiSkadimit = await _context.AfatetESkadimit.Include(x => x.Produkti).FirstOrDefaultAsync(x => x.ID == id);
 
             if (afatiSkadimit == null)
                 return BadRequest("Invalid id");
 
             _context.AfatetESkadimit.Remove(afatiSkadimit);
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Largo", afatiSkadimit.ID.ToString(), $"Eshte bere largimi i afatit te skadimit per: {afatiSkadimit.Produkti.EmriProduktit} - {afatiSkadimit.DataSkadimit}");
 
             return Ok("Afati Skadimit u fshi me sukses!");
         }

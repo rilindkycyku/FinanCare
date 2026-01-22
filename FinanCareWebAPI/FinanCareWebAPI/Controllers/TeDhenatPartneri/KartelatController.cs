@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
-namespace FinanCareWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.TeDhenatPartneri
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -15,11 +16,24 @@ namespace FinanCareWebAPI.Controllers
     {
         private readonly FinanCareDbContext _context;
         private readonly KartelaService _kartelaService;
+        private readonly IAdminLogService _adminLogService;
 
-        public KartelatController(FinanCareDbContext context, KartelaService kartelaService)
+        public KartelatController(FinanCareDbContext context, KartelaService kartelaService, IAdminLogService adminLogService)
         {
             _context = context;
             _kartelaService = kartelaService;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "KartelatEPartnerit", entityId, description);
+            }
         }
 
         [Authorize]
@@ -51,6 +65,8 @@ namespace FinanCareWebAPI.Controllers
 
             if (kartela != null)
             {
+                await LogAdminActionAsync("KerkesPerTeDhenaKartela", kartela.KodiKartela.ToString(), $"Eshte bere kerkes per perdorimin e karteles me numer: {kartela.KodiKartela} - {kartela.LlojiKarteles}");
+
 
                 return Ok(kartela);
             }
@@ -89,6 +105,9 @@ namespace FinanCareWebAPI.Controllers
             try
             {
                 var kartela = await _kartelaService.ShtoKartelenBonus(idPartneri, stafiID, rabati);
+
+                await LogAdminActionAsync("Shto", kartela.IDKartela.ToString(), $"Eshte shtuar bonusi per: {kartela.Partneri.EmriBiznesit} - {kartela.KodiKartela}");
+
                 return Ok(kartela);
             }
             catch (InvalidOperationException ex)
@@ -109,6 +128,9 @@ namespace FinanCareWebAPI.Controllers
             await _context.Kartelat.AddAsync(kartela);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Shto", kartela.IDKartela.ToString(), $"Eshte shtuar kartela per: {kartela.Partneri.EmriBiznesit} - {kartela.KodiKartela}");
+
+
             return CreatedAtAction("Get", kartela.IDKartela, kartela);
         }
 
@@ -117,7 +139,7 @@ namespace FinanCareWebAPI.Controllers
         [Route("perditesoKartelen")]
         public async Task<IActionResult> Put(int id, [FromBody] Kartelat k)
         {
-            var kartela = await _context.Kartelat.FirstOrDefaultAsync(x => x.IDKartela == id);
+            var kartela = await _context.Kartelat.Include(x => x.Partneri).FirstOrDefaultAsync(x => x.IDKartela == id);
 
             if (id < 0)
             {
@@ -152,6 +174,8 @@ namespace FinanCareWebAPI.Controllers
             _context.Kartelat.Update(kartela);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Perditeso", k.IDKartela.ToString(), $"Eshte perditesuar kartela: {kartela.Partneri.EmriBiznesit} - {kartela.KodiKartela} - Rabati: {kartela.Rabati}%");
+
             return Ok(kartela);
         }
 
@@ -165,9 +189,9 @@ namespace FinanCareWebAPI.Controllers
             _context.Kartelat.Remove(kartela);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Fshij", kartela.IDKartela.ToString(), $"Eshte fshire kartela me kod: {kartela.KodiKartela}");
+
             return Ok("Kartela u fshi me sukses!");
         }
-
-        
     }
 }

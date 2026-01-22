@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using FinanCareWebAPI.Migrations;
-using FinanCareWebAPI.Models;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
-namespace WebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.Stafi
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -14,9 +16,12 @@ namespace WebAPI.Controllers
     {
         private readonly FinanCareDbContext _context;
 
-        public TeDhenatBiznesitController(FinanCareDbContext context)
+        private readonly IAdminLogService _adminLogService;
+
+        public TeDhenatBiznesitController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
         }
 
         [Authorize]
@@ -92,6 +97,9 @@ namespace WebAPI.Controllers
             await _context.Bankat.AddAsync(banka);
             await _context.SaveChangesAsync();
 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Shto", "Banakt", banka.BankaID.ToString(), $"Eshte bere vendosja e bankes: " + banka.EmriBankes);
+
             return CreatedAtAction("get", banka.BankaID, banka);
         }
 
@@ -102,6 +110,9 @@ namespace WebAPI.Controllers
         {
             await _context.LlogaritEBiznesit.AddAsync(banka);
             await _context.SaveChangesAsync();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Shto", "LlogaritEBiznesit", banka.BankaID.ToString(), $"Eshte bere vendosja e Llogaris: " + banka.NumriLlogaris);
 
             return CreatedAtAction("get", banka.IDLlogariaBankare, banka);
         }
@@ -128,6 +139,9 @@ namespace WebAPI.Controllers
 
             _context.Bankat.Update(banka);
             await _context.SaveChangesAsync();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Perditeso", "Bankat", banka.BankaID.ToString(), $"Eshte bere perditesimi i bankes: " + banka.EmriBankes);
 
             return Ok(banka);
         }
@@ -163,13 +177,16 @@ namespace WebAPI.Controllers
             _context.LlogaritEBiznesit.Update(banka);
             await _context.SaveChangesAsync();
 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Perditeso", "LlogaritEBiznesit", banka.BankaID.ToString(), $"Eshte bere perditesimi i llogaris: " + banka.NumriLlogaris);
+
             return Ok(banka);
         }
 
         [Authorize]
         [HttpPut]
         [Route("perditesoTeDhenat")]
-        public IActionResult Put([FromBody] TeDhenatBiznesit k)
+        public async Task<IActionResult> Put([FromBody] TeDhenatBiznesit k)
         {
             var teDhenat = _context.TeDhenatBiznesit.FirstOrDefault(x => x.IDTeDhenatBiznesit == 1);
             if (teDhenat == null)
@@ -190,6 +207,10 @@ namespace WebAPI.Controllers
 
             _context.SaveChanges();
 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Perditeso", "TeDhenatBiznesit", teDhenat.IDTeDhenatBiznesit.ToString(), $"Eshte bere perditesimi i te dhenave te Biznesit");
+
+
             return Ok(teDhenat);
         }
 
@@ -208,6 +229,10 @@ namespace WebAPI.Controllers
             _context.Bankat.Update(banka);
             await _context.SaveChangesAsync();
 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Largo", "Banakt", banka.BankaID.ToString(), $"Eshte bere largimi i bankes: "+banka.EmriBankes);
+
+
             return NoContent();
         }
 
@@ -225,6 +250,9 @@ namespace WebAPI.Controllers
 
             _context.LlogaritEBiznesit.Remove(banka);
             await _context.SaveChangesAsync();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Largo", "LlogaritEBiznesit", banka.BankaID.ToString(), $"Eshte bere largimi i llogaris: " + banka.NumriLlogaris);
 
             return NoContent();
         }

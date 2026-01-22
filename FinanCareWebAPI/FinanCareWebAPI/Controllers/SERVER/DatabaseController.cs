@@ -7,7 +7,7 @@ using System.Linq;
 using System;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FinanCareWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.SERVER
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]

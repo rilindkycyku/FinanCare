@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using FinanCareWebAPI.Migrations;
 
-namespace WebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.TeNdryshme
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]

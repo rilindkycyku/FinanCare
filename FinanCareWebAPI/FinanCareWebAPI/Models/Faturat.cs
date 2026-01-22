@@ -21,6 +21,7 @@ public partial class Faturat
     public string? StatusiKalkulimit { get; set; } = "false";
     public string? PershkrimShtese { get; set; } = "";
     public decimal? Rabati { get; set; } = 0;
+    public decimal? Transporti { get; set; } = 0;
     public int? NrRendorFatures { get; set; } = 0;
     public string? EshteFaturuarOferta { get; set; } = "false";
     public int? IDBonusKartela { get; set; } = null;

@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FinanCareWebAPI.Models;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using FinanCareWebAPI.Migrations;
 
-namespace TechStoreWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.Produktet
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -14,10 +16,23 @@ namespace TechStoreWebAPI.Controllers
     public class ProduktiController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public ProduktiController(FinanCareDbContext context)
+        public ProduktiController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "Produkti", entityId, description);
+            }
         }
 
         [Authorize]
@@ -306,6 +321,8 @@ namespace TechStoreWebAPI.Controllers
             await _context.StokuQmimiProduktit.AddAsync(s);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Shto", produkti.ProduktiID.ToString(), $"Eshte bere krijimi i: {produkti.EmriProduktit}");
+
             return CreatedAtAction("Get", produkti.ProduktiID, produkti);
         }
 
@@ -397,6 +414,8 @@ namespace TechStoreWebAPI.Controllers
             _context.Produkti.Update(produkti);
             _context.StokuQmimiProduktit.Update(stokuQmimi);
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Perditeso", produkti.ProduktiID.ToString(), $"Eshte bere perditesimi i: {produkti.EmriProduktit}");
 
             return Ok(produkti);
         }
@@ -503,6 +522,8 @@ namespace TechStoreWebAPI.Controllers
             _context.StokuQmimiProduktit.Update(stokuQmimiIVjeter);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Bartja", $"Produkti Vjeter: {produktiIRi.ProduktiID} - Produkti i ri: {produktiIRi.ProduktiID}", $"Eshte bere bartja e produkteve: Produkti Vjeter: {produktiIRi.EmriProduktit} - Produkti i ri: {produktiIRi.EmriProduktit}");
+
             return Ok("Artikulli u bart me sukses");
         }
 
@@ -520,11 +541,9 @@ namespace TechStoreWebAPI.Controllers
             _context.Produkti.Update(produkti);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Fshij", produkti.ProduktiID.ToString(), $"Eshte bere fshirja e: {produkti.EmriProduktit}");
+
             return NoContent();
         }
-
-
-        
-
     }
 }

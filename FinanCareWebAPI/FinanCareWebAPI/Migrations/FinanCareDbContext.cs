@@ -32,4 +32,5 @@ public partial class FinanCareDbContext : IdentityDbContext
     public DbSet<AfatetESkadimit> AfatetESkadimit { get; set; }
     public DbSet<DitaFurnizimit> DitaFurnizimit { get; set; }
     public DbSet<BarazoArken> BarazoArken { get; set; }
-}
+    public DbSet<AdminLogs> AdminLogs { get; set; }
+    }

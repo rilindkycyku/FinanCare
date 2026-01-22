@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 
-namespace WebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.TeNdryshme
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using FinanCareWebAPI.Migrations;
 
-namespace WebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.SERVER
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]

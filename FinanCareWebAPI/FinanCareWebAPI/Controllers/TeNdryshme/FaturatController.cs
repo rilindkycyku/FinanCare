@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using FinanCareWebAPI.Models;
-using FinanCareWebAPI.Migrations;
+using System.Security.Claims;
 
-namespace WebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.TeNdryshme
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -12,10 +14,23 @@ namespace WebAPI.Controllers
     public class FaturatController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public FaturatController(FinanCareDbContext context)
+        public FaturatController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "Produkti", entityId, description);
+            }
         }
 
         [Authorize]
@@ -47,7 +62,8 @@ namespace WebAPI.Controllers
                     x.NrRendorFatures,
                     x.EshteFaturuarOferta,
                     x.IDBonusKartela,
-                    x.BonusKartela
+                    x.BonusKartela,
+                    x.Transporti
                 }).ToListAsync();
 
             return Ok(regjistrimet);
@@ -125,7 +141,8 @@ namespace WebAPI.Controllers
                     x.NrRendorFatures,
                     x.EshteFaturuarOferta,
                     x.IDBonusKartela,
-                    x.BonusKartela
+                    x.BonusKartela,
+                    x.Transporti
                 }).FirstOrDefaultAsync(x => x.IDRegjistrimit == id);
 
             var totTVSH18 = await _context.TeDhenatFaturat.Include(x => x.Produkti).Where(x => x.Produkti.LlojiTVSH == 18 && x.IDRegjistrimit == id).ToListAsync();
@@ -153,7 +170,7 @@ namespace WebAPI.Controllers
                     QmimiTotalShites += Convert.ToDecimal(teDhenat.QmimiShites * teDhenat.SasiaStokut);
                 }
 
-                if (regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
+                if (regjistrimet.LlojiKalkulimit.Equals("ONLINE") || regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
                 {
                     totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
                               (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
@@ -170,7 +187,7 @@ namespace WebAPI.Controllers
                 TotaliMeTVSH18 += totalBeforeVAT;
                 TotaliPaTVSH18 += totalBeforeVAT - vatAmount;
 
-                if (regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
+                if (regjistrimet.LlojiKalkulimit.Equals("ONLINE") || regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
                 {
                     Rabati += Convert.ToDecimal((teDhenat.QmimiShites * (rabati1 / 100) +
                               (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) +
@@ -194,7 +211,7 @@ namespace WebAPI.Controllers
                 decimal totalBeforeVAT = 0.00m;
                 decimal vatAmount = 0.00m;
 
-                if (regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
+                if (regjistrimet.LlojiKalkulimit.Equals("ONLINE") || regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
                 {
                     totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
                               (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
@@ -211,7 +228,7 @@ namespace WebAPI.Controllers
                 TotaliMeTVSH8 += totalBeforeVAT;
                 TotaliPaTVSH8 += totalBeforeVAT - vatAmount;
 
-                if (regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
+                if (regjistrimet.LlojiKalkulimit.Equals("ONLINE") || regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
                 {
                     Rabati += Convert.ToDecimal((teDhenat.QmimiShites * (rabati1 / 100) +
                               (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) +
@@ -286,7 +303,8 @@ namespace WebAPI.Controllers
                     NrRendorFatures = x.Faturat.NrRendorFatures,
                     EshteFaturuarOferta = x.Faturat.EshteFaturuarOferta,
                     IDBonusKartela = x.Faturat.IDBonusKartela,
-                    BonusKartela = x.Faturat.BonusKartela
+                    BonusKartela = x.Faturat.BonusKartela,
+                    x.Faturat.Transporti
                 })
                 .ToListAsync();
 
@@ -327,7 +345,7 @@ namespace WebAPI.Controllers
                 {
                     QmimiTotalShites += Convert.ToDecimal(teDhenat.QmimiShites * teDhenat.SasiaStokut);
                 }
-                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                if (llojiKalkulimit.Equals("ONLINE") || llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
                     llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
                 {
                     totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites -
@@ -346,7 +364,7 @@ namespace WebAPI.Controllers
                 TotaliMeTVSH18 += totalBeforeVAT;
                 TotaliPaTVSH18 += totalBeforeVAT - vatAmount;
 
-                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                if (llojiKalkulimit.Equals("ONLINE") || llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
                     llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
                 {
                     Rabati += Convert.ToDecimal((teDhenat.QmimiShites * (rabati1 / 100) +
@@ -371,7 +389,7 @@ namespace WebAPI.Controllers
                 decimal vatAmount = 0.00m;
 
                 var llojiKalkulimit = teDhenat.Faturat?.LlojiKalkulimit ?? "Unknown";
-                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                if (llojiKalkulimit.Equals("ONLINE") || llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
                     llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
                 {
                     totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites -
@@ -390,7 +408,7 @@ namespace WebAPI.Controllers
                 TotaliMeTVSH8 += totalBeforeVAT;
                 TotaliPaTVSH8 += totalBeforeVAT - vatAmount;
 
-                if (llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
+                if (llojiKalkulimit.Equals("ONLINE") || llojiKalkulimit.Equals("OFERTE") || llojiKalkulimit.Equals("FAT") ||
                     llojiKalkulimit.Equals("FL") || llojiKalkulimit.Equals("PARAGON"))
                 {
                     Rabati += Convert.ToDecimal((teDhenat.QmimiShites * (rabati1 / 100) +
@@ -690,7 +708,7 @@ namespace WebAPI.Controllers
             await _context.Faturat.AddAsync(regjistrimet);
             await _context.SaveChangesAsync();
 
-            
+            await LogAdminActionAsync("Shto", regjistrimet.IDRegjistrimit.ToString(), $"Eshte sthuar fatura me NR: {regjistrimet.NrFatures}");
 
             return CreatedAtAction("Get", regjistrimet.IDRegjistrimit, regjistrimet);
         }
@@ -856,9 +874,12 @@ namespace WebAPI.Controllers
 
             kalkulimi.StatusiKalkulimit = statusi;
 
+            var StatusiShqip = statusi == "true" ? "I Hapur" : "I Mbyllut";
+
             try
             {
                 await _context.SaveChangesAsync();
+                await LogAdminActionAsync("Perditeso", id.ToString(), $"Eshte bere perditesimi i statusit te kalkulimit me NR: {id} - {StatusiShqip}");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -888,6 +909,8 @@ namespace WebAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                await LogAdminActionAsync("BartNgaPranimMalli", id.ToString(), $"Eshte bere bartja e kalkulimit nr: {id}");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -913,6 +936,8 @@ namespace WebAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                await LogAdminActionAsync("FaturoOferten", oferta.NrFatures.ToString(), $"Eshte faturuar oferta: {oferta.NrFatures}");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -1031,6 +1056,8 @@ namespace WebAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                await LogAdminActionAsync("Perditeso", idKalulimit.ToString(), $"Eshte bere perditesimi i kalkulimit: {idKalulimit} - {fat.Partneri.EmriBiznesit}");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -1045,7 +1072,7 @@ namespace WebAPI.Controllers
         [Route("fshijKalkulimin")]
         public async Task<IActionResult> fshijKalkulimin(int idKalkulimi)
         {
-            var kalkulimi = await _context.Faturat.FirstOrDefaultAsync(x => x.IDRegjistrimit == idKalkulimi);
+            var kalkulimi = await _context.Faturat.Include(x => x.Partneri).FirstOrDefaultAsync(x => x.IDRegjistrimit == idKalkulimi);
             var teDhenatKalkulimit = await _context.TeDhenatFaturat.Where(x => x.IDRegjistrimit == idKalkulimi).ToListAsync();
 
             foreach (var teDhenat in teDhenatKalkulimit)
@@ -1056,6 +1083,9 @@ namespace WebAPI.Controllers
             _context.Faturat.Remove(kalkulimi);
 
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Largo", idKalkulimi.ToString(), $"Eshte bere largimi i kalkulimit me numer: {kalkulimi.IDRegjistrimit} - {kalkulimi.Partneri.EmriBiznesit}");
+
 
             return Ok();
         }
@@ -1093,8 +1123,185 @@ namespace WebAPI.Controllers
 
             await _context.SaveChangesAsync();
 
+
+
             return NoContent();
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("shtoFaturen")]
+        public async Task<ActionResult<object>> ShtoFaturen([FromBody] ImportFaturaDto dto)
+        {
+            try { 
+
+                // Check if partner exists
+                var partner = await _context.Partneri.FindAsync(dto.IDKlienti);
+                if (partner == null)
+                {
+                    return NotFound(new { message = "Partneri nuk u gjet" });
+                }
+
+                var staffId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var staff = await _context.Perdoruesi.FirstOrDefaultAsync(x => x.AspNetUserID == staffId);
+                int currentUserId = 0;
+                if(staff != null)
+                {
+                    currentUserId = staff.UserID;
+                }
+                else { currentUserId = 9; }
+
+                var fatura = new Faturat
+                    {
+                        NrFatures = dto.NrFatures,
+                        DataRegjistrimit = dto.Data ?? DateTime.Now,
+                        StafiID = currentUserId,
+                        IDPartneri = dto.IDKlienti,
+                        LlojiPageses = dto.LlojiPageses ?? "Cash",
+                        TotaliPaTVSH = dto.TotaliPaTVSH ?? 0,
+                        TVSH = dto.TVSH ?? 0,
+                        Rabati = dto.Rabati ?? 0,
+                        LlojiKalkulimit = dto.LlojiKalkulimit ?? "HYRJE",
+                        StatusiPageses = dto.StatusiPageses ?? "Pa Paguar",
+                        StatusiKalkulimit = "true",
+
+                    Transporti = dto.Transporti ?? 0
+                };
+
+                await _context.Faturat.AddAsync(fatura);
+                await _context.SaveChangesAsync();
+
+                await LogAdminActionAsync("ShtoPorosiOnline", fatura.NrFatures.ToString(), $"Eshte bere vendosja e porosis numer: {fatura.NrFatures} - {fatura.Partneri.EmriBiznesit}");
+
+                return Ok(new
+                {
+                    idFatura = fatura.IDRegjistrimit,
+                    nrFatures = fatura.NrFatures,
+                    message = "Fatura u shtua me sukses"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Gabim në shtimin e faturës", error = ex.Message });
+            }
+        }
+
+        // POST: api/Faturat/shtoTeDhenatFatura
+        [HttpPost("shtoTeDhenatFatura")]
+        public async Task<ActionResult<object>> ShtoTeDhenatFatura([FromBody] ImportTeDhenatFaturaDto dto)
+        {
+            try
+            {
+                if (dto.IDFatura <= 0 || dto.IDProdukti <= 0)
+                {
+                    return BadRequest(new { message = "IDFatura dhe IDProdukti janë të detyrueshëm" });
+                }
+
+                var fatura = await _context.Faturat.FindAsync(dto.IDFatura);
+                if (fatura == null)
+                {
+                    return NotFound(new { message = "Fatura nuk u gjet" });
+                }
+
+                var produkti = await _context.Produkti.FindAsync(dto.IDProdukti);
+                if (produkti == null)
+                {
+                    return NotFound(new { message = "Produkti nuk u gjet" });
+                }
+
+                var teDhenat = new TeDhenatFaturat
+                {
+                    IDRegjistrimit = dto.IDFatura,
+                    IDProduktit = dto.IDProdukti,
+                    SasiaStokut = dto.Sasia ?? 0,
+                    QmimiShites = dto.Qmimi ?? 0,
+                    Rabati1 = dto.Rabati ?? 0,
+                };
+
+                var stokuProduktit = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(sp => sp.ProduktiID == dto.IDProdukti);
+
+                if (stokuProduktit != null)
+                {
+                    stokuProduktit.SasiaNeStok -= teDhenat.SasiaStokut;
+                    stokuProduktit.DataPerditsimit = DateTime.Now;
+                    _context.StokuQmimiProduktit.Update(stokuProduktit);
+                }
+
+                _context.TeDhenatFaturat.Add(teDhenat);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    idTeDhenatFatura = teDhenat.ID,
+                    message = "Të dhënat e faturës u shtuan me sukses"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Gabim në shtimin e të dhënave të faturës", error = ex.Message });
+            }
+        }
+
+        // GET: api/Faturat/kerkoFatureNgaNumri
+        [HttpGet("kerkoFatureNgaNumri")]
+        public async Task<ActionResult<object>> KerkoFatureNgaNumri([FromQuery] string nrFatures)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(nrFatures))
+                {
+                    return BadRequest(new { message = "Numri i faturës është i detyrueshëm" });
+                }
+
+                var fatura = await _context.Faturat
+                    .Include(f => f.Partneri)
+                    .FirstOrDefaultAsync(f => f.NrFatures == nrFatures);
+
+                if (fatura == null)
+                {
+                    return Ok();
+                }
+
+                return Ok(new
+                {
+                    idFatura = fatura.IDRegjistrimit,
+                    nrFatures = fatura.NrFatures,
+                    data = fatura.DataRegjistrimit,
+                    emriPartnerit = fatura.Partneri != null ? fatura.Partneri.EmriBiznesit : "N/A",
+                    statusiPageses = fatura.StatusiPageses
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Gabim në kërkimin e faturës", error = ex.Message });
+            }
+        }
     }
+
+    // Import DTOs
+    public class ImportFaturaDto
+    {
+        public string? NrFatures { get; set; }
+        public DateTime? Data { get; set; }
+        public int? IDKlienti { get; set; }
+        public decimal? TotaliPaTVSH { get; set; }
+        public decimal? TVSH { get; set; }
+        public decimal? Rabati { get; set; }
+        public decimal? Transporti { get; set; }
+        public decimal? Totali { get; set; }
+        public string? LlojiPageses { get; set; }
+        public string? StatusiPageses { get; set; }
+        public string? LlojiKalkulimit { get; set; } = "ONLINE";
+    }
+
+    public class ImportTeDhenatFaturaDto
+    {
+        public int IDFatura { get; set; }
+        public int IDProdukti { get; set; }
+        public decimal? Sasia { get; set; }
+        public decimal? Qmimi { get; set; }
+        public int? Rabati { get; set; }
+    }
+
 }
+

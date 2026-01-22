@@ -4,6 +4,7 @@ using FinanCareWebAPI.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinanCareWebAPI.Migrations
 {
     [DbContext(typeof(FinanCareDbContext))]
-    partial class FinanCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260121194209_EshteShtuarTransportiTekFaturatPerPorosiOnline")]
+    partial class EshteShtuarTransportiTekFaturatPerPorosiOnline
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,39 +24,6 @@ namespace FinanCareWebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("FinanCareWebAPI.Models.AdminLogs", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Detaje")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Entiteti")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntitetiId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Koha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("StafiId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Veprimi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StafiId");
-
-                    b.ToTable("AdminLogs");
-                });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.AfatetESkadimit", b =>
                 {
@@ -895,15 +865,6 @@ namespace FinanCareWebAPI.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("FinanCareWebAPI.Models.AdminLogs", b =>
-                {
-                    b.HasOne("FinanCareWebAPI.Models.Perdoruesi", "Stafi")
-                        .WithMany()
-                        .HasForeignKey("StafiId");
-
-                    b.Navigation("Stafi");
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.AfatetESkadimit", b =>

@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FinanCareWebAPI.Models;
-using FinanCareWebAPI.Migrations;
+using System.Security.Claims;
 
-namespace WebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.Stafi
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -15,13 +17,27 @@ namespace WebAPI.Controllers
     {
         private readonly FinanCareDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IAdminLogService _adminLogService;
 
         public PerdoruesiController(
             FinanCareDbContext context, 
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            IAdminLogService adminLogService)
         {
             _context = context;
             _userManager = userManager;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "Perdoruesi", entityId, description);
+            }
         }
 
         [Authorize]
@@ -77,7 +93,6 @@ namespace WebAPI.Controllers
 
             return Ok(result);
         }
-
 
 
         [Authorize]
@@ -168,6 +183,7 @@ namespace WebAPI.Controllers
                 return BadRequest("Ndodhi nje gabim gjate perditesimit te email");
             }
 
+            await LogAdminActionAsync("Perditeso", emailIVjeter.ToString(), $"Eshte bere perditesimi i emailit ne: {emailIRI}");
 
             return Ok(emailINdryshuar);
         }
@@ -193,6 +209,7 @@ namespace WebAPI.Controllers
                 return BadRequest("Ndodhi nje gabim gjate perditesimit te fjalekalimit");
             }
 
+            await LogAdminActionAsync("Perditeso", AspNetID.ToString(), $"Eshte bere ndryshimi i passwordid per: {perdoruesi.Email}");
 
             return Ok(passwodiINdryshuar);
         }
@@ -296,6 +313,8 @@ namespace WebAPI.Controllers
 
             _context.TeDhenatPerdoruesit.Update(teDhenatUser);
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Perditeso", id.ToString(), $"Eshte bere perditesimi i te dhenave te perdoruesit: {perdouresi.UserID} - {perdouresi.Emri} {perdouresi.Mbiemri}");
 
             return Ok(perdouresi);
         }

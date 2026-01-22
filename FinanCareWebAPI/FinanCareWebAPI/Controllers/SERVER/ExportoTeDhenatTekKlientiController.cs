@@ -1,14 +1,16 @@
 ﻿using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-namespace TechStoreWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.SERVER
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -16,10 +18,23 @@ namespace TechStoreWebAPI.Controllers
     public class ExportoTeDhenatTekKlientiController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public ExportoTeDhenatTekKlientiController(FinanCareDbContext context)
+        public ExportoTeDhenatTekKlientiController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "BartjeOnline", entityId, description);
+            }
         }
 
 
@@ -82,6 +97,9 @@ namespace TechStoreWebAPI.Controllers
                 var filePath = Path.Combine(targetFolder, "products.json");
 
                 await System.IO.File.WriteAllTextAsync(filePath, json);
+
+                await LogAdminActionAsync("Bartje", DateTime.Now.ToString(), $"Eshte bere bartja per dyqanin online!");
+
 
                 return Ok(new
                 {

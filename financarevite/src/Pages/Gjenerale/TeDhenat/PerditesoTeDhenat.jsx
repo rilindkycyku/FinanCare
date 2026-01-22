@@ -103,7 +103,7 @@ function PerditesoTeDhenat(props) {
     try {
       if (!isNullOrEmpty(fjalekalimiAktual) && !isNullOrEmpty(fjalekalimiIRi)) {
         const passREGEX =
-          /^[A-Z][A-Za-z0-9@$!%*?&]*[a-z][A-Za-z0-9@$!%*?&]*[0-9][A-Za-z0-9@$!%*?&]*$/;
+          /^[A-Za-z0-9@$!%*?&]*[a-z][A-Za-z0-9@$!%*?&]*[0-9][A-Za-z0-9@$!%*?&]*$/;
 
         const kontrolloFjalekalimin = await axios.get(
           `${API_BASE_URL}/api/Perdoruesi/KontrolloFjalekalimin?AspNetID=${getID}&fjalekalimi=${fjalekalimiAktual}`,
@@ -134,7 +134,7 @@ function PerditesoTeDhenat(props) {
             setShfaqFjalekalimin(false);
 
             setPershkrimiMesazhit(
-              "Fjalekalimi duhet te permbaj <strong>shkronja, numra dhe simbole si dhe shkroja e pare duhet te jete e madhe!</strong>"
+              "Fjalekalimi duhet te permbaj <strong>shkronja, numra dhe simbole!</strong>"
             );
             setTipiMesazhit("danger");
             setShfaqMesazhin(true);

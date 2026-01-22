@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -9,6 +9,7 @@ import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Select from "react-select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { useReactToPrint } from "react-to-print";
 
 function KartelaFinanciare(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -21,13 +22,12 @@ function KartelaFinanciare(props) {
   const [kartelaEProduktit, setKartelaEProduktit] = useState([]);
   const [kartelaEProduktitDetaje, setKartelaEProduktitDetaje] = useState([]);
   const [produktet, setProduktet] = useState([]);
-
   const [teDhenat, setTeDhenat] = useState([]);
 
   const navigate = useNavigate();
+  const printRef = useRef();
 
   const getID = localStorage.getItem("id");
-
   const getToken = localStorage.getItem("token");
 
   const authentikimi = {
@@ -35,6 +35,20 @@ function KartelaFinanciare(props) {
       Authorization: `Bearer ${getToken}`,
     },
   };
+
+   const [options, setOptions] = useState([]);
+  const [optionsSelected, setOptionsSelected] = useState(null);
+  const customStyles = {
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 1050,
+    }),
+  };
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `Kartela_Financiare_${optionsSelected?.label || "Partner"}`,
+  });
 
   useEffect(() => {
     if (getID) {
@@ -77,7 +91,7 @@ function KartelaFinanciare(props) {
   useEffect(() => {
     const kartelaEProduktit = async () => {
       try {
-        setLoading(true); // Show loading indicator
+        setLoading(true);
         const response = await axios.get(
           `${API_BASE_URL}/api/Partneri/KartelaFinanciare?id=${produktiID}`,
           authentikimi
@@ -109,7 +123,7 @@ function KartelaFinanciare(props) {
               ? (p.totaliPaTVSH + p.tvsh - p.rabati) * -1
               : p.totaliPaTVSH + p.tvsh - p.rabati;
 
-          if (["HYRJE", "FAT", "AS", "PARAGON", "SALDO"].includes(p.llojiKalkulimit)) {
+          if (["HYRJE", "FAT", "AS", "PARAGON", "SALDO", "ONLINE"].includes(p.llojiKalkulimit)) {
             faturimValue = parseFloat(vlera).toFixed(2);
             saldo += parseFloat(faturimValue);
           } else if (
@@ -128,7 +142,7 @@ function KartelaFinanciare(props) {
             "Lloji Fat.": p.llojiKalkulimit,
             "Nr. Fat": p.nrFatures,
             Pershkrimi: p.pershkrimShtese,
-            "Faturim €": ["HYRJE", "FAT", "AS", "PARAGON", "SALDO"].includes(
+            "Faturim €": ["HYRJE", "FAT", "AS", "PARAGON", "SALDO", "ONLINE"].includes(
               p.llojiKalkulimit
             )
               ? faturimValue
@@ -143,8 +157,8 @@ function KartelaFinanciare(props) {
         });
 
         setKartelaEProduktit(response.data);
-        setKartelaEProduktitDetaje(formattedData); // Set the formatted data to state
-        setLoading(false); // Hide loading indicator
+        setKartelaEProduktitDetaje(formattedData);
+        setLoading(false);
       } catch (err) {
         console.error("Error fetching kartela e produktit:", err);
         setLoading(false);
@@ -154,14 +168,8 @@ function KartelaFinanciare(props) {
     kartelaEProduktit();
   }, [perditeso, produktiID]);
 
-  const [options, setOptions] = useState([]);
-  const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
+ 
+
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/api/Partneri/shfaqPartneret`, authentikimi)
@@ -183,6 +191,7 @@ function KartelaFinanciare(props) {
         console.error("Error fetching data:", error);
       });
   }, []);
+
   const handleChange = async (partneri) => {
     setproduktiID(partneri.value);
     setOptionsSelected(partneri);
@@ -217,139 +226,158 @@ function KartelaFinanciare(props) {
             />
           </div>
         ) : (
-          <div className="kartela">
-            <h1 className="title">Kartela Financiare</h1>
+          <>
+            {/* Print Button */}
+            <div style={{ marginBottom: "20px", textAlign: "right" }}>
+              <Button
+                onClick={handlePrint}
+                className="mb-3 Butoni"
+                style={{
+                  marginRight: "10px",
+                  backgroundColor: "#009879",
+                  border: "none",
+                }}
+              >
+                🖨️ Print Kartela
+              </Button>
+            </div>
 
-            <Container fluid>
-              <Row>
-                <Col>
-                  <h3>Te dhenat e Partnerit</h3>
-                  <Form>
-                    <Form.Group controlId="idDheEmri">
-                      <Form.Label>Partneri</Form.Label>
-                      <Select
-                        value={optionsSelected}
-                        onChange={handleChange}
-                        options={options}
-                        id="produktiSelect" // Setting the id attribute
-                        inputId="produktiSelect-input" // Setting the input id attribute
-                        styles={customStyles}
-                      />
-                    </Form.Group>
-                  </Form>
-                  <br />
+            {/* Content to Print */}
+            <div ref={printRef} className="kartela">
+              <h1 className="title">Kartela Financiare</h1>
 
-                  <p>
-                    <strong>Shkurtesa:</strong>{" "}
-                    {(kartelaEProduktit &&
-                      kartelaEProduktit.partneri?.shkurtesaPartnerit) ??
-                      ""}
-                  </p>
-                  <p>
-                    <strong>Nr. Unik:</strong>{" "}
-                    {(kartelaEProduktit && kartelaEProduktit.partneri?.nui) ??
-                      0}
-                  </p>
-                  <p>
-                    <strong>Lloji Partnerit:</strong>{" "}
-                    {(kartelaEProduktit &&
-                      kartelaEProduktit.partneri?.llojiPartnerit) ??
-                      ""}
-                  </p>
-                  <p>
-                    <strong>Kodi Karteles:</strong>{" "}
-                    {(kartelaEProduktit &&
-                      kartelaEProduktit.partneri?.kartela?.kodiKartela) ??
-                      "-"}
-                  </p>
-                </Col>
-                <Col>
-                  <h3>Te dhenat Ndihmese</h3>
-                  <p>
-                    <strong>Nr. TVSH:</strong>{" "}
-                    {(kartelaEProduktit && kartelaEProduktit.partneri?.tvsh) ??
-                      0}
-                  </p>
-                  <p>
-                    <strong>Nr. Fiskal:</strong>{" "}
-                    {(kartelaEProduktit && kartelaEProduktit.partneri?.nrf) ??
-                      0}
-                  </p>
-                  <p>
-                    <strong>Email:</strong>{" "}
-                    {(kartelaEProduktit &&
-                      kartelaEProduktit?.produkti?.email) ??
-                      0}
-                  </p>
-                  <p>
-                    <strong>Adresa:</strong>{" "}
-                    {(kartelaEProduktit &&
-                      kartelaEProduktit.partneri?.adresa) ??
-                      ""}
-                  </p>
-                  <p>
-                    <strong>Nr. Kontaktit:</strong>{" "}
-                    {(kartelaEProduktit &&
-                      kartelaEProduktit.partneri?.nrKontaktit) ??
-                      0}
-                  </p>
-                  <p>
-                    <strong>Rabati %:</strong>{" "}
-                    {parseFloat(kartelaEProduktit &&
-                      kartelaEProduktit.partneri?.kartela?.rabati).toFixed(2) ??
-                      "-"}
-                  </p>
-                </Col>
-                <Col>
-                  <Row>
-                    <h3>Financat</h3>
+              <Container fluid>
+                <Row>
+                  <Col>
+                    <h3>Te dhenat e Partnerit</h3>
+                    <Form>
+                      <Form.Group controlId="idDheEmri">
+                        <Form.Label>Partneri</Form.Label>
+                        <Select
+                          value={optionsSelected}
+                          onChange={handleChange}
+                          options={options}
+                          id="produktiSelect"
+                          inputId="produktiSelect-input"
+                          styles={customStyles}
+                        />
+                      </Form.Group>
+                    </Form>
+                    <br />
+
                     <p>
-                      <strong>Totali Hyres :</strong>{" "}
-                      {parseFloat(
-                        kartelaEProduktit && kartelaEProduktit?.totaliHyrese
-                      ).toFixed(2) ?? parseFloat(0).toFixed(2)}{" "}
-                      €
+                      <strong>Shkurtesa:</strong>{" "}
+                      {(kartelaEProduktit &&
+                        kartelaEProduktit.partneri?.shkurtesaPartnerit) ??
+                        ""}
                     </p>
                     <p>
-                      <strong>Totali Dales :</strong>{" "}
-                      {parseFloat(
-                        kartelaEProduktit && kartelaEProduktit?.totaliDalese
-                      ).toFixed(2) ?? parseFloat(0).toFixed(2)}{" "}
-                      €
+                      <strong>Nr. Unik:</strong>{" "}
+                      {(kartelaEProduktit && kartelaEProduktit.partneri?.nui) ??
+                        0}
                     </p>
                     <p>
-                      <strong>Saldo :</strong>{" "}
-                      {parseFloat(
-                        (kartelaEProduktit && kartelaEProduktit?.totaliDalese) -
-                          (kartelaEProduktit && kartelaEProduktit?.totaliHyrese)
-                      ).toFixed(2) ?? parseFloat(0).toFixed(2)}{" "}
-                      €
+                      <strong>Lloji Partnerit:</strong>{" "}
+                      {(kartelaEProduktit &&
+                        kartelaEProduktit.partneri?.llojiPartnerit) ??
+                        ""}
                     </p>
-                    <hr />
-                    <Col
-                      style={{
-                        display: "flex",
-                        justifyContent: "left",
-                      }}>
-                      <Link to="/TabelaEPartnereve">
-                        <Button className="mb-3 Butoni">Partneret</Button>
-                      </Link>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <hr />
-              <div className="mt-2">
-                <Tabela
-                  data={kartelaEProduktitDetaje}
-                  tableName={"Kartela Financiare per " + optionsSelected?.label}
-                  dateField="Data Fat." // The field in your data that contains the date values
-                  kontrolloStatusin
-                  mosShfaqID={true}
-                />
-              </div>
-            </Container>
-          </div>
+                    <p>
+                      <strong>Kodi Karteles:</strong>{" "}
+                      {(kartelaEProduktit &&
+                        kartelaEProduktit.partneri?.kartela?.kodiKartela) ??
+                        "-"}
+                    </p>
+                  </Col>
+                  <Col>
+                    <h3>Te dhenat Ndihmese</h3>
+                    <p>
+                      <strong>Nr. TVSH:</strong>{" "}
+                      {(kartelaEProduktit && kartelaEProduktit.partneri?.tvsh) ??
+                        0}
+                    </p>
+                    <p>
+                      <strong>Nr. Fiskal:</strong>{" "}
+                      {(kartelaEProduktit && kartelaEProduktit.partneri?.nrf) ??
+                        0}
+                    </p>
+                    <p>
+                      <strong>Email:</strong>{" "}
+                      {(kartelaEProduktit &&
+                        kartelaEProduktit?.produkti?.email) ??
+                        0}
+                    </p>
+                    <p>
+                      <strong>Adresa:</strong>{" "}
+                      {(kartelaEProduktit &&
+                        kartelaEProduktit.partneri?.adresa) ??
+                        ""}
+                    </p>
+                    <p>
+                      <strong>Nr. Kontaktit:</strong>{" "}
+                      {(kartelaEProduktit &&
+                        kartelaEProduktit.partneri?.nrKontaktit) ??
+                        0}
+                    </p>
+                    <p>
+                      <strong>Rabati %:</strong>{" "}
+                      {parseFloat(kartelaEProduktit &&
+                        kartelaEProduktit.partneri?.kartela?.rabati).toFixed(2) ??
+                        "-"}
+                    </p>
+                  </Col>
+                  <Col>
+                    <Row>
+                      <h3>Financat</h3>
+                      <p>
+                        <strong>Totali Hyres :</strong>{" "}
+                        {parseFloat(
+                          kartelaEProduktit && kartelaEProduktit?.totaliHyrese
+                        ).toFixed(2) ?? parseFloat(0).toFixed(2)}{" "}
+                        €
+                      </p>
+                      <p>
+                        <strong>Totali Dales :</strong>{" "}
+                        {parseFloat(
+                          kartelaEProduktit && kartelaEProduktit?.totaliDalese
+                        ).toFixed(2) ?? parseFloat(0).toFixed(2)}{" "}
+                        €
+                      </p>
+                      <p>
+                        <strong>Saldo :</strong>{" "}
+                        {parseFloat(
+                          (kartelaEProduktit && kartelaEProduktit?.totaliDalese) -
+                            (kartelaEProduktit && kartelaEProduktit?.totaliHyrese)
+                        ).toFixed(2) ?? parseFloat(0).toFixed(2)}{" "}
+                        €
+                      </p>
+                      <hr />
+                      <Col
+                        style={{
+                          display: "flex",
+                          justifyContent: "left",
+                        }}
+                      >
+                        <Link to="/TabelaEPartnereve">
+                          <Button className="mb-3 Butoni">Partneret</Button>
+                        </Link>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+                <hr />
+                <div className="mt-2">
+                  <Tabela
+                    data={kartelaEProduktitDetaje}
+                    tableName={"Kartela Financiare per " + optionsSelected?.label}
+                    dateField="Data Fat."
+                    kontrolloStatusin
+                    mosShfaqID={true}
+                  />
+                </div>
+              </Container>
+            </div>
+          </>
         )}
       </div>
     </>

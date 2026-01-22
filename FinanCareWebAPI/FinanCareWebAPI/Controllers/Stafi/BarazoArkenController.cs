@@ -1,10 +1,12 @@
 ﻿using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
-namespace FinanCareWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.Stafi
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -12,10 +14,23 @@ namespace FinanCareWebAPI.Controllers
     public class BarazoArkenController : ControllerBase
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public BarazoArkenController(FinanCareDbContext context)
+        public BarazoArkenController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "BarazoArken", entityId, description);
+            }
         }
 
         // GET: api/BarazoArken/shfaqBaraziminSipasIDs/5
@@ -96,6 +111,9 @@ namespace FinanCareWebAPI.Controllers
             await _context.BarazoArken.AddAsync(barazoArken);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Shto", barazoArken.IDBarazoArken.ToString(), $"Barazimi i Arkes per: {barazoArken.Arkatari.Username} - {barazoArken.Arkatari.Emri} {barazoArken.Arkatari.Mbiemri}");
+
+
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = barazoArken.IDBarazoArken },
@@ -110,7 +128,7 @@ namespace FinanCareWebAPI.Controllers
             if (id <= 0)
                 return BadRequest("ID e pavlefshme.");
 
-            var barazo = await _context.BarazoArken
+            var barazo = await _context.BarazoArken.Include(x => x.Arkatari)
                 .FirstOrDefaultAsync(b => b.IDBarazoArken == id);
 
             if (barazo == null)
@@ -118,6 +136,8 @@ namespace FinanCareWebAPI.Controllers
 
             _context.BarazoArken.Remove(barazo);
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Fshij", id.ToString(), $"Barazimi i Arkes u fshi per: {barazo.Arkatari.Username} - {barazo.Arkatari.Emri} {barazo.Arkatari.Mbiemri}");
 
             return Ok("Barazimi i arkës u fshi me sukses!");
         }

@@ -1,6 +1,62 @@
 [
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AdminLogsController",
+    "Method": "EksportoGjurmimet",
+    "RelativePath": "api/AdminLogs/EksportoGjurmimet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AdminLogsController",
+    "Method": "FshijGjurmimetEGjitha",
+    "RelativePath": "api/AdminLogs/FshijGjurmimetEGjitha",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AdminLogsController",
+    "Method": "FshijGjurmimetEVjetra",
+    "RelativePath": "api/AdminLogs/FshijGjurmimetEVjetra/{dite}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dite",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AdminLogsController",
+    "Method": "ShfaqGjurmimet",
+    "RelativePath": "api/AdminLogs/ShfaqGjurmimet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AdminLogsController",
+    "Method": "ShfaqNumerinEGjurmimeve",
+    "RelativePath": "api/AdminLogs/ShfaqNumerinEGjurmimeve",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "FshijRolet",
     "RelativePath": "api/Authenticate/fshijRolin",
     "HttpMethod": "DELETE",
@@ -16,7 +72,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "Login",
     "RelativePath": "api/Authenticate/login",
     "HttpMethod": "POST",
@@ -32,7 +88,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "NdryshoFjalekalimin",
     "RelativePath": "api/Authenticate/NdryshoFjalekalimin",
     "HttpMethod": "POST",
@@ -58,7 +114,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "PerditesoAksesin",
     "RelativePath": "api/Authenticate/PerditesoAksesin",
     "HttpMethod": "PUT",
@@ -79,7 +135,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "Register",
     "RelativePath": "api/Authenticate/register",
     "HttpMethod": "POST",
@@ -95,7 +151,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "ResetoFjalekalimin",
     "RelativePath": "api/Authenticate/ResetoFjalekalimin",
     "HttpMethod": "POST",
@@ -111,7 +167,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "ShfaqRolet",
     "RelativePath": "api/Authenticate/shfaqRolet",
     "HttpMethod": "GET",
@@ -121,7 +177,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.AuthenticateController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.AuthenticateController",
     "Method": "ShtoRolin",
     "RelativePath": "api/Authenticate/shtoRolin",
     "HttpMethod": "POST",
@@ -137,7 +193,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.BarazoArkenController",
     "Method": "Delete",
     "RelativePath": "api/BarazoArken/fshijBarazimin/{id}",
     "HttpMethod": "DELETE",
@@ -153,7 +209,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.BarazoArkenController",
     "Method": "ShfaqArkataretPerSot",
     "RelativePath": "api/BarazoArken/shfaqArkataretPerSot",
     "HttpMethod": "GET",
@@ -163,7 +219,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.BarazoArkenController",
     "Method": "GetById",
     "RelativePath": "api/BarazoArken/shfaqBaraziminSipasIDs",
     "HttpMethod": "GET",
@@ -179,7 +235,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.BarazoArkenController",
     "Method": "GetAll",
     "RelativePath": "api/BarazoArken/shfaqTeGjithaBarazimet",
     "HttpMethod": "GET",
@@ -189,7 +245,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.BarazoArkenController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.BarazoArkenController",
     "Method": "Post",
     "RelativePath": "api/BarazoArken/shtoBarazimin",
     "HttpMethod": "POST",
@@ -205,7 +261,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.DatabaseController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.DatabaseController",
     "Method": "CreateAndImportDatabase",
     "RelativePath": "api/Database",
     "HttpMethod": "POST",
@@ -226,7 +282,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.DitaFurnizimitController",
     "Method": "Delete",
     "RelativePath": "api/DitaFurnizimit/fshijDitenEFurnizimit",
     "HttpMethod": "DELETE",
@@ -242,7 +298,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.DitaFurnizimitController",
     "Method": "Put",
     "RelativePath": "api/DitaFurnizimit/perditesoDitenEFurnizimit",
     "HttpMethod": "PUT",
@@ -263,7 +319,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.DitaFurnizimitController",
     "Method": "Get",
     "RelativePath": "api/DitaFurnizimit/shfaqDitenEFurnizimitSipasIDs",
     "HttpMethod": "GET",
@@ -279,7 +335,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.DitaFurnizimitController",
     "Method": "Get",
     "RelativePath": "api/DitaFurnizimit/shfaqDitetEFurnizimit",
     "HttpMethod": "GET",
@@ -289,7 +345,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.DitaFurnizimitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.DitaFurnizimitController",
     "Method": "Post",
     "RelativePath": "api/DitaFurnizimit/shtoDitenEFurnizimit",
     "HttpMethod": "POST",
@@ -305,7 +361,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.ExportoTeDhenatTekKlientiController",
     "Method": "BartTeDhenatEBiznesit",
     "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEBiznesit",
     "HttpMethod": "POST",
@@ -315,7 +371,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.ExportoTeDhenatTekKlientiController",
     "Method": "BartTeDhenatEKategorive",
     "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEKategorive",
     "HttpMethod": "POST",
@@ -325,7 +381,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.ExportoTeDhenatTekKlientiController",
     "Method": "BartTeDhenatEPerdorueseve",
     "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEPerdorueseve",
     "HttpMethod": "POST",
@@ -335,7 +391,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ExportoTeDhenatTekKlientiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.ExportoTeDhenatTekKlientiController",
     "Method": "BartTeDhenatEProdukteve",
     "RelativePath": "api/ExportoTeDhenatTekKlienti/BartTeDhenatEProdukteve",
     "HttpMethod": "POST",
@@ -345,7 +401,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "BartNgaPranimiMallitKalkulim",
     "RelativePath": "api/Faturat/BartNgaPranimiMallitKalkulim",
     "HttpMethod": "PUT",
@@ -366,7 +422,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "FaturoOferten",
     "RelativePath": "api/Faturat/FaturoOferten",
     "HttpMethod": "PUT",
@@ -382,7 +438,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "FaturoOfertenPerditesoStokun",
     "RelativePath": "api/Faturat/FaturoOferten/PerditesoStokun",
     "HttpMethod": "PUT",
@@ -408,7 +464,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "fshijKalkulimin",
     "RelativePath": "api/Faturat/fshijKalkulimin",
     "HttpMethod": "DELETE",
@@ -424,7 +480,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "fshijKalkuliminPerditesoStokun",
     "RelativePath": "api/Faturat/fshijKalkulimin/perditesoStokunQmimin",
     "HttpMethod": "GET",
@@ -450,7 +506,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "GetNumriFaturesMeRradhe",
     "RelativePath": "api/Faturat/getNumriFaturesMeRradhe",
     "HttpMethod": "GET",
@@ -466,7 +522,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "FshijAsgjesiminPerditesoStokun",
     "RelativePath": "api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin",
     "HttpMethod": "GET",
@@ -492,7 +548,23 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
+    "Method": "KerkoFatureNgaNumri",
+    "RelativePath": "api/Faturat/kerkoFatureNgaNumri",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nrFatures",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "PerditesoFaturen",
     "RelativePath": "api/Faturat/perditesoFaturen",
     "HttpMethod": "PUT",
@@ -513,7 +585,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Post",
     "RelativePath": "api/Faturat/ruajKalkulimin",
     "HttpMethod": "POST",
@@ -529,7 +601,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "AsgjesoStokunPerditesoStokunQmimin",
     "RelativePath": "api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin",
     "HttpMethod": "PUT",
@@ -550,7 +622,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Delete",
     "RelativePath": "api/Faturat/ruajKalkulimin/FshijTeDhenat",
     "HttpMethod": "DELETE",
@@ -566,7 +638,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "DeleteByIdKalkulimi",
     "RelativePath": "api/Faturat/ruajKalkulimin/FshijTeDhenatNgaIdKalkulimit",
     "HttpMethod": "DELETE",
@@ -582,7 +654,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "GetKalkulimi",
     "RelativePath": "api/Faturat/ruajKalkulimin/getKalkulimi",
     "HttpMethod": "GET",
@@ -598,7 +670,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Putkalkulimifillestarvjetor",
     "RelativePath": "api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin",
     "HttpMethod": "PUT",
@@ -619,7 +691,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Put",
     "RelativePath": "api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit",
     "HttpMethod": "PUT",
@@ -640,7 +712,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Put",
     "RelativePath": "api/Faturat/ruajKalkulimin/perditesoStokunQmimin",
     "HttpMethod": "PUT",
@@ -661,7 +733,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Put",
     "RelativePath": "api/Faturat/ruajKalkulimin/PerditesoTeDhenat",
     "HttpMethod": "PUT",
@@ -682,7 +754,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Post",
     "RelativePath": "api/Faturat/ruajKalkulimin/teDhenat",
     "HttpMethod": "POST",
@@ -698,7 +770,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "ShfaqFaturatEHapura",
     "RelativePath": "api/Faturat/ShfaqFaturatEHapura",
     "HttpMethod": "GET",
@@ -714,7 +786,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "ShfaqNumrinRendorFatures",
     "RelativePath": "api/Faturat/ShfaqNumrinRendorFatures",
     "HttpMethod": "GET",
@@ -730,7 +802,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Get",
     "RelativePath": "api/Faturat/shfaqRegjistrimet",
     "HttpMethod": "GET",
@@ -740,7 +812,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "GetRegjistrimin",
     "RelativePath": "api/Faturat/shfaqRegjistrimetNgaID",
     "HttpMethod": "GET",
@@ -756,7 +828,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "ShfaqRegjistrimetNgaProdukti",
     "RelativePath": "api/Faturat/shfaqRegjistrimetNgaProdukti",
     "HttpMethod": "GET",
@@ -772,7 +844,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "GetByStatusi",
     "RelativePath": "api/Faturat/shfaqRegjistrimetSipasStatusit",
     "HttpMethod": "GET",
@@ -788,7 +860,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.FaturatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "GetRegjistrimi",
     "RelativePath": "api/Faturat/shfaqTeDhenatKalkulimit",
     "HttpMethod": "GET",
@@ -804,7 +876,39 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
+    "Method": "ShtoFaturen",
+    "RelativePath": "api/Faturat/shtoFaturen",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "FinanCareWebAPI.Controllers.TeNdryshme.ImportFaturaDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
+    "Method": "ShtoTeDhenatFatura",
+    "RelativePath": "api/Faturat/shtoTeDhenatFatura",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "FinanCareWebAPI.Controllers.TeNdryshme.ImportTeDhenatFaturaDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.GrupiProduktitController",
     "Method": "Delete",
     "RelativePath": "api/GrupiProduktit/fshijGrupinEProduktit",
     "HttpMethod": "DELETE",
@@ -820,7 +924,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.GrupiProduktitController",
     "Method": "Put",
     "RelativePath": "api/GrupiProduktit/perditesoGrupinEProduktit",
     "HttpMethod": "PUT",
@@ -841,7 +945,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.GrupiProduktitController",
     "Method": "Get",
     "RelativePath": "api/GrupiProduktit/shfaqGrupetEProduktit",
     "HttpMethod": "GET",
@@ -851,7 +955,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.GrupiProduktitController",
     "Method": "Get",
     "RelativePath": "api/GrupiProduktit/shfaqGrupinEProduktitSipasIDs",
     "HttpMethod": "GET",
@@ -867,7 +971,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.GrupiProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.GrupiProduktitController",
     "Method": "Post",
     "RelativePath": "api/GrupiProduktit/shtoGrupinEProduktit",
     "HttpMethod": "POST",
@@ -883,7 +987,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.KartelatController",
     "Method": "Delete",
     "RelativePath": "api/Kartelat/fshijKartelen",
     "HttpMethod": "DELETE",
@@ -899,7 +1003,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.KartelatController",
     "Method": "Put",
     "RelativePath": "api/Kartelat/perditesoKartelen",
     "HttpMethod": "PUT",
@@ -920,7 +1024,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.KartelatController",
     "Method": "ShfaqKartelat",
     "RelativePath": "api/Kartelat/shfaqKartelat",
     "HttpMethod": "GET",
@@ -930,7 +1034,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.KartelatController",
     "Method": "ShfaqKartelenSipasIDs",
     "RelativePath": "api/Kartelat/shfaqKartelenSipasIDs",
     "HttpMethod": "GET",
@@ -946,7 +1050,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.KartelatController",
     "Method": "ShfaqKartelenSipasKodit",
     "RelativePath": "api/Kartelat/shfaqKartelenSipasKodit",
     "HttpMethod": "GET",
@@ -962,7 +1066,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.KartelatController",
     "Method": "Post",
     "RelativePath": "api/Kartelat/shtoKartelen",
     "HttpMethod": "POST",
@@ -978,7 +1082,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.KartelatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.KartelatController",
     "Method": "ShtoKartelenBonus",
     "RelativePath": "api/Kartelat/ShtoKartelenBonus",
     "HttpMethod": "POST",
@@ -1004,7 +1108,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.NjesiaMateseController",
     "Method": "Delete",
     "RelativePath": "api/NjesiaMatese/fshijNjesineMatese",
     "HttpMethod": "DELETE",
@@ -1020,7 +1124,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.NjesiaMateseController",
     "Method": "Put",
     "RelativePath": "api/NjesiaMatese/perditesoNjesineMatese",
     "HttpMethod": "PUT",
@@ -1041,7 +1145,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.NjesiaMateseController",
     "Method": "Get",
     "RelativePath": "api/NjesiaMatese/shfaqNjesineMateseSipasIDs",
     "HttpMethod": "GET",
@@ -1057,7 +1161,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.NjesiaMateseController",
     "Method": "Get",
     "RelativePath": "api/NjesiaMatese/shfaqNjesiteMatese",
     "HttpMethod": "GET",
@@ -1067,7 +1171,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.NjesiaMateseController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.NjesiaMateseController",
     "Method": "Post",
     "RelativePath": "api/NjesiaMatese/shtoNjesineMatese",
     "HttpMethod": "POST",
@@ -1083,7 +1187,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.NjoftimetController",
     "Method": "Delete",
     "RelativePath": "api/Njoftimet/fshijAfatetESkadimit",
     "HttpMethod": "DELETE",
@@ -1099,7 +1203,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.NjoftimetController",
     "Method": "ShfaqAfatetESkadimit",
     "RelativePath": "api/Njoftimet/ShfaqAfatetESkadimit",
     "HttpMethod": "GET",
@@ -1109,7 +1213,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.NjoftimetController",
     "Method": "ShfaqProduktetPaStok",
     "RelativePath": "api/Njoftimet/ShfaqProduktetPaStok",
     "HttpMethod": "GET",
@@ -1119,7 +1223,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.NjoftimetController",
     "Method": "Post",
     "RelativePath": "api/Njoftimet/shtoAfatetESkadimit",
     "HttpMethod": "POST",
@@ -1135,7 +1239,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.NjoftimetController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.NjoftimetController",
     "Method": "SuggestOrder",
     "RelativePath": "api/Njoftimet/suggest-order/{productId}",
     "HttpMethod": "POST",
@@ -1166,7 +1270,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "Delete",
     "RelativePath": "api/Partneri/fshijPartnerin",
     "HttpMethod": "DELETE",
@@ -1182,7 +1286,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "GetById",
     "RelativePath": "api/Partneri/KartelaFinanciare",
     "HttpMethod": "GET",
@@ -1198,7 +1302,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "Put",
     "RelativePath": "api/Partneri/perditesoPartnerin",
     "HttpMethod": "PUT",
@@ -1224,7 +1328,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "Get",
     "RelativePath": "api/Partneri/shfaqPartneret",
     "HttpMethod": "GET",
@@ -1234,7 +1338,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "GetBleresit",
     "RelativePath": "api/Partneri/shfaqPartneretBleres",
     "HttpMethod": "GET",
@@ -1244,7 +1348,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "GetFurnitoret",
     "RelativePath": "api/Partneri/shfaqPartneretFurntiore",
     "HttpMethod": "GET",
@@ -1254,7 +1358,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "GetSipasLlojit",
     "RelativePath": "api/Partneri/shfaqPartneretSipasLlojit",
     "HttpMethod": "GET",
@@ -1270,7 +1374,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "Get",
     "RelativePath": "api/Partneri/shfaqPartnerinSipasIDs",
     "HttpMethod": "GET",
@@ -1286,7 +1390,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FinanCareWebAPI.Controllers.PartneriController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeDhenatPartneri.PartneriController",
     "Method": "Post",
     "RelativePath": "api/Partneri/shtoPartnerin",
     "HttpMethod": "POST",
@@ -1302,7 +1406,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "GjeneroTeDhenatPerHyrje",
     "RelativePath": "api/Perdoruesi/GjeneroTeDhenatPerHyrje",
     "HttpMethod": "GET",
@@ -1328,7 +1432,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "KontrolloEmail",
     "RelativePath": "api/Perdoruesi/KontrolloEmail",
     "HttpMethod": "GET",
@@ -1344,7 +1448,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "KontrolloFjalekalimin",
     "RelativePath": "api/Perdoruesi/KontrolloFjalekalimin",
     "HttpMethod": "GET",
@@ -1365,7 +1469,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "NdryshoEmail",
     "RelativePath": "api/Perdoruesi/NdryshoEmail",
     "HttpMethod": "POST",
@@ -1386,7 +1490,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "NdryshoFjalekalimin",
     "RelativePath": "api/Perdoruesi/NdryshoFjalekalimin",
     "HttpMethod": "POST",
@@ -1412,7 +1516,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "Put",
     "RelativePath": "api/Perdoruesi/perditesoPerdorues/{id}",
     "HttpMethod": "PUT",
@@ -1433,7 +1537,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "Get",
     "RelativePath": "api/Perdoruesi/shfaqPerdoruesit",
     "HttpMethod": "GET",
@@ -1443,7 +1547,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.PerdoruesiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
     "Method": "GetbyId",
     "RelativePath": "api/Perdoruesi/shfaqSipasID",
     "HttpMethod": "GET",
@@ -1459,7 +1563,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "Put",
     "RelativePath": "api/Produkti/{id}",
     "HttpMethod": "PUT",
@@ -1480,7 +1584,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "Delete",
     "RelativePath": "api/Produkti/{id}",
     "HttpMethod": "DELETE",
@@ -1496,7 +1600,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "BartjaArtikullit",
     "RelativePath": "api/Produkti/bartjaArtikullit",
     "HttpMethod": "PUT",
@@ -1517,7 +1621,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "GetKodiProduktitPerRegjistrim",
     "RelativePath": "api/Produkti/GetKodiProduktitPerRegjistrim",
     "HttpMethod": "GET",
@@ -1533,7 +1637,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "GetStokuProduktit",
     "RelativePath": "api/Produkti/GetStokuProduktit",
     "HttpMethod": "GET",
@@ -1549,7 +1653,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "GetById",
     "RelativePath": "api/Produkti/KartelaArtikullit",
     "HttpMethod": "GET",
@@ -1565,7 +1669,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "Get",
     "RelativePath": "api/Produkti/Products",
     "HttpMethod": "GET",
@@ -1575,7 +1679,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "ProduktetPerKalkulim",
     "RelativePath": "api/Produkti/ProduktetPerKalkulim",
     "HttpMethod": "GET",
@@ -1585,7 +1689,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "ShfaqProduktinNgaID",
     "RelativePath": "api/Produkti/ShfaqProduktinNgaID",
     "HttpMethod": "GET",
@@ -1601,7 +1705,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TechStoreWebAPI.Controllers.ProduktiController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "Post",
     "RelativePath": "api/Produkti/shtoProdukt",
     "HttpMethod": "POST",
@@ -1617,7 +1721,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.StatistikatController",
     "Method": "BleresitBiznesorMeSeShumtiBlerje",
     "RelativePath": "api/Statistikat/15BleresitBiznesorMeSeShumtiBlerje",
     "HttpMethod": "GET",
@@ -1627,7 +1731,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.StatistikatController",
     "Method": "BleresitQytetarMeSeShumtiBlerje",
     "RelativePath": "api/Statistikat/15BleresitQytetarMeSeShumtiBlerje",
     "HttpMethod": "GET",
@@ -1637,7 +1741,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.StatistikatController",
     "Method": "GetTop15Prod",
     "RelativePath": "api/Statistikat/15ProduktetMeTeShitura",
     "HttpMethod": "GET",
@@ -1647,7 +1751,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.StatistikatController",
     "Method": "ShitjetMeParagonSipasOperatorit",
     "RelativePath": "api/Statistikat/ShitjetMeParagonSipasOperatorit",
     "HttpMethod": "GET",
@@ -1657,7 +1761,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.StatistikatController",
     "Method": "GetTotaleTeNdryshme",
     "RelativePath": "api/Statistikat/totaleTeNdryshme",
     "HttpMethod": "GET",
@@ -1667,7 +1771,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.StatistikatController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.StatistikatController",
     "Method": "GetShitjetJavore",
     "RelativePath": "api/Statistikat/TotaletJavore",
     "HttpMethod": "GET",
@@ -1677,7 +1781,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "FshijBanken",
     "RelativePath": "api/TeDhenatBiznesit/FshijBanken",
     "HttpMethod": "DELETE",
@@ -1693,7 +1797,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "FshijLlogarinBankareBiznesit",
     "RelativePath": "api/TeDhenatBiznesit/FshijLlogarinBankareBiznesit",
     "HttpMethod": "DELETE",
@@ -1709,7 +1813,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "PerditesoBanken",
     "RelativePath": "api/TeDhenatBiznesit/PerditesoBanken",
     "HttpMethod": "PUT",
@@ -1730,7 +1834,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "PerditesoLlogarineBankare",
     "RelativePath": "api/TeDhenatBiznesit/PerditesoLlogarineBankare",
     "HttpMethod": "PUT",
@@ -1751,7 +1855,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "Put",
     "RelativePath": "api/TeDhenatBiznesit/perditesoTeDhenat",
     "HttpMethod": "PUT",
@@ -1767,7 +1871,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "ShfaqBankat",
     "RelativePath": "api/TeDhenatBiznesit/ShfaqBankat",
     "HttpMethod": "GET",
@@ -1777,7 +1881,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "ShfaqBankenNgaID",
     "RelativePath": "api/TeDhenatBiznesit/ShfaqBankenNgaID",
     "HttpMethod": "GET",
@@ -1793,7 +1897,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "ShfaqLlogarineNgaID",
     "RelativePath": "api/TeDhenatBiznesit/ShfaqLlogarineNgaID",
     "HttpMethod": "GET",
@@ -1809,7 +1913,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "ShfaqLlogaritEBiznesit",
     "RelativePath": "api/TeDhenatBiznesit/ShfaqLlogaritEBiznesit",
     "HttpMethod": "GET",
@@ -1819,7 +1923,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "Get",
     "RelativePath": "api/TeDhenatBiznesit/ShfaqTeDhenat",
     "HttpMethod": "GET",
@@ -1829,7 +1933,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "ShtoBanken",
     "RelativePath": "api/TeDhenatBiznesit/ShtoBanken",
     "HttpMethod": "POST",
@@ -1845,7 +1949,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.TeDhenatBiznesitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.TeDhenatBiznesitController",
     "Method": "ShtoLlogarineBankareBiznesit",
     "RelativePath": "api/TeDhenatBiznesit/ShtoLlogarineBankareBiznesit",
     "HttpMethod": "POST",
@@ -1861,7 +1965,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.VendosFototController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.VendosFototController",
     "Method": "EditoProduktin",
     "RelativePath": "api/VendosFotot/EditoProduktin",
     "HttpMethod": "POST",
@@ -1882,7 +1986,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.VendosFototController",
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.VendosFototController",
     "Method": "PerditesoTeDhenatBiznesit",
     "RelativePath": "api/VendosFotot/PerditesoTeDhenatBiznesit",
     "HttpMethod": "POST",
@@ -1903,7 +2007,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.ZbritjaQmimitProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ZbritjaQmimitProduktitController",
     "Method": "Delete",
     "RelativePath": "api/ZbritjaQmimitProduktit/fshijZbritjenProduktit",
     "HttpMethod": "DELETE",
@@ -1919,7 +2023,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.ZbritjaQmimitProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ZbritjaQmimitProduktitController",
     "Method": "get",
     "RelativePath": "api/ZbritjaQmimitProduktit/shfaqZbritjet",
     "HttpMethod": "GET",
@@ -1929,7 +2033,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.ZbritjaQmimitProduktitController",
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ZbritjaQmimitProduktitController",
     "Method": "post",
     "RelativePath": "api/ZbritjaQmimitProduktit/shtoZbritjenProduktit",
     "HttpMethod": "POST",

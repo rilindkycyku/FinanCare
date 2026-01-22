@@ -44,6 +44,8 @@ import BarazoArken from "./Pages/Materiali/Shitjet/BarazoArken";
 import ListaBarazimeve from "./Pages/Materiali/Shitjet/ListaBarazimeve";
 import BartTeDhenat from "./Pages/BartTeDhenat";
 import PranimiIMallit from "./Pages/Materiali/Hyrjet/PranimiIMallit";
+import PorositeOnline from "./Pages/Materiali/Shitjet/PorositeOnline";
+import Gjurmimet from "./Pages/Gjurmimi";
 
 function App() {
   useEffect(() => {
@@ -109,6 +111,8 @@ function App() {
         <Route path="/ListaBarazimeve" element={<ListaBarazimeve/>} />
         <Route path="/BartTeDhenat" element={<BartTeDhenat/>} />
         <Route path="/PranimiIMallit" element={<PranimiIMallit/>} />
+        <Route path="/PorositeOnline" element={<PorositeOnline/>} />
+        <Route path="/Gjurmimi" element={<Gjurmimet />} />
 
         <Route path="/403" element={<NukKeniAkses />} />
         <Route path="/404" element={<NukUGjet />} />

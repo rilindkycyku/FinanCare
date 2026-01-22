@@ -25,6 +25,7 @@ function ShtoPagesat(props) {
   const [kartelaEProduktit, setKartelaEProduktit] = useState([]);
   const [kartelaEProduktitDetaje, setKartelaEProduktitDetaje] = useState([]);
   const [produktet, setProduktet] = useState([]);
+  const [nrRendorKalkulimit, setNrRendorKalkulimit] = useState(0);
 
   const [teDhenat, setTeDhenat] = useState([]);
 
@@ -84,6 +85,22 @@ function ShtoPagesat(props) {
   }, [perditeso]);
 
   useEffect(() => {
+    const vendosNrFaturesMeRradhe = async () => {
+      try {
+        const nrFat = await axios.get(
+          `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=${lloji}`,
+          authentikimi
+        );
+        setNrRendorKalkulimit(parseInt(nrFat.data));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    vendosNrFaturesMeRradhe();
+  }, [perditeso]);
+
+  useEffect(() => {
     const kartelaEProduktit = async () => {
       try {
         setLoading(true); // Show loading indicator
@@ -96,30 +113,15 @@ function ShtoPagesat(props) {
         let saldo = 0;
 
         const formattedData = kalkulimet.map((p, index) => {
-          // Calculate price with discounts
-          const qmimiMeTVSHRab = parseFloat(
-            p.qmimiShites -
-              p.qmimiShites * (p.rabati1 / 100) -
-              (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) *
-                (p.rabati2 / 100) -
-              (p.qmimiShites -
-                p.qmimiShites * (p.rabati1 / 100) -
-                (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) *
-                  (p.rabati2 / 100)) *
-                (p.rabati3 / 100)
-          ).toFixed(3);
-
-          const shumaTotale = parseFloat(
-            qmimiMeTVSHRab * p.sasiaStokut
-          ).toFixed(3);
-
+          console.log("Kalkulimi:", p);
+          
           let faturimValue = 0;
           const vlera =
-            p.totaliPaTVSH + p.tvsh - p.rabati < 0
-              ? (p.totaliPaTVSH + p.tvsh - p.rabati) * -1
-              : p.totaliPaTVSH + p.tvsh - p.rabati;
+            p.totaliPaTVSH + p.tvsh - p.rabati + (p.transporti ?? 0) < 0
+              ? (p.totaliPaTVSH + p.tvsh - p.rabati + (p.transporti ?? 0)) * -1
+              : p.totaliPaTVSH + p.tvsh - p.rabati + (p.transporti ?? 0);
 
-          if (["FAT", "AS", "KMB", "PARAGON", "FATURIM"].includes(p.llojiKalkulimit)) {
+          if (["FAT", "AS", "KMB", "PARAGON", "FATURIM", "ONLINE"].includes(p.llojiKalkulimit)) {
             faturimValue = parseFloat(vlera).toFixed(2);
             saldo += parseFloat(faturimValue);
           } else if (
@@ -136,9 +138,9 @@ function ShtoPagesat(props) {
               { dateStyle: "short" }
             ),
             "Lloji Fat.": p.llojiKalkulimit,
-            "Nr. Fat": p.nrRendorFatures,
+            "Nr. Fat": p.nrFatures,
             Pershkrimi: p.pershkrimShtese,
-            "Faturim €": ["FAT", "AS", "KMB", "PARAGON", "FATURIM"].includes(
+            "Faturim €": ["FAT", "AS", "KMB", "PARAGON", "FATURIM", "ONLINE"].includes(
               p.llojiKalkulimit
             )
               ? faturimValue
@@ -152,6 +154,7 @@ function ShtoPagesat(props) {
           };
         });
 
+        console.log("Formatted Data:", response.data);
         setKartelaEProduktit(response.data);
         setKartelaEProduktitDetaje(formattedData); // Set the formatted data to state
         setLoading(false); // Hide loading indicator
@@ -171,6 +174,7 @@ function ShtoPagesat(props) {
     }
   };
   async function handleRegjistroKalkulimin() {
+    var gjeneroBarkodinFatures = lloji + "-" + produktiID.toString() + "-" + (nrRendorKalkulimit + 1).toString();
     try {
       await axios
         .post(
@@ -183,6 +187,8 @@ function ShtoPagesat(props) {
             pershkrimShtese: pershkrimiPageses,
             llojiKalkulimit: lloji,
             statusiKalkulimit: "true",
+            nrFatures: gjeneroBarkodinFatures,
+            nrRendorKalkulimit: nrRendorKalkulimit + 1,
           },
           authentikimi
         )

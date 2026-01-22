@@ -106,6 +106,12 @@ export const roleBasedDropdowns = [
             path: "/KthimIMallitTeBlere",
             label: "Kthimi i Mallit te Blere",
           },
+          {
+            roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist"],
+            path: "/PorositeOnline",
+            label: "Porosite Online",
+            shfaqNeDashboard: true,
+          },
           { isDivider: true },
           {
             roles: ["Menaxher"],
@@ -212,6 +218,18 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Financa"],
             path: "/ShtoPagesat",
             label: "Shto Pagesat / Faturimet",
+            shfaqNeDashboard: true,
+          },
+        ],
+      },
+      {
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "Pergjegjes i Porosive"],
+        label: "Gjurmimi",
+        subItems: [
+          {
+            roles: ["Menaxher"],
+            path: "/Gjurmimi",
+            label: "Gjurmimi",
             shfaqNeDashboard: true,
           },
         ],

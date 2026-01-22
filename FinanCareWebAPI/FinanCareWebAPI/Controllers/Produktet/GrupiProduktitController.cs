@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FinanCareWebAPI.Models;
-using FinanCareWebAPI.Migrations;
+using System.Security.Claims;
 
-namespace FinanCareWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.Produktet
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -13,10 +15,12 @@ namespace FinanCareWebAPI.Controllers
     public class GrupiProduktitController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public GrupiProduktitController(FinanCareDbContext context)
+        public GrupiProduktitController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
         }
 
         [Authorize]
@@ -65,10 +69,6 @@ namespace FinanCareWebAPI.Controllers
             }
         }
 
-
-
-        
-
         [Authorize]
         [HttpPost]
         [Route("shtoGrupinEProduktit")]
@@ -76,6 +76,10 @@ namespace FinanCareWebAPI.Controllers
         {
             await _context.GrupiProduktit.AddAsync(grupiIProduktit);
             await _context.SaveChangesAsync();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Shto", "GrupiIProduktit", grupiIProduktit.IDGrupiProduktit.ToString(), $"Eshte bere vendosja e: " + grupiIProduktit.GrupiIProduktit);
+
 
             return CreatedAtAction("Get", grupiIProduktit.IDGrupiProduktit, grupiIProduktit);
         }
@@ -100,6 +104,9 @@ namespace FinanCareWebAPI.Controllers
             _context.GrupiProduktit.Update(grupiIProduktit);
             await _context.SaveChangesAsync();
 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Perditeso", "GrupiIProduktit", grupiIProduktit.IDGrupiProduktit.ToString(), $"Eshte bere perditesimi i: " + grupiIProduktit.GrupiIProduktit);
+
             return Ok(grupiIProduktit);
         }
 
@@ -117,6 +124,9 @@ namespace FinanCareWebAPI.Controllers
 
             _context.GrupiProduktit.Update(grupiIProduktit);
             await _context.SaveChangesAsync();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Largo", "GrupiIProduktit", grupiIProduktit.IDGrupiProduktit.ToString(), $"Eshte bere largmi i: " + grupiIProduktit.GrupiIProduktit);
 
             return Ok("Grupi i Produktit u fshi me sukses!");
         }

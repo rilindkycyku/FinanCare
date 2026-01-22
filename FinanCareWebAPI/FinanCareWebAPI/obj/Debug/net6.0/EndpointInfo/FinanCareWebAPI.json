@@ -5,6 +5,77 @@
     "version": "v2"
   },
   "paths": {
+    "/api/AdminLogs/ShfaqGjurmimet": {
+      "get": {
+        "tags": [
+          "AdminLogs"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/AdminLogs/ShfaqNumerinEGjurmimeve": {
+      "get": {
+        "tags": [
+          "AdminLogs"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/AdminLogs/FshijGjurmimetEGjitha": {
+      "delete": {
+        "tags": [
+          "AdminLogs"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/AdminLogs/FshijGjurmimetEVjetra/{dite}": {
+      "delete": {
+        "tags": [
+          "AdminLogs"
+        ],
+        "parameters": [
+          {
+            "name": "dite",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/AdminLogs/EksportoGjurmimet": {
+      "get": {
+        "tags": [
+          "AdminLogs"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Authenticate/shfaqRolet": {
       "get": {
         "tags": [
@@ -1211,6 +1282,89 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/shtoFaturen": {
+      "post": {
+        "tags": [
+          "Faturat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportFaturaDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportFaturaDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportFaturaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/shtoTeDhenatFatura": {
+      "post": {
+        "tags": [
+          "Faturat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportTeDhenatFaturaDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportTeDhenatFaturaDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportTeDhenatFaturaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/kerkoFatureNgaNumri": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "nrFatures",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -3188,6 +3342,11 @@
             "format": "double",
             "nullable": true
           },
+          "transporti": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "nrRendorFatures": {
             "type": "integer",
             "format": "int32",
@@ -3307,6 +3466,92 @@
           "accessFailedCount": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImportFaturaDto": {
+        "type": "object",
+        "properties": {
+          "nrFatures": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "idKlienti": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totaliPaTVSH": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "tvsh": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rabati": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "transporti": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totali": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "llojiPageses": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusiPageses": {
+            "type": "string",
+            "nullable": true
+          },
+          "llojiKalkulimit": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImportTeDhenatFaturaDto": {
+        "type": "object",
+        "properties": {
+          "idFatura": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "idProdukti": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sasia": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "qmimi": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rabati": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false

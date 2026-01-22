@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
-namespace FinanCareWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.TeDhenatPartneri
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -15,11 +16,24 @@ namespace FinanCareWebAPI.Controllers
     {
         private readonly FinanCareDbContext _context;
         private readonly KartelaService _kartelaService;
+        private readonly IAdminLogService _adminLogService;
 
-        public PartneriController(FinanCareDbContext context, KartelaService kartelaService)
+        public PartneriController(FinanCareDbContext context, KartelaService kartelaService, IAdminLogService adminLogService)
         {
             _context = context;
             _kartelaService = kartelaService;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "Partneri", entityId, description);
+            }
         }
 
         [Authorize]
@@ -46,8 +60,6 @@ namespace FinanCareWebAPI.Controllers
                 return BadRequest("Ndodhi një gabim: " + ex.Message);
             }
         }
-
-
 
         [Authorize]
         [HttpGet]
@@ -157,7 +169,8 @@ namespace FinanCareWebAPI.Controllers
                     x.StatusiKalkulimit,
                     x.NrRendorFatures,
                     x.PershkrimShtese,
-                    x.NrFatures
+                    x.NrFatures,
+                    x.Transporti
                 })
                 .ToListAsync();
 
@@ -180,6 +193,7 @@ namespace FinanCareWebAPI.Controllers
                     || x.LlojiKalkulimit.Equals("SALDO")
                     || x.LlojiKalkulimit.Equals("PARAGON")
                     || x.LlojiKalkulimit.Equals("FATURIM")
+                    || x.LlojiKalkulimit.Equals("ONLINE")
                     ) && x.StatusiKalkulimit.Equals("true")
                 )
                 .ToListAsync();
@@ -189,7 +203,7 @@ namespace FinanCareWebAPI.Controllers
 
             foreach (var produktiNeKalkulim in kalkulimetHyrese)
             {
-                TotaliHyrese += (produktiNeKalkulim.TotaliPaTVSH + produktiNeKalkulim.TVSH - produktiNeKalkulim.Rabati) ?? 0;
+                TotaliHyrese += (produktiNeKalkulim.TotaliPaTVSH + produktiNeKalkulim.TVSH - produktiNeKalkulim.Rabati + (produktiNeKalkulim.Transporti ?? 0)) ?? 0;
             }
 
             foreach (var produktiNeKalkulim in kalkulimetDalese)
@@ -219,8 +233,6 @@ namespace FinanCareWebAPI.Controllers
             });
         }
 
-        
-
         [Authorize]
         [HttpPost]
         [Route("shtoPartnerin")]
@@ -228,6 +240,8 @@ namespace FinanCareWebAPI.Controllers
         {
             await _context.Partneri.AddAsync(partneri);
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Shto", partneri.IDPartneri.ToString(), $"Eshte bere krijimi i: {partneri.EmriBiznesit}");
 
             return CreatedAtAction("Get", partneri.IDPartneri, partneri);
         }
@@ -379,6 +393,8 @@ namespace FinanCareWebAPI.Controllers
             _context.Partneri.Update(partneri);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Perditeso", partneri.IDPartneri.ToString(), $"Eshte bere perditesimi i: {partneri.EmriBiznesit}");
+
             return Ok(partneri);
         }
 
@@ -396,6 +412,8 @@ namespace FinanCareWebAPI.Controllers
 
             _context.Partneri.Update(partneri);
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Fshij", partneri.IDPartneri.ToString(), $"Eshte bere fshirja e: {partneri.EmriBiznesit}");
 
             return Ok("Partneri u fshi me sukses!");
         }

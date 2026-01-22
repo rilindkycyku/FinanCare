@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using FinanCareWebAPI.Models;
-using FinanCareWebAPI.Migrations;
+using System.Security.Claims;
 
-namespace WebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.Produktet
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -12,10 +14,23 @@ namespace WebAPI.Controllers
     public class ZbritjaQmimitProduktitController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public ZbritjaQmimitProduktitController(FinanCareDbContext context)
+        public ZbritjaQmimitProduktitController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
+        }
+
+        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        private async Task LogAdminActionAsync(string action, string entityId, string description)
+        {
+            var userId = GetUserId();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _adminLogService.LogAsync(userId, action, "ZbritjaQmimitProduktit", entityId, description);
+            }
         }
 
         [Authorize]
@@ -54,6 +69,8 @@ namespace WebAPI.Controllers
             await _context.HistoriaZbritjeveProduktit.AddAsync(historiaZbritjeveProduktit);
             await _context.SaveChangesAsync();
 
+            await LogAdminActionAsync("Shto", zbritja.ProduktiID.ToString(), $"Zbritja vlen per: {zbritja.Produkti.EmriProduktit} - nga {zbritja.DataZbritjes} deri {zbritja.DataSkadimit}");
+
             return CreatedAtAction("get", zbritja.ProduktiID, zbritja);
         }
 
@@ -62,7 +79,7 @@ namespace WebAPI.Controllers
         [Route("fshijZbritjenProduktit")]
         public async Task<IActionResult> Delete(int id)
         {
-            var produkti = await _context.ZbritjaQmimitProduktit.FirstOrDefaultAsync(x => x.ProduktiID == id);
+            var produkti = await _context.ZbritjaQmimitProduktit.Include(x => x.Produkti).FirstOrDefaultAsync(x => x.ProduktiID == id);
 
             if(produkti == null)
             {
@@ -71,6 +88,8 @@ namespace WebAPI.Controllers
 
             _context.ZbritjaQmimitProduktit.Remove(produkti);
             await _context.SaveChangesAsync();
+
+            await LogAdminActionAsync("Fshij", produkti.ProduktiID.ToString(), $"Zbritja u fshi per: {produkti.Produkti.EmriProduktit}");
 
             return NoContent();
         }

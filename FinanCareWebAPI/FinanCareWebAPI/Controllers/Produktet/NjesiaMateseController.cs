@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Models;
+using FinanCareWebAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using FinanCareWebAPI.Models;
-using FinanCareWebAPI.Migrations;
+using System.Security.Claims;
 
-namespace FinanCareWebAPI.Controllers
+namespace FinanCareWebAPI.Controllers.Produktet
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
@@ -13,10 +15,12 @@ namespace FinanCareWebAPI.Controllers
     public class NjesiaMateseController : Controller
     {
         private readonly FinanCareDbContext _context;
+        private readonly IAdminLogService _adminLogService;
 
-        public NjesiaMateseController(FinanCareDbContext context)
+        public NjesiaMateseController(FinanCareDbContext context, IAdminLogService adminLogService)
         {
             _context = context;
+            _adminLogService = adminLogService;
         }
 
         [Authorize]
@@ -67,10 +71,6 @@ namespace FinanCareWebAPI.Controllers
             }
         }
 
-
-
-        
-
         [Authorize]
         [HttpPost]
         [Route("shtoNjesineMatese")]
@@ -78,6 +78,10 @@ namespace FinanCareWebAPI.Controllers
         {
             await _context.NjesiaMatese.AddAsync(njesiaMatese);
             await _context.SaveChangesAsync();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Shto", "NjesiaMatese", njesiaMatese.IDNjesiaMatese.ToString(), $"Eshte bere krijimi i: " + njesiaMatese.EmriNjesiaMatese);
+
 
             return CreatedAtAction("Get", njesiaMatese.IDNjesiaMatese, njesiaMatese);
         }
@@ -102,6 +106,10 @@ namespace FinanCareWebAPI.Controllers
             _context.NjesiaMatese.Update(njesiaMatese);
             await _context.SaveChangesAsync();
 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Perditeso", "NjesiaMatese", njesiaMatese.IDNjesiaMatese.ToString(), $"Eshte bere perditesimi i: " + njesiaMatese.EmriNjesiaMatese);
+
+
             return Ok(njesiaMatese);
         }
 
@@ -119,6 +127,10 @@ namespace FinanCareWebAPI.Controllers
 
             _context.NjesiaMatese.Update(njesiaMatese);
             await _context.SaveChangesAsync();
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _adminLogService.LogAsync(userId, "Largo", "NjesiaMatese", njesiaMatese.IDNjesiaMatese.ToString(), $"Eshte bere largimi i: " + njesiaMatese.EmriNjesiaMatese);
+
 
             return Ok("Njesia Matese u fshi me sukses!");
         }

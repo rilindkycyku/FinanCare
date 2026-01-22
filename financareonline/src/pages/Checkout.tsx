@@ -107,6 +107,7 @@ export default function Checkout() {
       IDProdukti: i.ProduktiID,
       Sasia: i.quantity,
       Qmimi: Number(i.QmimiProduktit.toFixed(2)),
+      Rabati: Number(user?.Rabati ?? 0)
     }));
 
     const orderJson = {
@@ -116,6 +117,9 @@ export default function Checkout() {
       LlojiPageses: paymentMethod === "cash" ? "Cash" : "Banke",
       TotaliPaTVSH: Number(calc.subtotalNet.toFixed(2)),
       TVSH: Number(calc.totalVAT.toFixed(2)),
+      Rabati: Number(calc.rabati.toFixed(2)),
+      Transporti: Number(calc.transporti.toFixed(2)),
+      Totali: Number(calc.grandTotal.toFixed(2)),
       Produktet: items,
     };
 
