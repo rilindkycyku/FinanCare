@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Button, Form, Modal, Tabs, Tab } from "react-bootstrap";
+import { Button, Form, Modal, Tabs, Tab, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
   faXmark,
   faPenToSquare,
   faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
-import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import "../../../../Pages/Styles/PremiumTheme.css";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function EditoProduktin(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -39,21 +40,17 @@ function EditoProduktin(props) {
 
   const [removeCurrentPhoto, setRemoveCurrentPhoto] = useState(false);
 
-  const customStyles = {
-    menu: (provided) => ({ ...provided, zIndex: 1050 }),
-  };
-
-  const getToken = localStorage.getItem("token");
+    const getToken = localStorage.getItem("token");
   const authentikimi = {
     headers: { Authorization: `Bearer ${getToken}` },
   };
 
   useEffect(() => {
-  if (!props.show) {
-    setSelectedImages([]);
-    setRemoveCurrentPhoto(false);
-  }
-}, [props.show]);
+    if (!props.show) {
+      setSelectedImages([]);
+      setRemoveCurrentPhoto(false);
+    }
+  }, [props.show]);
 
   // Fetch dropdowns
   useEffect(() => {
@@ -125,7 +122,7 @@ function EditoProduktin(props) {
         );
         setOptionsSelectedNjesiaMatese(
           optionsNjesiaMatese.find((o) => o.value === data.idNjesiaMatese) ||
-            null
+          null
         );
         setOptionsSelectedLlojiTVSH(
           optionsLlojiTVSH.find((o) => o.value === data.llojiTVSH) || null
@@ -247,11 +244,11 @@ function EditoProduktin(props) {
     let finalFotoName = produkti.fotoProduktit; // default: keep old
 
     try {
-      // Case 1: User removed current photo and uploaded nothing → use default
+      // Case 1: User removed current photo and uploaded nothing â†’ use default
       if (removeCurrentPhoto && selectedImages.length === 0) {
         finalFotoName = "ProduktPaFoto.png";
       }
-      // Case 2: User uploaded new photo(s) → upload the FIRST one only
+      // Case 2: User uploaded new photo(s) â†’ upload the FIRST one only
       else if (selectedImages.length > 0) {
         const formData = new FormData();
         formData.append("foto", selectedImages[0]); // Only first image
@@ -269,7 +266,7 @@ function EditoProduktin(props) {
 
         finalFotoName = uploadRes.data; // Backend returns new filename
       }
-      // Case 3: User removed current photo but didn't upload new → default
+      // Case 3: User removed current photo but didn't upload new â†’ default
       else if (removeCurrentPhoto) {
         finalFotoName = "ProduktPaFoto.png";
       }
@@ -338,14 +335,22 @@ function EditoProduktin(props) {
       <Modal
         size="sm"
         show={fushatEZbrazura}
-        onHide={() => setFushatEZbrazura(false)}>
+        onHide={() => setFushatEZbrazura(false)}
+        className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title style={{ color: "red" }}>Gabim</Modal.Title>
+          <Modal.Title className="text-danger">Ndodhi një gabim</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Plotësoni të gjitha fushat e detyrueshme!</Modal.Body>
+        <Modal.Body className="text-center py-4">
+          <div className="mb-3 text-danger">
+            <FontAwesomeIcon icon={faXmark} size="3x" />
+          </div>
+          <p className="text-white">Plotësoni të gjitha fushat e detyrueshme!</p>
+        </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setFushatEZbrazura(false)}>
-            Mbyll
+          <Button
+            className="btn-cancel w-100"
+            onClick={() => setFushatEZbrazura(false)}>
+            Mbylle
           </Button>
         </Modal.Footer>
       </Modal>
@@ -353,162 +358,183 @@ function EditoProduktin(props) {
       <Modal
         size="sm"
         show={kontrolloProduktin}
-        onHide={() => setKontrolloProduktin(false)}>
+        onHide={() => setKontrolloProduktin(false)}
+        className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Konfirmim</Modal.Title>
+          <Modal.Title>Konfirmo Ndryshimin</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Ekziston një produkt me të njëjtin emër. Vazhdo?
+        <Modal.Body className="text-center py-4">
+          <p className="text-warning mb-2">Ky produkt ekziston në sistem!</p>
+          <p className="text-white small">A jeni të sigurt që dëshironi të vazhdoni?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button
-            variant="secondary"
+            className="btn-cancel"
             onClick={() => setKontrolloProduktin(false)}>
             Anulo
           </Button>
-          <Button variant="warning" onClick={handleSubmit}>
+          <Button
+            variant="warning"
+            className="px-4"
+            onClick={() => handleSubmit()}>
             Vazhdo
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Main Modal */}
-      <Modal size="xl" show={props.show} onHide={props.hide}>
+      <Modal size="xl" show={props.show} onHide={props.hide} className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Edito Produktin</Modal.Title>
+          <Modal.Title>
+            Edito Produktin
+            <div className="text-muted" style={{ fontSize: '0.7rem', fontWeight: 500, marginTop: '2px', letterSpacing: '0.05em' }}>
+              ID: {props.id} • {produkti.barkodi}
+            </div>
+          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <Tabs defaultActiveKey="gjenerale" className="mb-4">
+          <Tabs defaultActiveKey="gjenerale" className="sp-tabs mb-4">
             {/* General Tab */}
             <Tab eventKey="gjenerale" title="Të Dhënat Gjenerale">
-              <MDBRow className="g-4 align-items-end">
-                {/* Row 1 */}
-                <MDBCol md="6">
-                  <MDBInput
-                    label={
-                      <>
-                        Barkodi <span className="text-danger">*</span>
-                      </>
-                    }
-                    name="barkodi"
-                    value={produkti.barkodi || ""}
-                    onChange={onChange}
-                    onKeyDown={(e) => ndrroField(e, "emriProduktit")}
-                    autoFocus
-                    autoComplete="off"
-                  />
-                </MDBCol>
-                <MDBCol md="6">
-                  <MDBInput
-                    label={
-                      <>
-                        Emri i Produktit <span className="text-danger">*</span>
-                      </>
-                    }
-                    name="emriProduktit"
-                    id="emriProduktit"
-                    value={produkti.emriProduktit || ""}
-                    onChange={onChange}
-                    onKeyDown={(e) =>
-                      ndrroField(e, "grupiProduktitSelect-input")
-                    }
-                    autoComplete="off"
-                  />
-                </MDBCol>
+              <div className="sp-form-container p-2">
+                <Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Barkodi <span className="text-danger">*</span></label>
+                        <Form.Control
+                          name="barkodi"
+                          value={produkti.barkodi || ""}
+                          onChange={onChange}
+                          onKeyDown={(e) => ndrroField(e, "emriProduktit")}
+                          autoFocus
+                          autoComplete="off"
+                          className="sp-input"
+                          placeholder="Barkodi..."
+                        />
+                      </div>
+                    </Col>
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Emri i Produktit <span className="text-danger">*</span></label>
+                        <Form.Control
+                          name="emriProduktit"
+                          id="emriProduktit"
+                          value={produkti.emriProduktit || ""}
+                          onChange={onChange}
+                          onKeyDown={(e) => ndrroField(e, "grupiProduktitSelect-input")}
+                          autoComplete="off"
+                          className="sp-input"
+                          placeholder="Emri i produktit..."
+                        />
+                      </div>
+                    </Col>
+                  </Row>
 
-                {/* Row 2 */}
-                <MDBCol md="4">
-                  <Form.Label className="fw-bold text-center d-block mb-2">
-                    Grupi i Produktit <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Select
-                    value={optionsSelectedGrupiProduktit}
-                    onChange={handleChangeGrupiProduktit}
-                    options={optionsGrupiProduktit}
-                    inputId="grupiProduktitSelect-input"
-                    styles={customStyles}
-                    placeholder="Zgjidh..."
-                  />
-                </MDBCol>
+                  <Row className="g-4 mb-3">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Grupi i Produktit <span className="text-danger">*</span></label>
+                        <div className="sp-select-container">
+                          <Select
+                            value={optionsSelectedGrupiProduktit}
+                            onChange={handleChangeGrupiProduktit}
+                            options={optionsGrupiProduktit}
+                            inputId="grupiProduktitSelect-input"
+                            placeholder="Zgjidh grupin..."
+                            className="sp-select-container"
+                            classNamePrefix="sp-select"
+                          />
+                        </div>
+                      </div>
+                    </Col>
 
-                <MDBCol md="4">
-                  <Form.Label className="fw-bold text-center d-block mb-2">
-                    Partneri <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Select
-                    value={optionsSelectedPartneri}
-                    onChange={handleChangePartneri}
-                    options={optionsPartneri}
-                    inputId="partneriSelect-input"
-                    styles={customStyles}
-                    placeholder="Zgjidh..."
-                  />
-                </MDBCol>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Partneri <span className="text-danger">*</span></label>
+                        <div className="sp-select-container">
+                          <Select
+                            value={optionsSelectedPartneri}
+                            onChange={handleChangePartneri}
+                            options={optionsPartneri}
+                            inputId="partneriSelect-input"
+                            placeholder="Zgjidh partnerin..."
+                            className="sp-select-container"
+                            classNamePrefix="sp-select"
+                          />
+                        </div>
+                      </div>
+                    </Col>
 
-                <MDBCol md="4">
-                  <Form.Label className="fw-bold text-center d-block mb-2">
-                    Njësia Matëse <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Select
-                    value={optionsSelectedNjesiaMatese}
-                    onChange={handleChangeNjesiaMatese}
-                    options={optionsNjesiaMatese}
-                    inputId="njesiaMateseSelect-input"
-                    styles={customStyles}
-                    placeholder="Zgjidh..."
-                  />
-                </MDBCol>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Njësia Matëse <span className="text-danger">*</span></label>
+                        <div className="sp-select-container">
+                          <Select
+                            value={optionsSelectedNjesiaMatese}
+                            onChange={handleChangeNjesiaMatese}
+                            options={optionsNjesiaMatese}
+                            inputId="njesiaMateseSelect-input"
+                            placeholder="Zgjidh njesinë..."
+                            className="sp-select-container"
+                            classNamePrefix="sp-select"
+                          />
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
 
-                {/* Row 3 */}
-                <MDBCol md="4">
-                  <Form.Label className="fw-bold text-center d-block mb-2">
-                    TVSH % <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Select
-                    value={optionsSelectedLlojiTVSH}
-                    onChange={handleChangeLlojiTVSH}
-                    options={optionsLlojiTVSH}
-                    inputId="llojiTVSHSelect-input"
-                    styles={customStyles}
-                    placeholder="Zgjidh..."
-                  />
-                </MDBCol>
+                  <Row className="g-4 align-items-end">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">TVSH % <span className="text-danger">*</span></label>
+                        <div className="sp-select-container">
+                          <Select
+                            value={optionsSelectedLlojiTVSH}
+                            onChange={handleChangeLlojiTVSH}
+                            options={optionsLlojiTVSH}
+                            inputId="llojiTVSHSelect-input"
+                            placeholder="Norma e TVSH"
+                            className="sp-select-container"
+                            classNamePrefix="sp-select"
+                          />
+                        </div>
+                      </div>
+                    </Col>
 
-                <MDBCol md="4">
-                  <Form.Label className="fw-bold text-center d-block mb-2">
-                    Sasia e Shumicës <span className="text-danger">*</span>
-                  </Form.Label>
-                  <MDBInput
-                    name="sasiaShumices"
-                    value={produkti.sasiaShumices || ""}
-                    onChange={onChange}
-                    onKeyDown={handleMenaxhoTastetPagesa}
-                    autoComplete="off"
-                    id="sasiaShumices"
-                  />
-                </MDBCol>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Sasia e Shumicës <span className="text-danger">*</span></label>
+                        <Form.Control
+                          name="sasiaShumices"
+                          value={produkti.sasiaShumices || ""}
+                          onChange={onChange}
+                          onKeyDown={handleMenaxhoTastetPagesa}
+                          autoComplete="off"
+                          id="sasiaShumices"
+                          className="sp-input"
+                          type="number"
+                        />
+                      </div>
+                    </Col>
 
-                <MDBCol md="4" id="kodiProduktit">
-                  <Form.Label className="fw-bold text-center d-block mb-2">
-                    Kodi Produktit <span className="text-danger">*</span>
-                  </Form.Label>
-                  <MDBTooltip
-                    placement="bottom"
-                    title="Gjenerohet automatikisht pas zgjedhjes se partnerit"
-                    wrapperClass="mdb-tooltip mdb-tooltip-content">
-                    <MDBInput
-                      onChange={onChange}
-                      value={produkti.kodiProduktit}
-                      name="kodiProduktit"
-                      type="text"
-                      placeholder="Kodi Produktit"
-                      onKeyDown={(e) => ndrroField(e, "llojiTVSH")}
-                      disabled
-                    />
-                  </MDBTooltip>
-                </MDBCol>
-              </MDBRow>
+                    <Col md="4">
+                      <div className="sp-input-group opacity-75">
+                        <label className="sp-label text-soft">Kodi Produktit</label>
+                        <Form.Control
+                          onChange={onChange}
+                          value={produkti.kodiProduktit}
+                          name="kodiProduktit"
+                          type="text"
+                          disabled
+                          className="sp-input"
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
             </Tab>
 
             {/* Online Tab */}
@@ -520,118 +546,87 @@ function EditoProduktin(props) {
                   Online
                 </>
               }>
-              <div className="p-4 bg-light rounded">
-                <Form.Check
-                  type="switch"
-                  id="perfshiNeOnline"
-                  label="Përfshi këtë produkt në dyqanin online (shfaqet në ueb)"
-                  checked={isOnline}
-                  onChange={handleOnlineToggle}
-                  className="mb-4 fs-5 fw-medium"
-                />
+              <div className="sp-online-container p-4">
+                <div className="sp-switch-box mb-4">
+                  <Form.Check
+                    type="switch"
+                    id="perfshiNeOnline"
+                    label="Shfaq produktin në dyqanin online (E-commerce)"
+                    checked={isOnline}
+                    onChange={handleOnlineToggle}
+                    className="sp-switch"
+                  />
+                  <p className="mt-2 text-soft small ps-5" style={{ opacity: 0.8 }}>
+                    Kur aktivizohet, ky artikull do të jetë i dukshëm për klientët në faqen publike të shitjes.
+                  </p>
+                </div>
 
                 {isOnline && (
-                  <Form.Group>
-                    <Form.Label className="fw-bold">
-                      Fotot e Produktit për Online
-                    </Form.Label>
+                  <div className="sp-image-upload-section">
+                    <label className="sp-label mb-3">Fotografia Kryesore</label>
 
                     <div
-                      className="border rounded-3 p-5 text-center bg-white shadow-sm position-relative"
-                      style={{
-                        borderStyle: "dashed",
-                        borderColor: "#ccc",
-                        cursor: "pointer",
-                        transition: "border-color 0.3s",
-                      }}
+                      className="sp-upload-zone"
                       onClick={() => fileInputRef.current?.click()}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.style.borderColor = "#009879";
-                      }}
-                      onDragLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#ccc";
-                      }}
+                      onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => {
                         e.preventDefault();
-                        e.currentTarget.style.borderColor = "#ccc";
                         handleFiles(e.dataTransfer.files);
                       }}>
-                      <i className="bi bi-camera fs-1 text-muted mb-3"></i>
-                      <p className="text-muted mb-4">
-                        Kliko këtu ose tërhiq fotot për të ngarkuar
-                      </p>
-                      <Button variant="success">
-                        <i className="bi bi-upload me-2"></i>
-                        Zgjidh dhe Ngarko Foto
-                      </Button>
-                      <small className="d-block text-muted mt-3">
-                        Formate: JPG, PNG • Max 5MB • Rekomandohet 800x800px
-                      </small>
-
+                      <div className="upload-icon">
+                        <i className="bi bi-cloud-arrow-up fs-1"></i>
+                      </div>
+                      <div className="upload-text">
+                        <h6>Tërhiq dhe lësho fotografinë këtu</h6>
+                        <p>ose kliko për të zgjedhur nga kompjuteri</p>
+                      </div>
                       <input
                         ref={fileInputRef}
                         type="file"
                         accept="image/*"
                         multiple
                         style={{ display: "none" }}
-                        onChange={(e) =>
-                          e.target.files && handleFiles(e.target.files)
-                        }
+                        onChange={(e) => e.target.files && handleFiles(e.target.files)}
                       />
                     </div>
 
                     {(selectedImages.length > 0 || produkti.fotoProduktit) && (
-                      <div className="mt-4">
-                        <h6 className="fw-bold mb-3">Parapamja e Fotove</h6>
-                        <div className="row g-3">
+                      <div className="sp-image-preview-grid mt-4">
+                        <label className="sp-label mb-3 d-block">Parapamja</label>
+                        <Row className="g-3">
                           {produkti.fotoProduktit && (
-                            <div className="col-md-3 col-sm-4 col-6">
-                              <div className="position-relative">
+                            <Col xs="auto">
+                              <div className="sp-preview-card current">
                                 <img
                                   src={`${API_BASE_URL}/images/products/${produkti.fotoProduktit}`}
                                   alt="Foto aktuale"
-                                  className="img-thumbnail w-100"
-                                  style={{
-                                    height: "150px",
-                                    objectFit: "cover",
-                                  }}
                                 />
-                                <span className="badge bg-success position-absolute top-0 start-0 m-2">
-                                  Aktuale
-                                </span>
+                                <div className="preview-badge">Aktuale</div>
                               </div>
-                            </div>
+                            </Col>
                           )}
 
                           {selectedImages.map((file, index) => (
-                            <div
-                              key={index}
-                              className="col-md-3 col-sm-4 col-6">
-                              <div className="position-relative">
+                            <Col key={index} xs="auto">
+                              <div className="sp-preview-card new">
                                 <img
                                   src={URL.createObjectURL(file)}
-                                  alt={`Parapamje ${index + 1}`}
-                                  className="img-thumbnail w-100"
-                                  style={{
-                                    height: "150px",
-                                    objectFit: "cover",
-                                  }}
+                                  alt={`E re ${index + 1}`}
                                 />
                                 <Button
                                   variant="danger"
-                                  size="sm"
-                                  className="position-absolute top-0 end-0 m-2"
+                                  className="remove-btn"
                                   onClick={() => removeImage(index)}>
-                                  <i className="bi bi-x"></i>
+                                  <FontAwesomeIcon icon={faXmark} />
                                 </Button>
+                                <div className="preview-badge glow">E Re</div>
                               </div>
-                            </div>
+                            </Col>
                           ))}
-                        </div>
+                        </Row>
                       </div>
                     )}
-                  </Form.Group>
+                  </div>
                 )}
               </div>
             </Tab>
@@ -639,14 +634,13 @@ function EditoProduktin(props) {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={props.hide}>
-            Anulo <FontAwesomeIcon icon={faXmark} className="ms-2" />
+          <Button className="btn-cancel" onClick={props.hide}>
+            Anulo
           </Button>
           <Button
-            style={{ backgroundColor: "#009879", border: "none" }}
+            className="btn-save px-4"
             onClick={handleKontrolli}>
-            Ruaj Ndryshimet{" "}
-            <FontAwesomeIcon icon={faPenToSquare} className="ms-2" />
+            Ruaj Ndryshimet
           </Button>
         </Modal.Footer>
       </Modal>

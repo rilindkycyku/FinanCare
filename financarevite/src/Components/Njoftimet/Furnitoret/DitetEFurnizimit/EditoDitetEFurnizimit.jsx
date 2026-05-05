@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -41,7 +41,7 @@ function EditoDitetEFurnizimit(props) {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  /* ==================== NGARKO TË DHËNAT ==================== */
+  /* ==================== NGARKO TÇ‹ DHÇ‹NAT ==================== */
   useEffect(() => {
     if (!props.id) return;
 
@@ -210,7 +210,7 @@ function EditoDitetEFurnizimit(props) {
               />
             </Form.Group>
 
-            {/* Furnitori – Enter zgjedh opsionin, pastaj kalon te dita kur zgjedhja përfundon */}
+            {/* Furnitori â€“ Enter zgjedh opsionin, pastaj kalon te dita kur zgjedhja përfundon */}
             <Form.Group className="mb-3">
               <Form.Label>
                 Furnitori <span style={{ color: "red" }}>*</span>
@@ -230,11 +230,11 @@ function EditoDitetEFurnizimit(props) {
                 className="react-select-container"
                 classNamePrefix="react-select"
                 autoFocus
-                // Hiq onKeyDown krejt – lejo default behavior të Enter-it
+                // Hiq onKeyDown krejt â€“ lejo default behavior të Enter-it
               />
             </Form.Group>
 
-            {/* Dita e Furnizimit – Enter zgjedh ditën, pastaj ruajt */}
+            {/* Dita e Furnizimit â€“ Enter zgjedh ditën, pastaj ruajt */}
             <Form.Group className="mb-3">
               <Form.Label>
                 Dita e Furnizimit <span style={{ color: "red" }}>*</span>
@@ -252,7 +252,7 @@ function EditoDitetEFurnizimit(props) {
                 isSearchable={false}
                 className="react-select-container"
                 classNamePrefix="react-select"
-                // Hiq onKeyDown – Enter-i do të zgjedhë ditën automatikisht
+                // Hiq onKeyDown â€“ Enter-i do të zgjedhë ditën automatikisht
               />
             </Form.Group>
           </Form>

@@ -30,9 +30,12 @@ function findAvailablePort(startPort = 5173) {
 async function updateEnv() {
   const ip = getLocalIP()
   const port = await findAvailablePort(5173)
-  
-  const envContent = `
-VITE_API_BASE_URL=http://${ip}:7286
+
+  // VITE_API_BASE_URL is intentionally empty — API calls use relative paths
+  // (/api/...) so they go through the Vite proxy to https://localhost:7285.
+  // This way mobile devices on the LAN can reach the API through the Vite
+  // server without needing the backend to bind to a LAN IP.
+  const envContent = `VITE_API_BASE_URL=http://${ip}:${port}
 VITE_BASE_URL=http://${ip}:${port}
 `
 

@@ -1,4 +1,4 @@
-import NavBar from "../../../Components/TeTjera/layout/NavBar";
+﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import { useState, useEffect } from "react";
 import "../../Styles/ProductTables.css";
 import axios from "axios";
@@ -78,7 +78,7 @@ const ProductTables = () => {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}

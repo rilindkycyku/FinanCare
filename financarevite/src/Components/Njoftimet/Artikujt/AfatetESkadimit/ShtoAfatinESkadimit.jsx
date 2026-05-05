@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -6,9 +6,10 @@ import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
-import { useEffect } from "react";
+import { useEffect } from "react";
 
-import Select from "react-select";
+import Select from "react-select";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 function ShtoAfatinESkadimit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [dataSkadimit, setDataSkadimit] = useState("");
@@ -90,13 +91,7 @@ function ShtoAfatinESkadimit(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
       .get(`${API_BASE_URL}/api/Produkti/Products`, authentikimi)
       .then((response) => {
@@ -175,7 +170,7 @@ function ShtoAfatinESkadimit(props) {
                 options={options}
                 id="produktiSelect" // Setting the id attribute
                 inputId="produktiSelect-input" // Setting the input id attribute
-                styles={customStyles}
+                styles={darkSelectStyles}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="dataSkadimit">

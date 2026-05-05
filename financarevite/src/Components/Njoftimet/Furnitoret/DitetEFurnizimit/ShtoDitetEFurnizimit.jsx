@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -42,7 +42,7 @@ function ShtoDitenEFurnizimit(props) {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  // Ngarko furnitorët (pa ID 1, 2, 3 – si te edito)
+  // Ngarko furnitorët (pa ID 1, 2, 3 â€“ si te edito)
   useEffect(() => {
     const fetchFurnitoret = async () => {
       try {

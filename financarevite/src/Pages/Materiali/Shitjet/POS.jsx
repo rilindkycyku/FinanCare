@@ -1,26 +1,33 @@
-import { useEffect, useState } from "react";
-import NavBar from "../../../Components/TeTjera/layout/NavBar";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faXmark,
-  faPenToSquare,
-  faDolly,
-} from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import {
   Table,
   Form,
-  Container,
   Row,
   Col,
   InputGroup,
   Tabs,
   Tab,
+  Badge
 } from "react-bootstrap";
+import {
+  Receipt,
+  User,
+  CreditCard,
+  History,
+  Package,
+  PlusCircle,
+  Hash,
+  Calendar as CalendarIcon,
+  Trash2 as Trash,
+  Edit2 as Edit,
+  MonitorSpeaker
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import "../../Styles/POSLayout.css";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
@@ -32,6 +39,7 @@ import NukEshteEOptimizuarPerMobile from "../../../Components/TeTjera/layout/Nuk
 function POS(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const BASE_URL = import.meta.env.VITE_BASE_URL || "";
+
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -76,6 +84,7 @@ function POS(props) {
   const [optionsBarkodi, setOptionsBarkodi] = useState([]);
   const [optionsBarkodiSelected, setOptionsBarkodiSelected] = useState(null);
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState(null);
+  const [filterText, setFilterText] = useState("");
 
   // New states for multi-customer support
   const [activeInvoices, setActiveInvoices] = useState([]);
@@ -93,7 +102,7 @@ function POS(props) {
     if (activeInvoices.length >= 4) {
       setTipiMesazhit("danger");
       setPershkrimiMesazhit(
-        "Nuk mund të shtoni më shumë se 4 klientë njëkohësisht!"
+        "Nuk mund të shtoni më shumë se 4 klientë njëkohësisht!",
       );
       setShfaqMesazhin(true);
       return;
@@ -101,11 +110,11 @@ function POS(props) {
     try {
       const perdoruesi = await axios.get(
         `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-        authentikimi
+        authentikimi,
       );
       const nrRendor = await axios.get(
         `${API_BASE_URL}/api/Faturat/ShfaqNumrinRendorFatures?stafiID=${perdoruesi.data.perdoruesi.userID}`,
-        authentikimi
+        authentikimi,
       );
       const newInvoiceId = nrRendor.data.idRegjistrimit;
       setActiveInvoices((prev) => [...prev, newInvoiceId]);
@@ -130,11 +139,11 @@ function POS(props) {
       console.error("Error creating new invoice:", err);
       setTipiMesazhit("danger");
       setPershkrimiMesazhit(
-        "Gabim gjatë krijimit të faturës për klientin e ri!"
+        "Gabim gjatë krijimit të faturës për klientin e ri!",
       );
       setShfaqMesazhin(true);
     } finally {
-      document.getElementById("barkodiSelect-input").focus();
+      document.getElementById("barkodiSelect-input")?.focus();
     }
   };
 
@@ -144,7 +153,7 @@ function POS(props) {
       try {
         const teDhenat = await axios.get(
           `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
-          authentikimi
+          authentikimi,
         );
         setTeDhenatBiznesit(teDhenat.data);
       } catch (err) {
@@ -162,24 +171,24 @@ function POS(props) {
           setLoading(true);
           const perdoruesi = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-            authentikimi
+            authentikimi,
           );
           const stafiID = perdoruesi.data.perdoruesi.userID;
           // Fetch open invoices for the current stafiID
           const openInvoices = await axios.get(
             `${API_BASE_URL}/api/Faturat/shfaqFaturatEHapura?stafiID=${stafiID}`,
-            authentikimi
+            authentikimi,
           );
           console.log(openInvoices);
           if (openInvoices.data && openInvoices.data.length > 0) {
             const invoiceIds = openInvoices.data.map(
-              (invoice) => invoice.idRegjistrimit
+              (invoice) => invoice.idRegjistrimit,
             );
             const invoicesDataObj = {};
             for (const invoice of openInvoices.data) {
               const teDhenatKalkulimit = await axios.get(
                 `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${invoice.idRegjistrimit}`,
-                authentikimi
+                authentikimi,
               );
               invoicesDataObj[invoice.idRegjistrimit] = {
                 nrFatures: invoice.nrFatures,
@@ -227,20 +236,20 @@ function POS(props) {
         try {
           const teDhenatKalkulimit = await axios.get(
             `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${selectedInvoice}`,
-            authentikimi
+            authentikimi,
           );
           const teDhenatFatures = await axios.get(
             `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
-            authentikimi
+            authentikimi,
           );
           setproduktetNeKalkulim(teDhenatKalkulimit.data);
           setIDPartneri(teDhenatFatures.data.regjistrimet.idPartneri);
           if (teDhenatFatures.data.regjistrimet.bonusKartela != null) {
             setKartelaBleresit(
-              teDhenatFatures.data.regjistrimet.idBonusKartela
+              teDhenatFatures.data.regjistrimet.idBonusKartela,
             );
             setTeDhenatKartelaBleresit(
-              teDhenatFatures.data.regjistrimet.bonusKartela
+              teDhenatFatures.data.regjistrimet.bonusKartela,
             );
           } else {
             setKartelaBleresit(null);
@@ -255,7 +264,7 @@ function POS(props) {
           console.error("Error fetching invoice data:", err);
           setTipiMesazhit("danger");
           setPershkrimiMesazhit(
-            "Gabim gjatë ngarkimit të të dhënave të faturës!"
+            "Gabim gjatë ngarkimit të të dhënave të faturës!",
           );
           setShfaqMesazhin(true);
         } finally {
@@ -269,6 +278,7 @@ function POS(props) {
   // Calculate totals for selected invoice
   useEffect(() => {
     const calculateTotals = async () => {
+      if (!selectedInvoice) return;
       let totalQmimiPaTVSH = 0;
       let totalTVSH = 0;
       let qmimiPaRabatBonus = 0;
@@ -278,13 +288,13 @@ function POS(props) {
           produkti.qmimiShites * (produkti.rabati1 / 100) -
           (produkti.qmimiShites -
             produkti.qmimiShites * (produkti.rabati1 / 100)) *
-            (produkti.rabati2 / 100) -
+          (produkti.rabati2 / 100) -
           (produkti.qmimiShites -
             produkti.qmimiShites * (produkti.rabati1 / 100) -
             (produkti.qmimiShites -
               produkti.qmimiShites * (produkti.rabati1 / 100)) *
-              (produkti.rabati2 / 100)) *
-            (produkti.rabati3 / 100);
+            (produkti.rabati2 / 100)) *
+          (produkti.rabati3 / 100);
         const qmimiShitesPaRabatBonus =
           produkti.qmimiShites -
           produkti.qmimiShites * (produkti.rabati1 / 100);
@@ -301,7 +311,7 @@ function POS(props) {
       try {
         const response = await axios.get(
           `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
-          authentikimi
+          authentikimi,
         );
         await axios.put(
           `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
@@ -321,7 +331,7 @@ function POS(props) {
             nrRendorFatures: response.data.regjistrimet.nrRendorFatures,
             idBonusKartela: response.data.regjistrimet.idBonusKartela,
           },
-          authentikimi
+          authentikimi,
         );
       } catch (error) {
         console.error("Error fetching or updating data:", error);
@@ -363,7 +373,7 @@ function POS(props) {
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      document.getElementById(tjetra)?.focus();
     }
   };
 
@@ -371,7 +381,7 @@ function POS(props) {
     await axios
       .get(
         `${API_BASE_URL}/api/Faturat/ruajKalkulimin/getKalkulimi?idKalkulimit=${id}`,
-        authentikimi
+        authentikimi,
       )
       .then((p) => {
         setEdito(true);
@@ -387,8 +397,8 @@ function POS(props) {
         setSasiaAktualeNeStok(p.data[0].sasiaNeStok);
         setTimeout(() => {
           const sasiaInput = document.getElementById("sasia");
-          sasiaInput.focus();
-          sasiaInput.select();
+          sasiaInput?.focus();
+          sasiaInput?.select();
         }, 0);
       });
   }
@@ -405,7 +415,7 @@ function POS(props) {
           rabati1: rabati1,
           rabati2: rabati2,
         },
-        authentikimi
+        authentikimi,
       );
       setproduktiID(0);
       setSasia("");
@@ -415,8 +425,8 @@ function POS(props) {
       setPerditesoFat(Date.now());
       setTimeout(() => {
         const barkodiInput = document.getElementById("barkodiSelect-input");
-        barkodiInput.focus();
-        barkodiInput.select();
+        barkodiInput?.focus();
+        barkodiInput?.select();
       }, 0);
     }
   }
@@ -436,78 +446,109 @@ function POS(props) {
 
   useEffect(() => {
     const initialOptionsBarkodiSelected = optionsBarkodi.find(
-      (option) => option.value === produktiID
+      (option) => option.value === produktiID,
     );
     setOptionsBarkodiSelected(initialOptionsBarkodiSelected);
-    document.getElementById("sasia").focus();
+    document.getElementById("sasia")?.focus();
   }, [edito, produktiID]);
+
+  const [produktetPerPOS, setProduktetPerPOS] = useState([]);
 
   useEffect(() => {
     axios
-      .get(`${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`, authentikimi)
+      .get(`${API_BASE_URL}/api/Produkti/ProduktetPerPOS`, authentikimi)
       .then((response) => {
-        const fetchedOptionsBarkodi = response.data
-          .filter((item) => item.qmimiProduktit > 0)
-          .map((item) => ({
-            value: item.produktiID,
-            label:
-              item.barkodi +
-              " - " +
-              item.emriProduktit +
-              " - " +
-              item.kodiProduktit,
-            qmimiProduktit: item.qmimiProduktit,
-            qmimiMeShumic: item.qmimiMeShumic,
-            rabati: item.rabati,
-            sasiaNeStok: item.sasiaNeStok,
-            emriNjesiaMatese: item.emriNjesiaMatese,
-          }));
-        setOptionsBarkodi(fetchedOptionsBarkodi);
+        setProduktetPerPOS(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
 
-  const handleChange = async (barkodi) => {
-    setOptionsBarkodiSelected(barkodi);
-    await axios
-      .post(
+  useEffect(() => {
+    const rawData = Array.isArray(produktetPerPOS) ? produktetPerPOS : (produktetPerPOS?.$values || []);
+    const fetchedOptionsBarkodi = rawData
+      .filter((item) => item && item.qmimiProduktit > 0)
+      .map((item) => ({
+        value: item.produktiID,
+        label: `${item.barkodi || ""} - ${item.emriProduktit || ""} - ${item.kodiProduktit || ""}`,
+        qmimiProduktit: item.qmimiProduktit,
+        qmimiMeShumic: item.qmimiMeShumic,
+        rabati: item.rabati,
+        sasiaNeStok: item.sasiaNeStok,
+        emriNjesiaMatese: item.emriNjesiaMatese,
+      }));
+
+    setOptionsBarkodi(fetchedOptionsBarkodi);
+  }, [produktetPerPOS]);
+
+  const selectRef = useRef(null);
+
+  const handleChange = async (selectedOption) => {
+    if (!selectedOption || !selectedOption.value) {
+      console.warn("No valid product selected on scan/add");
+      return;
+    }
+
+    try {
+      setOptionsBarkodiSelected(selectedOption);
+
+      await axios.post(
         `${API_BASE_URL}/api/Faturat/ruajKalkulimin/teDhenat`,
         {
           idRegjistrimit: selectedInvoice,
-          idProduktit: barkodi.value,
+          idProduktit: selectedOption.value,
           sasiaStokut: 1,
-          qmimiShites: barkodi.qmimiProduktit,
-          qmimiShitesMeShumic: barkodi.qmimiMeShumic,
-          rabati1: barkodi.rabati,
+          qmimiShites: selectedOption.qmimiProduktit,
+          qmimiShitesMeShumic: selectedOption.qmimiMeShumic || 0,
+          rabati1: selectedOption.rabati || 0,
           rabati2: rabati2,
         },
-        authentikimi
-      )
-      .then((r) => {
-        setIDProduktiFunditShtuar(r.data.id);
-      });
-    setproduktiID(0);
-    setSasia("");
-    setSasiaShumices(0);
-    setNjesiaMatese(barkodi.emriNjesiaMatese);
-    setSasiaAktualeNeStok(barkodi.sasiaNeStok);
-    setQmimiSH(0);
-    setQmimiSH2(0);
-    setOptionsBarkodiSelected(null);
-    setPerditesoFat(Date.now());
+        authentikimi,
+      );
+
+      setIDProduktiFunditShtuar(/* from response if needed */);
+      setPerditesoFat(Date.now());
+
+      // Reset for next fast scan
+      setInputValue("");
+      setOptionsBarkodiSelected(null);
+
+      // Refocus the select input
+      setTimeout(() => {
+        document.getElementById("barkodiSelect-input")?.focus();
+      }, 80);
+    } catch (err) {
+      console.error("Add product failed:", err);
+      // your error message code
+    }
   };
 
   const handleKaloTekPagesa = (event) => {
     if (event.key === "Escape") {
       event.preventDefault();
-      document.getElementById("shumaPageses").focus();
-    } else if (event.key === "F1") {
+      document.getElementById("shumaPageses")?.focus();
+      return;
+    }
+
+    if (event.key === "F1") {
       event.preventDefault();
       if (IDProduktiFunditShtuar !== null) {
         handleEdit(IDProduktiFunditShtuar);
       }
+      return;
+    }
+
+    // For Enter â†’ we give react-select ~50-100ms to set the value
+    if (event.key === "Enter") {
+      // Do NOT preventDefault() here
+      setTimeout(() => {
+        if (optionsBarkodiSelected?.value) {
+          handleChange(optionsBarkodiSelected);
+          setInputValue(""); // clear for next scan
+          selectRef.current?.focus(); // keep focus
+        }
+      }, 60); // 60ms is usually perfect for scanners
     }
   };
 
@@ -546,324 +587,176 @@ function POS(props) {
   }
 
   async function generateInvoice(data) {
-    const initialDoc = new jsPDF({ unit: "mm", format: [75, 1000] });
     const logoUrl = `${BASE_URL}/img/web/${teDhenatBiznesit?.logo}`;
-    const logoImage = await loadImage(logoUrl);
-    initialDoc.addImage(logoImage, "PNG", 10, 5, 55, 15);
-    let currentY = 25;
-
-    function addShrinkText(doc, text, x, y, maxWidth) {
-      let fontSize = 10;
-      doc.setFont("Courier");
-      doc.setFontSize(fontSize);
-      while (doc.getTextWidth(text) > maxWidth && fontSize > 7) {
-        fontSize -= 1;
-        doc.setFontSize(fontSize);
-      }
-      doc.text(text, x, y, { align: "center" });
+    let logoImage = null;
+    try {
+      logoImage = await loadImage(logoUrl);
+    } catch (e) {
+      console.warn('Logo not found for receipt:', e);
     }
 
-    addShrinkText(
-      initialDoc,
-      teDhenatBiznesit?.emriIBiznesit,
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `Adresa: ${teDhenatBiznesit?.adresa}`,
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `Kontakti: ${teDhenatBiznesit?.nrKontaktit} - ${teDhenatBiznesit?.email}`,
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `NUI: ${teDhenatBiznesit?.nui}`,
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `TVSH: ${teDhenatBiznesit?.nrTVSH}`,
-      38.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `NRF: ${teDhenatBiznesit?.nf}`,
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    initialDoc.line(0, currentY, 75, currentY);
-    currentY += 5;
+    function drawReceipt(doc, isMeasuring) {
+      let y = 6;
 
-    addShrinkText(initialDoc, "PARAGON", 37.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `Paragon #: ${data.invoiceNumber}`,
-      26.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(initialDoc, `Data: ${data.date}`, 18, currentY, 70);
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `Shitësi: ${data.salesUsername}`,
-      32.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    initialDoc.line(0, currentY, 75, currentY);
-    currentY += 5;
+      if (logoImage && !isMeasuring) {
+        doc.addImage(logoImage, 'PNG', 22.5, y, 30, 12);
+        y += 16;
+      } else if (logoImage && isMeasuring) {
+        y += 16;
+      }
 
-    currentY += 5;
-    addShrinkText(initialDoc, "Produkti", 11, currentY, 30);
-    addShrinkText(initialDoc, "TVSH (%)", 63, currentY, 20);
-    currentY += 5;
-    addShrinkText(initialDoc, "Çmimi", 11, currentY, 20);
-    addShrinkText(initialDoc, "Sasia", 38, currentY, 20);
-    addShrinkText(initialDoc, "Totali", 63, currentY, 20);
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      "----------------------------------",
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
+      const centerText = (txt, size, font = 'Helvetica', style = 'normal') => {
+        if (!isMeasuring) {
+          doc.setFont(font, style);
+          doc.setFontSize(size);
+          const block = doc.splitTextToSize(String(txt || ''), 65);
+          doc.text(block, 37.5, y, { align: 'center' });
+          y += (block.length * (size * 0.35)) + 1;
+        } else {
+          y += Math.max(1, Math.ceil(String(txt || '').length / 40)) * (size * 0.35) + 1;
+        }
+      };
 
-    data.items.forEach((item) => {
-      addShrinkText(initialDoc, item.name, 38, currentY, 30);
-      currentY += 5;
-      addShrinkText(
-        initialDoc,
-        `${parseFloat(item.vatPercentage).toFixed(2)} %`,
-        63,
-        currentY,
-        20
-      );
-      currentY += 5;
-      addShrinkText(
-        initialDoc,
-        `${parseFloat(item.price).toFixed(2)} €`,
-        11,
-        currentY,
-        20
-      );
-      addShrinkText(initialDoc, `${item.quantity}`, 38, currentY, 20);
-      addShrinkText(
-        initialDoc,
-        `${parseFloat(item.total).toFixed(2)} €`,
-        63,
-        currentY,
-        20
-      );
-      currentY += 5;
-      addShrinkText(
-        initialDoc,
-        "----------------------------------",
-        37.5,
-        currentY,
-        70
-      );
-      currentY += 5;
-    });
-    initialDoc.line(0, currentY, 75, currentY);
-    currentY += 5;
+      centerText(teDhenatBiznesit?.emriIBiznesit || 'FinanCare', 11, 'Helvetica', 'bold');
+      centerText(`Adresa: ${teDhenatBiznesit?.adresa || ''}`, 8);
+      centerText(`Tel: ${teDhenatBiznesit?.nrKontaktit || ''}`, 8);
+      centerText(`NUI: ${teDhenatBiznesit?.nui || ''} / NRT: ${teDhenatBiznesit?.nrTVSH || ''}`, 8);
+      centerText(`NRF: ${teDhenatBiznesit?.nf || ''}`, 8);
+      y += 2;
 
-    addShrinkText(
-      initialDoc,
-      `Totali pa TVSH: ${data.totalWithoutVAT} €`,
-      25.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(initialDoc, `TVSH: ${data.vat} €`, 14, currentY, 70);
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `Totali pa Rabat: ${parseFloat(
-        parseFloat(data.totalWithoutVAT) +
-          parseFloat(data.vat) +
-          parseFloat(data.rabati)
-      ).toFixed(2)} €`,
-      26.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(initialDoc, `Rabati: ${data.rabati} €`, 16.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(
-      initialDoc,
-      `Totali: ${parseFloat(
-        parseFloat(data.totalWithoutVAT) + parseFloat(data.vat)
-      ).toFixed(2)} €`,
-      17.5,
-      currentY,
-      70
-    );
-    currentY += 10;
-    addShrinkText(initialDoc, "Faleminderit për blerjen!", 37.5, currentY, 70);
+      const drawSolidLine = () => {
+        if (!isMeasuring) {
+          doc.setLineWidth(0.3);
+          doc.line(5, y, 70, y);
+        }
+      };
 
-    const finalHeight = currentY + 20;
-    const doc = new jsPDF({ unit: "mm", format: [75, finalHeight] });
-    doc.addImage(logoImage, "PNG", 10, 5, 55, 15);
-    currentY = 25;
+      const drawDashedLine = () => {
+        if (!isMeasuring) {
+          doc.setFont('Courier', 'normal');
+          doc.setFontSize(10);
+          doc.text('-'.repeat(32), 37.5, y, { align: 'center' });
+        }
+      };
 
-    addShrinkText(doc, teDhenatBiznesit?.emriIBiznesit, 37.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(
-      doc,
-      `Adresa: ${teDhenatBiznesit?.adresa}`,
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(
-      doc,
-      `Kontakti: ${teDhenatBiznesit?.nrKontaktit} - ${teDhenatBiznesit?.email}`,
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(doc, `NUI: ${teDhenatBiznesit?.nui}`, 37.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(doc, `TVSH: ${teDhenatBiznesit?.nrTVSH}`, 38.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(doc, `NRF: ${teDhenatBiznesit?.nf}`, 37.5, currentY, 70);
-    currentY += 5;
-    doc.line(0, currentY, 75, currentY);
-    currentY += 5;
+      drawSolidLine();
+      y += 5;
 
-    addShrinkText(doc, "PARAGON", 37.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(doc, `Paragon #: ${data.invoiceNumber}`, 26.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(doc, `Data: ${data.date}`, 18, currentY, 70);
-    currentY += 5;
-    addShrinkText(doc, `Shitësi: ${data.salesUsername}`, 32.5, currentY, 70);
-    currentY += 5;
-    doc.line(0, currentY, 75, currentY);
-    currentY += 5;
+      centerText('P A R A G O N', 10, 'Helvetica', 'bold');
+      y += 1;
 
-    currentY += 5;
-    addShrinkText(doc, "Produkti", 11, currentY, 30);
-    addShrinkText(doc, "TVSH (%)", 63, currentY, 20);
-    currentY += 5;
-    addShrinkText(doc, "Çmimi", 11, currentY, 20);
-    addShrinkText(doc, "Sasia", 38, currentY, 20);
-    addShrinkText(doc, "Totali", 63, currentY, 20);
-    currentY += 5;
-    addShrinkText(
-      doc,
-      "----------------------------------",
-      37.5,
-      currentY,
-      70
-    );
-    currentY += 5;
+      const rowMeta = (lbl, val) => {
+        if (!isMeasuring) {
+          doc.setFont('Helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.text(lbl, 5, y);
+          doc.text(String(val), 70, y, { align: 'right' });
+        }
+        y += 4;
+      };
 
-    data.items.forEach((item) => {
-      addShrinkText(doc, item.name, 38, currentY, 30);
-      currentY += 5;
-      addShrinkText(
-        doc,
-        `${parseFloat(item.vatPercentage).toFixed(2)} %`,
-        63,
-        currentY,
-        20
-      );
-      currentY += 5;
-      addShrinkText(
-        doc,
-        `${parseFloat(item.price).toFixed(2)} €`,
-        11,
-        currentY,
-        20
-      );
-      addShrinkText(doc, `${item.quantity}`, 38, currentY, 20);
-      addShrinkText(
-        doc,
-        `${parseFloat(item.total).toFixed(2)} €`,
-        63,
-        currentY,
-        20
-      );
-      currentY += 5;
-      addShrinkText(
-        doc,
-        "----------------------------------",
-        37.5,
-        currentY,
-        70
-      );
-      currentY += 5;
-    });
-    doc.line(0, currentY, 75, currentY);
-    currentY += 5;
+      rowMeta('Fatura Nr:', data.invoiceNumber || '');
+      rowMeta('Data:', data.date || '');
+      rowMeta('Shitësi:', data.salesUsername || '');
 
-    addShrinkText(
-      doc,
-      `Totali pa TVSH: ${data.totalWithoutVAT} €`,
-      25.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(doc, `TVSH: ${data.vat} €`, 14, currentY, 70);
-    currentY += 5;
-    addShrinkText(
-      doc,
-      `Totali pa Rabat: ${parseFloat(
-        parseFloat(data.totalWithoutVAT) +
-          parseFloat(data.vat) +
-          parseFloat(data.rabati)
-      ).toFixed(2)} €`,
-      26.5,
-      currentY,
-      70
-    );
-    currentY += 5;
-    addShrinkText(doc, `Rabati: ${data.rabati} €`, 16.5, currentY, 70);
-    currentY += 5;
-    addShrinkText(
-      doc,
-      `Totali: ${parseFloat(
-        parseFloat(data.totalWithoutVAT) + parseFloat(data.vat)
-      ).toFixed(2)} €`,
-      17.5,
-      currentY,
-      70
-    );
-    currentY += 10;
-    addShrinkText(doc, "Faleminderit për blerjen!", 37.5, currentY, 70);
+      y += 1;
+      drawSolidLine();
+      y += 5;
+
+      if (!isMeasuring) {
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.text('PRODUKTI', 5, y);
+        doc.text('SASIA', 43, y, { align: 'right' });
+        doc.text('ÇMIMI', 56, y, { align: 'right' });
+        doc.text('SHUMA', 70, y, { align: 'right' });
+      }
+      y += 2.5;
+      drawDashedLine();
+      y += 4.5;
+
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(8.5);
+      if (data.items && Array.isArray(data.items)) {
+        data.items.forEach((item) => {
+          if (!isMeasuring) {
+            let itemName = String(item?.name || "Produkti");
+            let name = itemName.length > 20 ? itemName.substring(0, 18) + '..' : itemName;
+            doc.setFont('Helvetica', 'normal');
+            doc.text(name, 5, y);
+            doc.text(String(item?.quantity || 1), 43, y, { align: 'right' });
+            doc.text(`${parseFloat(item?.price || 0).toFixed(2)}`, 56, y, { align: 'right' });
+            doc.setFont('Helvetica', 'bold');
+            doc.text(`${parseFloat(item?.total || 0).toFixed(2)}`, 70, y, { align: 'right' });
+          }
+          y += 4.5;
+        });
+      }
+
+      y += 1;
+      drawSolidLine();
+      y += 5;
+
+      const rowTotal = (lbl, val, bold = false) => {
+        if (!isMeasuring) {
+          doc.setFont('Helvetica', bold ? 'bold' : 'normal');
+          doc.setFontSize(8.5);
+          doc.text(lbl, 35, y);
+          doc.text(String(val), 70, y, { align: 'right' });
+        }
+        y += 4.5;
+      }
+
+      rowTotal('Totali pa TVSH:', `${parseFloat(data.totalWithoutVAT).toFixed(2)} €`);
+      rowTotal('TVSH totale:', `${parseFloat(data.vat).toFixed(2)} €`);
+      if (parseFloat(data.rabati) > 0) {
+        if (!isMeasuring) doc.setTextColor(200, 50, 50);
+        rowTotal('Rabati (-):', `${parseFloat(data.rabati).toFixed(2)} €`, true);
+        if (!isMeasuring) doc.setTextColor(0, 0, 0);
+      }
+
+      y += 2;
+      drawSolidLine();
+      y += 7;
+
+      const totalAmount = parseFloat(parseFloat(data.totalWithoutVAT) + parseFloat(data.vat)).toFixed(2);
+
+      if (!isMeasuring) {
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.text('TOTALI:', 5, y);
+        doc.text(`${totalAmount} €`, 70, y, { align: 'right' });
+      }
+      y += 8;
+
+      rowMeta('Mënyra e Pagesës:', llojiPageses || 'Cash');
+
+      y += 3;
+      drawDashedLine();
+      y += 7;
+
+      if (!isMeasuring) {
+        doc.setFont('Helvetica', 'bolditalic');
+        doc.setFontSize(9);
+        doc.text('Faleminderit për blerjen tuaj!', 37.5, y, { align: 'center' });
+      }
+
+      y += 12; // Bottom padding padding
+      return y;
+    }
+
+    const dummyDoc = new jsPDF({ unit: 'mm', format: [75, 1000] });
+    const finalHeight = drawReceipt(dummyDoc, true);
+
+    const doc = new jsPDF({ unit: 'mm', format: [75, finalHeight] });
+    drawReceipt(doc, false);
+
+    // Create Blob for Telegram
+    const pdfBlob = doc.output("blob");
+
+    // Save locally
     doc.save(`Paragon #${data.invoiceNumber}.pdf`);
+
     setPerditeso(Date.now());
     setShumaPageses(0);
     setLlojiPageses("Cash");
@@ -880,13 +773,13 @@ function POS(props) {
     await axios
       .get(
         `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
-        authentikimi
+        authentikimi,
       )
       .then(async (r) => {
         if (r.data.regjistrimet.totaliPaTVSH <= 0) {
           setTipiMesazhit("danger");
           setPershkrimiMesazhit(
-            "Kjo fature nuk mund te mbyllet me qmim 0 ose me te vogel! Ju lutem kontrolloni ate."
+            "Kjo fature nuk mund te mbyllet me qmim 0 ose me te vogel! Ju lutem kontrolloni ate.",
           );
           setShfaqMesazhin(true);
         } else {
@@ -910,7 +803,7 @@ function POS(props) {
                 nrRendorFatures: r.data.regjistrimet.nrRendorFatures,
                 idBonusKartela: r.data.regjistrimet.idBonusKartela,
               },
-              authentikimi
+              authentikimi,
             )
             .then(async () => {
               addNewCustomer();
@@ -918,7 +811,7 @@ function POS(props) {
                 await axios.put(
                   `${API_BASE_URL}/api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin?id=${produkti.idProduktit}`,
                   { sasiaNeStok: produkti.sasiaStokut },
-                  authentikimi
+                  authentikimi,
                 );
               }
               if (llojiPageses !== "Borxh" && idPartneri !== 1) {
@@ -929,7 +822,7 @@ function POS(props) {
                     stafiID: r.data.regjistrimet.stafiID,
                     totaliPaTVSH: parseFloat(
                       r.data.regjistrimet.totaliPaTVSH +
-                        r.data.regjistrimet.tvsh 
+                      r.data.regjistrimet.tvsh,
                     ),
                     tvsh: 0,
                     idPartneri: r.data.regjistrimet.idPartneri,
@@ -945,18 +838,18 @@ function POS(props) {
                     idBonusKartela: null,
                     statusiKalkulimit: "true",
                   },
-                  authentikimi
+                  authentikimi,
                 );
               }
               // Remove closed invoice and select next
               const updatedInvoices = activeInvoices.filter(
-                (id) => id !== selectedInvoice
+                (id) => id !== selectedInvoice,
               );
               setActiveInvoices(updatedInvoices);
               setSelectedInvoice(updatedInvoices[0] || null);
               setPerditeso(Date.now());
 
-              document.getElementById("barkodiSelect-input").focus();
+              document.getElementById("barkodiSelect-input")?.focus();
             });
           const data = {
             invoiceNumber: r?.data?.regjistrimet?.nrFatures,
@@ -965,26 +858,25 @@ function POS(props) {
               r?.data?.regjistrimet?.stafiID +
               " - " +
               r?.data?.regjistrimet?.username,
-            items: [
-              ...(r?.data?.totTVSH8?.map((item) => ({
-                name: item.produkti?.emriProduktit || "Unknown Product",
-                vatPercentage: 8,
-                quantity: item.sasiaStokut || 1,
-                price: item.qmimiShites.toFixed(2) || "0.00",
-                total:
-                  (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
-              })) || []),
-              ...(r?.data?.totTVSH18?.map((item) => ({
-                name: item.produkti?.emriProduktit || "Unknown Product",
-                vatPercentage: 18,
-                quantity: item.sasiaStokut || 1,
-                price: item.qmimiShites.toFixed(2) || "0.00",
-                total:
-                  (item.qmimiShites * item.sasiaStokut).toFixed(2) || "0.00",
-              })) || []),
-            ],
+            items: produktetNeKalkulim.map((p) => {
+              const finalPrice = parseFloat(
+                p.qmimiShites -
+                p.qmimiShites * (p.rabati1 / 100) -
+                (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) * (p.rabati2 / 100) -
+                (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100) - (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) * (p.rabati2 / 100)) * (p.rabati3 / 100)
+              );
+              return {
+                idProduktit: p.idProduktit || 0,
+                name: p.emriProduktit || "Produkti",
+                vatPercentage: parseInt(p.llojiTvsh) || 18,
+                quantity: p.sasiaStokut || 1,
+                price: finalPrice.toFixed(2) || "0.00",
+                rabatiStok: p.rabati1 || 0,
+                total: (finalPrice * (p.sasiaStokut || 1)).toFixed(2) || "0.00",
+              };
+            }),
             totalWithoutVAT: parseFloat(
-              r?.data?.regjistrimet?.totaliPaTVSH
+              r?.data?.regjistrimet?.totaliPaTVSH,
             ).toFixed(2),
             vat: parseFloat(r?.data?.regjistrimet?.tvsh).toFixed(2),
             rabati: parseFloat(r?.data?.rabati ?? 0).toFixed(2),
@@ -999,7 +891,7 @@ function POS(props) {
     try {
       const kaKartele = await axios.get(
         `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaBleresit}`,
-        authentikimi
+        authentikimi,
       );
       if (kaKartele != null) {
         setRabati2(kaKartele.data.rabati);
@@ -1007,7 +899,7 @@ function POS(props) {
         setTeDhenatKartelaBleresit(kaKartele.data);
         const r = await axios.get(
           `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
-          authentikimi
+          authentikimi,
         );
         await axios.put(
           `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
@@ -1027,7 +919,7 @@ function POS(props) {
             nrRendorFatures: r.data.regjistrimet.nrRendorFatures,
             idBonusKartela: kaKartele.data.idKartela,
           },
-          authentikimi
+          authentikimi,
         );
         for (let produkti of produktetNeKalkulim) {
           await axios.put(
@@ -1039,7 +931,7 @@ function POS(props) {
               rabati1: produkti?.rabati1 ?? 0,
               rabati2: kaKartele.data.rabati,
             },
-            authentikimi
+            authentikimi,
           );
         }
         setKartelaBleresit(null);
@@ -1061,13 +953,13 @@ function POS(props) {
     try {
       const kaKartele = await axios.get(
         `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaFshirjes}`,
-        authentikimi
+        authentikimi,
       );
       if (kaKartele != null) {
         if (kaKartele.data.llojiKarteles == "Fshirje") {
           await axios.delete(
             `${API_BASE_URL}/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${fshijProdKalkID}`,
-            authentikimi
+            authentikimi,
           );
           document.getElementById("barkodiSelect-input").focus();
           setVendosKartelenFshirjeProduktit(false);
@@ -1093,18 +985,8 @@ function POS(props) {
     }
   }
 
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050,
-    }),
-  };
-
   useEffect(() => {
-    const tabelaDiv = document.querySelector(".tabelaDiv");
-    if (tabelaDiv) {
-      tabelaDiv.style.zoom = "80%";
-    }
+    // POS Layout is now optimized via POSLayout.css to fit the screen
   }, []);
 
   const [showNEEPM, setShowNEEPM] = useState(true);
@@ -1113,12 +995,32 @@ function POS(props) {
     setShowNEEPM(false);
   };
 
+  const [inputValue, setInputValue] = useState("");
+  const handleInputChange = (val) => {
+    setInputValue(val);
+    return val;
+  };
+  const filteredOptions = useMemo(() => {
+    if (!inputValue || inputValue.length < 2) return [];
+
+    const lower = inputValue.toLowerCase();
+    const results = [];
+    for (let i = 0; i < optionsBarkodi.length; i++) {
+      const option = optionsBarkodi[i];
+      if (option && option.label && option.label.toLowerCase().includes(lower)) {
+        results.push(option);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValue, optionsBarkodi]);
+
   return (
-    <>
+    <div className="pos-page-wrapper">
       <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Arkatar"]} />
       <Titulli titulli={"POS"} />
-      <NavBar />
-      <div className="containerDashboardP" style={{ width: "90%" }}>
+
+      <div className="pos-main-container">
         {showNEEPM && (
           <NukEshteEOptimizuarPerMobile
             title="Përdorni një Paisje tjeter!"
@@ -1134,10 +1036,13 @@ function POS(props) {
             tipi={tipiMesazhit}
           />
         )}
+
+        {/* Modal for Client Card (Logic preserved) */}
         {vendosKartelenBleresit && (
           <Modal
             show={vendosKartelenBleresit}
-            onHide={() => setVendosKartelenBleresit(false)}>
+            onHide={() => setVendosKartelenBleresit(false)}
+            centered>
             <Modal.Header closeButton>
               <Modal.Title as="h6">Vendosni Kartelen</Modal.Title>
             </Modal.Header>
@@ -1159,24 +1064,27 @@ function POS(props) {
               <Button
                 variant="secondary"
                 onClick={() => setVendosKartelenBleresit(false)}>
-                Anulo <FontAwesomeIcon icon={faPenToSquare} />
+                Anulo
               </Button>
               <Button variant="warning" onClick={VendosKartelenBleresit}>
-                Vendos Kartelen <FontAwesomeIcon icon={faPlus} />
+                Vendos Kartelen
               </Button>
             </Modal.Footer>
           </Modal>
         )}
+
+        {/* Modal for Deletion Card (Logic preserved) */}
         {vendosKartelenFshirjeProduktit && (
           <Modal
             show={vendosKartelenFshirjeProduktit}
-            onHide={() => setVendosKartelenFshirjeProduktit(false)}>
+            onHide={() => setVendosKartelenFshirjeProduktit(false)}
+            centered>
             <Modal.Header closeButton>
-              <Modal.Title as="h6">Vendosni Kartelen</Modal.Title>
+              <Modal.Title as="h6">Konfirmo Fshirjen</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form.Group>
-                <Form.Label>Nr. Karteles</Form.Label>
+                <Form.Label>Nr. Karteles Menaxheriale</Form.Label>
                 <Form.Control
                   id="nrKarteles"
                   type="text"
@@ -1192,340 +1100,363 @@ function POS(props) {
               <Button
                 variant="secondary"
                 onClick={() => setVendosKartelenFshirjeProduktit(false)}>
-                Anulo <FontAwesomeIcon icon={faPenToSquare} />
+                Anulo
               </Button>
               <Button
                 variant="warning"
                 onClick={VendosKartelenFshirjesProduktit}>
-                Vendos Kartelen <FontAwesomeIcon icon={faPlus} />
+                Konfirmo
               </Button>
             </Modal.Footer>
           </Modal>
         )}
+
         {loading ? (
-          <div className="Loader">
-            <TailSpin
-              height="80"
-              width="80"
-              color="#009879"
-              ariaLabel="tail-spin-loading"
-              radius="1"
-              wrapperStyle={{}}
-              wrapperClass=""
-              visible={true}
-            />
+          <div className="Loader d-flex align-items-center justify-content-center h-100">
+            <TailSpin height="80" width="80" color="#6366f1" radius="1" visible={true} />
           </div>
         ) : (
           <>
-            <h1 className="title">POS</h1>
-            <Container fluid>
-              {activeInvoices.length === 0 ? (
-                <div>
-                  <h3>
-                    Asnjë klient i hapur. Shtoni një klient të ri për të
-                    filluar.
-                  </h3>
-                  <Button variant="primary" onClick={addNewCustomer}>
-                    Shto Klient të Ri <FontAwesomeIcon icon={faPlus} />
+            <div className="pos-header">
+              <div className="pos-title-section">
+                <div className="d-flex align-items-center gap-2">
+                  <h2 className="pos-main-title">Pika e Shitjes (POS)</h2>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => navigate("/")}
+                    className="rounded-pill px-3 py-1 fw-600 d-flex align-items-center gap-1 border-0 bg-primary-subtle text-primary">
+                    <History size={14} /> Dashboard
                   </Button>
                 </div>
+
+                <div className="invoice-tabs-custom ms-4">
+                  {activeInvoices.length > 0 && (
+                    <Tabs
+                      activeKey={selectedInvoice || "none"}
+                      onSelect={(key) => setSelectedInvoice(parseInt(key))}
+                      className="border-0">
+                      {activeInvoices.map((invoiceId, index) => (
+                        <Tab
+                          eventKey={invoiceId}
+                          title={<span><User size={13} className="me-1" /> Klienti {index + 1}</span>}
+                          key={invoiceId}
+                        />
+                      ))}
+                    </Tabs>
+                  )}
+                </div>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={addNewCustomer}
+                  className="rounded-circle d-flex align-items-center justify-content-center p-0"
+                  style={{ width: '28px', height: '28px' }}>
+                  <PlusCircle size={18} color="white" />
+                </Button>
+              </div>
+              <div className="pos-header-info">
+                <span className="pos-nr-chip"><Hash size={13} /> {nrFatures || 'â€”'}</span>
+                <span><CalendarIcon size={14} className="me-1" style={{ opacity: 0.6 }} /> {currentDate}</span>
+              </div>
+            </div>
+
+            <div className="pos-content-grid">
+              {activeInvoices.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="d-flex flex-column align-items-center justify-content-center bg-white rounded-4 shadow-sm h-100 grid-span-all"
+                >
+                  <div className="text-center p-5 empty-pos-state">
+                    <MonitorSpeaker size={90} className="text-muted opacity-25 mb-4 pulse-slow" />
+                    <h2 className="fw-bold text-dark mb-2">Terminali i Shitjes</h2>
+                    <p className="text-muted mb-4 px-4">Hapni një faturë të re për të filluar me shtimin e produkteve dhe skanimin e barkodeve.</p>
+                    <Button variant="primary" size="lg" className="px-5 py-3 rounded-pill fw-bold shadow hover-lift" onClick={addNewCustomer}>
+                      <PlusCircle size={20} className="me-2" />
+                      Fillo Porosinë e Re
+                    </Button>
+                  </div>
+                </motion.div>
               ) : (
                 <>
-                  <Row className="mb-3">
-                    <Col>
-                      <Tabs
-                        activeKey={selectedInvoice || "none"}
-                        onSelect={(key) => setSelectedInvoice(parseInt(key))}
-                        className="mb-3">
-                        {activeInvoices.map((invoiceId, index) => (
-                          <Tab
-                            eventKey={invoiceId}
-                            title={`Klienti ${index + 1}`}
-                            key={invoiceId}
-                          />
-                        ))}
-                      </Tabs>
-                      <Button variant="primary" onClick={addNewCustomer}>
-                        Shto Klient të Ri <FontAwesomeIcon icon={faPlus} />
-                      </Button>
-                    </Col>
-                  </Row>
+                  <div className="pos-left-side">
+                    <div className="pos-input-card">
+                      <Row className="g-3">
+                        <Col md={6}>
+                          <Form.Group>
+                            <Form.Label className="small fw-bold text-muted text-uppercase mb-1">Barkodi / Produkti</Form.Label>
+                            <Select
+                              id="barkodiSelect"
+                              placeholder="Kërko produktin ose skano barkodin..."
+                              isClearable
+                              ref={selectRef}
+                              inputId="barkodiSelect-input"
+                              options={filteredOptions}
+                              value={optionsBarkodiSelected}
+                              onChange={(selected) => {
+                                if (selected) {
+                                  handleChange(selected);
+                                }
+                              }}
+                              onInputChange={handleInputChange}
+                              onKeyDown={handleKaloTekPagesa}
+                              inputValue={inputValue}
+                              filterOption={null}
+                              noOptionsMessage={() =>
+                                inputValue.length < 2
+                                  ? "Shkruani të paktën 2 karaktere"
+                                  : "Nuk u gjet produkt"
+                              }
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={3}>
+                          <Form.Group>
+                            <Form.Label className="small fw-bold text-muted mb-1">Sasia - {njesiaMatese === "COPE" ? "Copë" : njesiaMatese}</Form.Label>
+                            <Form.Control
+                              id="sasia"
+                              type="number"
+                              placeholder="0.00"
+                              value={sasia}
+                              onChange={(e) => kontrolloQmimin(e)}
+                              onKeyDown={(e) => handleEdito(e)}
+                              disabled={!edito}
+                              className={edito ? "border-warning bg-warning-subtle fw-bold" : "fw-bold"}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={3} className="d-flex align-items-end gap-2">
+                          <Form.Group className="flex-grow-1">
+                            <Form.Label className="small fw-bold text-muted mb-1">Çmimi €</Form.Label>
+                            <Form.Control
+                              type="number"
+                              value={qmimiSH}
+                              disabled
+                              className="bg-light fw-bold text-primary"
+                            />
+                          </Form.Group>
+                          <Button
+                            variant="light"
+                            title="Historia e Kthimeve"
+                            onClick={() => navigate("/KthimiMallitTeShitur")}
+                            className="bg-white border-light shadow-sm btn-icon-round"
+                            style={{ height: '38px', width: '38px' }}>
+                            <History size={18} className="text-secondary" />
+                          </Button>
+                        </Col>
+                      </Row>
+                    </div>
+
+                    <div className="pos-table-card">
+                      <div className="pos-table-header flex-wrap gap-2">
+                        <div className="d-flex align-items-center gap-2">
+                          <Receipt size={18} className="text-primary" />
+                          <span>Produktet në Paragon</span>
+                          <Badge bg="primary" className="rounded-pill px-2 pb-1 mx-1">{produktetNeKalkulim.length}</Badge>
+                        </div>
+                        <Form.Control
+                          size="sm"
+                          placeholder="Filtro produktet..."
+                          className="pos-search-filter"
+                          value={filterText}
+                          onChange={(e) => setFilterText(e.target.value)}
+                        />
+                      </div>
+                      <div className="pos-table-scroll">
+                        <Table hover borderless>
+                          <thead>
+                            <tr>
+                              <th style={{ width: '60px' }}>Nr.</th>
+                              <th style={{ width: '120px' }}>Barkodi</th>
+                              <th>Emërtimi</th>
+                              <th style={{ width: '100px' }}>Sasia</th>
+                              <th className="text-end" style={{ width: '110px' }}>Çmimi</th>
+                              <th className="text-end" style={{ width: '130px' }}>Shuma</th>
+                              <th className="text-center" style={{ width: '110px' }}>Veprime</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <AnimatePresence>
+                              {produktetNeKalkulim.filter(p => p.emriProduktit.toLowerCase().includes(filterText.toLowerCase()) || p.barkodi.toLowerCase().includes(filterText.toLowerCase())).map((p, index) => {
+                                const qmimiMeTVSHRab = parseFloat(
+                                  p.qmimiShites -
+                                  p.qmimiShites * (p.rabati1 / 100) -
+                                  (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) *
+                                  (p.rabati2 / 100) -
+                                  (p.qmimiShites -
+                                    p.qmimiShites * (p.rabati1 / 100) -
+                                    (p.qmimiShites -
+                                      p.qmimiShites * (p.rabati1 / 100)) *
+                                    (p.rabati2 / 100)) *
+                                  (p.rabati3 / 100),
+                                ).toFixed(3);
+                                const ShumaToT = parseFloat(
+                                  qmimiMeTVSHRab * p.sasiaStokut,
+                                ).toFixed(3);
+                                const originalIndex =
+                                  produktetNeKalkulim.length - 1 - index;
+                                return (
+                                  p && (
+                                    <motion.tr
+                                      key={p.id || originalIndex}
+                                      initial={{ opacity: 0, x: -20, backgroundColor: 'rgba(16, 185, 129, 0.1)' }}
+                                      animate={{ opacity: 1, x: 0, backgroundColor: 'rgba(0, 0, 0, 0)' }}
+                                      exit={{ opacity: 0, scale: 0.95, backgroundColor: 'rgba(248, 113, 113, 0.1)' }}
+                                      transition={{ duration: 0.2 }}
+                                    >
+                                      <td className="text-muted small align-middle">#{originalIndex + 1}</td>
+                                      <td className="font-monospace small align-middle">{p.barkodi}</td>
+                                      <td className="fw-semibold align-middle truncate-cell" title={p.emriProduktit}>{p.emriProduktit}</td>
+                                      <td className="align-middle"><Badge bg="light" text="dark" className="border px-2 py-1 qty-badge">{p.sasiaStokut} {p.emriNjesiaMatese === "COPE" ? "Copë" : p.emriNjesiaMatese}</Badge></td>
+                                      <td className="text-end fw-bold align-middle">{parseFloat(qmimiMeTVSHRab).toFixed(2)} €</td>
+                                      <td className="text-end fw-bold text-primary fs-6 align-middle">{parseFloat(ShumaToT).toFixed(2)} €</td>
+                                      <td className="align-middle">
+                                        <div className="d-flex justify-content-center gap-2">
+                                          <Button
+                                            size="sm"
+                                            variant="light"
+                                            className="btn-icon-round border text-danger shadow-sm bg-white"
+                                            disabled={edito}
+                                            onClick={() => {
+                                              setVendosKartelenFshirjeProduktit(true);
+                                              setFshijProduktKalkID(p.id);
+                                            }}>
+                                            <Trash size={15} />
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            variant="light"
+                                            className="btn-icon-round border text-warning shadow-sm bg-white"
+                                            disabled={edito}
+                                            onClick={() => {
+                                              setOptionsBarkodiSelected(p.idProduktit);
+                                              handleEdit(p.id, index);
+                                            }}>
+                                            <Edit size={15} />
+                                          </Button>
+                                        </div>
+                                      </td>
+                                    </motion.tr>
+                                  )
+                                );
+                              })}
+                            </AnimatePresence>
+                          </tbody>
+                        </Table>
+                      </div>
+                    </div>
+
+                    <div className="keyboard-shortcuts mt-0">
+                      <span><kbd>ESC</kbd> Pagesa</span>
+                      <span><kbd>F1</kbd> Edito Fundit</span>
+                      <span><kbd>F4</kbd> Kartela</span>
+                      <span><kbd>F5</kbd> Mbyll</span>
+                      <span><kbd>Ctrl 1-9</kbd> Klientët</span>
+                    </div>
+                  </div>
+
+                  <div className="pos-right-side">
+                    <div className="pos-summary-card">
+                      <div className="pos-total-display">
+                        <span className="label">Totali për Pagesë</span>
+                        <span className="amount">{(parseFloat(qmimiTotal) || 0).toFixed(2)} €</span>
+                        <div className="amount-sub">
+                          <span>Pa TVSH: {(parseFloat(qmimiTotal) - parseFloat(totaliTVSH) || 0).toFixed(2)} €</span>
+                          <span>TVSH: {(parseFloat(totaliTVSH) || 0).toFixed(2)} €</span>
+                        </div>
+                      </div>
+
+                      <div className="pos-payment-details">
+                        <Row className="g-2">
+                          <Col xs={12}>
+                            <Form.Group>
+                              <Form.Label className="small fw-bold text-muted text-uppercase mb-1">Mënyra e Pagesës</Form.Label>
+                              <Form.Select
+                                value={llojiPageses || ""}
+                                disabled={edito}
+                                onChange={(e) => setLlojiPageses(e.target.value)}
+                                className="fw-bold">
+                                <option value="Cash">Cash (Para të Gatshme)</option>
+                                <option value="Banke">Bankë (Debit / Credit Kartela)</option>
+                                {teDhenatKartelaBleresit != null && (
+                                  <option value="Borxh">Borxh (Kredit)</option>
+                                )}
+                              </Form.Select>
+                            </Form.Group>
+                          </Col>
+                        </Row>
+
+                        <div className="mt-2">
+                          <Form.Label className="small fw-bold text-muted text-uppercase mb-1">Shuma e Paguar</Form.Label>
+                          <InputGroup>
+                            <InputGroup.Text><CreditCard size={16} /></InputGroup.Text>
+                            <Form.Control
+                              id="shumaPageses"
+                              type="number"
+                              value={shumaPageses || ""}
+                              placeholder="0.00"
+                              disabled={edito}
+                              onChange={(e) => setShumaPageses(e.target.value)}
+                              onKeyDown={handleMenaxhoTastetPagesa}
+                              className="fw-bold text-end"
+                              style={{ fontSize: '1.2rem' }}
+                            />
+                            <InputGroup.Text>€</InputGroup.Text>
+                          </InputGroup>
+                        </div>
+
+                        <div className="pos-info-row border-bottom border-light">
+                          <span className="text-muted">Kusuri:</span>
+                          <span className={`value fs-5 ${shumaPageses - qmimiTotal > 0 ? "text-success" : (shumaPageses - qmimiTotal < 0 ? "text-danger" : "")}`}>
+                            {parseFloat(shumaPageses - qmimiTotal).toFixed(2)} €
+                          </span>
+                        </div>
+
+                        <div className="pos-info-row">
+                          <span className="text-muted"><Package size={16} className="me-1" /> Në Stok:</span>
+                          <span className="value">
+                            {parseFloat(sasiaAktualeNeStok).toFixed(2)} {njesiaMatese === "COPE" ? "Copë" : njesiaMatese}
+                          </span>
+                        </div>
+                      </div>
+
+                      {teDhenatKartelaBleresit != null && (
+                        <div className="pos-client-card shadow-sm">
+                          <span className="client-name">
+                            <User size={14} className="me-1 text-primary" />
+                            {teDhenatKartelaBleresit.partneri?.emriBiznesit}
+                          </span>
+                          <div className="discount-info d-flex flex-column gap-1 mt-1">
+                            <div className="d-flex justify-content-between">
+                              <span>Rabati:</span>
+                              <span className="fw-bold text-success">{parseFloat(teDhenatKartelaBleresit.rabati).toFixed(2)}%</span>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                              <span>Kursimi:</span>
+                              <span className="fw-bold text-success">-{parseFloat(qmimiPaRabatBonus - qmimiTotal).toFixed(2)} €</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="pos-actions">
+                        <Button
+                          className="w-100 btn-pay rounded-3 mb-0"
+                          onClick={mbyllFature}
+                          disabled={produktetNeKalkulim.length === 0}>
+                          Mbyll Faturën (F5)
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
-              <Row>
-                <Col>
-                  <Form.Group>
-                    <Form.Label>Nr. Fatures</Form.Label>
-                    <Form.Control
-                      id="nrFatures"
-                      type="number"
-                      placeholder={nrFatures}
-                      value={nrFatures}
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group className="mt-1">
-                    <Form.Label>Data</Form.Label>
-                    <Form.Control
-                      id="qmimiShites"
-                      type="text"
-                      value={currentDate}
-                      disabled
-                      className="mb-3"
-                    />
-                  </Form.Group>
-                  <h5 className="mt-1">
-                    <strong>Sasia ne Stok:</strong>{" "}
-                    {parseFloat(sasiaAktualeNeStok).toFixed(4)} {njesiaMatese}
-                  </h5>
-                  <br />
-                </Col>
-                <Col>
-                  <Form.Group>
-                    <Form.Label>Lloji i Pageses</Form.Label>
-                    <select
-                      id="llojiIPageses"
-                      placeholder="LlojiIPageses"
-                      className="form-select"
-                      value={llojiPageses ? llojiPageses : 0}
-                      disabled={edito}
-                      onChange={(e) => setLlojiPageses(e.target.value)}
-                      onKeyDown={(e) => ndrroField(e, "statusiIPageses")}>
-                      <option defaultValue value={0} key={0} disabled>
-                        Zgjedhni Llojin e Pageses
-                      </option>
-                      <option key={1} value="Cash">
-                        Cash
-                      </option>
-                      <option key={2} value="Banke">
-                        Banke
-                      </option>
-                      {teDhenatKartelaBleresit != null && (
-                        <option key={3} value="Borxh">
-                          Borxh
-                        </option>
-                      )}
-                    </select>
-                  </Form.Group>
-                  <Form.Group className="mt-1">
-                    <Form.Label>Shuma Pageses</Form.Label>
-                  </Form.Group>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      id="shumaPageses"
-                      type="number"
-                      placeholder={shumaPageses}
-                      value={shumaPageses}
-                      disabled={edito}
-                      onChange={(e) => setShumaPageses(e.target.value)}
-                      onKeyDown={handleMenaxhoTastetPagesa}
-                    />
-                    <InputGroup.Text>€</InputGroup.Text>
-                  </InputGroup>
-                  <h5 className="mt-1">
-                    <strong>Kusuri:</strong>{" "}
-                    {parseFloat(shumaPageses - qmimiTotal).toFixed(2)} €
-                  </h5>
-                  <br />
-                </Col>
-                <Col>
-                  <h1 style={{ fontSize: "3.7em" }}>
-                    {parseFloat(qmimiTotal).toFixed(2)} €
-                  </h1>
-                  {teDhenatKartelaBleresit != null && (
-                    <>
-                      <p style={{ fontSize: "1.8em" }}>
-                        <strong>Klienti: </strong>
-                        {teDhenatKartelaBleresit &&
-                          teDhenatKartelaBleresit.partneri &&
-                          teDhenatKartelaBleresit.partneri.emriBiznesit}
-                      </p>
-                      <p style={{ fontSize: "1.4em", marginTop: "-0.55em" }}>
-                        <strong>Rabati: </strong>
-                        {parseFloat(
-                          teDhenatKartelaBleresit &&
-                            teDhenatKartelaBleresit.rabati
-                        ).toFixed(2)}{" "}
-                        % -{" "}
-                        {parseFloat(qmimiPaRabatBonus - qmimiTotal).toFixed(2)}{" "}
-                        €
-                      </p>
-                      <p style={{ fontSize: "1.4em", marginTop: "-0.55em" }}>
-                        <strong>Tot. Pa Rab.: </strong>
-                        {parseFloat(qmimiPaRabatBonus).toFixed(2)} €
-                      </p>
-                    </>
-                  )}
-                </Col>
-              </Row>
-              <Row>
-                <Col md={4}>
-                  <Form.Group controlId="idDheEmri">
-                    <Form.Label>Barkodi</Form.Label>
-                    <Select
-                      value={optionsBarkodiSelected}
-                      onChange={handleChange}
-                      options={optionsBarkodi}
-                      id="barkodiSelect"
-                      inputId="barkodiSelect-input"
-                      isDisabled={edito}
-                      onKeyDown={handleKaloTekPagesa}
-                      styles={customStyles}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={3}>
-                  <Form.Group>
-                    <Form.Label>Sasia - {njesiaMatese}</Form.Label>
-                    <Form.Control
-                      id="sasia"
-                      type="number"
-                      placeholder={"0.00 " + njesiaMatese}
-                      value={sasia}
-                      onChange={(e) => kontrolloQmimin(e)}
-                      onKeyDown={(e) => handleEdito(e)}
-                      disabled={!edito}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={3}>
-                  <Form.Group>
-                    <Form.Label>Qmimi Shites €</Form.Label>
-                    <Form.Control
-                      id="qmimiShites"
-                      type="number"
-                      placeholder={"0.00 €"}
-                      value={qmimiSH}
-                      disabled
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={2}>
-                  <Button
-                    className="mt-4 Butoni"
-                    onClick={() => navigate("/KthimiMallitTeShitur")}>
-                    Kthimet <FontAwesomeIcon icon={faDolly} />
-                  </Button>
-                </Col>
-              </Row>
-              <h1 className="mt-2">Regjistrimi Pozicioneve te Paragonit</h1>
-
-              <div
-                className="tabelaDiv"
-                style={{
-                  maxHeight: "300px",
-                  overflowY: "auto",
-                }}>
-                <Table striped bordered hover>
-                  <thead
-                    style={{
-                      position: "sticky",
-                      top: "0",
-                      backgroundColor: "#fff",
-                      zIndex: 999,
-                    }}>
-                    <tr>
-                      <th>Nr.</th>
-                      <th>Barkodi</th>
-                      <th>Emertimi</th>
-                      <th>Njm</th>
-                      <th>Sasia</th>
-                      <th>Qmimi Shites</th>
-                      <th>Shuma €</th>
-                      <th>Funksione</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {produktetNeKalkulim.slice().map((p, index) => {
-                      const qmimiMeTVSHRab = parseFloat(
-                        p.qmimiShites -
-                          p.qmimiShites * (p.rabati1 / 100) -
-                          (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) *
-                            (p.rabati2 / 100) -
-                          (p.qmimiShites -
-                            p.qmimiShites * (p.rabati1 / 100) -
-                            (p.qmimiShites -
-                              p.qmimiShites * (p.rabati1 / 100)) *
-                              (p.rabati2 / 100)) *
-                            (p.rabati3 / 100)
-                      ).toFixed(3);
-                      const ShumaToT = parseFloat(
-                        qmimiMeTVSHRab * p.sasiaStokut
-                      ).toFixed(3);
-                      const originalIndex =
-                        produktetNeKalkulim.length - 1 - index;
-                      return (
-                        p && (
-                          <tr key={originalIndex}>
-                            <td>{originalIndex + 1}</td>
-                            <td>{p.barkodi}</td>
-                            <td>{p.emriProduktit}</td>
-                            <td>{p.emriNjesiaMatese}</td>
-                            <td>{p.sasiaStokut}</td>
-                            <td>{parseFloat(qmimiMeTVSHRab).toFixed(2)} €</td>
-                            <td>{parseFloat(ShumaToT).toFixed(2)} €</td>
-                            <td>
-                              <div style={{ display: "flex", gap: "0.3em" }}>
-                                <Button
-                                  size="sm"
-                                  variant="danger"
-                                  disabled={edito}
-                                  onClick={() => {
-                                    setVendosKartelenFshirjeProduktit(true);
-                                    setFshijProduktKalkID(p.id);
-                                  }}>
-                                  <FontAwesomeIcon icon={faXmark} />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="warning"
-                                  disabled={edito}
-                                  onClick={() => {
-                                    setOptionsBarkodiSelected(p.idProduktit);
-                                    handleEdit(p.id, index);
-                                  }}>
-                                  <FontAwesomeIcon icon={faPenToSquare} />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      );
-                    })}
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
-              <footer
-                style={{
-                  position: "fixed",
-                  width: "100%",
-                  bottom: 0,
-                  backgroundColor: "#fff",
-                  zIndex: 1000,
-                  fontWeight: "bold",
-                  fontSize: "0.8em",
-                }}>
-                <p>
-                  Me ESC kalohet tek Pagesa. F1 Editohet produkti i fundit. F4
-                  Bonus Kartela. F5 Mbyllet Fatura. Ctrl+1 deri Ctrl+9 për të
-                  kaluar mes klientëve.
-                </p>
-              </footer>
-            </Container>
+            </div>
           </>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

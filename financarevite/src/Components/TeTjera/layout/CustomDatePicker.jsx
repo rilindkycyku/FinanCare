@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+﻿import { forwardRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Styles/customStyles.css";
@@ -20,7 +20,7 @@ const CustomDatePicker = ({ selectedDate, onDateChange, placeholderText, minDate
       popperClassName="custom-datepicker-popper"
       minDate={minDate}
       maxDate={maxDate}
-      
+      portalId="root-portal"
     />
   );
 };

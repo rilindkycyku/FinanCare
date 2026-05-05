@@ -97,7 +97,6 @@ namespace FinanCareWebAPI.Controllers.Stafi
             return Ok(barazimet);
         }
 
-        // POST: api/BarazoArken/shtoBarazimin
         [HttpPost]
         [Route("shtoBarazimin")]
         public async Task<IActionResult> Post([FromBody] BarazoArken barazoArken)
@@ -105,14 +104,16 @@ namespace FinanCareWebAPI.Controllers.Stafi
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // KohaBarazimit defaults to DateTime.Now in model, but you can override if needed
             barazoArken.KohaBarazimit ??= DateTime.Now;
 
             await _context.BarazoArken.AddAsync(barazoArken);
             await _context.SaveChangesAsync();
 
-            await LogAdminActionAsync("Shto", barazoArken.IDBarazoArken.ToString(), $"Barazimi i Arkes per: {barazoArken.Arkatari.Username} - {barazoArken.Arkatari.Emri} {barazoArken.Arkatari.Mbiemri}");
+            // Fetch the cashier info if it's not loaded to avoid null reference during logging
+            var arkatari = await _context.Perdoruesi.FindAsync(barazoArken.IDArkatari);
+            string cashierInfo = arkatari != null ? $"{arkatari.Username} - {arkatari.Emri} {arkatari.Mbiemri}" : "ID: " + barazoArken.IDArkatari;
 
+            await LogAdminActionAsync("Shto", barazoArken.IDBarazoArken.ToString(), $"Barazimi i Arkes per: {cashierInfo}");
 
             return CreatedAtAction(
                 nameof(GetById),

@@ -153,6 +153,47 @@ namespace FinanCareWebAPI.Controllers.Produktet
 
         [Authorize]
         [HttpGet]
+        [Route("ProduktetPerPOS")]
+        public async Task<ActionResult> ProduktetPerPOS()
+        {
+            var produktet = await _context.Produkti
+                .AsNoTracking()
+                .Where(x =>
+                    x.isDeleted == "false" 
+                    &&
+                    x.StokuQmimiProduktit.QmimiProduktit > 0
+                )
+                .OrderBy(x => x.StokuQmimiProduktit.SasiaNeStok)
+                .ThenByDescending(x => x.ProduktiID)
+                .Select(p => new
+                {
+                    p.ProduktiID,
+                    p.EmriProduktit,
+                    p.IDPartneri,
+                    p.Partneri.EmriBiznesit,
+                    p.IDNjesiaMatese,
+                    p.NjesiaMatese.EmriNjesiaMatese,
+                    p.Barkodi,
+                    p.KodiProduktit,
+                    p.LlojiTVSH,
+                    p.StokuQmimiProduktit.SasiaNeStok,
+                    p.StokuQmimiProduktit.QmimiProduktit,
+                    p.StokuQmimiProduktit.QmimiBleres,
+                    p.StokuQmimiProduktit.QmimiMeShumic,
+                    p.ZbritjaQmimitProduktit.Rabati,
+                    p.SasiaShumices,
+                    p.IDGrupiProduktit,
+                    p.GrupiProduktit.GrupiIProduktit,
+                    p.FotoProduktit,
+                    p.perfshiNeOnline,
+                })
+                .ToListAsync();
+
+            return Ok(produktet);
+        }
+
+        [Authorize]
+        [HttpGet]
         [Route("GetStokuProduktit")]
         public async Task<ActionResult> GetStokuProduktit(int id)
         {

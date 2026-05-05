@@ -12,6 +12,7 @@ export type CartItem = {
   hasProductDiscount?: boolean;
   discountPercentage?: number;
   SasiaNeStok: number;
+  FotoProduktit?: string;
 };
 
 export type CartState = {
@@ -85,17 +86,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
             discountPercentage,
             Barkodi: product.Barkodi || undefined,
             SasiaNeStok: SasiaNeStok,
+            FotoProduktit: product.FotoProduktit,
           },
         ];
       }
 
       // Show single toast after cart update
-      const currentItem = newCart.find(i => i.ProduktiID === product.ProduktiID);
-      const quantity = currentItem?.quantity || 1;
-      const discountMsg = hasProductDiscount 
-        ? ` 🎉 -${discountPercentage}%`
-        : "";
-
       localStorage.setItem("cart", JSON.stringify(newCart));
       return { ...state, cart: newCart };
     }

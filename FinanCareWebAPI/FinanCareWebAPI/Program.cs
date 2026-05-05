@@ -108,25 +108,13 @@ builder.Services.AddSwaggerGen(c => {
 builder.Services.AddScoped<KartelaService>();
 builder.Services.AddScoped<IAdminLogService, AdminLogService>();
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(7286); // Port 5000, change if needed.
-    options.ListenAnyIP(7285, listenOptions => // HTTPS
-    {
-        listenOptions.UseHttps();
-    });
-});
-
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger enabled in all environments (local dev + Docker)
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("CorsPolicy");
 
@@ -135,5 +123,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// ── Auto-migrate on startup (with retry) ─────────────────────────────────────
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FinanCareDbContext>();
+    for (int i = 0; i < 5; i++)
+    {
+        try { db.Database.Migrate(); break; }
+        catch { Thread.Sleep(5000); }
+    }
+}
 
 app.Run();

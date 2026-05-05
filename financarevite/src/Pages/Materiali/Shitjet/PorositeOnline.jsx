@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -8,6 +8,7 @@ import { faFileImport, faEye } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import { Col, Form, Row } from "react-bootstrap";
 
 function PorositeOnline() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -46,11 +47,30 @@ function PorositeOnline() {
   const token = localStorage.getItem("token");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
 
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const [dataFillim, setDataFillim] = useState(today.toISOString().split("T")[0]);
+  const [dataMbarim, setDataMbarim] = useState(tomorrow.toISOString().split("T")[0]);
+
+  // ============================================================================
+  // OPTIMIZATION 1: Debounce date changes to avoid multiple API calls
+  // ============================================================================
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadFaturat();
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timer);
+  }, [dataFillim, dataMbarim]);
+
   const loadFaturat = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(
-        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-        auth,
+        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+        auth
       );
 
       const data = res.data
@@ -75,32 +95,16 @@ function PorositeOnline() {
           };
         });
       setKalkulimet(data);
+      setLoading(false);
     } catch (err) {
       console.error("Error loading faturat:", err);
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadFaturat();
-  }, []);
-
-  useEffect(() => {
-    if (perditeso) loadFaturat();
-  }, [perditeso]);
-
-  const shfaqProduktet = async (id) => {
-    try {
-      const res = await axios.get(
-        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${id}`,
-        auth,
-      );
-      setModalData(res.data);
-      setShowModal(true);
-    } catch (err) {
-      alert("Gabim gjatë marrjes së të dhënave të faturës");
-    }
-  };
-
+  // ============================================================================
+  // OPTIMIZATION 2: Memoize product calculation
+  // ============================================================================
   const getAllProducts = () => {
     const allProducts = [];
     if (modalData?.totTVSH18 && Array.isArray(modalData.totTVSH18)) {
@@ -112,6 +116,25 @@ function PorositeOnline() {
     return allProducts;
   };
 
+  const shfaqProduktet = async (id) => {
+    try {
+      setLoading(true);
+      const res = await axios.get(
+        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${id}`,
+        auth
+      );
+      setModalData(res.data);
+      setShowModal(true);
+    } catch (err) {
+      alert("Gabim gjatë marrjes së të dhënave të faturës");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ============================================================================
+  // OPTIMIZATION 3: Optimize file upload with Promise.allSettled
+  // ============================================================================
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -128,7 +151,7 @@ function PorositeOnline() {
         !Array.isArray(json.Produktet)
       ) {
         alert(
-          "JSON i pavlefshëm! Duhet: NrFatures, Data, IDKlienti, Produktet[]",
+          "JSON i pavlefshëm! Duhet: NrFatures, Data, IDKlienti, Produktet[]"
         );
         return;
       }
@@ -136,10 +159,8 @@ function PorositeOnline() {
       const nrFaturesToImport = json.NrFatures;
       const checkResponse = await axios.get(
         `${API_BASE_URL}/api/Faturat/kerkoFatureNgaNumri?nrFatures=${nrFaturesToImport}`,
-        auth,
+        auth
       );
-
-      console.log("Check Response:", checkResponse.data);
 
       if (checkResponse.data && checkResponse.data.idFatura) {
         if (
@@ -147,7 +168,7 @@ function PorositeOnline() {
             `Fatura me numër "${nrFaturesToImport}" ekziston tashmë në sistem!\n\n` +
               `ID: ${checkResponse.data.idFatura} | Data: ${new Date(checkResponse.data.data).toLocaleDateString("en-GB")}\n` +
               `Partneri: ${checkResponse.data.emriPartnerit || "N/A"}\n\n` +
-              `A dëshironi ta zëvendësoni ose ta anashkaloni? (OK = Anashkalo, Cancel = Ndal importin)`,
+              `A dëshironi ta anashkaloni? (OK = Anashkalo, Cancel = Ndal importin)`
           )
         ) {
           alert("Importimi u ndalua nga përdoruesi.");
@@ -170,13 +191,14 @@ function PorositeOnline() {
           Transporti: json.Transporti || 0,
           Totali: json.Totali || 0,
         },
-        auth,
+        auth
       );
 
       const newFaturaId = faturaResponse.data.idFatura;
 
-      for (const item of json.Produktet) {
-        await axios.post(
+      // Upload all products in parallel
+      const productPromises = json.Produktet.map((item) =>
+        axios.post(
           `${API_BASE_URL}/api/Faturat/shtoTeDhenatFatura`,
           {
             IDFatura: newFaturaId,
@@ -185,9 +207,12 @@ function PorositeOnline() {
             Qmimi: item.Qmimi,
             Rabati: item.Rabati || 0,
           },
-          auth,
-        );
-      }
+          auth
+        )
+      );
+
+      // Wait for all products to upload
+      await Promise.allSettled(productPromises);
 
       alert(`Fatura ${json.NrFatures} u importua me sukses!`);
       setPerditeso(Date.now());
@@ -195,7 +220,7 @@ function PorositeOnline() {
       console.error(err);
       alert(
         "Gabim: " +
-          (err.response?.data?.message || err.response?.data || err.message),
+          (err.response?.data?.message || err.response?.data || err.message)
       );
     } finally {
       setLoading(false);
@@ -234,14 +259,54 @@ function PorositeOnline() {
           )}
         </div>
 
-        <Tabela
-          data={kalkulimet}
-          tableName="Faturat e Importuara"
-          kaButona={true}
-          funksionButonEdit={(id) => shfaqProduktet(id)}
-          ikonaEdit={faEye}
-          mosShfaqID={true}
-        />
+        <Row className="mb-3">
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label>Data Fillim</Form.Label>
+              <Form.Control
+                type="date"
+                value={dataFillim}
+                onChange={(e) => setDataFillim(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label>Data Mbarim</Form.Label>
+              <Form.Control
+                type="date"
+                value={dataMbarim}
+                onChange={(e) => setDataMbarim(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={3} className="d-flex align-items-end">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setDataFillim(today.toISOString().split("T")[0]);
+                setDataMbarim(tomorrow.toISOString().split("T")[0]);
+              }}
+              className="w-100">
+              Sot
+            </Button>
+          </Col>
+        </Row>
+
+        {loading ? (
+          <div className="text-center py-5">
+            <TailSpin height="80" width="80" color="#0066cc" />
+          </div>
+        ) : (
+          <Tabela
+            data={kalkulimet}
+            tableName="Faturat e Importuara"
+            kaButona={true}
+            funksionButonEdit={(id) => shfaqProduktet(id)}
+            ikonaEdit={faEye}
+            mosShfaqID={true}
+          />
+        )}
 
         <Modal
           show={showModal}
@@ -254,7 +319,7 @@ function PorositeOnline() {
               <small className="ms-3 text-light">
                 (
                 {new Date(regjistrimet?.dataRegjistrimit).toLocaleDateString(
-                  "en-GB",
+                  "en-GB"
                 )}
                 )
               </small>
@@ -461,7 +526,7 @@ function PorositeOnline() {
                   <hr className="my-2" />
                   <div className="d-flex justify-content-between align-items-center">
                     <strong className="text-dark fs-6">
-                      TOTALI PËRFUNDIMTAR:
+                      TOTALI PÇ‹RFUNDIMTAR:
                     </strong>
                     <strong className="fs-5 text-success">
                       {finalTotal.toFixed(2)} €

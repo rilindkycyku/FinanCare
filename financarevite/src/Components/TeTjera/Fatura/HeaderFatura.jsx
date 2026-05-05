@@ -1,4 +1,4 @@
-import "./Styles/Fatura.css";
+﻿import "./Styles/Fatura.css";
 import { useRef } from "react";
 import { View, Text, StyleSheet, Image, Font } from "@react-pdf/renderer";
 import Barcode from "react-barcode"; // For UI

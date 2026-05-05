@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Modal from "react-bootstrap/Modal";
+import { Button, Form, Modal, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
@@ -101,24 +99,22 @@ function ShtoNjesineMatese(props) {
         <Modal
           size="sm"
           show={fushatEZbrazura}
-          onHide={() => setFushatEZbrazura(false)}>
+          onHide={() => setFushatEZbrazura(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title style={{ color: "red" }} as="h6">
-              Ndodhi nje gabim
-            </Modal.Title>
+            <Modal.Title className="text-danger">Ndodhi një gabim</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <strong style={{ fontSize: "10pt" }}>
-              Ju lutemi plotesoni te gjitha fushat me{" "}
-              <span style={{ color: "red" }}>*</span>
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <div className="mb-3 text-danger">
+              <FontAwesomeIcon icon={faXmark} size="3x" />
+            </div>
+            <p className="text-white">Ju lutem plotësoni të gjitha fushat me *</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              onClick={() => setFushatEZbrazura(false)}
-              variant="secondary">
-              Mbylle <FontAwesomeIcon icon={faXmark} />
+              className="btn-cancel w-100"
+              onClick={() => setFushatEZbrazura(false)}>
+              Mbylle
             </Button>
           </Modal.Footer>
         </Modal>
@@ -127,66 +123,60 @@ function ShtoNjesineMatese(props) {
         <Modal
           size="sm"
           show={kontrolloNjesineMatese}
-          onHide={() => setKontrolloNjesineMatese(false)}>
+          onHide={() => setKontrolloNjesineMatese(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title as="h6">Konfirmo vendosjen</Modal.Title>
+            <Modal.Title>Konfirmo Vendosjen</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <span style={{ fontSize: "10pt" }}>
-              Kjo Njesi Matese ekziston ne sistem!
-            </span>
-            <br />
-            <strong style={{ fontSize: "10pt" }}>
-              A jeni te sigurt qe deshironi te vazhdoni?
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <p className="text-warning mb-2">Kjo njësi ekziston në sistem!</p>
+            <p className="text-white small">A jeni të sigurt që dëshironi të vazhdoni?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              variant="secondary"
+              className="btn-cancel"
               onClick={() => setKontrolloNjesineMatese(false)}>
-              Korrigjo <FontAwesomeIcon icon={faXmark} />
+              Korrigjo
             </Button>
             <Button
-              size="sm"
               variant="warning"
-              onClick={() => {
-                handleSubmit();
-              }}>
-              Vazhdoni
+              className="px-4"
+              onClick={() => handleSubmit()}>
+              Vazhdo
             </Button>
           </Modal.Footer>
         </Modal>
       )}
       <Modal
-        className="modalEditShto"
         show={props.shfaq}
-        onHide={() => props.largo()}>
+        onHide={() => props.largo()}
+        className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Shto Kategorine</Modal.Title>
+          <Modal.Title>Shto Njësinë Matëse</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>
-                Lloji Kategoris<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-              <Form.Control
-                onChange={(e) => handleNjesiaMateseChange(e.target.value)}
-                value={njesiaMatese}
-                type="text"
-                placeholder="Lloji Kategoris"
-                autoFocus
-              />
-            </Form.Group>
-          </Form>
+          <div className="sp-form-container p-2">
+            <Form>
+              <div className="sp-input-group mb-0">
+                <label className="sp-label">Emri i Njësisë <span className="text-danger">*</span></label>
+                <Form.Control
+                  onChange={(e) => handleNjesiaMateseChange(e.target.value)}
+                  value={njesiaMatese}
+                  type="text"
+                  placeholder="Psh: Copë, KG, Litër..."
+                  className="sp-input"
+                  autoFocus
+                />
+              </div>
+            </Form>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={() => props.largo()}>
+            Anulo
           </Button>
-          <Button className="Butoni" onClick={handleKontrolli}>
-            Shto Njesine Matese <FontAwesomeIcon icon={faPlus} />
+          <Button className="btn-save px-4" onClick={handleKontrolli}>
+            Shto Njësinë
           </Button>
         </Modal.Footer>
       </Modal>

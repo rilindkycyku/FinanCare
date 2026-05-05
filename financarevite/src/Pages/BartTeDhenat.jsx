@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+﻿import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import Titulli from "../Components/TeTjera/Titulli";
@@ -45,10 +45,10 @@ const BartTeDhenat = () => {
         try {
           const res = await axios.post(`${API_BASE_URL}/api/ExportoTeDhenatTekKlienti/${route}`, {}, auth);
           results[key] = res.data;
-          await addLog(`✅ ${name} transfer completed. Total: ${res.data.total ?? "-"} items.`, 500);
+          await addLog(`âœ… ${name} transfer completed. Total: ${res.data.total ?? "-"} items.`, 500);
           setData({ ...results }); // update cards dynamically
         } catch (err) {
-          await addLog(`❌ Error transferring ${name}: ${err.message}`, 500);
+          await addLog(`âŒ Error transferring ${name}: ${err.message}`, 500);
         }
       }
 
@@ -60,16 +60,17 @@ const BartTeDhenat = () => {
   }, [API_BASE_URL]);
 
   const renderCard = (title, info) => (
-    <Card className="mb-3 shadow-sm text-center">
-      <Card.Body>
-        <Card.Title>{title}</Card.Title>
-        <Card.Text>
-          {info?.total ?? "-"} items
-          <br />
-          File: {info?.file ?? "-"}
-          <br />
-          Generated at: {info?.generatedAt ? new Date(info.generatedAt).toLocaleString() : "-"}
+    <Card className="sp-card mb-3 text-center h-100 border-0">
+      <Card.Body className="d-flex flex-column align-items-center justify-content-center p-4">
+        <Card.Title className="text-emerald fw-bold mb-3">{title}</Card.Title>
+        <Card.Text className="text-soft small">
+          <span className="h4 d-block text-white fw-900 mb-2">{info?.total ?? "0"}</span>
+          <span className="opacity-75">Items Transferred</span>
         </Card.Text>
+        <hr className="w-50 opacity-10 my-3" />
+        <div className="text-muted extra-small">
+          {info?.generatedAt ? new Date(info.generatedAt).toLocaleDateString() : "-"}
+        </div>
       </Card.Body>
     </Card>
   );
@@ -79,38 +80,51 @@ const BartTeDhenat = () => {
       <Titulli titulli={"Bart të Dhënat"} />
       <NavBar />
 
-      <Container className="py-4">
-        <h2 className="mb-4 text-center">Dashboard: Bart të Dhënat</h2>
+      <div className="containerDashboardP py-5">
+        <div className="text-center mb-5">
+          <h1 className="display-6 fw-900 text-white mb-2">Sinkronizimi i të Dhënave</h1>
+          <p className="text-soft opacity-75">Monitoroni dhe barti të dhënat drejt klientit në kohë reale</p>
+        </div>
 
-        {/* CONSOLE PANEL ON TOP */}
-        <div
-          ref={logRef}
-          style={{
-            background: "#000",
-            color: "#0f0",
-            fontFamily: "monospace",
-            height: "250px",
-            overflowY: "auto",
-            padding: "1rem",
-            borderRadius: "5px",
-            border: "1px solid #333",
-            marginBottom: "2rem",
-          }}
-        >
-          {logs.map((log, idx) => (
-            <div key={idx}>{log}</div>
-          ))}
-          {loading && <div>...</div>}
+        {/* CONSOLE PANEL */}
+        <div className="sp-card p-4 mb-5 border-emerald-glow">
+          <div className="d-flex align-items-center mb-3">
+            <div className="pulse-emerald me-2"></div>
+            <h6 className="text-emerald fw-800 uppercase letter-spacing-1 mb-0">Live Transfer Logs</h6>
+          </div>
+          <div
+            ref={logRef}
+            style={{
+              background: "rgba(0,0,0,0.3)",
+              color: "#10b981",
+              fontFamily: "'JetBrains Mono', monospace",
+              height: "280px",
+              overflowY: "auto",
+              padding: "1.25rem",
+              borderRadius: "12px",
+              border: "1px solid rgba(16,185,129,0.1)",
+              fontSize: "0.85rem",
+              lineHeight: "1.6"
+            }}
+          >
+            {logs.map((log, idx) => (
+              <div key={idx} className="mb-1">
+                <span className="opacity-50 me-2">{log.slice(0, 10)}</span>
+                <span>{log.slice(10)}</span>
+              </div>
+            ))}
+            {loading && <div className="text-white opacity-50 animate-pulse mt-2">Sinkronizimi në proces...</div>}
+          </div>
         </div>
 
         {/* CARDS */}
-        <Row>
-          <Col md={3}>{renderCard("Products", data.products)}</Col>
-          <Col md={3}>{renderCard("Users", data.users)}</Col>
-          <Col md={3}>{renderCard("Categories", data.categories)}</Col>
-          <Col md={3}>{renderCard("Business", data.business)}</Col>
+        <Row className="g-4">
+          <Col md={3}>{renderCard("Produktet", data.products)}</Col>
+          <Col md={3}>{renderCard("Përdoruesit", data.users)}</Col>
+          <Col md={3}>{renderCard("Kategoritë", data.categories)}</Col>
+          <Col md={3}>{renderCard("Biznesi", data.business)}</Col>
         </Row>
-      </Container>
+      </div>
     </>
   );
 };

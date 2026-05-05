@@ -1,4 +1,4 @@
-import NavBar from "../../../Components/TeTjera/layout/NavBar";
+﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import { useState, useEffect } from "react";
 import "../../Styles/ProductTables.css";
 import axios from "axios";
@@ -145,17 +145,9 @@ const ProductTables = () => {
           />
         )}
         {loading ? (
-          <div className="Loader">
-            <TailSpin
-              height="80"
-              width="80"
-              color="#009879"
-              ariaLabel="tail-spin-loading"
-              radius="1"
-              wrapperStyle={{}}
-              wrapperClass=""
-              visible={true}
-            />
+          <div className="sp-loader-container">
+            <TailSpin height="80" width="80" color="#10b981" radius="1" visible={true} />
+            <span className="text-soft mt-3">Duke ngarkuar produktet...</span>
           </div>
         ) : (
           <>

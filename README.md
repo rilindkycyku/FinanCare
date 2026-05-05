@@ -32,7 +32,27 @@ Ky projekt është i punuar në:
 
 ## Konfigurimi
 
-Së pari duhet të bëhet konfigurimi i Connection String në `FinanCare/appsettings.json` dhe duhet të ndërrohet emri i Server me atë të serverit tuaj. Pastaj ju duhet të bëni run komandën **EntityFrameworkCore\update-database** në **Serverin e Projektit - FinanCare**, e cila do të mundësojë gjenerimin në tërësi të databazës dhe insertimin e të dhënave bazike.
+Ju mund ta startoni projektin në dy mënyra: duke përdorur **Docker** (më e lehta) ose **Manulisht**.
+
+### Opsioni 1: Përdorimi i Docker (Rekomandohet)
+
+1. Në folderin kryesor të projektit, kopjoni file-in `.env.example` dhe emërtojeni `.env`.
+2. Hapni terminalin në folderin kryesor dhe ekzekutoni komandën:
+   ```bash
+   docker compose up -d --build
+   ```
+   *(Kjo komandë do të ndërtojë dhe startojë automatikisht të tre shërbimet: databazën MSSQL, WebAPI-në dhe Frontend-in. Databaza do të migrohet dhe të dhënat fillestare do të shtohen vetë).*
+3. Pasi të jenë startuar të gjitha kontejnerët, hapni shfletuesin tuaj:
+   - **Frontend:** `http://localhost:3000`
+   - **API (Swagger):** `http://localhost:7286/swagger`
+
+   > **Shënim:** Adresa IP dhe portet konfigurohen automatikisht. Nuk keni nevojë të ekzekutoni `npm run dev` kur përdorni Docker.
+
+---
+
+### Opsioni 2: Konfigurimi Manual (Pa Docker)
+
+Së pari duhet të bëhet konfigurimi i Connection String në `FinanCare/appsettings.json` dhe duhet të ndërrohet emri i Server me atë të serverit tuaj. Pastaj ju duhet të bëni run komandën **EntityFrameworkCore\\update-database** në **Serverin e Projektit - FinanCare**, e cila do të mundësojë gjenerimin në tërësi të databazës dhe insertimin e të dhënave bazike.
 
 ### **Njoftimi për Ndryshimin e Serverit të API dhe Front**
 API i cili vjen nga ASP.NET Core mund të ndryshohet duke vendosur adresën IP në file-in `.env` që gjendet në folderin `financare`. Adresa IP mund të gjendet duke ekzekutuar komandën `ipconfig` në Command Prompt (CMD).  
@@ -43,6 +63,8 @@ Kërkoni nën seksionin "IPv4 Address" (p.sh., `192.168.0.102`).
 ```VITE_API_BASE_URL=http://192.168.0.102:7285```
 ```VITE_BASE_URL=http://192.168.0.102:5173```
 - **Shënim**: Zëvendësoni `192.168.0.102` me adresën tuaj IP dhe `7285 dhe 5173 (Front)` me portin e konfiguruar për API-n tuaj (```7285 dhe 5173``` janë të konfiguruar automatikisht).
+
+> **Shënim:** Kur ekzekutoni `npm run dev`, skripti `update-env.js` e përditëson `.env` automatikisht me IP-në dhe portin aktual të sistemit tuaj.
 
 ### **Konfigurimi i Certifikatës HTTPS**
 Për të shmangur problemet gjatë përdorimit të HTTPS, duhet të krijohet dhe të besohet një certifikatë zhvillimi.  

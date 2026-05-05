@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -72,12 +72,20 @@ function KalkulimiIMallit(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
           authentikimi
         );
         const kthimet = kalkulimi.data.filter(
@@ -101,7 +109,7 @@ function KalkulimiIMallit(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]);
 
   useEffect(() => {
     if (getID) {
@@ -280,7 +288,7 @@ function KalkulimiIMallit(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -349,6 +357,46 @@ function KalkulimiIMallit(props) {
                   </Col>
                 </Row>
                 <div className="mt-2">
+                   <Row className="mb-3">
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Fillim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataFillim}
+                          onChange={(e) => {
+                            setDataFillim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Mbarim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataMbarim}
+                          onChange={(e) => {
+                            setDataMbarim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3} className="d-flex align-items-end">
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setDataFillim(new Date().toISOString().split("T")[0]);
+                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                        }}
+                        className="w-100">
+                        Sot
+                      </Button>
+                    </Col>
+                  </Row>
+
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Kthimit te Mallit te Shitur"

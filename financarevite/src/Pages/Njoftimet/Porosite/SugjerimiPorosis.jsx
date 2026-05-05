@@ -1,25 +1,60 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
 import Select from "react-select";
 import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Alert,
-  Spinner,
-  Badge,
-} from "react-bootstrap";
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Search,
+  ShoppingCart,
+  Package,
+} from "lucide-react";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import "../../../Pages/Styles/SugjerimiPorosise.css";
 
+/* â”€â”€ Reused helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function LevelBadge({ level }) {
+  const icons = {
+    CRITICAL: <AlertTriangle size={11} />,
+    HIGH: <AlertTriangle size={11} />,
+    MEDIUM: <Package size={11} />,
+    LOW: <CheckCircle size={11} />,
+    OK: <CheckCircle size={11} />,
+  };
+  const labels = {
+    CRITICAL: "KRITIKE",
+    HIGH: "E LARTÇ‹",
+    MEDIUM: "MESME",
+    LOW: "E ULÇ‹T",
+    OK: "OK",
+  };
+  return (
+    <span className={`sp-level sp-level-${level || "OK"}`} style={{ fontSize: "0.75rem", padding: "0.25rem 0.8rem" }}>
+      {icons[level] || null}
+      {labels[level] || level || "â€”"}
+    </span>
+  );
+}
+
+function TrendBadge({ trending }) {
+  if (trending === true) return <span className="sp-trend up"><TrendingUp size={13} /> Në rritje</span>;
+  if (trending === false) return <span className="sp-trend down"><TrendingDown size={13} /> Në rënie</span>;
+  return <span className="sp-trend flat"><Minus size={13} /> Stabile</span>;
+}
+
+/* â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function SugjerimiPorosise() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [options, setOptions] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   const token = localStorage.getItem("token");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
@@ -31,21 +66,17 @@ function SugjerimiPorosise() {
         setOptions(
           res.data.map((p) => ({
             value: p.produktiID,
-            label: `${p.barkodi} - ${p.emriProduktit}`,
+            label: `${p.barkodi} â€“ ${p.emriProduktit}`,
             data: p,
           }))
         )
       )
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const handleProductChange = async (selected) => {
     setSelectedProduct(selected);
-    if (!selected) {
-      setSuggestion(null);
-      return;
-    }
-
+    if (!selected) { setSuggestion(null); return; }
     setLoading(true);
     try {
       const res = await axios.post(
@@ -55,17 +86,54 @@ function SugjerimiPorosise() {
       );
       setSuggestion(res.data);
     } catch {
-      alert("Gabim në komunikim me serverin");
       setSuggestion(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // PËRMIRËSIME TË REJA
-  const isCritical = suggestion?.suggestionLevel === "CRITICAL";
-  const isUrgent = suggestion?.suggestionLevel === "HIGH";
-  const noNeedToOrder = suggestion?.recommendedOrderQuantity <= 0;
+  const filteredOptions = useMemo(() => {
+    if (!inputValue || inputValue.length < 2) return [];
+    const lower = inputValue.toLowerCase();
+    const results = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].label.toLowerCase().includes(lower)) {
+        results.push(options[i]);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValue, options]);
+
+  // Derived values
+  const s = suggestion;
+  const avgWeekly = s ? Math.round(s.averageWeeklySales || 0) : 0;
+  const recommended = s ? Math.max(0, s.recommendedOrderQuantity || 0) : 0;
+
+  // Week mode toggle
+  const [weekMode, setWeekMode] = useState(4);
+
+  const calcSugjerimi = useCallback((sug, weekly, weeks) => {
+    const packSize = sug.packSize || 1;
+    const needed = weekly * weeks - Math.max(0, sug.currentStock ?? 0);
+    if (needed <= 0) return 0;
+    return Math.ceil(needed / packSize) * packSize;
+  }, []);
+
+  const displayQty = s ? calcSugjerimi(s, avgWeekly, weekMode) : 0;
+  const packs = s && s.packSize > 1 ? Math.ceil(displayQty / s.packSize) : null;
+  const estimatedCost = s ? displayQty * (s.lastPurchasePrice || 0) : 0;
+  const noNeedToOrder = s && displayQty <= 0;
+
+  // Level â†’ accent color for the hero banner
+  const levelColor = {
+    CRITICAL: "var(--sp-red)",
+    HIGH: "var(--sp-amber)",
+    MEDIUM: "var(--sp-cyan)",
+    LOW: "var(--sp-emerald)",
+    OK: "var(--sp-emerald)",
+  };
+  const bannerAccent = s ? (levelColor[s.suggestionLevel] || "var(--sp-emerald)") : "var(--sp-emerald)";
 
   return (
     <>
@@ -75,221 +143,263 @@ function SugjerimiPorosise() {
       />
       <NavBar />
 
-      <Container className="py-4 py-md-5">
-        {/* TITULLI KRYESOR */}
-        <div className="text-center mb-5">
-          <h1 className="display-5 fw-bold text-primary mb-3">
-            Sa duhet të porosis sot?
-          </h1>
-          <p className="lead text-muted">
-            Zgjidh produktin dhe shiko sugjerimin menjëherë
-          </p>
-        </div>
+      <div className="sp-page">
+        <div className="sp-inner" style={{ maxWidth: 960 }}>
 
-        {/* KËRKIMI */}
-        <Row className="justify-content-center mb-4">
-          <Col lg={8} xl={7}>
+          {/* Hero */}
+          <div className="sp-hero">
+            <h1>Sa duhet të porosis sot?</h1>
+            <p>Kërko produktin dhe shiko sugjerimin inteligjent menjëherë</p>
+          </div>
+
+          {/* Search */}
+          <div style={{ maxWidth: 620, margin: "0 auto 2rem" }}>
             <Select
+              className="sp-select"
+              classNamePrefix="sp-select"
               placeholder="Kërko me barkod ose emër produkti..."
-              options={options}
+              options={filteredOptions}
               value={selectedProduct}
               onChange={handleProductChange}
+              onInputChange={(val) => setInputValue(val)}
               isClearable
               isLoading={options.length === 0}
-              className="shadow-sm"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: "12px",
-                  padding: "6px",
-                }),
-              }}
+              noOptionsMessage={() =>
+                inputValue.length < 2
+                  ? "Shkruani të paktën 2 karaktere..."
+                  : "Nuk u gjet asnjë produkt"
+              }
             />
-          </Col>
-        </Row>
-
-        {/* LOADING */}
-        {loading && (
-          <div className="text-center py-5">
-            <Spinner animation="border" variant="primary" size="lg" />
-            <p className="mt-4 fs-4 text-muted">
-              Duke llogaritur... (1-2 sekonda)
-            </p>
           </div>
-        )}
 
-        {/* REZULTATI */}
-        {suggestion && (
-          <>
-            {/* BANNER I MADH – SHUMË I DUKSHËM */}
-            <div
-              className={`text-center py-5 px-4 rounded-4 shadow-lg mb-5 text-white ${
-                noNeedToOrder
-                  ? "bg-success"
-                  : isCritical
-                  ? "bg-danger"
-                  : isUrgent
-                  ? "bg-warning text-dark"
-                  : "bg-info"
-              }`}>
-              {noNeedToOrder ? (
-                <>
-                  <i className="bi bi-check-circle-fill display-1 mb-3"></i>
-                  <h1 className="display-4 fw-bold">STOK I MJAFTUESHËM</h1>
-                  <h4 className="opacity-90">Nuk ka nevojë për porosi tani</h4>
-                </>
-              ) : (
-                <>
-                  <i className="bi bi-cart-fill display-1 mb-3"></i>
-                  <h1 className="display-4 fw-bold mb-2">
-                    POROSIT{" "}
-                    {suggestion.recommendedOrderQuantity.toLocaleString()} COPË
-                  </h1>
-
-                  {/* SHTESA E RE – SHUMË E RËNDËSISHME PËR DEPON! */}
-                  {suggestion.packSize > 1 &&
-                    suggestion.recommendedOrderQuantity > 0 && (
-                      <h3 className="text-white mb-4 opacity-90">
-                        <strong>
-                          (
-                          {Math.ceil(
-                            suggestion.recommendedOrderQuantity /
-                              suggestion.packSize
-                          )}{" "}
-                          pako × {suggestion.packSize} copë/pako)
-                        </strong>
-                      </h3>
-                    )}
-
-                  <h5 className={isCritical ? "" : "text-dark opacity-90"}>
-                    {suggestion.message}
-                  </h5>
-                </>
-              )}
+          {/* Loading */}
+          {loading && (
+            <div className="sp-loading">
+              <h5>Duke llogaritur sugjerimin...</h5>
+              <div className="sp-progress-wrap">
+                <div className="sp-progress-bar" style={{ width: "100%", animation: "pulse 1.2s ease-in-out infinite" }} />
+              </div>
             </div>
+          )}
 
-            {/* KARTA KRYESORE */}
-            <Row className="justify-content-center">
-              <Col lg={10} xl={9}>
-                <Card className="border-0 shadow">
-                  <Card.Header className="bg-primary text-white text-center py-4 rounded-top">
-                    <h3 className="mb-1">{suggestion.productName}</h3>
-                    <Badge bg="light" text="dark" className="fs-6">
-                      {selectedProduct.data.barkodi}
-                    </Badge>
-                  </Card.Header>
+          {/* Result */}
+          {s && !loading && (
+            <>
+              {/* Hero banner */}
+              <div
+                style={{
+                  background: noNeedToOrder
+                    ? "linear-gradient(145deg, #052010, #0a2d18)"
+                    : "linear-gradient(145deg, #050d1a, #080f20)",
+                  border: `1px solid ${bannerAccent}33`,
+                  borderRadius: "var(--radius-lg)",
+                  padding: "2.5rem 2rem",
+                  textAlign: "center",
+                  marginBottom: "1.25rem",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Glow blob */}
+                <div style={{
+                  position: "absolute", bottom: -30, left: "50%", transform: "translateX(-50%)",
+                  width: 300, height: 100, background: bannerAccent,
+                  borderRadius: "50%", filter: "blur(60px)", opacity: 0.1, pointerEvents: "none",
+                }} />
 
-                  <Card.Body className="p-4 p-md-5">
-                    <Row className="text-center g-4">
-                      {/* 1. Stoku Aktual */}
-                      <Col xs={6} md={{ span: 2, offset: 1 }}>
-                        <div className="bg-light rounded-3 py-3">
-                          <p className="mb-1 text-muted small">Stoku Aktual</p>
-                          <h2
-                            className={
-                              suggestion.currentStock < 0
-                                ? "text-danger"
-                                : "text-dark"
-                            }>
-                            {suggestion.currentStock.toLocaleString()}
-                          </h2>
-                          <small>copë</small>
-                        </div>
-                      </Col>
+                {/* Top accent line */}
+                <div style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 2,
+                  background: `linear-gradient(90deg, transparent, ${bannerAccent}, transparent)`,
+                }} />
 
-                      {/* 2. Shitje Javore Mesatare – SHTESA E RE! */}
-                      <Col xs={6} md={2}>
-                        <div className="bg-light rounded-3 py-3">
-                          <p className="mb-1 text-muted small">Shitje Javore</p>
-                          <h2 className="text-primary">
-                            {Math.round(
-                              suggestion.averageWeeklySales
-                            ).toLocaleString()}
-                          </h2>
-                          <small>copë/javë</small>
-                        </div>
-                      </Col>
+                <div style={{ marginBottom: "0.75rem" }}>
+                  <LevelBadge level={s.suggestionLevel} />
+                  {s.isOutOfStock && (
+                    <span className="sp-oos" style={{ marginLeft: "0.5rem" }}>
+                      <XCircle size={10} /> Jashtë Stok
+                    </span>
+                  )}
+                </div>
 
-                      {/* 3. Mbulim Aktual */}
-                      <Col xs={6} md={2}>
-                        <div className="bg-light rounded-3 py-3">
-                          <p className="mb-1 text-muted small">Mbulim Aktual</p>
-                          <h2
-                            className={
-                              suggestion.currentWeeksCoverage < 1
-                                ? "text-warning"
-                                : ""
-                            }>
-                            {suggestion.currentWeeksCoverage.toFixed(1)}
-                          </h2>
-                          <small>javë</small>
-                        </div>
-                      </Col>
-
-                      {/* 4. Pas Porosisë */}
-                      <Col xs={6} md={2}>
-                        <div className="bg-light rounded-3 py-3">
-                          <p className="mb-1 text-muted small">Pas Porosisë</p>
-                          <h2 className="text-success">
-                            {suggestion.projectedStockAfterOrder.toLocaleString()}
-                          </h2>
-                          <small>copë</small>
-                        </div>
-                      </Col>
-
-                      {/* 5. Mbulim i Ardhshëm */}
-                      <Col xs={6} md={2}>
-                        <div className="bg-light rounded-3 py-3">
-                          <p className="mb-1 text-muted small">
-                            Mbulim i Ardhshëm
-                          </p>
-                          <h2 className="text-success">
-                            {suggestion.projectedWeeksCoverage.toFixed(1)}
-                          </h2>
-                          <small>javë</small>
-                        </div>
-                      </Col>
-                    </Row>
-
-                    {/* INFO TË TJERA */}
-                    <div className="mt-5 pt-4 border-top">
-                      <Row className="text-muted small">
-                        <Col md={6}>
-                          <strong>MOQ:</strong> {suggestion.moq} copë
-                          <br />
-                          <strong>Pako:</strong> {suggestion.packSize} copë/pako
-                        </Col>
-                        <Col md={6} className="text-end">
-                          <strong>Çmimi i fundit:</strong>{" "}
-                          {suggestion.lastPurchasePrice} €<br />
-                          <strong>Furnitori:</strong> {suggestion.lastSupplier}
-                        </Col>
-                      </Row>
-
-                      {suggestion.dataQualityWarning && (
-                        <Alert variant="warning" className="mt-4 text-center">
-                          {suggestion.dataQualityWarning}
-                        </Alert>
-                      )}
+                {noNeedToOrder ? (
+                  <>
+                    <CheckCircle size={48} color="var(--sp-emerald)" style={{ marginBottom: "0.75rem" }} />
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "2.2rem", fontWeight: 900, color: "var(--sp-emerald)", letterSpacing: "-0.03em" }}>
+                      STOK I MJAFTUESHÇ‹M
                     </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
-          </>
-        )}
+                    <p style={{ color: "var(--sp-text-muted)", fontSize: "0.9rem", marginTop: "0.4rem" }}>
+                      Nuk ka nevojë për porosi
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={42} color={bannerAccent} style={{ marginBottom: "0.75rem" }} />
 
-        {/* EMPTY STATE */}
-        {!selectedProduct && !loading && (
-          <div className="text-center py-5">
-            <i className="bi bi-search display-1 text-muted mb-4"></i>
-            <h3 className="text-muted mt-4">
-              Zgjidh një produkt për të parë sugjerimin
-            </h3>
-            <p className="text-muted">Funksionon në çast – pa pritje</p>
-          </div>
-        )}
-      </Container>
+                    {/* Week toggle */}
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+                      <div className="sp-week-toggle">
+                        <button
+                          className={`sp-week-btn${weekMode === 1 ? " active" : ""}`}
+                          onClick={() => setWeekMode(1)}
+                        >
+                          1 Javë
+                        </button>
+                        <button
+                          className={`sp-week-btn${weekMode === 4 ? " active" : ""}`}
+                          onClick={() => setWeekMode(4)}
+                        >
+                          4 Javë
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ color: "var(--sp-text-muted)", fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "0.3rem" }}>
+                      Porosi për {weekMode} {weekMode === 1 ? "javë" : "javë"}
+                    </div>
+                    <div style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: "clamp(2rem, 6vw, 3.5rem)",
+                      fontWeight: 900,
+                      color: bannerAccent,
+                      lineHeight: 1,
+                      textShadow: `0 0 40px ${bannerAccent}44`,
+                      letterSpacing: "-0.03em",
+                      marginBottom: "0.4rem",
+                    }}>
+                      {displayQty.toLocaleString()} copë
+                    </div>
+                    {packs && (
+                      <div style={{ color: `${bannerAccent}bb`, fontSize: "1rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+                        {packs >= 1000 ? `${(packs / 1000).toFixed(1)}k` : packs} pako Ç— {s.packSize} copë/pako
+                      </div>
+                    )}
+                    {estimatedCost > 0 && (
+                      <div style={{ color: "var(--sp-text-muted)", fontSize: "0.85rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+                        Kosto e vlerësuar: <strong style={{ color: "var(--sp-text-soft)" }}>≈ {estimatedCost.toLocaleString("sq-AL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong>
+                      </div>
+                    )}
+                    <div style={{ color: "var(--sp-text-soft)", fontSize: "0.85rem", fontWeight: 600 }}>
+                      {s.message}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Product name chip */}
+              <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+                <span style={{
+                  display: "inline-block",
+                  background: "var(--sp-surface-2)",
+                  border: "1px solid var(--sp-border)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "0.5rem 1.25rem",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  color: "var(--sp-text)",
+                }}>
+                  {s.productName}
+                </span>
+                <span className="sp-barcode" style={{ marginLeft: "0.75rem", fontSize: "0.8rem" }}>
+                  {selectedProduct?.data?.barkodi}
+                </span>
+              </div>
+
+              {/* Stat grid */}
+              <div className="sp-stat-grid" style={{ marginBottom: "1.25rem" }}>
+                <div className="sp-stat-card">
+                  <div className="label">Stoku Aktual</div>
+                  <div className="value" style={{ color: s.currentStock < 0 ? "var(--sp-red)" : s.currentStock < avgWeekly ? "var(--sp-amber)" : "var(--sp-text)" }}>
+                    {(s.currentStock ?? 0).toLocaleString()}
+                  </div>
+                  <div className="unit">copë</div>
+                </div>
+                <div className="sp-stat-card">
+                  <div className="label">Shitje / Javë</div>
+                  <div className="value" style={{ color: "var(--sp-cyan)" }}>
+                    {avgWeekly.toLocaleString()}
+                  </div>
+                  <div className="unit"><TrendBadge trending={s.isSalesTrendingUp} /></div>
+                </div>
+                <div className="sp-stat-card">
+                  <div className="label">Mbulim Aktual</div>
+                  <div className="value" style={{ color: s.currentWeeksCoverage < 1 ? "var(--sp-red)" : "var(--sp-text)" }}>
+                    {(s.currentWeeksCoverage ?? 0).toFixed(1)}
+                  </div>
+                  <div className="unit">javë</div>
+                </div>
+                <div className="sp-stat-card">
+                  <div className="label">Mbulim Pas Porosisë</div>
+                  <div className="value" style={{ color: "var(--sp-emerald)" }}>
+                    {(s.projectedWeeksCoverage ?? 0).toFixed(1)}
+                  </div>
+                  <div className="unit">javë</div>
+                </div>
+              </div>
+
+              {/* Meta grid */}
+              <div className="sp-meta" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+                <div className="sp-meta-item">
+                  <div className="mi-label">MOQ</div>
+                  <div className="mi-value">{s.moq || 0} copë</div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Pako</div>
+                  <div className="mi-value">{s.packSize || 1} copë/pako</div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Çmimi i Fundit</div>
+                  <div className="mi-value">{s.lastPurchasePrice || 0} €</div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Furnitori</div>
+                  <div className="mi-value" style={{ fontFamily: "inherit", fontSize: "0.78rem" }}>{s.lastSupplier || "â€”"}</div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Blerja e Fundit</div>
+                  <div className="mi-value">
+                    {s.lastPurchaseDate ? new Date(s.lastPurchaseDate).toLocaleDateString("sq-AL") : "â€”"}
+                  </div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Shitje Mujore</div>
+                  <div className="mi-value">{Math.round(s.averageMonthlySales || 0).toLocaleString()}</div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Muaj me Shitje</div>
+                  <div className="mi-value">{s.monthsWithSales ?? "â€”"}</div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Periudha Analizës</div>
+                  <div className="mi-value" style={{ fontSize: "0.68rem" }}>{s.analysisPeriod || "â€”"}</div>
+                </div>
+                <div className="sp-meta-item">
+                  <div className="mi-label">Trendi</div>
+                  <div className="mi-value" style={{ fontFamily: "inherit" }}>
+                    <TrendBadge trending={s.isSalesTrendingUp} />
+                  </div>
+                </div>
+              </div>
+
+              {s.dataQualityWarning && (
+                <div className="sp-modal-warning" style={{ marginTop: "1rem" }}>
+                  <AlertTriangle size={13} style={{ marginRight: "0.4rem" }} />
+                  {s.dataQualityWarning}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Empty state */}
+          {!selectedProduct && !loading && (
+            <div className="sp-empty">
+              <Search size={90} />
+              <h3>Zgjidh një produkt për të parë sugjerimin</h3>
+              <p>Funksionon në çast â€“ pa pritje</p>
+            </div>
+          )}
+        </div>
+      </div>
     </>
   );
 }

@@ -1,15 +1,12 @@
-import { useState} from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Modal from "react-bootstrap/Modal";
+﻿import { useState } from "react";
+import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark} from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
-import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
-import { Col } from "react-bootstrap";
 import Select from "react-select";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 const ShtoProduktin = (props) => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -134,13 +131,7 @@ const ShtoProduktin = (props) => {
   const [optionsLlojiTVSH, setOptionsLlojiTVSH] = useState([]);
   const [optionsSelectedLlojiTVSH, setOptionsSelectedLlojiTVSH] =
     useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
       .get(
         `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
@@ -250,24 +241,22 @@ const ShtoProduktin = (props) => {
         <Modal
           size="sm"
           show={fushatEZbrazura}
-          onHide={() => setFushatEZbrazura(false)}>
+          onHide={() => setFushatEZbrazura(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title style={{ color: "red" }} as="h6">
-              Ndodhi nje gabim
-            </Modal.Title>
+            <Modal.Title className="text-danger">Ndodhi një gabim</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <strong style={{ fontSize: "10pt" }}>
-              Ju lutemi plotesoni te gjitha fushat me{" "}
-              <span style={{ color: "red" }}>*</span>
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <div className="mb-3 text-danger">
+              <FontAwesomeIcon icon={faXmark} size="3x" />
+            </div>
+            <p className="text-white">Ju lutem plotësoni të gjitha fushat me *</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              onClick={() => setFushatEZbrazura(false)}
-              variant="secondary">
-              Mbylle <FontAwesomeIcon icon={faXmark} />
+              className="btn-cancel w-100"
+              onClick={() => setFushatEZbrazura(false)}>
+              Mbylle
             </Button>
           </Modal.Footer>
         </Modal>
@@ -276,188 +265,274 @@ const ShtoProduktin = (props) => {
         <Modal
           size="sm"
           show={kontrolloProduktin}
-          onHide={() => setKontrolloProduktin(false)}>
+          onHide={() => setKontrolloProduktin(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title as="h6">Konfirmo vendosjen</Modal.Title>
+            <Modal.Title>Konfirmo Vendosjen</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <span style={{ fontSize: "10pt" }}>
-              Nje produkt me te njejtin emer ekziston ne sistem!
-            </span>
-            <br />
-            <strong style={{ fontSize: "10pt" }}>
-              A jeni te sigurt qe deshironi te vazhdoni?
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <p className="text-warning mb-2">Ky produkt ekziston në sistem!</p>
+            <p className="text-white small">A jeni të sigurt që dëshironi të vazhdoni?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              variant="secondary"
+              className="btn-cancel"
               onClick={() => setKontrolloProduktin(false)}>
-              Korrigjo <FontAwesomeIcon icon={faXmark} />
+              Korrigjo
             </Button>
             <Button
-              size="sm"
               variant="warning"
-              onClick={() => {
-                handleSubmit();
-              }}>
-              Vazhdoni
+              className="px-4"
+              onClick={() => handleSubmit()}>
+              Vazhdo
             </Button>
           </Modal.Footer>
         </Modal>
       )}
       <Modal
         size="lg"
-        className="modalEditShto"
+        className="sp-modal"
         show={props.show}
         onHide={props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>Shto Produkt</Modal.Title>
+          <Modal.Title>Shto Produkt të Ri</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <MDBRow className="g-3">
-            <MDBCol md="6">
-              <MDBInput
-                onChange={onChange}
-                value={produkti.barkodi}
-                name="barkodi"
-                id="barkodi"
-                type="text"
-                placeholder="Barkodi"
-                autoFocus
-                onKeyDown={(e) => ndrroField(e, "emriProduktit")}
-                label={
-                  <span>
-                    Barkodi<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
-                autoComplete={false}
-              />
-            </MDBCol>
-            <MDBCol md="6">
-              <MDBInput
-                onChange={onChange}
-                value={produkti.emriProduktit}
-                name="emriProduktit"
-                id="emriProduktit"
-                type="text"
-                placeholder="Emri Produktit"
-                onKeyDown={(e) => ndrroField(e, "grupiProduktitSelect-input")}
-                label={
-                  <span>
-                    Emri Produktit<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
-                autoComplete={false}
-              />
-            </MDBCol>
-            <Form.Group as={Col} controlId="grupiProduktit" md="4">
-              <Select
-                value={optionsSelectedGrupiProduktit}
-                onChange={handleChangeGrupiProduktit}
-                options={optionsGrupiProduktit}
-                id="grupiProduktitSelect" // Setting the id attribute
-                inputId="grupiProduktitSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+          <div className="sp-form-container p-2">
+            <Form>
+              <Row className="g-4 mb-3">
+                <Col md="6">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Barkodi <span className="text-danger">*</span></label>
+                    <Form.Control
+                      onChange={onChange}
+                      value={produkti.barkodi}
+                      name="barkodi"
+                      id="barkodi"
+                      type="text"
+                      autoFocus
+                      onKeyDown={(e) => ndrroField(e, "emriProduktit")}
+                      autoComplete="off"
+                      className="sp-input"
+                      placeholder="Skano ose shëno barkodin..."
+                    />
+                  </div>
+                </Col>
+                <Col md="6">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Emri Produktit <span className="text-danger">*</span></label>
+                    <Form.Control
+                      onChange={onChange}
+                      value={produkti.emriProduktit}
+                      name="emriProduktit"
+                      id="emriProduktit"
+                      type="text"
+                      onKeyDown={(e) => ndrroField(e, "grupiProduktitSelect-input")}
+                      autoComplete="off"
+                      className="sp-input"
+                      placeholder="Emri i produktit..."
+                    />
+                  </div>
+                </Col>
+              </Row>
 
-              <Form.Label>
-                Grupi Produktit<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
+              <Row className="g-4 mb-3">
+                <Col md="4">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Grupi Produktit <span className="text-danger">*</span></label>
+                    <div className="sp-select-container">
+                      <Select
+                        value={optionsSelectedGrupiProduktit}
+                        onChange={handleChangeGrupiProduktit}
+                        options={optionsGrupiProduktit}
+                        inputId="grupiProduktitSelect-input"
+                        placeholder="Zgjidh..."
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderRadius: '8px',
+                            color: 'white'
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            background: '#1a1d21',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                          }),
+                          option: (base, state) => ({
+                            ...base,
+                            background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                            color: 'white'
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            color: 'white'
+                          })
+                        }}
+                      />
+                    </div>
+                  </div>
+                </Col>
 
-            <Form.Group as={Col} controlId="partneri" md="4">
-              <Select
-                value={optionsSelectedPartneri}
-                onChange={handleChangePartneri}
-                options={optionsPartneri}
-                id="partneriSelect" // Setting the id attribute
-                inputId="partneriSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+                <Col md="4">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Partneri <span className="text-danger">*</span></label>
+                    <div className="sp-select-container">
+                      <Select
+                        value={optionsSelectedPartneri}
+                        onChange={handleChangePartneri}
+                        options={optionsPartneri}
+                        inputId="partneriSelect-input"
+                        placeholder="Zgjidh..."
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderRadius: '8px',
+                            color: 'white'
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            background: '#1a1d21',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                          }),
+                          option: (base, state) => ({
+                            ...base,
+                            background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                            color: 'white'
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            color: 'white'
+                          })
+                        }}
+                      />
+                    </div>
+                  </div>
+                </Col>
 
-              <Form.Label>
-                Partneri<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} controlId="njesiaMatese" md="4">
-              <Select
-                value={optionsSelectedNjesiaMatese}
-                onChange={handleChangeNjesiaMatese}
-                options={optionsNjesiaMatese}
-                id="njesiaMateseSelect" // Setting the id attribute
-                inputId="njesiaMateseSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+                <Col md="4">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Njësia Matëse <span className="text-danger">*</span></label>
+                    <div className="sp-select-container">
+                      <Select
+                        value={optionsSelectedNjesiaMatese}
+                        onChange={handleChangeNjesiaMatese}
+                        options={optionsNjesiaMatese}
+                        inputId="njesiaMateseSelect-input"
+                        placeholder="Zgjidh..."
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderRadius: '8px',
+                            color: 'white'
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            background: '#1a1d21',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                          }),
+                          option: (base, state) => ({
+                            ...base,
+                            background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                            color: 'white'
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            color: 'white'
+                          })
+                        }}
+                      />
+                    </div>
+                  </div>
+                </Col>
+              </Row>
 
-              <Form.Label>
-                Njesia Matese<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} controlId="partneri" md="4">
-              <Select
-                value={optionsSelectedLlojiTVSH}
-                onChange={handleChangeLlojiTVSH}
-                options={optionsLlojiTVSH}
-                id="llojiTVSHSelect" // Setting the id attribute
-                inputId="llojiTVSHSelect-input" // Setting the input id attribute
-                styles={customStyles}
-              />
+              <Row className="g-4 align-items-end">
+                <Col md="4">
+                  <div className="sp-input-group">
+                    <label className="sp-label">TVSH % <span className="text-danger">*</span></label>
+                    <div className="sp-select-container">
+                      <Select
+                        value={optionsSelectedLlojiTVSH}
+                        onChange={handleChangeLlojiTVSH}
+                        options={optionsLlojiTVSH}
+                        inputId="llojiTVSHSelect-input"
+                        placeholder="Zgjidh..."
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderRadius: '8px',
+                            color: 'white'
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            background: '#1a1d21',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                          }),
+                          option: (base, state) => ({
+                            ...base,
+                            background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                            color: 'white'
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            color: 'white'
+                          })
+                        }}
+                      />
+                    </div>
+                  </div>
+                </Col>
 
-              <Form.Label>
-                TVSH %<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-            </Form.Group>
+                <Col md="4">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Sasia e Shumicës <span className="text-danger">*</span></label>
+                    <Form.Control
+                      onChange={onChange}
+                      name="sasiaShumices"
+                      id="sasiaShumices"
+                      value={produkti.sasiaShumices}
+                      type="number"
+                      autoComplete="off"
+                      onKeyDown={handleMenaxhoTastetPagesa}
+                      className="sp-input"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </Col>
 
-            <MDBCol md="4">
-              <MDBInput
-                onChange={onChange}
-                name="sasiaShumices"
-                id="sasiaShumices"
-                value={produkti.sasiaShumices}
-                type="text"
-                placeholder="Sasia e Shumices"
-                label={
-                  <span>
-                    Sasia e Shumices<span style={{ color: "red" }}>*</span>
-                  </span>
-                }
-                autoComplete={false}
-                onKeyDown={handleMenaxhoTastetPagesa}
-              />
-            </MDBCol>
-            <MDBCol md="4" id="kodiProduktit">
-              <MDBTooltip
-                placement="bottom"
-                title="Gjenerohet automatikisht pas zgjedhjes se partnerit"
-                wrapperClass="mdb-tooltip mdb-tooltip-content">
-                <MDBInput
-                  onChange={onChange}
-                  value={produkti.kodiProduktit}
-                  name="kodiProduktit"
-                  type="text"
-                  placeholder="Kodi Produktit"
-                  onKeyDown={(e) => ndrroField(e, "llojiTVSH")}
-                  label={
-                    <span>
-                      Kodi Produktit<span style={{ color: "red" }}>*</span>
-                    </span>
-                  }
-                  disabled
-                />
-              </MDBTooltip>
-            </MDBCol>
-          </MDBRow>
+                <Col md="4">
+                  <div className="sp-input-group opacity-75">
+                    <label className="sp-label text-muted">Kodi Produktit</label>
+                    <Form.Control
+                      value={produkti.kodiProduktit}
+                      name="kodiProduktit"
+                      type="text"
+                      disabled
+                      className="sp-input"
+                      placeholder="Gjenerohet..."
+                    />
+                  </div>
+                </Col>
+              </Row>
+            </Form>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={props.hide}>
-            Close <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={props.hide}>
+            Anulo
           </Button>
           <Button
-            style={{ backgroundColor: "#009879", border: "none" }}
+            className="btn-save px-4"
             onClick={handleKontrolli}>
-            Save Changes
+            Shto Produktin
           </Button>
         </Modal.Footer>
       </Modal>

@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Form, Col, Button, Modal, Tabs, Tab } from "react-bootstrap";
-import { MDBRow, MDBCol, MDBInput, MDBTooltip } from "mdb-react-ui-kit";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoKompanin(props) {
@@ -211,9 +210,9 @@ function EditoKompanin(props) {
       )}
       <Modal
         size="lg"
-        className="modalEditShto"
         show={true}
-        onHide={() => props.largo()}>
+        onHide={() => props.largo()}
+        className="sp-modal">
         <Modal.Header closeButton>
           <Modal.Title>Edito Partnerin</Modal.Title>
         </Modal.Header>
@@ -222,169 +221,189 @@ function EditoKompanin(props) {
             id="editoPartnerin"
             activeKey={key}
             onSelect={(k) => setKey(k)}
-            className="mb-3">
-            <Tab eventKey="teDhenat" title="Te Dhenat Partnerit">
-              <MDBRow className="g-3">
-                <MDBCol md="6">
-                  <MDBInput
-                    value={partneri.emriBiznesit ?? ""}
-                    name="emriBiznesit"
-                    onChange={onChange}
-                    id="validationCustom01"
-                    label={
-                      <span>
-                        Emri i Biznesit / Klientit / Parnerit
-                        <span style={{ color: "red" }}>*</span>
-                      </span>
-                    }
-                  />
-                </MDBCol>
-                <MDBCol md="4">
-                  <MDBTooltip
-                    placement="bottom"
-                    title="Perderoni inicialet per klient te thejshte"
-                    wrapperClass="mdb-tooltip mdb-tooltip-content">
-                    <MDBInput
-                      value={partneri.shkurtesaPartnerit ?? ""}
-                      name="shkurtesaPartnerit"
-                      onChange={onChange}
-                      id="validationCustom03"
-                      label={
-                        <span>
-                          Shkurtesa e Partnerit
-                          <span style={{ color: "red" }}>*</span>
-                        </span>
-                      }
-                    />
-                  </MDBTooltip>
-                </MDBCol>
-                <MDBCol md="4">
-                  <MDBTooltip
-                    placement="bottom"
-                    title="Vendosni 0 per klient te thejshte"
-                    wrapperClass="mdb-tooltip mdb-tooltip-content">
-                    <MDBInput
-                      value={partneri.nui ?? ""}
-                      name="nui"
-                      onChange={onChange}
-                      id="validationCustom03"
-                      label={
-                        <span>
-                          Numri Unik Identifikues: NUI
-                          <span style={{ color: "red" }}>*</span>
-                        </span>
-                      }
-                    />
-                  </MDBTooltip>
-                </MDBCol>
-                <MDBCol md="4">
-                  <MDBInput
-                    value={partneri.nrf ?? ""}
-                    name="nrf"
-                    onChange={onChange}
-                    id="validationCustom03"
-                    label="Numri Fiskal: NF / NRF"
-                  />
-                </MDBCol>
-                <MDBCol md="4">
-                  <MDBInput
-                    value={partneri.tvsh ?? ""}
-                    name="tvsh"
-                    onChange={onChange}
-                    id="validationCustom03"
-                    label="Numri TVSH: NRTVSH"
-                  />
-                </MDBCol>
-                <MDBCol md="4">
-                  <MDBInput
-                    value={partneri.email ?? ""}
-                    name="email"
-                    onChange={onChange}
-                    id="validationCustom02"
-                    label="Email"
-                  />
-                </MDBCol>
-                <MDBCol md="6">
-                  <MDBInput
-                    value={partneri.adresa ?? ""}
-                    name="adresa"
-                    onChange={onChange}
-                    id="validationCustom03"
-                    label={
-                      <span>
-                        Adresa<span style={{ color: "red" }}>*</span>
-                      </span>
-                    }
-                  />
-                </MDBCol>
-                <MDBCol md="4">
-                  <MDBInput
-                    value={partneri.nrKontaktit ?? ""}
-                    name="nrKontaktit"
-                    onChange={onChange}
-                    id="validationCustom05"
-                    label="Numri i Kontaktit"
-                  />
-                </MDBCol>
-                <Form.Group as={Col} className="p-0" controlId="formGridState">
-                  <Form.Select
-                    value={llojiPartnerit}
-                    onChange={handleLlojiPartneritChange}>
-                    <option hidden disabled value={0}>
-                      Zgjedhni Llojin e Partnerit
-                    </option>
-                    <option value="B">Bleres</option>
-                    <option value="F">Furnitore</option>
-                    <option value="B/F">Bleres & Furnitore</option>
-                  </Form.Select>
-                  <Form.Label>
-                    {
-                      <span>
-                        Lloji i Partnerit<span style={{ color: "red" }}>*</span>
-                      </span>
-                    }
-                  </Form.Label>
-                </Form.Group>
-              </MDBRow>
+            className="sp-tabs mb-4">
+            <Tab eventKey="teDhenat" title="Të Dhënat e Partnerit">
+              <div className="sp-form-container p-2">
+                <Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="8">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Emri i Biznesit / Klientit <span className="text-danger">*</span></label>
+                        <Form.Control
+                          type="text"
+                          name="emriBiznesit"
+                          value={partneri.emriBiznesit ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="Emri i plotë..."
+                        />
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Shkurtesa <span className="text-danger">*</span></label>
+                        <Form.Control
+                          type="text"
+                          name="shkurtesaPartnerit"
+                          value={partneri.shkurtesaPartnerit ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="FC"
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+
+                  <Row className="g-4 mb-3">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">NUI <span className="text-danger">*</span></label>
+                        <Form.Control
+                          type="number"
+                          name="nui"
+                          value={partneri.nui ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="111222333"
+                        />
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Fiskal (NF)</label>
+                        <Form.Control
+                          type="number"
+                          name="nrf"
+                          value={partneri.nrf ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="Optional..."
+                        />
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. TVSH</label>
+                        <Form.Control
+                          type="number"
+                          name="tvsh"
+                          value={partneri.tvsh ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="Optional..."
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+
+                  <Row className="g-4 mb-3">
+                    <Col md="12">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Adresa <span className="text-danger">*</span></label>
+                        <Form.Control
+                          type="text"
+                          name="adresa"
+                          value={partneri.adresa ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="Adresa e plotë..."
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+
+                  <Row className="g-4">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Kontakt</label>
+                        <Form.Control
+                          type="text"
+                          name="nrKontaktit"
+                          value={partneri.nrKontaktit ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="+383..."
+                        />
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Email</label>
+                        <Form.Control
+                          type="email"
+                          name="email"
+                          value={partneri.email ?? ""}
+                          onChange={onChange}
+                          className="sp-input"
+                          placeholder="email@example.com"
+                        />
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Lloji i Partnerit <span className="text-danger">*</span></label>
+                        <div className="sp-select-container">
+                          <Form.Select
+                            value={llojiPartnerit}
+                            onChange={handleLlojiPartneritChange}
+                            className="sp-input">
+                            <option hidden disabled value={0}>
+                              Zgjedhni Llojin
+                            </option>
+                            <option value="B">Blerës</option>
+                            <option value="F">Furnitorë</option>
+                            <option value="B/F">Blerës & Furnitorë</option>
+                          </Form.Select>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
             </Tab>
-            <Tab eventKey="kartelaRabati" title="Kartela - Rabati">
-              <MDBRow>
-                <MDBCol md="6">
-                  <MDBInput
-                    value={partneri?.kartela?.kodiKartela ?? ""}
-                    name="adresa"
-                    id="validationCustom03"
-                    disabled
-                    label={
-                      <span>
-                        Kartela<span style={{ color: "red" }}>*</span>
-                      </span>
-                    }
-                  />
-                </MDBCol>
-                <MDBCol md="6">
-                  <MDBInput
-                    value={rabati}
-                    name="rabati"
-                    onChange={handleRabatiChange}
-                    id="validationCustom05"
-                    label="Rabati %"
-                  />
-                </MDBCol>
-              </MDBRow>
+            <Tab eventKey="kartelaRabati" title="Kartela & Rabati">
+              <div className="sp-form-container p-2">
+                <Row className="g-4">
+                  <Col md="6">
+                    <div className="sp-input-group">
+                      <label className="sp-label">Kodi i Kartelës</label>
+                      <Form.Control
+                        type="text"
+                        value={partneri?.kartela?.kodiKartela ?? ""}
+                        disabled
+                        className="sp-input"
+                        style={{ opacity: 0.6 }}
+                      />
+                    </div>
+                  </Col>
+                  <Col md="6">
+                    <div className="sp-input-group">
+                      <label className="sp-label">Rabati (%)</label>
+                      <Form.Control
+                        type="number"
+                        name="rabati"
+                        value={rabati}
+                        onChange={handleRabatiChange}
+                        className="sp-input"
+                        placeholder="0"
+                      />
+                    </div>
+                  </Col>
+                </Row>
+              </div>
             </Tab>
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={() => props.largo()}>
+            Anulo
           </Button>
           <Button
-            className="Butoni"
+            className="btn-save px-4"
             onClick={(e) =>
               key == "teDhenat" ? handleKontrolli() : PerditesoKartelen()
             }>
-            Edito Partnerin <FontAwesomeIcon icon={faPenToSquare} />
+            Përditëso Partnerin
           </Button>
         </Modal.Footer>
       </Modal>

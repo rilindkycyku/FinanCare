@@ -1,68 +1,135 @@
-import { Col, Image, Row } from "react-bootstrap";
+﻿import { Col, Image, Container, Button } from "react-bootstrap";
 import NavBar from "../layout/NavBar";
 import Titulli from "../Titulli";
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
+import { MapPinOff, ArrowLeft, Home } from "lucide-react";
 
-function NukUGjet(props) {
+function NukUGjet() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const BASE_URL = import.meta.env.VITE_BASE_URL || "";
-  const [teDhenatBiznesit, setTeDhenatBiznesit] = useState([]);
-  const [perditeso, setPerditeso] = useState("");
+  const navigate = useNavigate();
+  const [teDhenatBiznesit, setTeDhenatBiznesit] = useState(null);
 
-  const getToken = localStorage.getItem("token");
-
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
+  const token = localStorage.getItem("token");
+  const authentikimi = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   useEffect(() => {
-    const ShfaqTeDhenat = async () => {
+    const fetchBiznesi = async () => {
       try {
-        const teDhenat = await axios.get(
-          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
-          authentikimi
-        );
-        setTeDhenatBiznesit(teDhenat.data);
-        console.log(teDhenat.data);
-      } catch (err) {
-        console.log(err);
-      }
+        const res = await axios.get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`, authentikimi);
+        setTeDhenatBiznesit(res.data);
+      } catch (err) { console.error(err); }
     };
+    if (token) fetchBiznesi();
+  }, [token, API_BASE_URL, authentikimi]);
 
-    ShfaqTeDhenat();
-  }, [perditeso]);
   return (
-    <>
-      <Titulli titulli={"Nuk u Gjet"} />
+    <div className="error-page-wrapper">
+      <Titulli titulli={"Nuk u Gjet | 404"} />
       <NavBar />
-      <div className="containerDashboardP d-flex justify-content-center align-items-center">
-        <div className="teDhenatAplikimit">
-          <div className="teDhenatAplikimitHeader">
-            <Row className="mb-4 align-items-center justify-content-center">
-              <Col xs="12" sm="6" className="text-center">
-                <Image
-                  src={`${BASE_URL}/img/web/${teDhenatBiznesit?.logo}`}
-                  style={{ marginTop: "0.5em" }}
-                  fluid
-                  alt="Partner Logo 1"
-                />
-              </Col>
-            </Row>
-            <Row className="mb-4 align-items-center justify-content-center">
-              <Col xs="12" sm="10" className="text-center">
-                <h1 style={{ marginTop: "1em" }}>
-                  404 - Na vjen keq, por nuk mund të gjejmë atë që po kërkoni
-                </h1>
-              </Col>
-            </Row>
+
+      <Container className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+        <div className="error-card text-center" data-aos="zoom-in">
+          <div className="error-icon-wrapper secondary">
+            <MapPinOff size={64} strokeWidth={1.5} />
           </div>
+
+          <h1 className="error-code">404</h1>
+          <h2 className="error-title">Faqja nuk u Gjet</h2>
+          <p className="error-message">
+            Na vjen keq, por faqja që po kërkoni nuk ekziston ose mund të jetë zhvendosur.
+          </p>
+
+          <div className="d-flex gap-3 justify-content-center mt-4">
+            <Button
+              variant="outline-primary"
+              className="btn-premium-outline"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft size={18} className="me-2" /> Mbrapa
+            </Button>
+            <Button
+              variant="primary"
+              className="btn-premium-shto"
+              onClick={() => navigate("/")}
+            >
+              <Home size={18} className="me-2" /> Ballina
+            </Button>
+          </div>
+
+          {teDhenatBiznesit?.logo && (
+            <div className="mt-5 opacity-50">
+              <Image
+                src={`${BASE_URL}/img/web/${teDhenatBiznesit.logo}`}
+                height="30"
+                alt="Business Logo"
+              />
+            </div>
+          )}
         </div>
-      </div>
-    </>
+      </Container>
+
+      <style>{`
+        .error-page-wrapper {
+          background: #f8fafc;
+          min-height: 100vh;
+        }
+        .error-card {
+          background: white;
+          padding: 4rem 3rem;
+          border-radius: 32px;
+          border: 1px solid rgba(226, 232, 240, 0.8);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+          max-width: 600px;
+          width: 100%;
+        }
+        .error-icon-wrapper {
+          width: 100px;
+          height: 100px;
+          background: #fef2f2;
+          color: #ef4444;
+          border-radius: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 2rem;
+          box-shadow: 0 8px 16px rgba(239, 68, 68, 0.1);
+        }
+        .error-icon-wrapper.secondary {
+          background: #eef2ff;
+          color: #6366f1;
+          box-shadow: 0 8px 16px rgba(99, 102, 241, 0.1);
+        }
+        .error-code {
+          font-size: 5rem;
+          font-weight: 900;
+          line-height: 1;
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin-bottom: 0.5rem;
+          letter-spacing: -0.05em;
+        }
+        .error-title {
+          font-weight: 800;
+          color: #1e293b;
+          margin-bottom: 1rem;
+          letter-spacing: -0.02em;
+        }
+        .error-message {
+          color: #64748b;
+          font-size: 1.1rem;
+          line-height: 1.6;
+          max-width: 400px;
+          margin: 0 auto;
+        }
+      `}</style>
+    </div>
   );
 }
 

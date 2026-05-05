@@ -808,7 +808,18 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "dataFillim",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "dataMbarim",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -839,6 +850,21 @@
         "Name": "id",
         "Type": "System.Int32",
         "IsRequired": false
+      },
+      {
+        "Name": "partneriID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "dataFillim",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "dataMbarim",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -854,6 +880,16 @@
       {
         "Name": "statusi",
         "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "dataFillim",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "dataMbarim",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
     ],
@@ -1682,6 +1718,16 @@
     "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
     "Method": "ProduktetPerKalkulim",
     "RelativePath": "api/Produkti/ProduktetPerKalkulim",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.Produktet.ProduktiController",
+    "Method": "ProduktetPerPOS",
+    "RelativePath": "api/Produkti/ProduktetPerPOS",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

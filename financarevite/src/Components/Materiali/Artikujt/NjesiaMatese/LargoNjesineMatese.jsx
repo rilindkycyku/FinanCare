@@ -1,4 +1,4 @@
-import axios from "axios";
+﻿import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -46,21 +46,28 @@ function LargoNjesineMatese(props) {
         setTipiMesazhit={(e) => props.setTipiMesazhit(e)}
         setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
       />
-      <Modal show={true} onHide={() => props.largo()}>
+      <Modal show={true} onHide={() => props.largo()} className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title style={{ color: "red" }}>
-            Largo Njesine Matese
-          </Modal.Title>
+          <Modal.Title className="text-white">Largo Njësinë Matëse</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h6>A jeni te sigurt qe deshironi ta fshini kete njesi matese?</h6>
+          <div className="text-center p-3">
+            <div className="mb-4 text-danger">
+              <FontAwesomeIcon icon={faBan} size="3x" />
+            </div>
+            <h5 className="text-white mb-2 fw-bold">Konfirmimi i Fshirjes</h5>
+            <p className="text-white-50">
+              A jeni të sigurt që dëshironi ta fshini këtë njësi? <br />
+              <span className="small opacity-75">Ky veprim mund të ketë ndikim në produktet që e përdorin këtë njësi.</span>
+            </p>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel px-4" onClick={() => props.largo()}>
+            Anulo
           </Button>
-          <Button variant="danger" onClick={handleSubmit}>
-            Largo Njesine Matese <FontAwesomeIcon icon={faBan} />
+          <Button variant="danger" onClick={handleSubmit} className="px-4 fw-bold shadow-sm">
+            Konfirmo Fshirjen
           </Button>
         </Modal.Footer>
       </Modal>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -14,7 +14,8 @@ import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/FleteLejime
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function FleteLejimetAutomatike(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -69,17 +70,25 @@ function FleteLejimetAutomatike(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-          authentikimi
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+          authentikimi,
         );
         const kalkulimet = kalkulimi.data.filter(
           (item) =>
-            item.llojiKalkulimit === "FL" && item.idPartneri === Partneri
+            item.llojiKalkulimit === "FL" && item.idPartneri === Partneri,
         );
         console.log(kalkulimi);
         setKalkulimet(
@@ -93,7 +102,7 @@ function FleteLejimetAutomatike(props) {
             "Data e Fatures": new Date(k.dataRegjistrimit).toISOString(),
             "Statusi Kalkulimit":
               k.statusiKalkulimit == "true" ? "I Mbyllur" : "I Hapur",
-          }))
+          })),
         );
         setLoading(false);
       } catch (err) {
@@ -103,7 +112,7 @@ function FleteLejimetAutomatike(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso, Partneri]);
+  }, [perditeso, Partneri, dataFillim, dataMbarim]);
 
   useEffect(() => {
     if (getID) {
@@ -111,7 +120,7 @@ function FleteLejimetAutomatike(props) {
         try {
           const perdoruesi = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-            authentikimi
+            authentikimi,
           );
           setTeDhenat(perdoruesi.data);
         } catch (err) {
@@ -132,7 +141,7 @@ function FleteLejimetAutomatike(props) {
       try {
         const partneri = await axios.get(
           `${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`,
-          authentikimi
+          authentikimi,
         );
         setPartneret(partneri.data);
 
@@ -141,7 +150,7 @@ function FleteLejimetAutomatike(props) {
             (item) =>
               item.idPartneri !== 1 &&
               item.idPartneri !== 2 &&
-              item.idPartneri !== 3
+              item.idPartneri !== 3,
           )
           .map((item) => ({
             value: item.idPartneri,
@@ -161,7 +170,7 @@ function FleteLejimetAutomatike(props) {
       try {
         const nrFat = await axios.get(
           `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=FL`,
-          authentikimi
+          authentikimi,
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
       } catch (err) {
@@ -197,7 +206,7 @@ function FleteLejimetAutomatike(props) {
             pershkrimShtese: pershkrimShtese,
             nrRendorFatures: nrRendorKalkulimit + 1,
           },
-          authentikimi
+          authentikimi,
         )
         .then((response) => {
           if (response.status === 200 || response.status === 201) {
@@ -220,7 +229,7 @@ function FleteLejimetAutomatike(props) {
         .put(
           `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
-          authentikimi
+          authentikimi,
         )
         .then(() => {
           setRegjistroKalkulimin(false);
@@ -254,13 +263,7 @@ function FleteLejimetAutomatike(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  const handleChange = async (partneri) => {
+    const handleChange = async (partneri) => {
     setPartneri(partneri.value);
     setOptionsSelected(partneri);
 
@@ -313,7 +316,7 @@ function FleteLejimetAutomatike(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -352,7 +355,7 @@ function FleteLejimetAutomatike(props) {
                         id="produktiSelect" // Setting the id attribute
                         inputId="produktiSelect-input" // Setting the input id attribute
                         isDisabled={edito}
-                        styles={customStyles}
+                        styles={darkSelectStyles}
                       />
                     </Form.Group>
                   </Col>
@@ -396,6 +399,44 @@ function FleteLejimetAutomatike(props) {
                   </Col>
                 </Row>
                 <div className="mt-2">
+                  <Row className="mb-3">
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Fillim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataFillim}
+                          onChange={(e) => {
+                            setDataFillim(e.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Mbarim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataMbarim}
+                          onChange={(e) => {
+                            setDataMbarim(e.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3} className="d-flex align-items-end">
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setDataFillim(new Date().toISOString().split("T")[0]);
+                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                        }}
+                        className="w-100">
+                        Sot
+                      </Button>
+                    </Col>
+                  </Row>
+
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Flete Lejimeve"

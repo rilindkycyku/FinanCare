@@ -1,4 +1,4 @@
-// src/roleBasedDropdowns.js
+﻿// src/roleBasedDropdowns.js
 export const roleBasedDropdowns = [
   {
     label: "Materiali",
@@ -32,6 +32,12 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Kalkulant"],
             path: "/Stoqet",
             label: "Stoqet",
+          },
+          {
+            roles: ["User"],
+            path: "/ShikimiQmimeve",
+            label: "Shikimi i Çmimeve",
+            shfaqNeDashboard: true,
           },
           { isDivider: true },
           {
@@ -67,7 +73,7 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist"],
             path: "/FleteLejimet",
             label: "Flete Lejimet",
-          },{
+          }, {
             roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist"],
             path: "/FleteLejimetAutomatike",
             label: "Flete Lejimet Automatike",
@@ -131,12 +137,12 @@ export const roleBasedDropdowns = [
             label: "POS",
             shfaqNeDashboard: true,
           },
-          { isDivider: true },{
+          { isDivider: true }, {
             roles: ["Menaxher"],
             path: "/ListaBarazimeve",
             label: "Lista e Barazimeve",
             shfaqNeDashboard: true,
-          },{
+          }, {
             roles: ["Arkatar", "Menaxher"],
             path: "/BarazoArken",
             label: "Barazo Arken",
@@ -247,7 +253,7 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Pergjegjes i Porosive"],
             path: "/ArtikujtPaStok",
             label: "Artikujt Pa Stok",
-          },{
+          }, {
             roles: ["Menaxher", "Pergjegjes i Porosive", "Puntor i Thjeshte", "Komercialist", "Kalkulant"],
             path: "/AfatetESkadmit",
             label: "Afatet e Skadimit",
@@ -258,11 +264,6 @@ export const roleBasedDropdowns = [
         roles: ["Menaxher", "Burime Njerzore"],
         label: "Faturat",
         subItems: [
-          {
-            roles: ["Menaxher", "Kalkulant", "Komercialist"],
-            path: "/",
-            label: "",
-          },
           { isDivider: true },
         ],
       },
@@ -287,7 +288,7 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
             path: "/SugjerimiPorosiseSipasFurnitorit",
             label: "Sugjerimi Porosise sipas Furnitorit",
-          },{
+          }, {
             roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
             path: "/SugjerimiPorosis",
             label: "Sugjerimi Porosis",

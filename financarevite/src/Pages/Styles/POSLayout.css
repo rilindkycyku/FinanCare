@@ -1,0 +1,907 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+/* ══════════════════════════════════════════════════════════════
+   FINANCARE POS – Premium Dark Theme v2
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --pos-emerald:      #10b981;
+  --pos-emerald-dark: #059669;
+  --pos-emerald-glow: rgba(16, 185, 129, 0.18);
+  --pos-cyan:         #06b6d4;
+  --pos-cyan-glow:    rgba(6, 182, 212, 0.12);
+
+  --pos-bg:           #070d14;
+  --pos-surface:      #0d1520;
+  --pos-surface-2:    #111d2e;
+  --pos-surface-3:    #152035;
+
+  --pos-border:       rgba(255, 255, 255, 0.07);
+  --pos-border-glow:  rgba(16, 185, 129, 0.25);
+
+  --pos-text-main:    #f1f5f9;
+  --pos-text-soft:    #94a3b8;
+  --pos-text-muted:   #475569;
+
+  --pos-danger:       #f87171;
+  --pos-warning:      #fbbf24;
+  --pos-success:      #10b981;
+
+  --pos-header-h: 56px;
+  --pos-radius-lg: 16px;
+  --pos-radius-md: 12px;
+  --pos-radius-sm: 8px;
+
+  --pos-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --pos-shadow-glow: 0 0 24px rgba(16, 185, 129, 0.15);
+}
+
+/* ── Reset & Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+.pos-page-wrapper {
+  background: var(--pos-bg);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  color: var(--pos-text-main);
+}
+
+/* Ambient background glow */
+.pos-page-wrapper::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pos-main-container {
+  padding: 0.6rem 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 1920px;
+  margin: 0 auto;
+  width: 100%;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── HEADER ───────────────────────────────────────────────────── */
+.pos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--pos-surface);
+  padding: 0 1.25rem;
+  height: var(--pos-header-h);
+  border-radius: var(--pos-radius-lg);
+  border: 1px solid var(--pos-border);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top accent gradient bar */
+.pos-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--pos-emerald), var(--pos-cyan));
+}
+
+.pos-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pos-main-title {
+  margin: 0 !important;
+  font-weight: 900 !important;
+  font-size: 1.1rem !important;
+  letter-spacing: -0.03em !important;
+  background: linear-gradient(135deg, #fff 40%, var(--pos-emerald));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pos-header-info {
+  display: flex;
+  gap: 1.25rem;
+  font-weight: 600;
+  color: var(--pos-text-soft);
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Invoice tabs */
+.invoice-tabs-custom .nav {
+  gap: 0.3rem;
+}
+
+.invoice-tabs-custom .nav-link {
+  font-size: 0.72rem !important;
+  padding: 0.3rem 0.75rem !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--pos-border) !important;
+  background: var(--pos-surface-2) !important;
+  color: var(--pos-text-soft) !important;
+  font-weight: 700 !important;
+  transition: all 0.2s !important;
+}
+
+.invoice-tabs-custom .nav-link.active,
+.invoice-tabs-custom .nav-link:hover {
+  background: var(--pos-emerald-glow) !important;
+  border-color: var(--pos-border-glow) !important;
+  color: var(--pos-emerald) !important;
+}
+
+/* ── CONTENT GRID ─────────────────────────────────────────────── */
+.pos-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 0.6rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.grid-span-all { grid-column: 1 / -1; }
+
+.pos-left-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 0;
+}
+
+/* ── INPUT CARD ───────────────────────────────────────────────── */
+.pos-input-card {
+  background: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--pos-radius-lg);
+  flex-shrink: 0;
+  box-shadow: var(--pos-shadow-card);
+}
+
+/* Override Bootstrap labels inside POS */
+.pos-input-card .form-label,
+.pos-payment-details .form-label {
+  font-size: 0.64rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: var(--pos-text-muted) !important;
+  margin-bottom: 0.3rem !important;
+}
+
+/* Dark inputs */
+.pos-input-card .form-control,
+.pos-input-card .form-select,
+.pos-payment-details .form-control,
+.pos-payment-details .form-select {
+  background: var(--pos-surface-2) !important;
+  border: 1px solid var(--pos-border) !important;
+  color: var(--pos-text-main) !important;
+  border-radius: var(--pos-radius-sm) !important;
+  font-size: 0.88rem !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.pos-input-card .form-control:focus,
+.pos-input-card .form-select:focus,
+.pos-payment-details .form-control:focus,
+.pos-payment-details .form-select:focus {
+  border-color: var(--pos-emerald) !important;
+  box-shadow: 0 0 0 3px var(--pos-emerald-glow) !important;
+  background: var(--pos-surface-3) !important;
+}
+
+.pos-input-card .form-control::placeholder,
+.pos-payment-details .form-control::placeholder,
+.pos-table-header .form-control::placeholder {
+  color: var(--pos-text-muted) !important;
+}
+
+.pos-input-card .form-control:disabled,
+.pos-payment-details .form-control:disabled {
+  background: rgba(255,255,255,0.03) !important;
+  color: var(--pos-text-muted) !important;
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* Edit mode highlight */
+.pos-input-card .border-warning {
+  border-color: var(--pos-warning) !important;
+  box-shadow: 0 0 0 3px rgba(251,191,36,0.15) !important;
+}
+
+/* Input group addon */
+.pos-payment-details .input-group-text {
+  background: var(--pos-surface-2) !important;
+  border: 1px solid var(--pos-border) !important;
+  color: var(--pos-text-soft) !important;
+  border-radius: var(--pos-radius-sm) 0 0 var(--pos-radius-sm) !important;
+}
+
+/* Select dropdown */
+.pos-input-card .form-select option,
+.pos-payment-details .form-select option {
+  background: var(--pos-surface-3);
+  color: var(--pos-text-main);
+}
+
+/* Search Filter Input */
+.pos-search-filter {
+  max-width: 200px !important;
+  background: var(--pos-surface-3) !important;
+  color: var(--pos-text-main) !important;
+  border: 1px solid var(--pos-border) !important;
+}
+.pos-search-filter:focus {
+  background: var(--pos-surface-3) !important;
+  color: var(--pos-text-main) !important;
+  border-color: var(--pos-cyan) !important;
+  box-shadow: 0 0 0 3px var(--pos-cyan-glow) !important;
+}
+.pos-search-filter::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ── TABLE CARD ───────────────────────────────────────────────── */
+.pos-table-card {
+  background: var(--pos-surface);
+  border-radius: var(--pos-radius-lg);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--pos-border);
+  overflow: hidden;
+  box-shadow: var(--pos-shadow-card);
+}
+
+.pos-table-header {
+  padding: 0.55rem 1.1rem;
+  background: var(--pos-surface-2);
+  border-bottom: 1px solid var(--pos-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+  color: var(--pos-text-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  flex-shrink: 0;
+}
+
+.pos-table-header .badge {
+  background: var(--pos-emerald-glow) !important;
+  color: var(--pos-emerald) !important;
+  border: 1px solid var(--pos-border-glow) !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+}
+
+.pos-table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pos-surface-3) transparent;
+}
+
+.pos-table-scroll::-webkit-scrollbar { width: 4px; }
+.pos-table-scroll::-webkit-scrollbar-thumb {
+  background: var(--pos-surface-3);
+  border-radius: 2px;
+}
+
+/* Table override for dark theme */
+.pos-table-scroll table {
+  margin: 0 !important;
+  border-collapse: collapse !important;
+  --bs-table-bg: transparent !important;
+  --bs-table-color: var(--pos-text-main) !important;
+  --bs-table-striped-bg: rgba(255,255,255,0.02) !important;
+  --bs-table-hover-bg: rgba(16, 185, 129, 0.04) !important;
+  --bs-table-hover-color: var(--pos-text-main) !important;
+  background-color: transparent !important;
+}
+
+.pos-table-scroll table thead th {
+  background: var(--pos-surface-2) !important;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 0.65rem 1rem !important;
+  font-size: 0.64rem !important;
+  font-weight: 800 !important;
+  color: var(--pos-text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--pos-border) !important;
+  border-top: none !important;
+  white-space: nowrap;
+}
+
+.pos-table-scroll tbody tr {
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+.pos-table-scroll tbody tr:hover {
+  background: rgba(16, 185, 129, 0.04) !important;
+}
+
+.pos-table-scroll tbody td {
+  padding: 0.55rem 1rem !important;
+  font-size: 0.84rem !important;
+  color: var(--pos-text-main) !important;
+  background-color: transparent !important;
+  vertical-align: middle;
+  border: none !important;
+}
+
+/* Scan-in flash animation for new rows */
+@keyframes row-flash-in {
+  0%   { background: rgba(16, 185, 129, 0.15); }
+  100% { background: transparent; }
+}
+.pos-table-scroll tbody tr.row-new {
+  animation: row-flash-in 0.7s ease-out forwards;
+}
+
+/* Row index number */
+.pos-table-scroll .text-muted { color: var(--pos-text-muted) !important; }
+
+/* Barcode monospace */
+.pos-table-scroll .font-monospace {
+  font-family: 'JetBrains Mono', monospace !important;
+  color: var(--pos-text-soft) !important;
+  font-size: 0.74rem !important;
+}
+
+/* Quantity badge */
+.pos-table-scroll .badge {
+  background: var(--pos-surface-3) !important;
+  color: var(--pos-text-soft) !important;
+  border: 1px solid var(--pos-border) !important;
+  font-weight: 700 !important;
+  font-size: 0.74rem !important;
+}
+
+/* Price columns */
+.pos-table-scroll .text-end.fw-bold { color: var(--pos-text-soft) !important; }
+.pos-table-scroll .text-end.fw-bold.text-primary { color: var(--pos-emerald) !important; }
+
+/* ── SUMMARY CARD (right panel) ───────────────────────────────── */
+.pos-right-side {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pos-summary-card {
+  background: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  border-radius: var(--pos-radius-lg);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: var(--pos-shadow-card);
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pos-surface-3) transparent;
+}
+
+/* ── TOTAL DISPLAY ────────────────────────────────────────────── */
+.pos-total-display {
+  background: linear-gradient(145deg, #050f1f, #091524);
+  border: 1px solid rgba(16,185,129,0.2);
+  padding: 1rem 1rem 1.1rem;
+  border-radius: var(--pos-radius-md);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 95px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* Glow behind the number */
+.pos-total-display::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 80px;
+  background: var(--pos-emerald);
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.15;
+}
+
+.pos-total-display .label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--pos-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 0.25rem;
+}
+
+/* Animated total amount */
+@keyframes amount-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.pos-total-display .amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.7rem;
+  font-weight: 700;
+  color: var(--pos-emerald);
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+  display: block;
+  position: relative;
+  animation: amount-pop 0.3s ease-out;
+}
+
+.pos-total-display .amount-sub {
+  font-size: 0.7rem;
+  color: var(--pos-text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 0.35rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.pos-total-display .amount-sub span {
+  white-space: nowrap;
+}
+
+/* ── PAYMENT DETAILS ──────────────────────────────────────────── */
+.pos-payment-details {
+  background: var(--pos-surface-2);
+  padding: 0.9rem;
+  border-radius: var(--pos-radius-md);
+  border: 1px solid var(--pos-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.pos-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.pos-info-row:last-child { border-bottom: none; }
+
+.pos-info-row .text-muted { color: var(--pos-text-soft) !important; font-weight: 500; }
+
+.pos-info-row .value {
+  font-weight: 800;
+  color: var(--pos-text-main);
+  font-size: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.pos-info-row .text-success { color: var(--pos-emerald) !important; }
+
+/* Kusuri (change) big display */
+.pos-info-row .fs-5 {
+  font-size: 1.15rem !important;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--pos-emerald);
+}
+
+/* ── CLIENT CARD ──────────────────────────────────────────────── */
+.pos-client-card {
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid var(--pos-border-glow);
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--pos-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pos-client-card .client-name {
+  font-weight: 800;
+  color: var(--pos-emerald);
+  font-size: 0.87rem;
+}
+
+.pos-client-card .text-success { color: var(--pos-emerald) !important; }
+
+/* ── PAY BUTTON ───────────────────────────────────────────────── */
+.btn-pay {
+  padding: 0.9rem !important;
+  font-size: 0.88rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, var(--pos-emerald), var(--pos-cyan)) !important;
+  border: none !important;
+  border-radius: var(--pos-radius-md) !important;
+  color: #fff !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-pay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.btn-pay:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--pos-emerald-dark), #0891b2) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.4) !important;
+}
+
+.btn-pay:hover:not(:disabled)::after { opacity: 1; }
+
+.btn-pay:active:not(:disabled) {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-pay:disabled {
+  background: var(--pos-surface-2) !important;
+  color: var(--pos-text-muted) !important;
+  box-shadow: none !important;
+}
+
+/* ── KEYBOARD SHORTCUTS ────────────────────────────────────────── */
+.keyboard-shortcuts {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0.25rem 0 !important;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.keyboard-shortcuts span {
+  font-size: 0.67rem !important;
+  color: var(--pos-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--pos-surface-2);
+  border: 1px solid var(--pos-border);
+  padding: 0.2rem 0.55rem 0.2rem 0.35rem;
+  border-radius: 20px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.keyboard-shortcuts span:hover {
+  border-color: var(--pos-border-glow);
+  color: var(--pos-text-soft);
+}
+
+.keyboard-shortcuts kbd {
+  background: var(--pos-surface-3) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: var(--pos-emerald) !important;
+  padding: 0 4px !important;
+  border-radius: 4px !important;
+  font-size: 0.62rem !important;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+  line-height: 1.6;
+}
+
+/* ── ACTION ICON BUTTONS ──────────────────────────────────────── */
+.btn-icon-round {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: var(--pos-radius-sm) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  transition: all 0.18s !important;
+  background: var(--pos-surface-2) !important;
+  border: 1px solid var(--pos-border) !important;
+}
+
+.btn-icon-round:hover { transform: scale(1.1); }
+
+.btn-icon-round.text-danger {
+  color: var(--pos-danger) !important;
+}
+.btn-icon-round.text-danger:hover {
+  background: rgba(248, 113, 113, 0.12) !important;
+  border-color: rgba(248, 113, 113, 0.3) !important;
+}
+
+.btn-icon-round.text-warning {
+  color: var(--pos-warning) !important;
+}
+.btn-icon-round.text-warning:hover {
+  background: rgba(251, 191, 36, 0.1) !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+/* ── EMPTY STATE ──────────────────────────────────────────────── */
+.grid-span-all {
+  grid-column: 1 / -1;
+}
+
+.grid-span-all .text-dark {
+  color: var(--pos-text-main) !important;
+}
+
+.grid-span-all .text-muted {
+  color: var(--pos-text-muted) !important;
+}
+
+.grid-span-all .bg-white {
+  background: var(--pos-surface) !important;
+  border: 1px solid var(--pos-border) !important;
+}
+
+/* ── REACT-SELECT DARK OVERRIDE ───────────────────────────────── */
+#barkodiSelect-input {
+  padding: 0 !important;
+  color: var(--pos-text-main) !important;
+}
+
+.pos-input-card [class*="-container"] {
+  color: var(--pos-text-main);
+}
+
+.pos-input-card [class*="-control"] {
+  background: var(--pos-surface-2) !important;
+  border-color: var(--pos-border) !important;
+  border-radius: var(--pos-radius-sm) !important;
+  min-height: 38px !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  cursor: text !important;
+}
+
+.pos-input-card [class*="-control"]:hover,
+.pos-input-card [class*="-control--is-focused"] {
+  border-color: var(--pos-emerald) !important;
+  box-shadow: 0 0 0 3px var(--pos-emerald-glow) !important;
+}
+
+.pos-input-card [class*="-placeholder"] { color: var(--pos-text-muted) !important; }
+.pos-input-card [class*="-singleValue"]  { color: var(--pos-text-main) !important; }
+.pos-input-card [class*="-input"]        { color: var(--pos-text-main) !important; }
+
+.pos-input-card [class*="-menu"] {
+  background: var(--pos-surface-3) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: var(--pos-radius-md) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5) !important;
+  z-index: 1050 !important;
+}
+
+.pos-input-card [class*="-option"] {
+  background: transparent !important;
+  color: var(--pos-text-soft) !important;
+  font-size: 0.82rem !important;
+  padding: 0.5rem 1rem !important;
+  transition: background 0.12s !important;
+  cursor: pointer !important;
+}
+
+.pos-input-card [class*="-option--is-focused"] {
+  background: rgba(16,185,129,0.08) !important;
+  color: var(--pos-text-main) !important;
+}
+
+.pos-input-card [class*="-option--is-selected"] {
+  background: var(--pos-emerald-glow) !important;
+  color: var(--pos-emerald) !important;
+}
+
+.pos-input-card [class*="-indicatorSeparator"] { display: none !important; }
+
+.pos-input-card [class*="-indicators"] svg {
+  stroke: var(--pos-text-muted) !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.pos-input-card [class*="-ValueContainer"] { padding: 2px 10px !important; }
+.pos-input-card [class*="-NoOptionsMessage"] {
+  color: var(--pos-text-muted) !important;
+  font-size: 0.82rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+/* ── BOOTSTRAP MODAL DARK (Scoped) ─────────────────────────────── */
+.pos-modal .modal-content {
+  background: var(--pos-surface-2) !important;
+  border: 1px solid var(--pos-border) !important;
+  border-radius: var(--pos-radius-lg) !important;
+  color: var(--pos-text-main) !important;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.6) !important;
+}
+
+.pos-modal .modal-header {
+  border-bottom: 1px solid var(--pos-border) !important;
+  padding: 1rem 1.25rem !important;
+}
+
+.pos-modal .modal-title { color: var(--pos-text-main) !important; font-weight: 800 !important; }
+
+.pos-modal .btn-close {
+  filter: invert(1) !important;
+  opacity: 0.5 !important;
+}
+
+.pos-modal .modal-body { padding: 1.25rem !important; }
+
+.pos-modal .modal-body .form-label {
+  color: var(--pos-text-soft) !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.pos-modal .modal-body .form-control {
+  background: var(--pos-surface-3) !important;
+  border: 1px solid var(--pos-border) !important;
+  color: var(--pos-text-main) !important;
+  border-radius: var(--pos-radius-sm) !important;
+}
+
+.pos-modal .modal-body .form-control:focus {
+  border-color: var(--pos-emerald) !important;
+  box-shadow: 0 0 0 3px var(--pos-emerald-glow) !important;
+}
+
+.pos-modal .modal-footer {
+  border-top: 1px solid var(--pos-border) !important;
+  padding: 0.9rem 1.25rem !important;
+}
+
+.pos-modal .modal-footer .btn-secondary {
+  background: var(--pos-surface-3) !important;
+  border: 1px solid var(--pos-border) !important;
+  color: var(--pos-text-soft) !important;
+  border-radius: var(--pos-radius-sm) !important;
+}
+
+.modal-footer .btn-warning {
+  background: linear-gradient(135deg, var(--pos-emerald), var(--pos-cyan)) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 800 !important;
+  border-radius: var(--pos-radius-sm) !important;
+}
+
+/* .Loader scoped styles removed — POS has its own dark background */
+
+/* ── BOOTSTRAP OVERRIDES ──────────────────────────────────────── */
+
+/* Add new customer button */
+.pos-title-section .btn-primary.rounded-circle {
+  background: var(--pos-emerald) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.pos-title-section .btn-primary.rounded-circle:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Dashboard button */
+.pos-title-section .bg-primary-subtle {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: var(--pos-emerald) !important;
+  border: 1px solid var(--pos-border-glow) !important;
+  font-weight: 700 !important;
+}
+
+/* ── SVG ICON FIX ─────────────────────────────────────────────── */
+.pos-page-wrapper svg {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2px !important;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ── SCROLLBAR GLOBAL ─────────────────────────────────────────── */
+.pos-page-wrapper * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pos-surface-3) transparent;
+}
+
+/* ── ANIMATIONS & UX UTILS ────────────────────────────────────── */
+.pulse-slow {
+  animation: pulse-op 3s infinite ease-in-out;
+}
+@keyframes pulse-op {
+  0%   { opacity: 0.15; transform: scale(0.95); }
+  50%  { opacity: 0.35; transform: scale(1.05); }
+  100% { opacity: 0.15; transform: scale(0.95); }
+}
+
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+.truncate-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qty-badge {
+  background: var(--pos-emerald-glow) !important;
+  color: var(--pos-emerald) !important;
+  border-color: rgba(16,185,129,0.3) !important;
+  font-weight: 800 !important;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── INVOICE NR CHIP (header right) ──────────────────────────── */
+.pos-nr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--pos-surface-2);
+  border: 1px solid var(--pos-border);
+  border-radius: 20px;
+  padding: 0.18rem 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--pos-text-soft);
+}

@@ -1,4 +1,4 @@
-import "./Styles/Fatura.css";
+﻿import "./Styles/Fatura.css";
 import { View, StyleSheet, Font } from "@react-pdf/renderer";
 import HeaderFatura from "./HeaderFatura";
 import TeDhenatFatura from "./TeDhenatFatura";

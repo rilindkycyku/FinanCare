@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import axios from "axios";
 import EditoProduktin from "./EditoProduktin";
 import ShtoProduktin from "./ShtoProduktin";
@@ -178,7 +178,7 @@ function TemplateTabela() {
           <TailSpin
             height="80"
             width="80"
-            color="#009879"
+            color="#10b981"
             ariaLabel="tail-spin-loading"
             radius="1"
             wrapperStyle={{}}

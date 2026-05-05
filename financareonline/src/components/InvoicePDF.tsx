@@ -1,186 +1,293 @@
 // src/components/InvoicePDF.tsx
-import {
-  Document,
-  Page,
-  View,
-  Text,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet, Image } from "@react-pdf/renderer";
 import businessData from "../data/business.json";
 
 const business = businessData.business;
 
-// Stilet (të njëjta siç i ke – kopjoji krejt)
+// ─── Brand Palette ─────────────────────────────────────────────────────────
+const C = {
+  emerald:    "#10b981",
+  emeraldDim: "#059669",
+  cyan:       "#06b6d4",
+  cyanLight:  "rgba(6,182,212,0.10)",
+  emeraldBg:  "rgba(16,185,129,0.07)",
+  slate900:   "#0f172a",
+  slate800:   "#1e293b",
+  slate700:   "#334155",
+  slate500:   "#64748b",
+  slate400:   "#94a3b8",
+  slate200:   "#e2e8f0",
+  slate100:   "#f1f5f9",
+  white:      "#ffffff",
+  red:        "#dc2626",
+  redLight:   "#fef2f2",
+};
+
 const styles = StyleSheet.create({
   page: {
     paddingHorizontal: 28,
-    paddingTop: 30,
-    paddingBottom: 40,
+    paddingTop: 28,
+    paddingBottom: 38,
     fontFamily: "Quicksand",
-    fontSize: 9.3,
-    backgroundColor: "#fff",
+    fontSize: 9.2,
+    backgroundColor: C.white,
     lineHeight: 1.4,
   },
 
-  // === ULTRA COMPACT 3-COLUMN HEADER ===
+  // ── Top accent bar ──────────────────────────────────────────────────────
+  accentBar: {
+    height: 3.5,
+    backgroundColor: C.emerald,
+    marginBottom: 18,
+    borderRadius: 2,
+  },
+
+  // ── Header ──────────────────────────────────────────────────────────────
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 18,
-    paddingBottom: 12,
+    marginBottom: 16,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
-    gap: 16,
+    borderBottomColor: C.slate200,
+    gap: 14,
   },
 
   logo: {
-    width: 78,
-    height: 78,
+    width: 74,
+    height: 74,
     borderRadius: 10,
     objectFit: "contain",
-    backgroundColor: "#f8f9ff",
+    backgroundColor: C.slate100,
     padding: 6,
-    borderWidth: 1.4,
-    borderColor: "#cbd5e1",
+    borderWidth: 1.2,
+    borderColor: C.slate200,
   },
 
-  // Center block: Furnitori + Klienti side by side
-  centerInfo: {
-    flex: 1,
-    paddingHorizontal: 10,
-  },
+  centerInfo: { flex: 1, paddingHorizontal: 8 },
 
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 24,
+    gap: 20,
   },
 
-  infoBlock: {
-    flex: 1,
-  },
+  infoBlock: { flex: 1 },
 
-  label: {
-    fontSize: 7.8,
-    color: "#64748b",
+  infoLabel: {
+    fontSize: 7.5,
+    color: C.emerald,
     marginBottom: 3,
     textTransform: "uppercase",
-    letterSpacing: 1.1,
-    fontWeight: "600",
+    letterSpacing: 1.2,
+    fontWeight: "700",
   },
 
-  title: {
-    fontSize: 11.2,
+  infoTitle: {
+    fontSize: 11,
     fontWeight: "bold",
-    color: "#111827",
+    color: C.slate900,
     marginBottom: 3,
   },
 
-  text: {
-    fontSize: 8.9,
-    color: "#475569",
-    lineHeight: 1.38,
+  infoText: {
+    fontSize: 8.6,
+    color: C.slate500,
+    lineHeight: 1.4,
   },
 
-  // Right: Invoice Box
+  // ── Invoice box (top-right) ─────────────────────────────────────────────
   invoiceBox: {
-    backgroundColor: "transparent",
     paddingVertical: 10,
-    paddingHorizontal: 13,
+    paddingHorizontal: 14,
     borderRadius: 10,
-    minWidth: 152,
+    minWidth: 150,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1.4,
-    borderColor: "#475569",
+    borderWidth: 1.5,
+    borderColor: C.emerald,
+    backgroundColor: C.emeraldBg,
   },
 
-  invoiceTitle: {
-    fontSize: 8.6,
+  invoiceFlag: {
+    fontSize: 7.8,
     fontWeight: "700",
-    letterSpacing: 1.9,
+    letterSpacing: 1.8,
     textTransform: "uppercase",
-    color: "#94a3b8",
+    color: C.emerald,
   },
 
   invoiceNumber: {
-    fontSize: 12.4,
+    fontSize: 11.5,
     fontWeight: "900",
-    marginVertical: 3.5,
-    letterSpacing: 0.6,
-    color: "#60a5fa",
+    marginVertical: 4,
+    letterSpacing: 0.4,
+    color: C.slate800,
   },
 
   invoiceDate: {
-    fontSize: 8.6,
-    color: "#94a3b8",
+    fontSize: 8.4,
+    color: C.slate500,
   },
 
-  // === TIGHT TABLE ===
-  table: {
-    marginTop: 0,
+  invoicePayment: {
+    marginTop: 6,
+    fontSize: 9,
+    color: C.slate700,
+    textAlign: "center",
   },
 
-  headerRow: {
+  // ── Table ────────────────────────────────────────────────────────────────
+  table: { marginTop: 2 },
+
+  tableHeaderRow: {
     flexDirection: "row",
-    backgroundColor: "transparent",
-    paddingVertical: 8,
-    borderBottomWidth: 2.1,
-    borderBottomColor: "#60a5fa",
+    paddingVertical: 7.5,
+    borderBottomWidth: 2,
+    borderBottomColor: C.emerald,
     fontWeight: "bold",
-    fontSize: 9.6,
+    fontSize: 9.4,
+    color: C.slate700,
   },
 
   row: {
     flexDirection: "row",
     paddingVertical: 6.5,
-    borderBottomWidth: 0.8,
-    borderBottomColor: "#e2e8f0",
-    fontSize: 9.3,
+    borderBottomWidth: 0.7,
+    borderBottomColor: C.slate200,
+    fontSize: 9.2,
   },
 
-  colNr: { width: "5.5%", textAlign: "center" },
-  colItem: { width: "37%", paddingLeft: 6 },
-  colQty: { width: "9%", textAlign: "center" },
-  colUnit: { width: "13%", textAlign: "right" },
-  colVatRate: { width: "9%", textAlign: "center" },
-  colVatAmount: { width: "13%", textAlign: "right" },
+  rowAlt: {
+    backgroundColor: C.emeraldBg,
+  },
+
+  colNr:        { width: "5.5%",  textAlign: "center" },
+  colItem:      { width: "37%",   paddingLeft: 6 },
+  colQty:       { width: "9%",    textAlign: "center" },
+  colUnit:      { width: "13%",   textAlign: "right" },
+  colVatRate:   { width: "9%",    textAlign: "center" },
+  colVatAmount: { width: "13%",   textAlign: "right" },
   colTotal: {
     width: "13.5%",
     textAlign: "right",
     fontWeight: "700",
-    color: "#1e40af",
+    color: C.emeraldDim,
   },
 
-  // === FOOTER ===
-  footer: {
-    marginTop: 36,
-    textAlign: "center",
-    fontSize: 8.8,
-    color: "#94a3b8",
-  },
-  discountRow: {
+  // ── Totals block ─────────────────────────────────────────────────────────
+  totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 8.5,
     paddingHorizontal: 14,
-    borderBottomWidth: 0.9,
-    borderBottomColor: "#e2e8f0",
+    borderBottomWidth: 0.8,
+    borderBottomColor: C.slate200,
   },
-  discountLabel: {
-    fontSize: 10.6,
-    color: "#b91c1c",
-    fontWeight: "600",
+
+  totalLabel: { fontSize: 10.5, color: C.slate500, fontWeight: "600" },
+  totalValue: { fontSize: 10.5, color: C.slate800, fontWeight: "bold" },
+
+  totalDiscountLabel: { fontSize: 10.5, color: C.red, fontWeight: "600" },
+  totalDiscountValue: { fontSize: 10.5, color: C.red, fontWeight: "700" },
+
+  grandTotalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    backgroundColor: C.emeraldBg,
+    borderTopWidth: 1.8,
+    borderTopColor: C.emerald,
   },
-  discountValue: {
-    fontSize: 10.8,
-    color: "#b91c1c",
+
+  grandTotalLabel: { fontSize: 13, fontWeight: "900", color: C.emeraldDim },
+  grandTotalValue: { fontSize: 15, fontWeight: "900", color: C.emeraldDim },
+
+  totalsBox: {
+    borderWidth: 1.4,
+    borderColor: C.emerald,
+    borderRadius: 9,
+    overflow: "hidden",
+  },
+
+  // ── Bank accounts ─────────────────────────────────────────────────────────
+  bankBox: {
+    borderWidth: 1.3,
+    borderColor: C.cyan,
+    borderRadius: 9,
+    overflow: "hidden",
+  },
+
+  bankHeaderRow: {
+    flexDirection: "row",
+    backgroundColor: C.cyanLight,
+    paddingVertical: 7,
+    paddingHorizontal: 11,
+  },
+
+  bankHeaderText: {
+    fontSize: 9.5,
     fontWeight: "700",
+    color: C.cyan,
+  },
+
+  bankRow: {
+    flexDirection: "row",
+    paddingVertical: 8,
+    paddingHorizontal: 11,
+    borderTopWidth: 0.8,
+    borderTopColor: C.slate200,
+  },
+
+  bankName: { flex: 3,   fontSize: 9.6, fontWeight: "bold",  color: C.slate800 },
+  bankIban: { flex: 3.2, fontSize: 9.6, fontWeight: "600",   color: C.slate700 },
+  bankCcy:  { flex: 0.9, fontSize: 11,  fontWeight: "800",   color: C.cyan, textAlign: "right" },
+
+  // ── Signature ─────────────────────────────────────────────────────────────
+  signatureRow: {
+    flexDirection: "row",
+    gap: 150,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    borderTopWidth: 0.9,
+    borderTopColor: C.slate200,
+  },
+
+  signatureLine: {
+    width: 180,
+    height: 1.4,
+    backgroundColor: C.slate700,
+  },
+
+  signatureText: {
+    fontSize: 9,
+    fontWeight: "600",
+    color: C.slate500,
+    marginBottom: 4,
+    textAlign: "center",
+  },
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  footer: {
+    marginTop: 32,
+    fontSize: 8.5,
+    color: C.slate400,
+  },
+
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderTopWidth: 0.9,
+    borderTopColor: C.slate200,
   },
 });
 
+// ─── Types ────────────────────────────────────────────────────────────────────
 export type InvoiceItem = {
   ProduktiID: string | number;
   EmriProduktit: string;
@@ -201,11 +308,183 @@ type InvoicePDFProps = {
   subtotalNet: number;
   totalVAT: number;
   grandTotal: number;
-  paymentMethod: "cash" | "card" ;
+  paymentMethod: "cash" | "card";
   transporti: number;
   rabati: number;
 };
 
+// ─── Reusable sub-components ──────────────────────────────────────────────────
+function PageHeader({ invoiceNumber, clientName, user, paymentMethod }: any) {
+  const payLabel = paymentMethod === "card" ? "BANKË" : "CASH";
+  return (
+    <>
+      {/* Accent bar */}
+      <View style={styles.accentBar} />
+
+      <View style={styles.header}>
+        {/* Logo */}
+        <View style={{ alignItems: "center" }}>
+          {business.Logo && (
+            <Image src={"/img/web/" + business.Logo} style={styles.logo} />
+          )}
+        </View>
+
+        {/* Center: Furnitori + Klienti */}
+        <View style={styles.centerInfo}>
+          <View style={styles.infoRow}>
+            <View style={styles.infoBlock}>
+              <Text style={styles.infoLabel}>Furnitori</Text>
+              <Text style={styles.infoTitle}>{business.EmriIBiznesit}</Text>
+              <Text style={styles.infoText}>
+                {business.Adresa}
+                {business.NUI ? ` | NUI: ${business.NUI}` : ""}
+                {business.NrKontaktit ? ` | ${business.NrKontaktit}` : ""}
+                {business.Email ? ` | ${business.Email}` : ""}
+              </Text>
+            </View>
+
+            <View style={styles.infoBlock}>
+              <Text style={styles.infoLabel}>Klienti</Text>
+              <Text style={styles.infoTitle}>{clientName}</Text>
+              <Text style={styles.infoText}>
+                {user?.Adresa ? user.Adresa : ""}
+                {user?.NUI && user.NUI !== "0" ? ` | NUI: ${user.NUI}` : ""}
+                {user?.NrKontaktit ? ` | ${user.NrKontaktit}` : ""}
+                {user?.Email ? ` | ${user.Email}` : ""}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Right: Invoice box */}
+        <View style={styles.invoiceBox}>
+          <Text style={styles.invoiceFlag}>Faturë Tatimore</Text>
+          <Text style={styles.invoiceNumber}>{invoiceNumber}</Text>
+          <Text style={styles.invoiceDate}>
+            {new Date().toLocaleDateString("sq-AL")}
+          </Text>
+          <Text style={styles.invoicePayment}>
+            Pagesa:{" "}
+            <Text style={{ fontWeight: "bold", color: C.slate800 }}>
+              {payLabel}
+            </Text>
+          </Text>
+        </View>
+      </View>
+    </>
+  );
+}
+
+function TableHeader() {
+  return (
+    <View style={styles.tableHeaderRow}>
+      <Text style={styles.colNr}>Nr.</Text>
+      <Text style={styles.colItem}>Emri — Barkodi</Text>
+      <Text style={styles.colQty}>Sasia</Text>
+      <Text style={styles.colUnit}>Ç. pa TVSH</Text>
+      <Text style={styles.colVatRate}>TVSH %</Text>
+      <Text style={styles.colVatAmount}>TVSH €</Text>
+      <Text style={styles.colTotal}>Totali €</Text>
+    </View>
+  );
+}
+
+function BankAccounts() {
+  return (
+    <View style={{ flex: 1 }}>
+      <Text style={{ fontSize: 10.5, fontWeight: "bold", color: C.slate800, marginBottom: 9 }}>
+        Të Dhënat Bankare
+      </Text>
+      <View style={styles.bankBox}>
+        <View style={styles.bankHeaderRow}>
+          <Text style={[styles.bankHeaderText, { flex: 3 }]}>Banka</Text>
+          <Text style={[styles.bankHeaderText, { flex: 3.2 }]}>Llogaria</Text>
+          <Text style={[styles.bankHeaderText, { flex: 0.9, textAlign: "right" }]}>Val.</Text>
+        </View>
+        {businessData.bankAccounts.map((acc, i) => {
+          const icon = acc.Valuta.includes("Euro") ? "€"
+            : acc.Valuta.includes("Dollar") ? "$"
+            : acc.Valuta.includes("Franga") ? "CHF"
+            : acc.Valuta[0];
+          return (
+            <View
+              key={acc.IDLlogariaBankare}
+              style={[styles.bankRow, i === 0 ? { borderTopWidth: 0 } : {}]}
+            >
+              <Text style={styles.bankName}>{acc.EmriBankes}</Text>
+              <Text style={styles.bankIban}>{acc.NumriLlogaris}</Text>
+              <Text style={styles.bankCcy}>{icon}</Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+function TotalsBox({ subtotalNet, totalVAT, transporti, rabati, grandTotal, user }: any) {
+  return (
+    <View style={{ width: "42%" }}>
+      <Text style={{ fontSize: 10.5, fontWeight: "bold", color: C.slate800, marginBottom: 9 }}>
+        Totalet
+      </Text>
+      <View style={styles.totalsBox}>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Totali pa TVSH</Text>
+          <Text style={styles.totalValue}>{subtotalNet.toFixed(2)} €</Text>
+        </View>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>TVSH totale</Text>
+          <Text style={styles.totalValue}>{totalVAT.toFixed(2)} €</Text>
+        </View>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Transporti</Text>
+          <Text style={styles.totalValue}>{transporti.toFixed(2)} €</Text>
+        </View>
+        {rabati > 0 && (
+          <View style={styles.totalRow}>
+            <Text style={styles.totalDiscountLabel}>Rabat (−{user?.Rabati ?? 0}%)</Text>
+            <Text style={styles.totalDiscountValue}>−{rabati.toFixed(2)} €</Text>
+          </View>
+        )}
+        <View style={styles.grandTotalRow}>
+          <Text style={styles.grandTotalLabel}>TOTALI PËR PAGESË</Text>
+          <Text style={styles.grandTotalValue}>{grandTotal.toFixed(2)} €</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function SignatureLines() {
+  return (
+    <View style={styles.signatureRow}>
+      {(["Dorezoi", "Pranoi"] as const).map((label) => (
+        <View key={label} style={{ alignItems: "center" }}>
+          <View style={styles.signatureLine} />
+          <Text style={styles.signatureText}>{label}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function PageFooter({ pageNum, totalPagesDisplay }: { pageNum: number; totalPagesDisplay: number }) {
+  return (
+    <View style={styles.footer} fixed>
+      <View style={styles.footerRow}>
+        <Text style={{ fontSize: 8, color: C.slate500, fontWeight: "500" }}>
+          Faleminderit për blerjen! • {business.EmriIBiznesit} © {new Date().getFullYear()}
+        </Text>
+        <Text style={{ fontSize: 8.2, color: C.slate500, fontWeight: "600" }}>
+          Faqja {pageNum} nga {totalPagesDisplay}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function InvoicePDF({
   invoiceNumber,
   clientName,
@@ -222,10 +501,11 @@ export default function InvoicePDF({
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const lastPageCount = items.length % ITEMS_PER_PAGE || ITEMS_PER_PAGE;
   const moveTotalsToNewPage = lastPageCount > 13;
+  const totalPagesDisplay = moveTotalsToNewPage ? totalPages + 1 : totalPages;
 
   return (
     <Document>
-      {/* FAQET ME PRODUKTET */}
+      {/* ── PRODUCT PAGES ─────────────────────────────────────────────────── */}
       {Array.from({ length: totalPages }, (_, pageIndex) => {
         const start = pageIndex * ITEMS_PER_PAGE;
         const end = Math.min(start + ITEMS_PER_PAGE, items.length);
@@ -234,940 +514,78 @@ export default function InvoicePDF({
 
         return (
           <Page key={`page-${pageIndex}`} size="A4" style={styles.page}>
-            {/* HEADER START*/}
-            {/* HEADER */}
-            {/* NEW SUPER COMPACT HEADER – 3 COLUMNS */}
-            <View style={styles.header}>
-              {/* LEFT: Logo */}
-              <View style={{ alignItems: "center" }}>
-                {business.Logo && (
-                  <Image
-                    src={"/img/web/" + business.Logo}
-                    style={styles.logo}
-                  />
-                )}
-              </View>
+            <PageHeader
+              invoiceNumber={invoiceNumber}
+              clientName={clientName}
+              user={user}
+              paymentMethod={paymentMethod}
+            />
 
-              {/* CENTER: Furnitori + Klienti (now perfectly squeezed in the middle) */}
-              <View style={styles.centerInfo}>
-                <View style={styles.infoRow}>
-                  {/* Furnitori */}
-                  <View style={styles.infoBlock}>
-                    <Text style={styles.label}>Furnitori</Text>
-                    <Text style={styles.title}>{business.EmriIBiznesit}</Text>
-                    <Text style={styles.text}>
-                      {business?.Adresa && <>{business.Adresa}</>} |{" "}
-                      {business?.NUI && <>NUI: {business.NUI}</>} |{" "}
-                      {business?.NrKontaktit && <>{business.NrKontaktit}</>} |{" "}
-                      {business?.Email && <>{business.Email}</>}
-                    </Text>
-                  </View>
-
-                  {/* Klienti */}
-                  {/* Klienti – TANI ME TË GJITHA TË DHËNAT (si në faturat zyrtare) */}
-                  <View style={styles.infoBlock}>
-                    <Text style={styles.label}>Klienti</Text>
-                    <Text style={styles.title}>{clientName}</Text>
-
-                    <Text style={styles.text}>
-                      {user?.Adresa && <>{user.Adresa}</>} |{" "}
-                      {user?.NUI && <>NUI: {user.NUI}</>} |{" "}
-                      {user?.NrKontaktit && <>{user.NrKontaktit}</>} |{" "}
-                      {user?.Email && <>{user.Email}</>}
-                    </Text>
-                    {/* Të dhënat kryesore të klientit – rreshta të qartë */}
-                  </View>
-                </View>
-              </View>
-
-              {/* RIGHT: Invoice Box */}
-              {/* RIGHT: Invoice Box – 100% CLEAN, NO DESIGN */}
-              <View style={styles.invoiceBox}>
-                <Text style={styles.invoiceTitle}>Faturë Tatimore</Text>
-                <Text style={styles.invoiceNumber}>{invoiceNumber}</Text>
-                <Text style={styles.invoiceDate}>
-                  {new Date().toLocaleDateString("en-GB")}
-                </Text>
-
-                {/* Lloji i Pagesës – THJESHT TEKST, ASNJË DIZAJN */}
-                <Text
-                  style={{
-                    marginTop: 7,
-                    fontSize: 9.2,
-                    color: "#475569",
-                    textAlign: "center",
-                  }}>
-                  Pagesa:{" "}
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      color: "#1e293b",
-                    }}>
-                    {paymentMethod === "cash"
-                      ? "CASH"
-                      : paymentMethod === "card"
-                      ? "BANK"
-                      : "CASH"}
-                  </Text>
-                </Text>
-              </View>
-            </View>
-            {/* HEADER END*/}
-
-            {/* TABELA */}
+            {/* Table */}
             <View style={styles.table}>
-              <View style={styles.headerRow}>
-                <Text style={styles.colNr}>Nr.</Text>
-                <Text style={styles.colItem}>Emri - Barkodi</Text>
-                <Text style={styles.colQty}>Sasia</Text>
-                <Text style={styles.colUnit}>Ç. pa TVSH</Text>
-                <Text style={styles.colVatRate}>TVSH %</Text>
-                <Text style={styles.colVatAmount}>TVSH €</Text>
-                <Text style={styles.colTotal}>Totali €</Text>
-              </View>
-
+              <TableHeader />
               {pageItems.map((item, i) => (
-                <View key={item.ProduktiID} style={styles.row}>
+                <View
+                  key={item.ProduktiID}
+                  style={[styles.row, i % 2 === 1 ? styles.rowAlt : {}]}
+                >
                   <Text style={styles.colNr}>{start + i + 1}</Text>
                   <Text style={styles.colItem}>
-                    {item.EmriProduktit} - {item.Barkodi || "-"}
+                    {item.EmriProduktit}{item.Barkodi ? ` — ${item.Barkodi}` : ""}
                   </Text>
                   <Text style={styles.colQty}>{item.quantity}</Text>
-                  <Text style={styles.colUnit}>
-                    {item.netPrice.toFixed(2)} €
-                  </Text>
+                  <Text style={styles.colUnit}>{item.netPrice.toFixed(2)} €</Text>
                   <Text style={styles.colVatRate}>{item.LlojiTVSH}%</Text>
-                  <Text style={styles.colVatAmount}>
-                    {item.totalVat.toFixed(2)} €
-                  </Text>
-                  <Text style={styles.colTotal}>
-                    {item.lineTotal.toFixed(2)} €
-                  </Text>
+                  <Text style={styles.colVatAmount}>{item.totalVat.toFixed(2)} €</Text>
+                  <Text style={styles.colTotal}>{item.lineTotal.toFixed(2)} €</Text>
                 </View>
               ))}
             </View>
 
-            {/* FOOTER START*/}
+            {/* Totals on last page (if fits) */}
             {isLastItemPage && !moveTotalsToNewPage && (
               <View style={{ marginTop: 28 }}>
-                {/* TOTALS + BANK INFO – SAME AS BEFORE */}
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    gap: 20,
-                    alignItems: "flex-start",
-                    marginBottom: 32,
-                  }}>
-                  {/* LEFT: Banking Info */}
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      style={{
-                        fontSize: 10.8,
-                        fontWeight: "bold",
-                        color: "#1e293b",
-                        marginBottom: 9,
-                      }}>
-                      Të Dhënat Bankare për Pagesë
-                    </Text>
-
-                    <View
-                      style={{
-                        borderWidth: 1.3,
-                        borderColor: "#60a5fa",
-                        borderRadius: 9,
-                        overflow: "hidden",
-                      }}>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          backgroundColor: "rgba(96,165,250,0.06)",
-                          paddingVertical: 7,
-                          paddingHorizontal: 11,
-                        }}>
-                        <Text
-                          style={{
-                            flex: 3,
-                            fontSize: 9.6,
-                            fontWeight: "700",
-                            color: "#1e40af",
-                          }}>
-                          Banka
-                        </Text>
-                        <Text
-                          style={{
-                            flex: 3.2,
-                            fontSize: 9.6,
-                            fontWeight: "700",
-                            color: "#1e40af",
-                          }}>
-                          Llogaria
-                        </Text>
-                        <Text
-                          style={{
-                            flex: 0.9,
-                            fontSize: 9.6,
-                            fontWeight: "700",
-                            color: "#1e40af",
-                            textAlign: "right",
-                          }}>
-                          Val.
-                        </Text>
-                      </View>
-
-                      {businessData.bankAccounts.map((acc, i) => {
-                        const icon = acc.Valuta.includes("Euro")
-                          ? "€"
-                          : acc.Valuta.includes("Dollar")
-                          ? "$"
-                          : acc.Valuta.includes("Franga")
-                          ? "CHF"
-                          : acc.Valuta[0];
-                        return (
-                          <View
-                            key={acc.IDLlogariaBankare}
-                            style={{
-                              flexDirection: "row",
-                              paddingVertical: 8,
-                              paddingHorizontal: 11,
-                              backgroundColor:
-                                i % 2 === 0
-                                  ? "transparent"
-                                  : "rgba(248,250,252,0.6)",
-                              borderTopWidth: i === 0 ? 0 : 0.8,
-                              borderTopColor: "#e2e8f0",
-                            }}>
-                            <Text
-                              style={{
-                                flex: 3,
-                                fontSize: 9.7,
-                                fontWeight: "bold",
-                                color: "#1e40af",
-                              }}>
-                              {acc.EmriBankes}
-                            </Text>
-                            <Text
-                              style={{
-                                flex: 3.2,
-                                fontSize: 9.7,
-                                color: "#1e293b",
-                                fontWeight: "600",
-                              }}>
-                              {acc.NumriLlogaris}
-                            </Text>
-                            <Text
-                              style={{
-                                flex: 0.9,
-                                fontSize: 11,
-                                fontWeight: "800",
-                                color: "#2563eb",
-                                textAlign: "right",
-                              }}>
-                              {icon}
-                            </Text>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  </View>
-
-                  {/* RIGHT: Totals */}
-                  <View style={{ width: "42%" }}>
-                    <Text
-                      style={{
-                        fontSize: 10.8,
-                        fontWeight: "bold",
-                        color: "#1e293b",
-                        marginBottom: 9,
-                      }}
-                    >
-                      Totalet
-                    </Text>
-                    <View
-                      style={{
-                        borderWidth: 1.4,
-                        borderColor: "#60a5fa",
-                        borderRadius: 9,
-                        overflow: "hidden",
-                      }}
-                    >
-                      {/* Subtotal pa TVSH */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 9,
-                          paddingHorizontal: 14,
-                          borderBottomWidth: 0.9,
-                          borderBottomColor: "#e2e8f0",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#475569",
-                            fontWeight: "600",
-                          }}
-                        >
-                          Totali pa TVSH
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#1e293b",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {subtotalNet.toFixed(2)} €
-                        </Text>
-                      </View>
-
-                      {/* TVSH */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 9,
-                          paddingHorizontal: 14,
-                          borderBottomWidth: 0.9,
-                          borderBottomColor: "#e2e8f0",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#475569",
-                            fontWeight: "600",
-                          }}
-                        >
-                          TVSH totale
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#1e293b",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {totalVAT.toFixed(2)} €
-                        </Text>
-                      </View>
-
-                      {/* Transporti */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 9,
-                          paddingHorizontal: 14,
-                          borderBottomWidth: 0.9,
-                          borderBottomColor: "#e2e8f0",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#475569",
-                            fontWeight: "600",
-                          }}
-                        >
-                          Transporti
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#1e293b",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {transporti.toFixed(2)} €
-                        </Text>
-                      </View>
-
-                      {/* Rabati - only show if exists */}
-                      {rabati > 0 && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            paddingVertical: 9,
-                            paddingHorizontal: 14,
-                            borderBottomWidth: 0.9,
-                            borderBottomColor: "#e2e8f0",
-                          }}
-                        >
-                          <Text style={styles.discountLabel}>
-                            Rabati (−{user?.Rabati || 0}%)
-                          </Text>
-                          <Text style={styles.discountValue}>
-                            −{rabati.toFixed(2)} €
-                          </Text>
-                        </View>
-                      )}
-
-                      {/* FINAL TOTAL */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 12,
-                          paddingHorizontal: 14,
-                          backgroundColor: "rgba(96,165,250,0.11)",
-                          borderTopWidth: 1.8,
-                          borderTopColor: "#60a5fa",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 13.2,
-                            fontWeight: "900",
-                            color: "#1e40af",
-                          }}
-                        >
-                          TOTALI PËR PAGESË
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 15.2,
-                            fontWeight: "900",
-                            color: "#1e40af",
-                          }}
-                        >
-                          {grandTotal.toFixed(2)} €
-                        </Text>
-                      </View>
-                    </View>
-                    </View>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 20, alignItems: "flex-start", marginBottom: 28 }}>
+                  <BankAccounts />
+                  <TotalsBox subtotalNet={subtotalNet} totalVAT={totalVAT} transporti={transporti} rabati={rabati} grandTotal={grandTotal} user={user} />
                 </View>
-
-                {/* SIGNATURE LINES – ONLY ONCE, AT THE VERY END */}
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "flex-end",
-                    paddingHorizontal: 20,
-                    paddingTop: 20,
-                    borderTopWidth: 0.9,
-                    borderTopColor: "#cbd5e1",
-                  }}>
-                  <View style={{ flexDirection: "row", gap: 150 }}>
-                    <View style={{ alignItems: "center" }}>
-                      <View
-                        style={{
-                          width: 180,
-                          height: 1.4,
-                          backgroundColor: "#1e293b",
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 9,
-                          fontWeight: "600",
-                          color: "#475569",
-                          marginBottom: 4,
-                        }}>
-                        Dorezoi
-                      </Text>
-                    </View>
-
-                    <View style={{ alignItems: "center" }}>
-                      <View
-                        style={{
-                          width: 180,
-                          height: 1.4,
-                          backgroundColor: "#1e293b",
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 9,
-                          fontWeight: "600",
-                          color: "#475569",
-                          marginBottom: 4,
-                        }}>
-                        Pranoi
-                      </Text>
-                    </View>
-                  </View>
-                </View>
+                <SignatureLines />
               </View>
             )}
 
-            {/* Tiny Elegant Footer Line */}
-            <View style={styles.footer} fixed>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderTopWidth: 0.9,
-                  borderTopColor: "#cbd5e1",
-                }}>
-                <Text
-                  style={{ fontSize: 8, color: "#64748b", fontWeight: "500" }}>
-                  Faleminderit për blerjen! • {business.EmriIBiznesit} ©{" "}
-                  {new Date().getFullYear()}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 8.2,
-                    color: "#475569",
-                    fontWeight: "600",
-                  }}>
-                  Faqja {pageIndex + 1} nga{" "}
-                  {moveTotalsToNewPage ? totalPages + 1 : totalPages}
-                </Text>
-              </View>
-            </View>
-            {/* FOOTER END*/}
+            <PageFooter pageNum={pageIndex + 1} totalPagesDisplay={totalPagesDisplay} />
           </Page>
         );
       })}
 
-      {/* FAQE EKSTRA PËR TOTALET – TANI IDENTIKE ME FATURËN KRYESORE */}
+      {/* ── OVERFLOW TOTALS PAGE ───────────────────────────────────────────── */}
       {moveTotalsToNewPage && (
         <Page size="A4" style={styles.page}>
-          {/* SAME COMPACT HEADER */}
-          <View style={styles.header}>
-            <View>
-              {business.Logo && (
-                <Image src={"/img/web/" + business.Logo} style={styles.logo} />
-              )}
-            </View>
+          <PageHeader
+            invoiceNumber={invoiceNumber}
+            clientName={clientName}
+            user={user}
+            paymentMethod={paymentMethod}
+          />
 
-            <View style={styles.centerInfo}>
-              <View style={styles.infoRow}>
-                <View style={styles.infoBlock}>
-                  <Text style={styles.label}>Furnitori</Text>
-                  <Text style={styles.title}>{business.EmriIBiznesit}</Text>
-                  <Text style={styles.text}>{business.Adresa}</Text>
-                  <Text style={styles.text}>
-                    NUI: {business.NUI} • NF: {business.NF}
-                  </Text>
-                  <Text style={styles.text}>TVSH: {business.NrTVSH}</Text>
-                </View>
-                <View style={styles.infoBlock}>
-                  <Text style={styles.label}>Klienti</Text>
-                  <Text style={styles.title}>{clientName}</Text>
-                  <Text style={styles.text}>
-                    Kategori: {user?.EmriKategoris || "Pa kategori"}
-                  </Text>
-                  {user?.NUI && (
-                    <Text style={styles.text}>NUI: {user.NUI}</Text>
-                  )}
-                  {user?.Adresa && (
-                    <Text style={styles.text}>Adresa: {user.Adresa}</Text>
-                  )}
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.invoiceBox}>
-              <Text style={styles.invoiceTitle}>Faturë Tatimore</Text>
-              <Text style={styles.invoiceNumber}>{invoiceNumber}</Text>
-              <Text style={styles.invoiceDate}>
-                {new Date().toLocaleDateString("en-GB")}
-              </Text>
-            </View>
-          </View>
-
+          {/* Empty table header to keep layout consistent */}
           <View style={styles.table}>
-            <View style={styles.headerRow}>
-              <Text style={styles.colNr}>Nr.</Text>
-              <Text style={styles.colItem}>Emri - Barkodi</Text>
-              <Text style={styles.colQty}>Sasia</Text>
-              <Text style={styles.colUnit}>Ç. pa TVSH</Text>
-              <Text style={styles.colVatRate}>TVSH %</Text>
-              <Text style={styles.colVatAmount}>TVSH €</Text>
-              <Text style={styles.colTotal}>Totali €</Text>
-            </View>
+            <TableHeader />
           </View>
 
-          {/* COMPACT SUMMARY – SAME STYLE AS MAIN INVOICE */}
-          <View style={{ marginTop: 60 }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "900",
-                color: "#1e293b",
-                textAlign: "center",
-                marginBottom: 32,
-              }}>
+          {/* Totals summary centred on the page */}
+          <View style={{ marginTop: 52 }}>
+            <Text style={{ fontSize: 15, fontWeight: "900", color: C.slate800, textAlign: "center", marginBottom: 28 }}>
               Përmbledhje Përfundimtare
             </Text>
-
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                gap: 20,
-                marginBottom: 32,
-              }}>
-              {/* LEFT: Banking Info – IDENTICAL TABLE */}
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontSize: 10.8,
-                    fontWeight: "bold",
-                    color: "#1e293b",
-                    marginBottom: 9,
-                  }}>
-                  Të Dhënat Bankare për Pagesë
-                </Text>
-
-                <View
-                  style={{
-                    borderWidth: 1.3,
-                    borderColor: "#60a5fa",
-                    borderRadius: 9,
-                    overflow: "hidden",
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      backgroundColor: "rgba(96,165,250,0.06)",
-                      paddingVertical: 7,
-                      paddingHorizontal: 11,
-                    }}>
-                    <Text
-                      style={{
-                        flex: 3,
-                        fontSize: 9.6,
-                        fontWeight: "700",
-                        color: "#1e40af",
-                      }}>
-                      Banka
-                    </Text>
-                    <Text
-                      style={{
-                        flex: 3.2,
-                        fontSize: 9.6,
-                        fontWeight: "700",
-                        color: "#1e40af",
-                      }}>
-                      Llogaria
-                    </Text>
-                    <Text
-                      style={{
-                        flex: 0.9,
-                        fontSize: 9.6,
-                        fontWeight: "700",
-                        color: "#1e40af",
-                        textAlign: "right",
-                      }}>
-                      Val.
-                    </Text>
-                  </View>
-
-                  {businessData.bankAccounts.map((acc, i) => {
-                    const icon = acc.Valuta.includes("Euro")
-                      ? "€"
-                      : acc.Valuta.includes("Dollar")
-                      ? "$"
-                      : acc.Valuta.includes("Franga")
-                      ? "CHF"
-                      : acc.Valuta[0];
-                    return (
-                      <View
-                        key={acc.IDLlogariaBankare}
-                        style={{
-                          flexDirection: "row",
-                          paddingVertical: 8,
-                          paddingHorizontal: 11,
-                          backgroundColor:
-                            i % 2 === 0
-                              ? "transparent"
-                              : "rgba(248,250,252,0.6)",
-                          borderTopWidth: i === 0 ? 0 : 0.8,
-                          borderTopColor: "#e2e8f0",
-                        }}>
-                        <Text
-                          style={{
-                            flex: 3,
-                            fontSize: 9.7,
-                            fontWeight: "bold",
-                            color: "#1e40af",
-                          }}>
-                          {acc.EmriBankes}
-                        </Text>
-                        <Text
-                          style={{
-                            flex: 3.2,
-                            fontSize: 9.7,
-                            color: "#1e293b",
-                            fontWeight: "600",
-                          }}>
-                          {acc.NumriLlogaris}
-                        </Text>
-                        <Text
-                          style={{
-                            flex: 0.9,
-                            fontSize: 11,
-                            fontWeight: "800",
-                            color: "#2563eb",
-                            textAlign: "right",
-                          }}>
-                          {icon}
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              </View>
-
-              {/* RIGHT: Totals – SAME COMPACT STYLE */}
-              <View style={{ width: "42%" }}>
-                    <Text
-                      style={{
-                        fontSize: 10.8,
-                        fontWeight: "bold",
-                        color: "#1e293b",
-                        marginBottom: 9,
-                      }}
-                    >
-                      Totalet
-                    </Text>
-                    <View
-                      style={{
-                        borderWidth: 1.4,
-                        borderColor: "#60a5fa",
-                        borderRadius: 9,
-                        overflow: "hidden",
-                      }}
-                    >
-                      {/* Subtotal pa TVSH */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 9,
-                          paddingHorizontal: 14,
-                          borderBottomWidth: 0.9,
-                          borderBottomColor: "#e2e8f0",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#475569",
-                            fontWeight: "600",
-                          }}
-                        >
-                          Totali pa TVSH
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#1e293b",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {subtotalNet.toFixed(2)} €
-                        </Text>
-                      </View>
-
-                      {/* TVSH */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 9,
-                          paddingHorizontal: 14,
-                          borderBottomWidth: 0.9,
-                          borderBottomColor: "#e2e8f0",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#475569",
-                            fontWeight: "600",
-                          }}
-                        >
-                          TVSH totale
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#1e293b",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {totalVAT.toFixed(2)} €
-                        </Text>
-                      </View>
-
-                      {/* Transporti */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 9,
-                          paddingHorizontal: 14,
-                          borderBottomWidth: 0.9,
-                          borderBottomColor: "#e2e8f0",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#475569",
-                            fontWeight: "600",
-                          }}
-                        >
-                          Transporti
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            color: "#1e293b",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {transporti.toFixed(2)} €
-                        </Text>
-                      </View>
-
-                      {/* Rabati - only show if exists */}
-                      {rabati > 0 && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            paddingVertical: 9,
-                            paddingHorizontal: 14,
-                            borderBottomWidth: 0.9,
-                            borderBottomColor: "#e2e8f0",
-                          }}
-                        >
-                          <Text style={styles.discountLabel}>
-                            Rabati (−{user?.Rabati || 0}%)
-                          </Text>
-                          <Text style={styles.discountValue}>
-                            −{rabati.toFixed(2)} €
-                          </Text>
-                        </View>
-                      )}
-
-                      {/* FINAL TOTAL */}
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: 12,
-                          paddingHorizontal: 14,
-                          backgroundColor: "rgba(96,165,250,0.11)",
-                          borderTopWidth: 1.8,
-                          borderTopColor: "#60a5fa",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 13.2,
-                            fontWeight: "900",
-                            color: "#1e40af",
-                          }}
-                        >
-                          TOTALI PËR PAGESË
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 15.2,
-                            fontWeight: "900",
-                            color: "#1e40af",
-                          }}
-                        >
-                          {grandTotal.toFixed(2)} €
-                        </Text>
-                      </View>
-                    </View>
-                    </View>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 20, alignItems: "flex-start", marginBottom: 28 }}>
+              <BankAccounts />
+              <TotalsBox subtotalNet={subtotalNet} totalVAT={totalVAT} transporti={transporti} rabati={rabati} grandTotal={grandTotal} user={user} />
             </View>
-
-            {/* SIGNATURE LINES – ONLY ONCE, AT THE VERY END */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                paddingHorizontal: 20,
-                paddingTop: 20,
-                borderTopWidth: 0.9,
-                borderTopColor: "#cbd5e1",
-              }}>
-              <View style={{ flexDirection: "row", gap: 150 }}>
-                <View style={{ alignItems: "center" }}>
-                  <View
-                    style={{
-                      width: 180,
-                      height: 1.4,
-                      backgroundColor: "#1e293b",
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 9,
-                      fontWeight: "600",
-                      color: "#475569",
-                      marginBottom: 4,
-                    }}>
-                    Dorezoi
-                  </Text>
-                </View>
-
-                <View style={{ alignItems: "center" }}>
-                  <View
-                    style={{
-                      width: 180,
-                      height: 1.4,
-                      backgroundColor: "#1e293b",
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 9,
-                      fontWeight: "600",
-                      color: "#475569",
-                      marginBottom: 4,
-                    }}>
-                    Pranoi
-                  </Text>
-                </View>
-              </View>
-            </View>
+            <SignatureLines />
           </View>
 
-          {/* Tiny Elegant Footer Line */}
-          <View style={styles.footer} fixed>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                borderTopWidth: 0.9,
-                borderTopColor: "#cbd5e1",
-              }}>
-              <Text
-                style={{ fontSize: 8, color: "#64748b", fontWeight: "500" }}>
-                Faleminderit për blerjen! • {business.EmriIBiznesit} ©{" "}
-                {new Date().getFullYear()}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 8.2,
-                  color: "#475569",
-                  fontWeight: "600",
-                }}>
-                Faqja {totalPages + 1} nga {totalPages + 1}
-              </Text>
-            </View>
-          </View>
-          {/* FOOTER END*/}
+          <PageFooter pageNum={totalPagesDisplay} totalPagesDisplay={totalPagesDisplay} />
         </Page>
       )}
     </Document>

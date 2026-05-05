@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Modal from "react-bootstrap/Modal";
+import { Button, Form, Modal, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
@@ -124,24 +122,22 @@ function EditoGrupetEProduktit(props) {
         <Modal
           size="sm"
           show={fushatEZbrazura}
-          onHide={() => setFushatEZbrazura(false)}>
+          onHide={() => setFushatEZbrazura(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title style={{ color: "red" }} as="h6">
-              Ndodhi nje gabim
-            </Modal.Title>
+            <Modal.Title className="text-danger">Ndodhi një gabim</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <strong style={{ fontSize: "10pt" }}>
-              Ju lutemi plotesoni te gjitha fushat me{" "}
-              <span style={{ color: "red" }}>*</span>
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <div className="mb-3 text-danger">
+              <FontAwesomeIcon icon={faXmark} size="3x" />
+            </div>
+            <p className="text-white">Ju lutem plotësoni të gjitha fushat me *</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              onClick={() => setFushatEZbrazura(false)}
-              variant="secondary">
-              Mbylle <FontAwesomeIcon icon={faXmark} />
+              className="btn-cancel w-100"
+              onClick={() => setFushatEZbrazura(false)}>
+              Mbylle
             </Button>
           </Modal.Footer>
         </Modal>
@@ -150,67 +146,72 @@ function EditoGrupetEProduktit(props) {
         <Modal
           size="sm"
           show={kontrolloNjesineMatese}
-          onHide={() => setKontrolloNjesineMatese(false)}>
+          onHide={() => setKontrolloNjesineMatese(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title as="h6">Konfirmo vendosjen</Modal.Title>
+            <Modal.Title>Konfirmo Ndryshimin</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <span style={{ fontSize: "10pt" }}>
-              Kjo Njesi Matese ekziston ne sistem!
-            </span>
-            <br />
-            <strong style={{ fontSize: "10pt" }}>
-              A jeni te sigurt qe deshironi te vazhdoni?
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <p className="text-warning mb-2">Ky emër grupi ekziston!</p>
+            <p className="text-white small">A jeni të sigurt që dëshironi të vazhdoni?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              variant="secondary"
+              className="btn-cancel"
               onClick={() => setKontrolloNjesineMatese(false)}>
-              Korrigjo <FontAwesomeIcon icon={faXmark} />
+              Anulo
             </Button>
             <Button
-              size="sm"
               variant="warning"
-              onClick={() => {
-                handleSubmit();
-              }}>
-              Vazhdoni
+              className="px-4"
+              onClick={() => handleSubmit()}>
+              Vazhdo
             </Button>
           </Modal.Footer>
         </Modal>
       )}
-      <Modal className="modalEditShto" show={true} onHide={() => props.largo()}>
+      <Modal show={true} onHide={() => props.largo()} className="sp-modal">
         <Modal.Header closeButton>
           <Modal.Title>Edito Grupin e Produktit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>ID Grupi i Produktit</Form.Label>
-              <Form.Control value={njesiaMatese.idGrupiProduktit} disabled />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>
-                Grupi i Produktit<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-              <Form.Control
-                onChange={(e) => handleNjesiaMateseChange(e.target.value)}
-                value={njesiaMatese.grupiIProduktit}
-                type="text"
-                placeholder="Grupi i Produktit"
-                autoFocus
-              />
-            </Form.Group>
-          </Form>
+          <div className="sp-form-container p-2">
+            <Form>
+              <Row className="g-4 mb-3">
+                <Col md="4">
+                  <div className="sp-input-group">
+                    <label className="sp-label">ID</label>
+                    <Form.Control
+                      value={njesiaMatese.idGrupiProduktit}
+                      disabled
+                      className="sp-input"
+                      style={{ opacity: 0.6 }}
+                    />
+                  </div>
+                </Col>
+                <Col md="8">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Grupi i Produktit <span className="text-danger">*</span></label>
+                    <Form.Control
+                      onChange={(e) => handleNjesiaMateseChange(e.target.value)}
+                      value={njesiaMatese.grupiIProduktit}
+                      type="text"
+                      className="sp-input"
+                      placeholder="Emri i grupit..."
+                      autoFocus
+                    />
+                  </div>
+                </Col>
+              </Row>
+            </Form>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={() => props.largo()}>
+            Anulo
           </Button>
-          <Button className="Butoni" onClick={handleKontrolli}>
-            Edito Grupin e Produktit <FontAwesomeIcon icon={faPenToSquare} />
+          <Button className="btn-save px-4" onClick={handleKontrolli}>
+            Përditëso Grupin
           </Button>
         </Modal.Footer>
       </Modal>

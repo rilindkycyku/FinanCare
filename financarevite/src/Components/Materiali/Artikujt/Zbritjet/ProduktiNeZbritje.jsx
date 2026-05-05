@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -11,44 +11,106 @@ import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/Kontr
 
 function ProduktiNeZbritje(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-  const [produkti, setProdukti] = useState("");
   const [qmimiBleresProduktit, setQmimiBleresProduktit] = useState(0.0);
   const [qmimiShitesProduktit, setQmimiShitesProduktit] = useState(0.0);
   const [rabati, setRabati] = useState(0.0);
   const [dataSkadimit, setDataSkadimit] = useState(
     new Date().toISOString().substring(0, 10)
   );
-  const [produktet, setProduktet] = useState([]);
-  const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
   const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
   const [zbritjaNeRregull, setZbritjaNeRregull] = useState(false);
   const [kaZbritje, setKaZbritje] = useState(false);
 
+  // ── Optimized product search ──────────────────────────────────────────────
+  const [allOptions, setAllOptions] = useState([]);   // full list loaded once
+  const [optionsSelected, setOptionsSelected] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const getToken = localStorage.getItem("token");
+  const authentikimi = useMemo(() => ({
+    headers: { Authorization: `Bearer ${getToken}` }
+  }), [getToken]);
 
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
-
+  // Single fetch on mount
   useEffect(() => {
-    const vendosProduktet = async () => {
+    let active = true;
+    const fetchProduktet = async () => {
       try {
-        const produktet = await axios.get(
-          `${API_BASE_URL}/api/Produkti/Products`,
-          authentikimi
-        );
-        setProduktet(produktet.data);
+        setIsLoading(true);
+        const res = await axios.get(`${API_BASE_URL}/api/Produkti/Products`, authentikimi);
+        if (!active) return;
+        let raw = res.data;
+        if (raw?.$values) raw = raw.$values;
+        if (!Array.isArray(raw)) raw = [];
+        setAllOptions(raw.map(item => ({
+          value: item.produktiID,
+          label: `${item.barkodi || "—"} · ${item.emriProduktit}`,
+          item,
+        })));
       } catch (err) {
-        console.log(err);
+        console.error("Fetch produktet failed:", err);
+      } finally {
+        if (active) setIsLoading(false);
       }
     };
+    fetchProduktet();
+    return () => { active = false; };
+  }, [API_BASE_URL, authentikimi]);
 
-    vendosProduktet();
-  }, [perditeso]);
+  // Client-side filter capped at 50 — fast even with 10 000+ products
+  const filteredOptions = useMemo(() => {
+    if (!inputValue || inputValue.length < 2) return [];
+    const lower = inputValue.toLowerCase();
+    const results = [];
+    for (let i = 0; i < allOptions.length; i++) {
+      if (allOptions[i].label.toLowerCase().includes(lower)) {
+        results.push(allOptions[i]);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValue, allOptions]);
+
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      background: "#162033",
+      borderColor: state.isFocused ? "#10b981" : "rgba(255,255,255,0.10)",
+      boxShadow: state.isFocused ? "0 0 0 3px rgba(16,185,129,0.15)" : "none",
+      borderRadius: "8px",
+      "&:hover": { borderColor: "#10b981" },
+    }),
+    input: (base) => ({ ...base, color: "#f1f5f9" }),
+    placeholder: (base) => ({ ...base, color: "#94a3b8" }),
+    singleValue: (base) => ({ ...base, color: "#f1f5f9" }),
+    menu: (base) => ({
+      ...base,
+      background: "#162033",
+      border: "1px solid rgba(255,255,255,0.10)",
+      borderRadius: "10px",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+      zIndex: 1060,
+    }),
+    option: (base, { isFocused, isSelected }) => ({
+      ...base,
+      background: isSelected ? "#10b981" : isFocused ? "#1e2d45" : "transparent",
+      color: isSelected ? "#fff" : "#e2e8f0",
+      cursor: "pointer",
+      borderRadius: "6px",
+      padding: "0.6rem 1rem",
+    }),
+    loadingIndicator: (base) => ({ ...base, color: "#10b981" }),
+    loadingMessage: (base) => ({ ...base, color: "#94a3b8" }),
+    noOptionsMessage: (base) => ({ ...base, color: "#94a3b8" }),
+    indicatorSeparator: () => ({ display: "none" }),
+    dropdownIndicator: (base) => ({ ...base, color: "#94a3b8" }),
+    clearIndicator: (base) => ({ ...base, color: "#94a3b8", "&:hover": { color: "#ef4444" } }),
+  };
+
 
   const handleZbritja = (value) => {
     const element = document.getElementById("rabati");
@@ -134,32 +196,19 @@ function ProduktiNeZbritje(props) {
     }
   }
 
-  const [options, setOptions] = useState([]);
-  const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/api/Produkti/Products`, authentikimi)
-      .then((response) => {
-        console.log(response);
-        const fetchedoptions = response.data.map((item) => ({
-          value: item.produktiID,
-          label: item.emriProduktit,
-          item: item,
-        }));
-        setOptions(fetchedoptions);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+
 
   const handleChange = async (partneri) => {
+    // isClearable fires null when user clears the selection
+    if (!partneri) {
+      setOptionsSelected(null);
+      setQmimiBleresProduktit(0);
+      setQmimiShitesProduktit(0);
+      setRabati(0);
+      setKaZbritje(false);
+      setZbritjaNeRregull(false);
+      return;
+    }
     setKaZbritje(false);
     setRabati(0);
     setOptionsSelected(partneri);
@@ -173,7 +222,7 @@ function ProduktiNeZbritje(props) {
       setShfaqMesazhin(true);
     } else {
       const element = document.getElementById("dataSkadimit");
-      element.focus();
+      if (element) element.focus();
     }
   };
 
@@ -216,10 +265,19 @@ function ProduktiNeZbritje(props) {
               <Select
                 value={optionsSelected}
                 onChange={handleChange}
-                options={options}
-                id="produktiSelect" // Setting the id attribute
-                inputId="produktiSelect-input" // Setting the input id attribute
-                styles={customStyles}
+                onInputChange={(val) => setInputValue(val)}
+                options={filteredOptions}
+                isLoading={isLoading}
+                id="produktiSelect"
+                inputId="produktiSelect-input"
+                styles={selectStyles}
+                placeholder={isLoading ? "Duke u ngarkuar..." : "Kërko barkodin ose emrin..."}
+                isClearable
+                noOptionsMessage={() =>
+                  inputValue.length < 2
+                    ? "Shkruani të paktën 2 karaktere..."
+                    : "Nuk u gjet asnjë produkt"
+                }
               />
             </Form.Group>
             <Form.Group

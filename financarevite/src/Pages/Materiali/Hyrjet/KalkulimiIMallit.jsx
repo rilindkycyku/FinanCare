@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +15,8 @@ import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
-import ImportoNgaPranimiMallit from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/ImportoNgaPranimiMallit";
+import ImportoNgaPranimiMallit from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/ImportoNgaPranimiMallit";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function KalkulimiIMallit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -48,7 +47,7 @@ function KalkulimiIMallit(props) {
   const [idKalkulimitEdit, setIdKalkulimitEdit] = useState(0);
 
   const [edito, setEdito] = useState(false);
-  
+
   const [importo, setImporto] = useState(false);
 
   const [teDhenat, setTeDhenat] = useState([]);
@@ -73,17 +72,26 @@ function KalkulimiIMallit(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
-        const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-          authentikimi
-        );
+        // Build URL with date parameters
+        const url = `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`;
+
+        const kalkulimi = await axios.get(url, authentikimi);
         const kalkulimet = kalkulimi.data.filter(
-          (item) => item.llojiKalkulimit === "HYRJE"
+          (item) => item.llojiKalkulimit === "HYRJE",
         );
+        console.log(kalkulimet);
         setKalkulimet(
           kalkulimet.map((k) => ({
             ID: k.idRegjistrimit,
@@ -99,7 +107,7 @@ function KalkulimiIMallit(props) {
             "Lloji Pageses": k.llojiPageses,
             "Statusi Kalkulimit":
               k.statusiKalkulimit === "true" ? "I Mbyllur" : "I Hapur",
-          }))
+          })),
         );
         setLoading(false);
       } catch (err) {
@@ -109,7 +117,7 @@ function KalkulimiIMallit(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]); // Add date filters to dependencies
 
   useEffect(() => {
     if (getID) {
@@ -117,7 +125,7 @@ function KalkulimiIMallit(props) {
         try {
           const perdoruesi = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-            authentikimi
+            authentikimi,
           );
           setTeDhenat(perdoruesi.data);
         } catch (err) {
@@ -138,7 +146,7 @@ function KalkulimiIMallit(props) {
       try {
         const partneri = await axios.get(
           `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
-          authentikimi
+          authentikimi,
         );
         setPartneret(partneri.data);
       } catch (err) {
@@ -154,7 +162,7 @@ function KalkulimiIMallit(props) {
       try {
         const nrFat = await axios.get(
           `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=HYRJE`,
-          authentikimi
+          authentikimi,
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
       } catch (err) {
@@ -189,7 +197,7 @@ function KalkulimiIMallit(props) {
             nrRendorFatures: nrRendorKalkulimit + 1,
             llojiKalkulimit: "HYRJE",
           },
-          authentikimi
+          authentikimi,
         )
         .then((response) => {
           console.log(response);
@@ -219,13 +227,13 @@ function KalkulimiIMallit(props) {
         .put(
           `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
-          authentikimi
+          authentikimi,
         )
         .then(async () => {
           setRegjistroKalkulimin(false);
           var r = await axios.get(
             `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idKalkulimitEdit}`,
-            authentikimi
+            authentikimi,
           );
           if (r.data.regjistrimet.llojiPageses !== "Borxh") {
             await axios.post(
@@ -235,8 +243,8 @@ function KalkulimiIMallit(props) {
                 stafiID: r.data.regjistrimet.stafiID,
                 totaliPaTVSH: parseFloat(
                   r.data.regjistrimet.totaliPaTVSH +
-                    r.data.regjistrimet.tvsh -
-                    r.data.rabati
+                  r.data.regjistrimet.tvsh -
+                  r.data.rabati,
                 ),
                 tvsh: 0,
                 idPartneri: r.data.regjistrimet.idPartneri,
@@ -250,7 +258,7 @@ function KalkulimiIMallit(props) {
                 idBonusKartela: null,
                 statusiKalkulimit: "true",
               },
-              authentikimi
+              authentikimi,
             );
           }
         });
@@ -284,18 +292,9 @@ function KalkulimiIMallit(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
-      .get(
-        `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
-        authentikimi
-      )
+      .get(`${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data
           .filter((item) => item.idPartneri !== 2 && item.idPartneri !== 3)
@@ -360,32 +359,34 @@ function KalkulimiIMallit(props) {
           />
         )}
         {loading ? (
-          <div className="Loader">
+          <div className="d-flex align-items-center justify-content-center py-5">
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
-              wrapperStyle={{}}
-              wrapperClass=""
               visible={true}
             />
+            <span className="text-soft ms-3">Duke ngarkuar...</span>
           </div>
         ) : (
           !regjistroKalkulimin &&
           !shfaqTeDhenat && (
             <>
-              <h1 className="title">Kalkulimi i Mallit</h1>
+              <div className="mb-4">
+                <h1 className="h2 fw-bold text-white mb-1">Kalkulimi i Mallit</h1>
+                <p className="text-soft opacity-75 small">Regjistrimi dhe menaxhimi i hyrjeve të mallit</p>
+              </div>
 
               <Container fluid>
                 <Row>
-                  <Col>
-                    <Form>
-                      <Form.Group controlId="idDheEmri">
-                        <Form.Label>Nr. Rendor i Kalkulimit</Form.Label>
+                  <Form className="row">
+                    <Col md={4} className="mb-3">
+                      <Form.Group controlId="nrRendorKalkulimit">
+                        <Form.Label className="sp-label">Nr. Rendor i Kalkulimit</Form.Label>
                         <Form.Control
-                          id="nrRendorKalkulimit"
+                          className="sp-input"
                           type="number"
                           value={
                             nrRendorKalkulimit ? nrRendorKalkulimit + 1 : 1
@@ -393,24 +394,33 @@ function KalkulimiIMallit(props) {
                           disabled
                         />
                       </Form.Group>
-                      <Form.Group controlId="idDheEmri">
-                        <Form.Label>Partneri</Form.Label>
+                    </Col>
+                    <Col md={4} className="mb-3">
+                      <Form.Group controlId="produktiSelect">
+                        <Form.Label className="sp-label">Partneri</Form.Label>
                         <Select
+                          className="sp-select-container"
+                          classNamePrefix="sp-select"
                           value={optionsSelected}
                           onChange={handleChange}
                           options={options}
-                          id="produktiSelect" // Setting the id attribute
-                          inputId="produktiSelect-input" // Setting the input id attribute
+                          id="produktiSelect"
+                          inputId="produktiSelect-input"
                           isDisabled={edito}
-                          styles={customStyles}
+                          styles={darkSelectStyles}
+                          placeholder="Zgjidh partnerin..."
                         />
                       </Form.Group>
-                      <Form.Group>
-                        <Form.Label>Nr. Fatures</Form.Label>
+                    </Col>
+                    <Col md={4} className="mb-3">
+                      <Form.Group controlId="nrFatures">
+                        <Form.Label className="sp-label">Nr. Fatures</Form.Label>
                         <Form.Control
+                          className="sp-input"
                           id="nrFatures"
                           type="text"
                           value={nrFatures}
+                          placeholder="Shkruaj numrin e faturës"
                           onChange={(e) => {
                             setNrFatures(e.target.value);
                           }}
@@ -419,12 +429,13 @@ function KalkulimiIMallit(props) {
                           }}
                         />
                       </Form.Group>
-                    </Form>
-                  </Col>
-                  <Col>
-                    <Form.Group>
-                      <Form.Label>Data e Fatures</Form.Label>
+                    </Col>
+                  </Form>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="dataEFatures">
+                      <Form.Label className="sp-label">Data e Fatures</Form.Label>
                       <Form.Control
+                        className="sp-input"
                         id="dataEFatures"
                         type="date"
                         value={dataEFatures}
@@ -436,12 +447,13 @@ function KalkulimiIMallit(props) {
                         }}
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Lloji i Pageses</Form.Label>
-                      <select
+                  </Col>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="llojiIPageses">
+                      <Form.Label className="sp-label">Lloji i Pageses</Form.Label>
+                      <Form.Select
                         id="llojiIPageses"
-                        placeholder="LlojiIPageses"
-                        className="form-select"
+                        className="sp-input"
                         value={llojiIPageses ? llojiIPageses : 0}
                         onChange={(e) => {
                           setLlojiIPageses(e.target.value);
@@ -452,26 +464,21 @@ function KalkulimiIMallit(props) {
                         onKeyDown={(e) => {
                           ndrroField(e, "statusiIPageses");
                         }}>
-                        <option defaultValue value={0} key={0} disabled>
+                        <option value={0} disabled>
                           Zgjedhni Llojin e Pageses
                         </option>
-                        <option key={1} value="Cash">
-                          Cash
-                        </option>
-                        <option key={2} value="Banke">
-                          Banke
-                        </option>
-                        <option key={3} value="Borxh">
-                          Borxh
-                        </option>
-                      </select>
+                        <option value="Cash">Cash</option>
+                        <option value="Banke">Banke</option>
+                        <option value="Borxh">Borxh</option>
+                      </Form.Select>
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Statusi i Pageses</Form.Label>
-                      <select
+                  </Col>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="statusiIPageses">
+                      <Form.Label className="sp-label">Statusi i Pageses</Form.Label>
+                      <Form.Select
                         id="statusiIPageses"
-                        placeholder="Statusi i Pageses"
-                        className="form-select"
+                        className="sp-input"
                         value={statusiIPageses}
                         onChange={(e) => {
                           setStatusiIPageses(e.target.value);
@@ -479,23 +486,20 @@ function KalkulimiIMallit(props) {
                         onKeyDown={(e) => {
                           ndrroField(e, "totPaTVSH");
                         }}
-                        disabled={llojiIPageses === "Borxh" ? true : false}>
-                        <option defaultValue value={0} key={0} disabled>
+                        disabled={llojiIPageses === "Borxh"}>
+                        <option value={0} disabled>
                           Zgjedhni Statusin e Pageses
                         </option>
-                        <option key={1} value="E Paguar">
-                          E Paguar
-                        </option>
-                        <option key={2} value="Pa Paguar">
-                          Pa Paguar
-                        </option>
-                      </select>
+                        <option value="E Paguar">E Paguar</option>
+                        <option value="Pa Paguar">Pa Paguar</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
-                  <Col>
-                    <Form.Group>
-                      <Form.Label>Totali Pa TVSH</Form.Label>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="totPaTVSH">
+                      <Form.Label className="sp-label">Totali Pa TVSH</Form.Label>
                       <Form.Control
+                        className="sp-input"
                         id="totPaTVSH"
                         type="number"
                         value={totPaTVSH}
@@ -507,9 +511,12 @@ function KalkulimiIMallit(props) {
                         }}
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>TVSH</Form.Label>
+                  </Col>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="TVSH">
+                      <Form.Label className="sp-label">TVSH</Form.Label>
                       <Form.Control
+                        className="sp-input"
                         id="TVSH"
                         type="number"
                         value={TVSH}
@@ -519,15 +526,57 @@ function KalkulimiIMallit(props) {
                         onKeyDown={handleMenaxhoTastetPagesa}
                       />
                     </Form.Group>
-                    <br />
+                  </Col>
+                  <Col md={4} className="d-flex align-items-end mb-3">
                     <Button
-                      className="mb-3 Butoni"
+                      className="btn-premium-shto w-100"
                       onClick={() => handleRegjistroKalkulimin()}>
-                      Regjistro <FontAwesomeIcon icon={faPlus} />
+                      Regjistro <FontAwesomeIcon icon={faPlus} className="ms-2" />
                     </Button>
                   </Col>
                 </Row>
                 <div className="mt-2">
+                  <Row className="mb-4 g-3 align-items-end">
+                    <Col md={4}>
+                      <Form.Group controlId="dataFillimFilter">
+                        <Form.Label className="sp-label small">Data Fillim</Form.Label>
+                        <Form.Control
+                          className="sp-input"
+                          type="date"
+                          value={dataFillim}
+                          onChange={(e) => {
+                            setDataFillim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group controlId="dataMbarimFilter">
+                        <Form.Label className="sp-label small">Data Mbarim</Form.Label>
+                        <Form.Control
+                          className="sp-input"
+                          type="date"
+                          value={dataMbarim}
+                          onChange={(e) => {
+                            setDataMbarim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Button
+                        className="btn-premium-outline w-100"
+                        onClick={() => {
+                          setDataFillim(new Date().toISOString().split("T")[0]);
+                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                        }}>
+                        Sot
+                      </Button>
+                    </Col>
+                  </Row>
+
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Kalkulimeve"

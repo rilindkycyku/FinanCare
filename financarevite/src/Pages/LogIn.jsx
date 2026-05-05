@@ -3,12 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import {
-  MDBContainer,
-  MDBCard,
-  MDBCardBody,
-  MDBInput
-} from "mdb-react-ui-kit";
+import { Mail, Lock, LogIn as LoginIcon } from "lucide-react";
 import Mesazhi from "../Components/TeTjera/layout/Mesazhi";
 import Titulli from "../Components/TeTjera/Titulli";
 
@@ -18,165 +13,126 @@ const LogIn = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [roles, setRoles] = useState([]);
-
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
   const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
-
-  function vendosEmail(value) {
-    setEmail(value);
-  }
-
-  function vendosPasswordin(value) {
-    setPassword(value);
-  }
-
   useEffect(() => {
-    const loggedUser = localStorage.getItem("user");
-
-    if (loggedUser) {
-      setLoggedIn(true);
+    if (getToken) {
+      navigate("/");
     }
-  }, []); // Added dependency array to avoid unnecessary re-runs
+  }, [getToken, navigate]);
 
   async function handleLogIn(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+
+    if (!email || !password) {
+      setPershkrimiMesazhit("Ju lutem plotësoni të gjitha fushat!");
+      setTipiMesazhit("danger");
+      setShfaqMesazhin(true);
+      return;
+    }
 
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/Authenticate/login`,
-        {
-          email: email,
-          password: password,
-        }
+        { email, password }
       );
 
-      if (response.status === 200) { // Fixed == to === for strict equality
+      if (response.status === 200) {
         const { token } = response.data;
-
         localStorage.setItem("token", token);
-
         const decodedToken = jwt_decode(token);
-
         localStorage.setItem("id", decodedToken.Id);
-
         navigate("/");
-      } else {
-        setPershkrimiMesazhit(
-          "<strong>Ju lutemi kontaktoni me stafin pasi ndodhi nje gabim ne server!</strong>"
-        );
-        setTipiMesazhit("danger");
-        setShfaqMesazhin(true);
       }
     } catch (error) {
-      setPershkrimiMesazhit(
-        "<strong>Ju lutemi kontrolloni te dhenat e juaja!</strong>"
-      );
+      setPershkrimiMesazhit("<strong>Të dhënat janë gabim!</strong> Provoni përsëri.");
       setTipiMesazhit("danger");
       setShfaqMesazhin(true);
+      console.error(error.response?.data?.message || error.message);
 
-      console.log(error);
     }
   }
 
-  const ndrroField = (e, tjetra) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault();
-      document.getElementById(tjetra).focus();
-    }
-  };
-
-  const handleMenaxhoTastet = (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleLogIn(event);
+      handleLogIn();
     }
   };
 
   return (
-    <>
+    <div className="auth-wrapper">
       <Titulli titulli={"Login"} />
 
-      <div className="logIn">
-        {shfaqMesazhin && (
+      {shfaqMesazhin && (
+        <div style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, width: '90%', maxWidth: '400px' }}>
           <Mesazhi
             setShfaqMesazhin={setShfaqMesazhin}
             pershkrimi={pershkrimiMesazhit}
             tipi={tipiMesazhit}
           />
-        )}
-        <MDBContainer fluid>
-          <MDBCard
-            className="bg-white my-5 mx-auto"
-            style={{
-              border: "none",
-              boxShadow: "0 0 20px #ddd",
-              borderRadius: "2rem",
-              maxWidth: "500px",
-              color: "#FFFFFF", // Set text color to white
-            }}
-          >
-            <MDBCardBody
-              className="p-5 w-100 d-flex flex-column"
-              style={{
-                border: "none",
-                boxShadow: "0 0 20px #ddd",
-                borderRadius: "2rem",
-                maxWidth: "500px",
-                backgroundColor: "#009879",
-              }}
-            >
-              <img
-                src="/img/web/d144a4e21cb54a7fb9c5a21d4eebdd50.svg" // Fixed path
-                alt="Logo"
-                className="logo mb-4"
-                style={{ maxWidth: "300px", alignSelf: "center" }}
-              />
-              <h3 className="formTitle">Log In</h3>
-              <p className="text-white-20 mb-4 p-text">
-                Please enter your email and password!
-              </p>
+        </div>
+      )}
 
-              <MDBInput
-                wrapperClass="mb-4 w-100"
-                label="Email address"
-                id="formControlEmailAddress"
+      <div className="auth-card">
+        <div className="auth-logo-container">
+          <img
+            src="/img/web/Logo.png"
+            alt="FinanCare Logo"
+            className="auth-logo"
+          />
+        </div>
+
+        <div className="auth-header">
+          <h1 className="auth-title">Mirësevini!</h1>
+          <p className="auth-subtitle">Ju lutem shënoni të dhënat tuaja për t'u kyçur.</p>
+        </div>
+
+        <form onSubmit={handleLogIn}>
+          <div className="auth-input-group">
+            <label className="auth-label">E-mail Adresa</label>
+            <div className="auth-input-wrapper">
+              <Mail className="auth-icon-left" size={18} />
+              <input
                 type="email"
-                size="lg"
-                onChange={(e) => vendosEmail(e.target.value)}
-                onKeyDown={(e) => ndrroField(e, "formControlPassword")}
+                className="auth-input"
+                placeholder="emri@shembull.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleKeyDown}
+                required
               />
-              <MDBInput
-                wrapperClass="mb-4 w-100"
-                label="Password"
-                id="formControlPassword"
+            </div>
+          </div>
+
+          <div className="auth-input-group">
+            <label className="auth-label">Fjalëkalimi</label>
+            <div className="auth-input-wrapper">
+              <Lock className="auth-icon-left" size={18} />
+              <input
                 type="password"
-                size="lg"
-                onChange={(e) => vendosPasswordin(e.target.value)}
-                onKeyDown={handleMenaxhoTastet}
+                className="auth-input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
+                required
               />
-              <button
-                className="button btn btn-primary btn-lg" // Fixed class syntax
-                role="button"
-                onClick={handleLogIn}
-              >
-                Login
-              </button>
-            </MDBCardBody>
-          </MDBCard>
-        </MDBContainer>
+            </div>
+          </div>
+
+          <button type="submit" className="auth-submit-btn d-flex align-items-center justify-content-center gap-2">
+            <LoginIcon size={20} />
+            <span>Kyçu në Sistem</span>
+          </button>
+        </form>
+
+
       </div>
-    </>
+    </div>
   );
 };
 

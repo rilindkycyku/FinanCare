@@ -1,100 +1,180 @@
+﻿import { useState } from "react";
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
-import { Button } from "react-bootstrap";
+import { Button, Modal, Table, Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faListCheck, faFilePdf, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const PrintLabels = ({ storeName, products }) => {
+  const [showModal, setShowModal] = useState(false);
+
   const generatePDF = () => {
-    const doc = new jsPDF("p", "mm", "a4"); // Portrait, millimeters, A4 size
-    const pageWidth = 210; // A4 page width in mm
-    const pageHeight = 297; // A4 page height in mm
+    const doc = new jsPDF("p", "mm", "a4");
 
-    // Label size and position
-    const labelWidth = 65; // Width of each label
-    const labelHeight = 30; // Height of each label
-    const margin = 2; // Reduced margin for each label
-    const columns = 3; // Number of columns
-    const rows = 9; // Number of rows
-    const padding = 1; // Reduced padding inside each label
+    // Optimized Compact Grid Settings (4x13 = 52 labels per page)
+    const columns = 4;
+    const rows = 13;
+    const margin = 5;
+    const gutter = 1; // Gap between labels for easy cutting
+    const labelWidth = (210 - (margin * 2) - (gutter * (columns - 1))) / columns;
+    const labelHeight = (297 - (margin * 2) - (gutter * (rows - 1))) / rows;
+    const padding = 1.5;
 
-    // Heights for the two sections of the label
-    const topSectionHeight = labelHeight / 2;
-    const bottomSectionHeight = labelHeight / 2;
-
-    let xPos = margin; // Horizontal start position for labels
-    let yPos = margin; // Vertical start position for labels
+    let xPos = margin;
+    let yPos = margin;
     let itemCount = 0;
 
     products.forEach((product) => {
       if (itemCount !== 0 && itemCount % (columns * rows) === 0) {
-        doc.addPage(); // Add a new page after filling the previous one
+        doc.addPage();
         xPos = margin;
         yPos = margin;
       }
 
-      // Draw the border for each label
+      // Draw Border
+      doc.setDrawColor(200);
+      doc.setLineWidth(0.05);
       doc.rect(xPos, yPos, labelWidth, labelHeight);
 
-      // Store Name (aligned on top, larger font size)
-      doc.setFontSize(7); // Adjusted font size
-      doc.text(storeName, xPos + padding, yPos + 4); // Reduced padding on top
+      // Header: Store Name
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(4.5);
+      doc.setTextColor(100);
+      doc.text(storeName.toUpperCase(), xPos + padding, yPos + 2.5);
 
-      // Product Name (wrapped text within top half of the label)
-      doc.setFontSize(9); // Font size for product name
-      const productLines = doc.splitTextToSize(
-        product.name,
-        labelWidth - 2 * padding
-      );
-      const productTextHeight = productLines.length * 7; // Calculate total height of text
-      doc.text(productLines, xPos + padding, yPos + 10); // Write product name
+      // Product Name (Compact)
+      doc.setFontSize(6.5);
+      doc.setTextColor(0);
+      const productLines = doc.splitTextToSize(product.name, labelWidth - (padding * 2));
+      doc.text(productLines, xPos + padding, yPos + 6);
 
-      // Adjust y position for price and barcode if product name is long
-      const adjustedYPos = yPos + topSectionHeight;
+      // PRICE (Main Focus)
+      doc.setFontSize(14);
+      const priceText = `${parseFloat(product.price).toFixed(2)}€`;
+      doc.text(priceText, xPos + padding, yPos + 13.5);
 
-      // Price (increased size, without text)
-      doc.setFontSize(15); // Increased font size
-      doc.text(`${product.price.toFixed(2)}€`, xPos + 5, adjustedYPos + 5); // Positioned in the bottom half
+      // Wholesale Price (Small footer)
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(4);
+      doc.setTextColor(80);
+      doc.text("QM. SH:", xPos + padding, yPos + 17);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6);
+      doc.text(`${parseFloat(product.wholesalePrice).toFixed(2)}€`, xPos + padding, yPos + 20);
 
-      // Wholesale Price (aligned with price, in the same column)
-      doc.setFontSize(8); // Reduced font size
-      doc.text(
-        `${product.wholesalePrice.toFixed(2)}€ - Q. SH.`,
-        xPos + 5,
-        adjustedYPos + 12
-      ); // Positioned below price
-
-      // Generate barcode inside the label, at the bottom
+      // Barcode (Right Bottom)
       const canvas = document.createElement("canvas");
       JsBarcode(canvas, product.barcode, {
         format: "CODE128",
-        width: 1.5, // Barcode width
-        height: 20, // Reduced height for barcode
-        displayValue: true, // Show barcode value
-        fontSize: 17, // Smaller font size for barcode value
+        width: 1,
+        height: 25,
+        displayValue: true,
+        fontSize: 14,
+        margin: 0
       });
       const barcodeImage = canvas.toDataURL("image/png");
-      doc.addImage(barcodeImage, "PNG", xPos + 25, adjustedYPos + 3, 35, 11); // Adjusted size and position
+      doc.addImage(barcodeImage, "PNG", xPos + labelWidth - 21, yPos + 13.5, 20, 5.5);
 
-      // Update positions for the next label
       itemCount++;
       if (itemCount % columns === 0) {
         xPos = margin;
-        yPos += labelHeight + 2; // Move down for the next row
+        yPos += labelHeight + gutter;
       } else {
-        xPos += labelWidth + 2; // Move right for the next column
+        xPos += labelWidth + gutter;
       }
     });
 
-    doc.save("Qmimorja.pdf"); // Save the PDF
+    doc.save("Qmimorja.pdf");
   };
 
   return (
-    <div>
-      <Button className="mb-3 Butoni" onClick={() => generatePDF()}>
-        Shtyp Qmimet <FontAwesomeIcon icon={faPrint} />
+    <>
+      <Button
+        className="btn-save px-4 d-flex align-items-center gap-2"
+        onClick={() => setShowModal(true)}
+      >
+        <FontAwesomeIcon icon={faPrint} />
+        Shtyp Çmimet
       </Button>
-    </div>
+
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        size="lg"
+        centered
+        className="sp-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title className="d-flex align-items-center gap-2">
+            <FontAwesomeIcon icon={faListCheck} className="text-primary" />
+            Konfirmimi i Çmimores
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mb-4">
+            <h6 className="text-white opacity-75 mb-1">Dyqani: <span className="text-white fw-bold">{storeName}</span></h6>
+            <p className="text-white-50 small">Më poshtë është lista e produkteve që do të gjenerohen në PDF. Kontrolloni çmimet para shtypjes.</p>
+          </div>
+
+          <div className="sp-table-container custom-scrollbar" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+            <Table hover variant="dark" className="sp-table">
+              <thead>
+                <tr>
+                  <th>Produkti</th>
+                  <th>Barkodi</th>
+                  <th className="text-end">Çmimi Pakicë</th>
+                  <th className="text-end">Çmimi Shumicë</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products && products.length > 0 ? (
+                  products.map((item, index) => (
+                    <tr key={index}>
+                      <td className="fw-semibold">{item.name}</td>
+                      <td><code className="text-info">{item.barcode}</code></td>
+                      <td className="text-end text-success fw-bold">{parseFloat(item.price).toFixed(2)}€</td>
+                      <td className="text-end text-warning fw-bold">{parseFloat(item.wholesalePrice).toFixed(2)}€</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center py-4 text-white-50 italic">
+                      Nuk ka produkte për të shtypur.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
+
+          <div className="mt-4 d-flex justify-content-between align-items-center">
+            <div className="text-white-50 small">
+              Totali i Etiketave: <Badge bg="primary" className="ms-1">{products.length}</Badge>
+            </div>
+            <div className="text-white-50 small">
+              Formati: <Badge bg="secondary" className="ms-1">A4 (4x13 Labels - Compact)</Badge>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className="btn-cancel px-4" onClick={() => setShowModal(false)}>
+            <FontAwesomeIcon icon={faXmark} className="me-2" />
+            Anulo
+          </Button>
+          <Button
+            className="btn-save px-4"
+            onClick={() => {
+              generatePDF();
+              setShowModal(false);
+            }}
+            disabled={!products || products.length === 0}
+          >
+            <FontAwesomeIcon icon={faFilePdf} className="me-2" />
+            Gjenero PDF
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 

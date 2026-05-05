@@ -1,0 +1,72 @@
+services:
+
+  # ── SQL Server ───────────────────────────────────────────────────────────────
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: financare-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${DB_SA_PASSWORD}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    networks:
+      - app-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${DB_SA_PASSWORD} -C -Q 'SELECT 1'"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # ── ASP.NET Core API ─────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./FinanCareWebAPI/FinanCareWebAPI
+      dockerfile: Dockerfile
+    container_name: financare-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:80"
+      ConnectionStrings__Conn: "Server=db;Database=FinanCareDB;User Id=sa;Password=${DB_SA_PASSWORD};TrustServerCertificate=True"
+      JwtConfig__Secret: "${JWT_SECRET}"
+    ports:
+      - "7286:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: always
+
+  # ── React Frontend (nginx) ───────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./financarevite
+      dockerfile: Dockerfile
+    container_name: financare-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - app-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  sqldata:
+
+networks:
+  app-network:
+    driver: bridge

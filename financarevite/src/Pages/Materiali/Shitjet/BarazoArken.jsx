@@ -1,8 +1,8 @@
-import NavBar from "../../../Components/TeTjera/layout/NavBar";
+﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
-import "../../Styles/DizajniPergjithshem.css";
+import "../../Styles/PremiumTheme.css";
 
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
@@ -273,7 +273,7 @@ function BarazimiArkes() {
   if (loadingUser || loading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
-        <TailSpin height="100" width="100" color="#009879" />
+        <TailSpin height="100" width="100" color="#10b981" />
       </div>
     );
   }
@@ -284,7 +284,7 @@ function BarazimiArkes() {
       <NavBar />
       <Titulli titulli={"Barazo Arken"} />
 
-      <div className="containerDashboardP py-4">
+      <div className="containerDashboardP py-2">
         {shfaqMesazhin && (
           <Mesazhi
             setShfaqMesazhin={setShfaqMesazhin}
@@ -297,36 +297,32 @@ function BarazimiArkes() {
             {error}
           </Alert>
         )}
-        <div className="text-center mb-4">
-          <h1 className="h3 fw-bold text-primary">Barazimi i Arkës</h1>
+        <div className="text-center mb-3">
+          <h1 className="h2 fw-bold text-dark mb-2">Barazimi i Arkës</h1>
           <p className="text-muted small">
-            {new Date().toLocaleDateString("sq-AL", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+            {(() => {
+              const days = ["E diel", "E hënë", "E martë", "E mërkurë", "E enjte", "E premte", "E shtunë"];
+              const months = ["janar", "shkurt", "mars", "prill", "maj", "qershor", "korrik", "gusht", "shtator", "tetor", "nëntor", "dhjetor"];
+              const d = new Date();
+              return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+            })()}
           </p>
         </div>
 
-        <Card
-          className="shadow border-0 rounded-3 mx-auto"
-          style={{ maxWidth: "1000px" }}>
-          <Card.Header
-            className="bg-gradient text-white py-3 text-center"
-            style={{ background: "linear-gradient(135deg, #007bff, #009879)" }}>
-            <h4 className="mb-0">Regjistrimi i Barazimit</h4>
-          </Card.Header>
+        <Card className="sp-card mx-auto" style={{ maxWidth: "1400px" }}>
+          <div className="sp-card-header text-center">
+            <h3>Regjistrimi i Barazimit të Arkës</h3>
+          </div>
 
-          <Card.Body className="p-4">
+          <Card.Body className="px-xl-5 py-xl-3 p-3">
             <Form>
-              <Row className="mb-4">
+              <Row className="mb-3">
                 <Col>
-                  <Form.Label className="fw-bold text-primary">
-                    Zgjidh Arkëtarin
-                  </Form.Label>
+                  <Form.Label className="sp-label">Zgjidh Arkëtarin</Form.Label>
                   <Select
                     ref={selectRef}
+                    className="sp-select"
+                    classNamePrefix="sp-select"
                     options={arkatarOptions}
                     value={selectedOption}
                     onChange={(option) => {
@@ -344,7 +340,6 @@ function BarazimiArkes() {
                     menuPosition="fixed"
                     styles={{
                       menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                      control: (base) => ({ ...base, minHeight: 50 }),
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -358,187 +353,132 @@ function BarazimiArkes() {
 
               <Row className="g-4">
                 <Col lg={6}>
-                  <Card className="h-100 border-0 shadow-sm">
-                    <Card.Header className="bg-success text-white text-center py-2">
-                      <h5 className="mb-0">HYRJE</h5>
-                    </Card.Header>
-                    <Card.Body className="p-3">
-                      <div className="d-grid gap-3">
-                        <Form.Group>
-                          <Form.Label className="small fw-semibold">
-                            Fillimi i Arkës
-                          </Form.Label>
-                          <InputGroup>
-                            <Form.Control
-                              ref={fillimiRef}
-                              type="text"
-                              inputMode="decimal"
-                              value={form.fillimiArkes}
-                              onChange={(e) =>
-                                setForm({
-                                  ...form,
-                                  fillimiArkes: e.target.value,
-                                })
-                              }
-                              onKeyDown={(e) => handleKeyDown(e, teShtuaraRef)}
-                              placeholder="0.00"
-                              className="fw-bold text-end"
-                            />
-                            <InputGroup.Text>€</InputGroup.Text>
-                            <Button
-                              ref={calcButtonRefs.fillimiArkes}
-                              variant="outline-success"
-                              size="sm"
-                              onClick={() => openCalculator("fillimiArkes")}>
-                              🧮
-                            </Button>
-                          </InputGroup>
-                        </Form.Group>
+                  <div className="sp-order-box green h-100">
+                    <div className="box-label mb-2 small">HYRJE (PARA NE ARKE)</div>
+                    <div className="d-grid gap-2">
+                      <Form.Group>
+                        <Form.Label className="sp-label small mb-1">Fillimi i Arkës</Form.Label>
+                        <InputGroup className="premium-input-group">
+                          <Form.Control
+                            ref={fillimiRef}
+                            className="sp-input text-end fw-bold"
+                            type="text"
+                            inputMode="decimal"
+                            value={form.fillimiArkes}
+                            onChange={(e) => setForm({ ...form, fillimiArkes: e.target.value })}
+                            onKeyDown={(e) => handleKeyDown(e, teShtuaraRef)}
+                            placeholder="0.00"
+                          />
+                          <InputGroup.Text className="bg-transparent border-0 text-success fw-bold">€</InputGroup.Text>
+                          <Button
+                            ref={calcButtonRefs.fillimiArkes}
+                            variant="link"
+                            className="text-success p-0 ms-1"
+                            onClick={() => openCalculator("fillimiArkes")}>
+                            <span style={{ fontSize: '1rem' }}>ðŸ§®</span>
+                          </Button>
+                        </InputGroup>
+                      </Form.Group>
 
-                        <Form.Group>
-                          <Form.Label className="small fw-semibold">
-                            Të Shtuara në Arkë
-                          </Form.Label>
-                          <InputGroup>
-                            <Form.Control
-                              ref={teShtuaraRef}
-                              type="text"
-                              inputMode="decimal"
-                              value={form.teShtuaraNeArke}
-                              onChange={(e) =>
-                                setForm({
-                                  ...form,
-                                  teShtuaraNeArke: e.target.value,
-                                })
-                              }
-                              onKeyDown={(e) => handleKeyDown(e, cashRef)}
-                              placeholder="0.00"
-                              className="fw-bold text-end"
-                            />
-                            <InputGroup.Text>€</InputGroup.Text>
-                            <Button
-                              ref={calcButtonRefs.teShtuaraNeArke}
-                              variant="outline-success"
-                              size="sm"
-                              onClick={() => openCalculator("teShtuaraNeArke")}>
-                              🧮
-                            </Button>
-                          </InputGroup>
-                        </Form.Group>
-                      </div>
-                    </Card.Body>
-                  </Card>
+                      <Form.Group>
+                        <Form.Label className="sp-label small mb-1">Të Shtuara në Arkë</Form.Label>
+                        <InputGroup className="premium-input-group">
+                          <Form.Control
+                            ref={teShtuaraRef}
+                            className="sp-input text-end fw-bold"
+                            type="text"
+                            inputMode="decimal"
+                            value={form.teShtuaraNeArke}
+                            onChange={(e) => setForm({ ...form, teShtuaraNeArke: e.target.value })}
+                            onKeyDown={(e) => handleKeyDown(e, cashRef)}
+                            placeholder="0.00"
+                          />
+                          <InputGroup.Text className="bg-transparent border-0 text-success fw-bold">€</InputGroup.Text>
+                          <Button
+                            ref={calcButtonRefs.teShtuaraNeArke}
+                            variant="link"
+                            className="text-success p-0 ms-1"
+                            onClick={() => openCalculator("teShtuaraNeArke")}>
+                            <span style={{ fontSize: '1rem' }}>ðŸ§®</span>
+                          </Button>
+                        </InputGroup>
+                      </Form.Group>
+                    </div>
+                  </div>
                 </Col>
 
                 <Col lg={6}>
-                  <Card className="h-100 border-0 shadow-sm">
-                    <Card.Header className="bg-danger text-white text-center py-2">
-                      <h5 className="mb-0">DALJE</h5>
-                    </Card.Header>
-                    <Card.Body className="p-3">
-                      <div className="d-grid gap-3">
-                        {[
-                          "cash",
-                          "monedha",
-                          "borxhe",
-                          "banka",
-                          "pagesFatura",
-                          "tjera",
-                        ].map((field, idx) => {
-                          const refs = [
-                            cashRef,
-                            monedhaRef,
-                            borxheRef,
-                            bankaRef,
-                            pagesFaturaRef,
-                            tjeraRef,
-                          ];
-                          const nextRef =
-                            idx < 5
-                              ? refs[idx + 1]
-                              : parseAmount(form.tjera) > 0
-                              ? pershkrimiRef
-                              : submitRef;
+                  <div className="sp-order-box blue h-100">
+                    <div className="box-label mb-2 small">DALJE (NUMERIMI ATY PER ATY)</div>
+                    <div className="d-grid gap-2">
+                      {[
+                        { field: "cash", label: "Cash (kartëmonedha)" },
+                        { field: "monedha", label: "Monedha (fizike)" },
+                        { field: "borxhe", label: "Borxhe" },
+                        { field: "banka", label: "Banka (POS)" },
+                        { field: "pagesFatura", label: "Paguar Fatura" },
+                        { field: "tjera", label: "Tjera" },
+                      ].map((item, idx) => {
+                        const refs = [cashRef, monedhaRef, borxheRef, bankaRef, pagesFaturaRef, tjeraRef];
+                        const nextRef = idx < 5 ? refs[idx + 1] : parseAmount(form.tjera) > 0 ? pershkrimiRef : submitRef;
 
-                          const labels = {
-                            cash: "Cash (karta/kuponë)",
-                            monedha: "Monedha (fizike)",
-                            borxhe: "Borxhe",
-                            banka: "Banka (POS)",
-                            pagesFatura: "Paguar Fatura",
-                            tjera: "Tjera",
-                          };
-
-                          return (
-                            <Form.Group key={field}>
-                              <Form.Label className="small fw-semibold">
-                                {labels[field]}
-                              </Form.Label>
-                              <InputGroup>
-                                <Form.Control
-                                  ref={refs[idx]}
-                                  type="text"
-                                  inputMode="decimal"
-                                  value={form[field]}
-                                  onChange={(e) =>
-                                    setForm({
-                                      ...form,
-                                      [field]: e.target.value,
-                                    })
-                                  }
-                                  onKeyDown={(e) => handleKeyDown(e, nextRef)}
-                                  placeholder="0.00"
-                                  className="fw-bold text-end"
-                                />
-                                <InputGroup.Text>€</InputGroup.Text>
-                                <Button
-                                  ref={calcButtonRefs[field]}
-                                  variant="outline-danger"
-                                  size="sm"
-                                  onClick={() => openCalculator(field)}>
-                                  🧮
-                                </Button>
-                              </InputGroup>
-                            </Form.Group>
-                          );
-                        })}
-                      </div>
-                    </Card.Body>
-                  </Card>
+                        return (
+                          <Form.Group key={item.field}>
+                            <Form.Label className="sp-label small mb-1">{item.label}</Form.Label>
+                            <InputGroup className="premium-input-group">
+                              <Form.Control
+                                ref={refs[idx]}
+                                className="sp-input text-end fw-bold"
+                                type="text"
+                                inputMode="decimal"
+                                value={form[item.field]}
+                                onChange={(e) => setForm({ ...form, [item.field]: e.target.value })}
+                                onKeyDown={(e) => handleKeyDown(e, nextRef)}
+                                placeholder="0.00"
+                              />
+                              <InputGroup.Text className="bg-transparent border-0 text-info fw-bold">€</InputGroup.Text>
+                              <Button
+                                ref={calcButtonRefs[item.field]}
+                                variant="link"
+                                className="text-info p-0 ms-1"
+                                onClick={() => openCalculator(item.field)}>
+                                <span style={{ fontSize: '1rem' }}>ðŸ§®</span>
+                              </Button>
+                            </InputGroup>
+                          </Form.Group>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </Col>
               </Row>
 
               {parseAmount(form.tjera) > 0 && (
                 <Row className="mt-3">
                   <Col>
-                    <Form.Group>
-                      <Form.Label className="fw-semibold text-danger small">
-                        Përshkrimi për "Tjera"
-                      </Form.Label>
-                      <Form.Control
-                        ref={pershkrimiRef}
-                        as="textarea"
-                        rows={2}
-                        value={form.pershkrimiTjera}
-                        onChange={(e) =>
-                          setForm({ ...form, pershkrimiTjera: e.target.value })
-                        }
-                        onKeyDown={(e) => handleKeyDown(e, submitRef)}
-                      />
-                    </Form.Group>
+                    <Form.Label className="sp-label text-danger small">Përshkrimi për "Tjera"</Form.Label>
+                    <Form.Control
+                      ref={pershkrimiRef}
+                      className="sp-input"
+                      as="textarea"
+                      rows={2}
+                      value={form.pershkrimiTjera}
+                      onChange={(e) => setForm({ ...form, pershkrimiTjera: e.target.value })}
+                      onKeyDown={(e) => handleKeyDown(e, submitRef)}
+                      placeholder="Specifikoni arsyen e shpenzimeve të tjera..."
+                    />
                   </Col>
                 </Row>
               )}
 
-              <div className="text-center mt-4">
+              <div className="text-center mt-3">
                 <Button
                   ref={submitRef}
-                  variant="success"
-                  size="lg"
-                  className="px-5 shadow-sm"
+                  className="btn-save px-5 py-3 fs-5"
                   disabled={error}
-                  onClick={handleSubmit}>
-                  Regjistro Barazimin
+                  onClick={handleSubmit}
+                  style={{ minWidth: '300px' }}>
+                  Përfundo dhe Ruaj Barazimin
                 </Button>
               </div>
             </Form>

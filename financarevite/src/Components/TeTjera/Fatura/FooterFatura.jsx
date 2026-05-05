@@ -1,4 +1,4 @@
-import "./Styles/Fatura.css";
+﻿import "./Styles/Fatura.css";
 import { View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 
 Font.register({
@@ -236,7 +236,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
             <Text>(Emri, Mbiemri, Nënshkrimi & Vula)</Text>
             <Text>(Personi Përgjegjës)</Text>
             <Text style={styles.bold}>
-              © FinanCare - POS, eOrder & More by Rilind Kyçyku
+              Â© FinanCare - POS, eOrder & More by Rilind Kyçyku
             </Text>
           </View>
           <View style={styles.signature}>
@@ -317,7 +317,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
           <span>(Emri, Mbiemri, Nëënshkrimi & Vula)</span>
           <span>(Personi Përgjegjës)</span>
           <br />
-          <strong>© FinanCare - POS, eOrder & More by Rilind Kyçyku</strong>
+          <strong>Â© FinanCare - POS, eOrder & More by Rilind Kyçyku</strong>
         </div>
         <div className="nenshkrimi">
           <span>_________________________________________________</span>

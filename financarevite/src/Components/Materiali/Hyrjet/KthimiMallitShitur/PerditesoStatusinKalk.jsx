@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPenToSquare,
   faCheck,
-  faXmark
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
@@ -41,7 +41,7 @@ function PerditesoStatusinKalk(props) {
       try {
         const produktet = await axios.get(
           `${API_BASE_URL}/api/Produkti/Products`,
-          authentikimi
+          authentikimi,
         );
         setProduktet(produktet.data);
       } catch (err) {
@@ -52,15 +52,23 @@ function PerditesoStatusinKalk(props) {
     vendosProduktet();
   }, [perditeso]);
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         const kalkulimet = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-          authentikimi
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+          authentikimi,
         );
         const kthimet = kalkulimet.data.filter(
-          (item) => item.llojiKalkulimit === "KMSH"
+          (item) => item.llojiKalkulimit === "KMSH",
         );
         setKalkulimet(kthimet);
       } catch (err) {
@@ -69,17 +77,17 @@ function PerditesoStatusinKalk(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso, hapKalkulimin, fshijKalkulimin]);
+  }, [perditeso, hapKalkulimin, fshijKalkulimin, dataFillim, dataMbarim]);
 
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         const kalkulimet = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetSipasStatusit?statusi=${statusiIFiltrimit}`,
-          authentikimi
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetSipasStatusit?statusi=${statusiIFiltrimit}&dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+          authentikimi,
         );
         const kthimet = kalkulimet.data.filter(
-          (item) => item.llojiKalkulimit === "KMSH"
+          (item) => item.llojiKalkulimit === "KMSH",
         );
         setKalkulimetEFiltruara(kthimet);
       } catch (err) {
@@ -88,7 +96,13 @@ function PerditesoStatusinKalk(props) {
     };
 
     shfaqKalkulimet();
-  }, [hapKalkulimin, fshijKalkulimin, statusiIFiltrimit]);
+  }, [
+    hapKalkulimin,
+    fshijKalkulimin,
+    statusiIFiltrimit,
+    dataFillim,
+    dataMbarim,
+  ]);
 
   async function ndryshoStatusinKalkulimit() {
     try {
@@ -96,7 +110,7 @@ function PerditesoStatusinKalk(props) {
         .put(
           `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${nrKalkulimit}&statusi=false`,
           {},
-          authentikimi
+          authentikimi,
         )
         .then(() => {
           filtroKalkulimet("hapKalkulimet");
@@ -106,13 +120,13 @@ function PerditesoStatusinKalk(props) {
       await axios
         .get(
           `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${nrKalkulimit}`,
-          authentikimi
+          authentikimi,
         )
         .then(async (teDhenat) => {
           for (let p of teDhenat.data) {
             await axios.get(
               `${API_BASE_URL}/api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin?idKalkulimi=${p.idRegjistrimit}&idProdukti=${p.idProduktit}&idTeDhenatKalkulimit=${p.id}&lloji=KMSH`,
-              authentikimi
+              authentikimi,
             );
           }
         });
@@ -128,7 +142,7 @@ function PerditesoStatusinKalk(props) {
       await axios
         .delete(
           `${API_BASE_URL}/api/Faturat/fshijKalkulimin?idKalkulimi=${nrKalkulimit}`,
-          authentikimi
+          authentikimi,
         )
         .then(() => {
           filtroKalkulimet("fshijKalkulimet");
@@ -146,7 +160,7 @@ function PerditesoStatusinKalk(props) {
     nrKalkulimit,
     dataFatures,
     llojiFatures,
-    funksioni
+    funksioni,
   ) {
     setEmriBiznesit(emriBiznesit);
     setNrFatures(nrFatures);
@@ -303,11 +317,48 @@ function PerditesoStatusinKalk(props) {
             {kalkulimetEFiltruara.length === 0
               ? "Lista e Kalkulimeve"
               : statusiIFiltrimit === "true"
-              ? "Lista e Kalkulimeve te Mbyllura"
-              : "Lista e Kalkulimeve te Hapura"}
+                ? "Lista e Kalkulimeve te Mbyllura"
+                : "Lista e Kalkulimeve te Hapura"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <Row className="mb-3">
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Data Fillim</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={dataFillim}
+                  onChange={(e) => {
+                    setDataFillim(e.target.value);
+                  }}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Data Mbarim</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={dataMbarim}
+                  onChange={(e) => {
+                    setDataMbarim(e.target.value);
+                  }}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3} className="d-flex align-items-end">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setDataFillim(new Date().toISOString().split("T")[0]);
+                  setDataMbarim(new Date().toISOString().split("T")[0]);
+                }}
+                className="w-100">
+                Sot
+              </Button>
+            </Col>
+          </Row>
           <Button
             style={{ marginRight: "0.5em" }}
             variant="success"
@@ -368,7 +419,7 @@ function PerditesoStatusinKalk(props) {
                     <td>
                       {new Date(k.dataRegjistrimit).toLocaleDateString(
                         "en-GB",
-                        { dateStyle: "short" }
+                        { dateStyle: "short" },
                       )}
                     </td>
                     <td>{k.llojiKalkulimit}</td>
@@ -385,7 +436,7 @@ function PerditesoStatusinKalk(props) {
                               k.idRegjistrimit,
                               k.dataRegjistrimit,
                               k.llojiKalkulimit,
-                              "hapKalkulimin"
+                              "hapKalkulimin",
                             );
                           }}>
                           <FontAwesomeIcon icon={faPenToSquare} />
@@ -402,7 +453,7 @@ function PerditesoStatusinKalk(props) {
                               k.idRegjistrimit,
                               k.dataRegjistrimit,
                               k.llojiKalkulimit,
-                              "fshijKalkulimin"
+                              "fshijKalkulimin",
                             );
                           }}>
                           <FontAwesomeIcon icon={faXmark} />
@@ -422,7 +473,7 @@ function PerditesoStatusinKalk(props) {
                     <td>
                       {new Date(k.dataRegjistrimit).toLocaleDateString(
                         "en-GB",
-                        { dateStyle: "short" }
+                        { dateStyle: "short" },
                       )}
                     </td>
                     <td>{k.llojiKalkulimit}</td>

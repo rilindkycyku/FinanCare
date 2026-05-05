@@ -1,43 +1,72 @@
+/* Global Reset & Base Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --primary: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.15);
+  --bg-main: #03070c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  background-color: var(--bg-main) !important;
+  color: #f1f5f9 !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 a {
-  text-decoration: none;
-  color: black;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+  color: inherit;
 }
 
-.App {
-  width: 100%;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-.App-logo {
-  height: 40vmin;
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+  border: 3px solid var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Modal Backdrops */
+.modal-backdrop.show {
+  opacity: 0.4 !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Standard Animations */
+[data-aos] {
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.aos-animate {
+  pointer-events: auto;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Fix for MDB Input focus */
+.form-outline .form-control:focus ~ .form-label {
+  color: var(--primary) !important;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.form-outline .form-control:focus ~ .form-notch .form-notch-middle {
+  border-color: var(--primary) !important;
 }

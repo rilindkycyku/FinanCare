@@ -18,82 +18,108 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             _context = context;
         }
 
+        // ============================================================================
+        // OPTIMIZATION 1: Calculate all totals in ONE query
+        // ============================================================================
         [Authorize]
         [HttpGet]
         [Route("totaleTeNdryshme")]
         public async Task<IActionResult> GetTotaleTeNdryshme()
         {
-            /* Prepare reusable date values */
             var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
             var yesterday = today.AddDays(-1);
             var startOfMonth = new DateTime(today.Year, today.Month, 1);
-            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+            var endOfMonth = startOfMonth.AddMonths(1);
             var startOfLastMonth = startOfMonth.AddMonths(-1);
-            var endOfLastMonth = startOfMonth.AddDays(-1);
+            var endOfLastMonth = startOfMonth;
 
-            /* General Totals */
-            var fatQuery = _context.Faturat.Where(x => x.LlojiKalkulimit == "FAT");
-            var flQuery = _context.Faturat.Where(x => x.LlojiKalkulimit == "FL");
-            var paragonQuery = _context.Faturat.Where(x => x.LlojiKalkulimit == "PARAGON");
+            // Single query to get all data we need
+            var allData = await _context.Faturat
+                .Where(x => x.DataRegjistrimit.HasValue)
+                .Select(x => new
+                {
+                    x.TotaliPaTVSH,
+                    x.TVSH,
+                    x.LlojiKalkulimit,
+                    x.DataRegjistrimit,
+                    IsSotme = x.DataRegjistrimit >= today && x.DataRegjistrimit < tomorrow,
+                    IsDjeshme = x.DataRegjistrimit >= yesterday && x.DataRegjistrimit < today,
+                    IsKeteMuaj = x.DataRegjistrimit >= startOfMonth && x.DataRegjistrimit < endOfMonth,
+                    IsMuajinKaluar = x.DataRegjistrimit >= startOfLastMonth && x.DataRegjistrimit < endOfLastMonth,
+                })
+                .ToListAsync();
 
-            var totShitjevePaTVSHFat = await fatQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveVetemTVSHFat = await fatQuery.SumAsync(p => p.TVSH);
-            var totShitjevePaTVSHFl = await flQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveVetemTVSHFl = await flQuery.SumAsync(p => p.TVSH);
-            var totShitjeveParagonPaTVSH = await paragonQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveParagonetemTVSH = await paragonQuery.SumAsync(p => p.TVSH);
+            // Calculate everything in memory (much faster than multiple DB queries)
+            var totShitjevePaTVSHFat = allData
+                .Where(x => x.LlojiKalkulimit == "FAT")
+                .Sum(p => p.TotaliPaTVSH ?? 0);
 
-            var totKlient = await _context.Partneri.CountAsync(x => (x.LlojiPartnerit == "B" || x.LlojiPartnerit == "B/F") && x.NUI.Equals("0"));
-            var totKlientBiznesi = await _context.Partneri.CountAsync(x => (x.LlojiPartnerit == "B" || x.LlojiPartnerit == "B/F") && !x.NUI.Equals("0"));
+            var totShitjeveVetemTVSHFat = allData
+                .Where(x => x.LlojiKalkulimit == "FAT")
+                .Sum(p => p.TVSH ?? 0);
+
+            var totShitjevePaTVSHFl = allData
+                .Where(x => x.LlojiKalkulimit == "FL")
+                .Sum(p => p.TotaliPaTVSH ?? 0);
+
+            var totShitjeveVetemTVSHFl = allData
+                .Where(x => x.LlojiKalkulimit == "FL")
+                .Sum(p => p.TVSH ?? 0);
+
+            var totShitjeveParagonPaTVSH = allData
+                .Where(x => x.LlojiKalkulimit == "PARAGON")
+                .Sum(p => p.TotaliPaTVSH ?? 0);
+
+            var totShitjeveParagonetemTVSH = allData
+                .Where(x => x.LlojiKalkulimit == "PARAGON")
+                .Sum(p => p.TVSH ?? 0);
+
+            // Count queries (still fast)
+            var totKlient = await _context.Partneri
+                .CountAsync(x => (x.LlojiPartnerit == "B" || x.LlojiPartnerit == "B/F") && x.NUI == "0");
+
+            var totKlientBiznesi = await _context.Partneri
+                .CountAsync(x => (x.LlojiPartnerit == "B" || x.LlojiPartnerit == "B/F") && x.NUI != "0");
+
             var totProdukteve = await _context.Produkti.CountAsync();
-            var totPorosive = await fatQuery.CountAsync();
-            var totPorosiveParagon = await paragonQuery.CountAsync();
+            var totPorosive = allData.Count(x => x.LlojiKalkulimit == "FAT");
+            var totPorosiveParagon = allData.Count(x => x.LlojiKalkulimit == "PARAGON");
 
-            /* Today's Totals */
-            var tomorrow = today.AddDays(1);
-            var todayFatQuery = fatQuery.Where(p => p.DataRegjistrimit >= today && p.DataRegjistrimit < tomorrow);
-            var todayFlQuery = flQuery.Where(p => p.DataRegjistrimit >= today && p.DataRegjistrimit < tomorrow);
+            // Today's data
+            var todaySotme = allData.Where(x => x.IsSotme).ToList();
+            var totPorosiveSotme = todaySotme.Count(x => x.LlojiKalkulimit == "FAT");
+            var totShitjeveSotmePaTVSHFat = todaySotme.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveSotmeVetemTVSHFat = todaySotme.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
+            var totShitjeveSotmePaTVSHFl = todaySotme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveSotmeVetemTVSHFl = todaySotme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
 
-            var totPorosiveSotme = await todayFatQuery.CountAsync();
-            var totShitjeveSotmePaTVSHFat = await todayFatQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveSotmeVetemTVSHFat = await todayFatQuery.SumAsync(p => p.TVSH);
-            var totShitjeveSotmePaTVSHFl = await todayFlQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveSotmeVetemTVSHFl = await todayFlQuery.SumAsync(p => p.TVSH);
+            // Monthly data
+            var dataKeteMuaj = allData.Where(x => x.IsKeteMuaj).ToList();
+            var totPorosiveMujore = dataKeteMuaj.Count(x => x.LlojiKalkulimit == "FAT");
+            var totShitjeveMujorePaTVSHFat = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveMujoreVetemTVSHFat = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
+            var totShitjeveMujorePaTVSHFl = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveMujoreVetemTVSHFl = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
 
-            /* Monthly Totals */
-            var monthFatQuery = fatQuery.Where(p => p.DataRegjistrimit >= startOfMonth && p.DataRegjistrimit <= endOfMonth);
-            var monthFlQuery = flQuery.Where(p => p.DataRegjistrimit >= startOfMonth && p.DataRegjistrimit <= endOfMonth);
+            // Yesterday's data
+            var dataDjeshme = allData.Where(x => x.IsDjeshme).ToList();
+            var totPorosiveDjeshme = dataDjeshme.Count(x => x.LlojiKalkulimit == "FAT");
+            var totShitjeveDjeshmePaTVSHFat = dataDjeshme.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveDjeshmeVetemTVSHFat = dataDjeshme.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
+            var totShitjeveDjeshmePaTVSHFl = dataDjeshme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveDjeshmeVetemTVSHFl = dataDjeshme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
 
-            var totPorosiveMujore = await monthFatQuery.CountAsync();
-            var totShitjeveMujorePaTVSHFat = await monthFatQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveMujoreVetemTVSHFat = await monthFatQuery.SumAsync(p => p.TVSH);
-            var totShitjeveMujorePaTVSHFl = await monthFlQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveMujoreVetemTVSHFl = await monthFlQuery.SumAsync(p => p.TVSH);
-
-            /* Yesterday's Totals */
-            var todayStart = today;
-            var yesterdayFatQuery = fatQuery.Where(p => p.DataRegjistrimit >= yesterday && p.DataRegjistrimit < todayStart);
-            var yesterdayFlQuery = flQuery.Where(p => p.DataRegjistrimit >= yesterday && p.DataRegjistrimit < todayStart);
-
-            var totPorosiveDjeshme = await yesterdayFatQuery.CountAsync();
-            var totShitjeveDjeshmePaTVSHFat = await yesterdayFatQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveDjeshmeVetemTVSHFat = await yesterdayFatQuery.SumAsync(p => p.TVSH);
-            var totShitjeveDjeshmePaTVSHFl = await yesterdayFlQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveDjeshmeVetemTVSHFl = await yesterdayFlQuery.SumAsync(p => p.TVSH);
-
-            /* Last Month's Totals */
-            var lastMonthFatQuery = fatQuery.Where(p => p.DataRegjistrimit >= startOfLastMonth && p.DataRegjistrimit <= endOfLastMonth);
-            var lastMonthFlQuery = flQuery.Where(p => p.DataRegjistrimit >= startOfLastMonth && p.DataRegjistrimit <= endOfLastMonth);
-
-            var totPorosiveMujoreKaluar = await lastMonthFatQuery.CountAsync();
-            var totShitjeveMujoreKaluarPaTVSHFat = await lastMonthFatQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveMujoreKaluarVetemTVSHFat = await lastMonthFatQuery.SumAsync(p => p.TVSH);
-            var totShitjeveMujoreKaluarPaTVSHFl = await lastMonthFlQuery.SumAsync(p => p.TotaliPaTVSH);
-            var totShitjeveMujoreKaluarVetemTVSHFl = await lastMonthFlQuery.SumAsync(p => p.TVSH);
+            // Last month's data
+            var dataMuajinKaluar = allData.Where(x => x.IsMuajinKaluar).ToList();
+            var totPorosiveMujoreKaluar = dataMuajinKaluar.Count(x => x.LlojiKalkulimit == "FAT");
+            var totShitjeveMujoreKaluarPaTVSHFat = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveMujoreKaluarVetemTVSHFat = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
+            var totShitjeveMujoreKaluarPaTVSHFl = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
+            var totShitjeveMujoreKaluarVetemTVSHFl = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
 
             var totalet = new
             {
-                /* General */
                 TotaliShitjeve = totShitjevePaTVSHFat + totShitjeveVetemTVSHFat - totShitjevePaTVSHFl - totShitjeveVetemTVSHFl,
                 TotaliKlient = totKlient,
                 TotaliKlientBiznesi = totKlientBiznesi,
@@ -101,20 +127,12 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                 TotaliPorosive = totPorosive,
                 TotaliShitjeveParagonEuro = totShitjeveParagonPaTVSH + totShitjeveParagonetemTVSH,
                 TotaliShitjeveParagon = totPorosiveParagon,
-
-                /* Today's Totals */
                 TotaliPorosiveSotme = totPorosiveSotme,
                 TotaliShitjeveSotme = totShitjeveSotmePaTVSHFat + totShitjeveSotmeVetemTVSHFat - totShitjeveSotmePaTVSHFl - totShitjeveSotmeVetemTVSHFl,
-
-                /* Monthly Totals */
                 TotaliPorosiveKeteMuaj = totPorosiveMujore,
                 TotaliShitjeveKeteMuaj = totShitjeveMujorePaTVSHFat + totShitjeveMujoreVetemTVSHFat - totShitjeveMujorePaTVSHFl - totShitjeveMujoreVetemTVSHFl,
-
-                /* Yesterday's Totals */
                 TotaliPorosiveDjeshme = totPorosiveDjeshme,
                 TotaliShitjeveDjeshme = totShitjeveDjeshmePaTVSHFat + totShitjeveDjeshmeVetemTVSHFat - totShitjeveDjeshmePaTVSHFl - totShitjeveDjeshmeVetemTVSHFl,
-
-                /* Last Month's Totals */
                 TotaliPorosiveMuajinKaluar = totPorosiveMujoreKaluar,
                 TotaliShitjeveMuajinKaluar = totShitjeveMujoreKaluarPaTVSHFat + totShitjeveMujoreKaluarVetemTVSHFat - totShitjeveMujoreKaluarPaTVSHFl - totShitjeveMujoreKaluarVetemTVSHFl,
             };
@@ -122,29 +140,28 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             return Ok(totalet);
         }
 
-
-
-
-        /*[Authorize]*/
+        // ============================================================================
+        // OPTIMIZATION 2: Use .AsNoTracking() and single query
+        // ============================================================================
         [Authorize]
         [HttpGet]
         [Route("15BleresitQytetarMeSeShumtiBlerje")]
         public async Task<IActionResult> BleresitQytetarMeSeShumtiBlerje()
         {
             var topBuyers = await _context.Partneri
-                .Where(p => p.IDPartneri != 1 && p.IDPartneri != 2 && p.IDPartneri != 3)  // Exclude partner with ID 1
-                .Include(x => x.Kartela)        // Include related Kartela
+                .AsNoTracking() // Don't track changes - faster
+                .Where(p => p.IDPartneri != 1 && p.IDPartneri != 2 && p.IDPartneri != 3)
                 .Select(p => new
                 {
                     Partneri = p,
                     NumriBlerjeve = p.Faturat.Count(f => f.LlojiKalkulimit == "PARAGON"),
                     TotaliBlerjeveEuro = p.Faturat
                         .Where(f => f.LlojiKalkulimit == "PARAGON")
-                        .Sum(f => f.TotaliPaTVSH + f.TVSH)
+                        .Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
-                .Where(x => x.NumriBlerjeve > 0) // Only include partners with more than 0 purchases
+                .Where(x => x.NumriBlerjeve > 0)
                 .OrderByDescending(x => x.TotaliBlerjeveEuro)
-                .Take(15)  // Take up to 15, will return fewer if less available
+                .Take(15)
                 .ToListAsync();
 
             return Ok(topBuyers);
@@ -156,55 +173,61 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         public async Task<IActionResult> BleresitBiznesorMeSeShumtiBlerje()
         {
             var topBuyers = await _context.Partneri
-                .Where(p => p.IDPartneri != 1 && p.IDPartneri != 2 && p.IDPartneri != 3)  // Exclude partner with ID 1
+                .AsNoTracking()
+                .Where(p => p.IDPartneri != 1 && p.IDPartneri != 2 && p.IDPartneri != 3)
                 .Select(p => new
                 {
                     Partneri = p,
                     NumriBlerjeve = p.Faturat.Count(f => f.LlojiKalkulimit == "FAT"),
                     TotaliBlerjeveEuro = p.Faturat
                         .Where(f => f.LlojiKalkulimit == "FAT")
-                        .Sum(f => f.TotaliPaTVSH + f.TVSH)
+                        .Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
-                .Where(x => x.NumriBlerjeve > 0) // Only include partners with more than 0 purchases
+                .Where(x => x.NumriBlerjeve > 0)
                 .OrderByDescending(x => x.TotaliBlerjeveEuro)
-                .Take(15)  // Take up to 15, will return fewer if less available
+                .Take(15)
                 .ToListAsync();
 
             return Ok(topBuyers);
         }
 
+        // ============================================================================
+        // OPTIMIZATION 3: Reduce includes and use AsNoTracking
+        // ============================================================================
         [Authorize]
         [HttpGet]
         [Route("ShitjetMeParagonSipasOperatorit")]
         public async Task<IActionResult> ShitjetMeParagonSipasOperatorit()
         {
             var today = DateTime.Today;
-
-            // Calculate the start of the week (Monday)
             var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
-
-            // Adjust if today is Sunday (since DayOfWeek.Sunday == 0)
             if (today.DayOfWeek == DayOfWeek.Sunday)
-            {
-                startOfWeek = today.AddDays(-6); // Move back to the previous Monday
-            }
+                startOfWeek = today.AddDays(-6);
 
-            // Calculate the end of the week (Sunday)
             var endOfWeek = startOfWeek.AddDays(6);
-
-            // Calculate the start of the month
             var startOfMonth = new DateTime(today.Year, today.Month, 1);
-
             var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
-            var query = _context.Faturat
-                .Where(x => x.LlojiKalkulimit == "PARAGON" && x.DataRegjistrimit.HasValue);
-
-            // Daily Sales
-            var dailyQuery = query.Where(x => x.DataRegjistrimit.Value.Date == today);
-
-            var ShitjetDitoreSipasOperatorit = await dailyQuery
+            // Single query for all data
+            var allData = await _context.Faturat
+                .AsNoTracking()
+                .Where(x => x.LlojiKalkulimit == "PARAGON" && x.DataRegjistrimit.HasValue)
                 .Include(x => x.Stafi)
+                .Select(x => new
+                {
+                    x.Stafi,
+                    x.TotaliPaTVSH,
+                    x.TVSH,
+                    x.DataRegjistrimit,
+                    IsDitore = x.DataRegjistrimit.Value.Date == today,
+                    IsJavore = x.DataRegjistrimit.Value.Date >= startOfWeek && x.DataRegjistrimit.Value.Date <= endOfWeek,
+                    IsMujore = x.DataRegjistrimit.Value.Date >= startOfMonth && x.DataRegjistrimit.Value.Date <= endOfMonth,
+                })
+                .ToListAsync();
+
+            // Process in memory
+            var ShitjetDitoreSipasOperatorit = allData
+                .Where(x => x.IsDitore)
                 .GroupBy(p => p.Stafi)
                 .Select(g => new
                 {
@@ -212,19 +235,15 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                     NumriBlerjeve = g.Count(),
                     TotaliBlerjeveEuro = g.Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
-                .Where(x => x.NumriBlerjeve > 0)
                 .OrderByDescending(x => x.TotaliBlerjeveEuro)
                 .Take(15)
-                .ToListAsync();
+                .ToList();
 
-            var ShitjetDitoreParagon = await dailyQuery.CountAsync();
-            var ShitjetDitoreEuro = await dailyQuery.SumAsync(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0));
+            var ShitjetDitoreParagon = allData.Count(x => x.IsDitore);
+            var ShitjetDitoreEuro = allData.Where(x => x.IsDitore).Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0));
 
-            // Weekly Sales
-            var weeklyQuery = query.Where(x => x.DataRegjistrimit.Value.Date >= startOfWeek && x.DataRegjistrimit.Value.Date <= endOfWeek);
-
-            var ShitjetJavoreSipasOperatorit = await weeklyQuery
-                .Include(x => x.Stafi)
+            var ShitjetJavoreSipasOperatorit = allData
+                .Where(x => x.IsJavore)
                 .GroupBy(p => p.Stafi)
                 .Select(g => new
                 {
@@ -232,19 +251,15 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                     NumriBlerjeve = g.Count(),
                     TotaliBlerjeveEuro = g.Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
-                .Where(x => x.NumriBlerjeve > 0)
                 .OrderByDescending(x => x.TotaliBlerjeveEuro)
                 .Take(15)
-                .ToListAsync();
+                .ToList();
 
-            var ShitjetJavoreParagon = await weeklyQuery.CountAsync();
-            var ShitjetJavoreEuro = await weeklyQuery.SumAsync(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0));
+            var ShitjetJavoreParagon = allData.Count(x => x.IsJavore);
+            var ShitjetJavoreEuro = allData.Where(x => x.IsJavore).Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0));
 
-            // Monthly Sales
-            var monthlyQuery = query.Where(x => x.DataRegjistrimit.Value.Date >= startOfMonth && x.DataRegjistrimit <= endOfMonth);
-
-            var ShitjetMujoreSipasOperatorit = await monthlyQuery
-                .Include(x => x.Stafi)
+            var ShitjetMujoreSipasOperatorit = allData
+                .Where(x => x.IsMujore)
                 .GroupBy(p => p.Stafi)
                 .Select(g => new
                 {
@@ -252,48 +267,25 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                     NumriBlerjeve = g.Count(),
                     TotaliBlerjeveEuro = g.Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
-                .Where(x => x.NumriBlerjeve > 0)
                 .OrderByDescending(x => x.TotaliBlerjeveEuro)
                 .Take(15)
-                .ToListAsync();
+                .ToList();
 
-            var ShitjetMujoreParagon = await monthlyQuery.CountAsync();
-            var ShitjetMujoreEuro = await monthlyQuery.SumAsync(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0));
-
-            var ShitjetDitore = new
-            {
-                ShitjetDitoreSipasOperatorit,
-                ShitjetDitoreParagon,
-                ShitjetDitoreEuro
-            };
-
-            var ShitjetJavore = new
-            {
-                ShitjetJavoreSipasOperatorit,
-                ShitjetJavoreParagon,
-                ShitjetJavoreEuro
-            };
-
-            var ShitjetMujore = new
-            {
-                ShitjetMujoreSipasOperatorit,
-                ShitjetMujoreParagon,
-                ShitjetMujoreEuro
-            };
+            var ShitjetMujoreParagon = allData.Count(x => x.IsMujore);
+            var ShitjetMujoreEuro = allData.Where(x => x.IsMujore).Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0));
 
             return Ok(new
             {
-                ShitjetDitore,
-                ShitjetJavore,
-                ShitjetMujore,
+                ShitjetDitore = new { ShitjetDitoreSipasOperatorit, ShitjetDitoreParagon, ShitjetDitoreEuro },
+                ShitjetJavore = new { ShitjetJavoreSipasOperatorit, ShitjetJavoreParagon, ShitjetJavoreEuro },
+                ShitjetMujore = new { ShitjetMujoreSipasOperatorit, ShitjetMujoreParagon, ShitjetMujoreEuro },
                 startOfWeek,
-                today ,
+                today,
                 endOfWeek,
-            startOfMonth ,
-            endOfMonth 
-        });
+                startOfMonth,
+                endOfMonth
+            });
         }
-
 
         [Authorize]
         [HttpGet]
@@ -301,6 +293,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         public async Task<IActionResult> GetTop15Prod()
         {
             var produktet = await _context.Produkti
+                .AsNoTracking()
                 .Select(e => new
                 {
                     Produkti = new
@@ -323,47 +316,49 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             return Ok(produktet);
         }
 
+        // ============================================================================
+        // OPTIMIZATION 4: Reduce loop iterations - fetch once instead of 7 times
+        // ============================================================================
         [Authorize]
         [HttpGet]
         [Route("TotaletJavore")]
         public async Task<IActionResult> GetShitjetJavore()
         {
-            var dataESotme = DateTime.Today;
-            var dataFillimit = dataESotme; 
-            var dataMbarimit = dataESotme.AddDays(-6); ; 
+            var today = DateTime.Today;
+            var weekAgo = today.AddDays(-6);
 
-            int totaliPorosiveJavore = 0;
-            decimal totaliShitjeveJavore = 0;
+            // Single query instead of 7 loops
+            var weekData = await _context.Faturat
+                .AsNoTracking()
+                .Where(x => x.LlojiKalkulimit == "FAT"
+                    && x.DataRegjistrimit.HasValue
+                    && x.DataRegjistrimit.Value.Date >= weekAgo
+                    && x.DataRegjistrimit.Value.Date <= today)
+                .GroupBy(x => x.DataRegjistrimit.Value.Date)
+                .Select(g => new
+                {
+                    Data = g.Key,
+                    totaliPorosiveDitore = g.Count(),
+                    totaliShitjeveDitore = g.Sum(p => (p.TotaliPaTVSH ?? 0) + (p.TVSH ?? 0))
+                })
+                .OrderByDescending(x => x.Data)
+                .ToListAsync();
 
-            var totaletDitore = new List<Object>();
-
-            for (var date = dataFillimit; date >= dataMbarimit; date = date.AddDays(-1))
+            // Fill in missing days
+            var totaletDitore = new List<object>();
+            for (var date = today; date >= weekAgo; date = date.AddDays(-1))
             {
-                var totalPorosive = await _context.Faturat.Where(x => x.LlojiKalkulimit == "FAT")
-                    .Where(p => p.DataRegjistrimit == date)
-                    .CountAsync();
-
-                totaliPorosiveJavore += totalPorosive;
-
-                var totalShitjevePaTVSH = await _context.Faturat.Where(x => x.LlojiKalkulimit == "FAT")
-                    .Where(p => p.DataRegjistrimit == date)
-                    .SumAsync(p => p.TotaliPaTVSH);
-
-                var totalShitjeveVetemTVSH = await _context.Faturat.Where(x => x.LlojiKalkulimit == "FAT")
-                    .Where(p => p.DataRegjistrimit == date)
-                    .SumAsync(p => p.TVSH);
-
-                totaliShitjeveJavore += (decimal)(totalShitjevePaTVSH + totalShitjeveVetemTVSH);
-
-                var totaliDitor = new
+                var dayData = weekData.FirstOrDefault(x => x.Data == date);
+                totaletDitore.Add(new
                 {
                     Data = date,
-                    totaliPorosiveDitore = totalPorosive,
-                    totaliShitjeveDitore = (totalShitjevePaTVSH + totalShitjeveVetemTVSH)
-                };
-
-                totaletDitore.Add(totaliDitor);
+                    totaliPorosiveDitore = dayData?.totaliPorosiveDitore ?? 0,
+                    totaliShitjeveDitore = dayData?.totaliShitjeveDitore ?? 0m
+                });
             }
+
+            var totaliPorosiveJavore = weekData.Sum(x => x.totaliPorosiveDitore);
+            var totaliShitjeveJavore = weekData.Sum(x => x.totaliShitjeveDitore);
 
             var totalet = new
             {
@@ -377,6 +372,5 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
 
             return Ok(totalet);
         }
-
     }
 }

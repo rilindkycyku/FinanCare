@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -66,16 +66,24 @@ function KalkulimiFillestarVjetor(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-          authentikimi
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+          authentikimi,
         );
         const kalkulimet = kalkulimi.data.filter(
-          (item) => item.llojiKalkulimit === "KLFV"
+          (item) => item.llojiKalkulimit === "KLFV",
         );
         setKalkulimet(
           kalkulimet.map((k) => ({
@@ -88,7 +96,7 @@ function KalkulimiFillestarVjetor(props) {
             "Gjendja Kalkulimit": k.pershkrimShtese,
             "Statusi Kalkulimit":
               k.statusiKalkulimit === "true" ? "I Mbyllur" : "I Hapur",
-          }))
+          })),
         );
         setLoading(false);
       } catch (err) {
@@ -98,7 +106,7 @@ function KalkulimiFillestarVjetor(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]);
 
   useEffect(() => {
     if (getID) {
@@ -106,7 +114,7 @@ function KalkulimiFillestarVjetor(props) {
         try {
           const perdoruesi = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-            authentikimi
+            authentikimi,
           );
           setTeDhenat(perdoruesi.data);
         } catch (err) {
@@ -127,7 +135,7 @@ function KalkulimiFillestarVjetor(props) {
       try {
         const partneri = await axios.get(
           `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
-          authentikimi
+          authentikimi,
         );
         setPartneret(partneri.data);
       } catch (err) {
@@ -143,7 +151,7 @@ function KalkulimiFillestarVjetor(props) {
       try {
         const nrFat = await axios.get(
           `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=KLFV`,
-          authentikimi
+          authentikimi,
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
       } catch (err) {
@@ -173,7 +181,7 @@ function KalkulimiFillestarVjetor(props) {
 
       // Check if a KLFV calculation exists for the selected year
       const exists = kalkulimet.some(
-        (k) => k["Viti Kalkulimit"] === selectedYear
+        (k) => k["Viti Kalkulimit"] === selectedYear,
       );
 
       if (exists) {
@@ -197,7 +205,7 @@ function KalkulimiFillestarVjetor(props) {
             nrRendorFatures: nrRendorKalkulimit + 1,
             llojiKalkulimit: "KLFV",
           },
-          authentikimi
+          authentikimi,
         );
 
         if (response.status === 200 || response.status === 201) {
@@ -227,13 +235,13 @@ function KalkulimiFillestarVjetor(props) {
         .put(
           `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
-          authentikimi
+          authentikimi,
         )
         .then(async () => {
           setRegjistroKalkulimin(false);
           var r = await axios.get(
             `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idKalkulimitEdit}`,
-            authentikimi
+            authentikimi,
           );
           if (r.data.regjistrimet.llojiPageses !== "Borxh") {
             await axios.post(
@@ -244,7 +252,7 @@ function KalkulimiFillestarVjetor(props) {
                 totaliPaTVSH: parseFloat(
                   r.data.regjistrimet.totaliPaTVSH +
                     r.data.regjistrimet.tvsh -
-                    r.data.rabati
+                    r.data.rabati,
                 ),
                 tvsh: 0,
                 idPartneri: r.data.regjistrimet.idPartneri,
@@ -258,7 +266,7 @@ function KalkulimiFillestarVjetor(props) {
                 idBonusKartela: null,
                 statusiKalkulimit: "true",
               },
-              authentikimi
+              authentikimi,
             );
           }
         });
@@ -291,10 +299,7 @@ function KalkulimiFillestarVjetor(props) {
   };
   useEffect(() => {
     axios
-      .get(
-        `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
-        authentikimi
-      )
+      .get(`${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data
           .filter((item) => item.idPartneri !== 2 && item.idPartneri !== 3)
@@ -351,7 +356,7 @@ function KalkulimiFillestarVjetor(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -417,6 +422,46 @@ function KalkulimiFillestarVjetor(props) {
                   </Col>
                 </Row>
                 <div className="mt-2">
+                   <Row className="mb-3">
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Fillim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataFillim}
+                          onChange={(e) => {
+                            setDataFillim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Mbarim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataMbarim}
+                          onChange={(e) => {
+                            setDataMbarim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3} className="d-flex align-items-end">
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setDataFillim(new Date().toISOString().split("T")[0]);
+                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                        }}
+                        className="w-100">
+                        Sot
+                      </Button>
+                    </Col>
+                  </Row>
+
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Kalkulimeve"

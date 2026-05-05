@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -8,7 +8,8 @@ import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Select from "react-select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function KartelaEArtikullit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -94,28 +95,28 @@ function KartelaEArtikullit(props) {
             Partneri: p.emriBiznesit,
             "Sas. Hyrese":
               p.llojiKalkulimit === "HYRJE" ||
-              p.llojiKalkulimit === "FL" ||
-              p.llojiKalkulimit === "KMSH"
+                p.llojiKalkulimit === "FL" ||
+                p.llojiKalkulimit === "KMSH"
                 ? p.sasiaStokut
                 : "-",
             "Sas. Dalese":
               p.llojiKalkulimit === "FAT" ||
-              p.llojiKalkulimit === "AS" ||
-              p.llojiKalkulimit === "KMB" ||
-              p.llojiKalkulimit === "PARAGON"
+                p.llojiKalkulimit === "AS" ||
+                p.llojiKalkulimit === "KMB" ||
+                p.llojiKalkulimit === "PARAGON"
                 ? p.sasiaStokut
                 : "-",
             "Qmimi Hyres €":
               p.llojiKalkulimit === "HYRJE" ||
-              p.llojiKalkulimit === "FL" ||
-              p.llojiKalkulimit === "KMSH"
+                p.llojiKalkulimit === "FL" ||
+                p.llojiKalkulimit === "KMSH"
                 ? parseFloat(p.qmimiBleres).toFixed(3)
                 : "-",
             "Qmimi Dales €":
               p.llojiKalkulimit === "FAT" ||
-              p.llojiKalkulimit === "AS" ||
-              p.llojiKalkulimit === "KMB" ||
-              p.llojiKalkulimit === "PARAGON"
+                p.llojiKalkulimit === "AS" ||
+                p.llojiKalkulimit === "KMB" ||
+                p.llojiKalkulimit === "PARAGON"
                 ? parseFloat(p.qmimiShites).toFixed(3)
                 : "-",
             "R. 1 %": parseFloat(p.rabati1 ?? 0).toFixed(2),
@@ -134,13 +135,7 @@ function KartelaEArtikullit(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
       .get(
         `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
@@ -162,6 +157,22 @@ function KartelaEArtikullit(props) {
     setproduktiID(partneri.value);
   };
 
+  const [inputValue, setInputValue] = useState("");
+
+  const filteredOptions = useMemo(() => {
+    if (!inputValue || inputValue.length < 2) return [];
+
+    const lower = inputValue.toLowerCase();
+    const results = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].label.toLowerCase().includes(lower)) {
+        results.push(options[i]);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValue, options]);
+
   return (
     <>
       <KontrolloAksesinNeFaqe
@@ -182,7 +193,7 @@ function KartelaEArtikullit(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -203,10 +214,17 @@ function KartelaEArtikullit(props) {
                       <Select
                         value={optionsSelected}
                         onChange={handleChange}
-                        options={options}
+                        onInputChange={(val) => setInputValue(val)}
+                        options={filteredOptions}
                         id="produktiSelect" // Setting the id attribute
                         inputId="produktiSelect-input" // Setting the input id attribute
-                        styles={customStyles}
+                        styles={darkSelectStyles}
+                        placeholder="Kërko produktin (min. 2 shkronja)..."
+                        noOptionsMessage={() =>
+                          inputValue.length < 2
+                            ? "Shkruani të paktën 2 karaktere..."
+                            : "Nuk u gjet asnjë produkt"
+                        }
                       />
                     </Form.Group>
                   </Form>
@@ -240,7 +258,7 @@ function KartelaEArtikullit(props) {
                     {parseFloat(
                       (kartelaEProduktit &&
                         kartelaEProduktit?.produkti?.qmimiProduktit) ??
-                        0
+                      0
                     ).toFixed(2)}{" "}
                     €
                   </p>
@@ -255,7 +273,7 @@ function KartelaEArtikullit(props) {
                     {parseFloat(
                       (kartelaEProduktit &&
                         kartelaEProduktit?.produkti?.qmimiMeShumic) ??
-                        0
+                      0
                     ).toFixed(2)}{" "}
                     €
                   </p>

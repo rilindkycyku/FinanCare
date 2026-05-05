@@ -1,41 +1,191 @@
-.logIn {
+/* Modern LogIn Styling */
+:root {
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --bg-color: #f8fafc;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+}
+
+.auth-wrapper {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100vh; /* Vertically and horizontally center the card */
+  justify-content: center;
+  background: radial-gradient(circle at top right, #eef2ff 0%, #f8fafc 100%);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.login-form {
-  border-radius: 25px;
-  box-shadow: 0 0 20px #ddd;
-  padding: 3em 2em;
-  width: fit-content;
+.auth-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 50%;
+  filter: blur(80px);
 }
 
-.p-text {
-  font-weight: 300;
-  color: white;
+.auth-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: -10%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  background: rgba(168, 85, 247, 0.05);
+  border-radius: 50%;
+  filter: blur(80px);
 }
 
-.button {
-  background-color: #ffffff;
-  color: #009879; /* Text color */
-  margin: 0 auto; /* Center the button */
-  display: block;
-  padding: 1em 2em;
+.auth-card {
+  background: white;
+  border-radius: 32px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   width: 100%;
-  border-radius: 50px;
-  border: none;
+  max-width: 450px;
+  padding: 3rem;
+  position: relative;
+  z-index: 10;
+  animation: authFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.button:hover {
-  background-color: #006d5b;
-  color: #ffffff; /* Text color */
-  cursor: pointer;
+@keyframes authFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-logo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo {
+  max-width: 220px;
+  height: auto;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.auth-title {
+  font-size: 1.75rem;
+  font-weight: 850;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.03em;
+}
+
+.auth-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.auth-input-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.auth-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+  padding-left: 0.25rem;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-icon-left {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.85rem 1rem 0.85rem 2.75rem;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  color: var(--text-dark);
+}
+
+.auth-input:focus {
+  outline: none;
+  background: white;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.auth-input:focus + .auth-icon-left {
+  color: #6366f1;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+}
+
+.auth-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.4);
+  filter: brightness(1.05);
+}
+
+.auth-submit-btn:active {
+  transform: translateY(0);
+}
+
+.auth-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.auth-link {
+  color: #6366f1;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: #4f46e5;
+  text-decoration: underline;
 }
 
 @media (max-width: 480px) {
-  .logIn {
-    padding: 1em; /* Add padding for smaller screens */
+  .auth-card {
+    padding: 2rem;
+    border-radius: 24px;
   }
 }

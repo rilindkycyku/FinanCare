@@ -1,439 +1,466 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Row, Col, Form, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPenToSquare,
   faCheck,
-  faXmark
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const KALKULIM_TYPE = "FAT";
+const STATUS_CLOSED = "true";
+const STATUS_OPEN = "false";
+const DEBOUNCE_DELAY = 500;
+
 function PerditesoStatusinKalk(props) {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  // Date initialization
+  const today = useMemo(() => new Date(), []);
+  const tomorrow = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    return date;
+  }, []);
+
+  // Date range state
+  const [dataFillim, setDataFillim] = useState(today.toISOString().split("T")[0]);
+  const [dataMbarim, setDataMbarim] = useState(tomorrow.toISOString().split("T")[0]);
+
+  // Data state
   const [kalkulimet, setKalkulimet] = useState([]);
   const [kalkulimetEFiltruara, setKalkulimetEFiltruara] = useState([]);
+  const [statusiIFiltrimit, setStatusiIFiltrimit] = useState("");
 
-  const [emriBiznesit, setEmriBiznesit] = useState("");
-  const [nrFatures, setNrFatures] = useState("");
-  const [nrKalkulimit, setNrKalkulimit] = useState("");
-  const [dataFatures, setDataFatures] = useState("");
-  const [llojiFatures, setLlojiFatures] = useState("");
+  // Selected kalkulim state
+  const [selectedKalkulim, setSelectedKalkulim] = useState({
+    emriBiznesit: "",
+    nrFatures: "",
+    nrKalkulimit: "",
+    dataFatures: "",
+    llojiFatures: "",
+  });
 
-  const [perditeso, setPerditeso] = useState("");
-  const [produktet, setProduktet] = useState([]);
-  const [hapKalkulimin, setHapKalkulimin] = useState(false);
-  const [fshijKalkulimin, setFshijKalkulimin] = useState(false);
+  // Modal state
+  const [modals, setModals] = useState({
+    hapKalkulimin: false,
+    fshijKalkulimin: false,
+  });
 
-  const [statusiIFiltrimit, setStatusiIFiltrimit] = useState([]);
+  // Loading states
+  const [loading, setLoading] = useState({
+    table: false,
+    filteredTable: false,
+    action: false,
+  });
 
-  const getToken = localStorage.getItem("token");
-
-  const authentikimi = {
+  // Auth configuration
+  const authentikimi = useMemo(() => ({
     headers: {
-      Authorization: `Bearer ${getToken}`,
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
-  };
+  }), []);
 
+  // Fetch main kalkulimet with debounce
   useEffect(() => {
-    const vendosProduktet = async () => {
-      try {
-        const produktet = await axios.get(
-          `${API_BASE_URL}/api/Produkti/Products`,
-          authentikimi
-        );
-        setProduktet(produktet.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+    const timer = setTimeout(() => {
+      const fetchKalkulimet = async () => {
+        try {
+          setLoading(prev => ({ ...prev, table: true }));
+          const response = await axios.get(
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+            authentikimi
+          );
+          const filtered = response.data.filter(
+            (item) => item.llojiKalkulimit === KALKULIM_TYPE
+          );
+          setKalkulimet(filtered);
+        } catch (err) {
+          console.error("Error fetching kalkulimet:", err);
+        } finally {
+          setLoading(prev => ({ ...prev, table: false }));
+        }
+      };
 
-    vendosProduktet();
-  }, [perditeso]);
+      fetchKalkulimet();
+    }, DEBOUNCE_DELAY);
 
+    return () => clearTimeout(timer);
+  }, [dataFillim, dataMbarim, authentikimi]);
+
+  // Fetch filtered kalkulimet with debounce
   useEffect(() => {
-    const shfaqKalkulimet = async () => {
-      try {
-        const kalkulimet = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-          authentikimi
-        );
-        const kthimet = kalkulimet.data.filter(
-          (item) => item.llojiKalkulimit === "FAT"
-        );
-        setKalkulimet(kthimet);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+    if (!statusiIFiltrimit) {
+      setKalkulimetEFiltruara([]);
+      setLoading(prev => ({ ...prev, filteredTable: false }));
+      return;
+    }
 
-    shfaqKalkulimet();
-  }, [perditeso, hapKalkulimin, fshijKalkulimin]);
+    const timer = setTimeout(() => {
+      const fetchFilteredKalkulimet = async () => {
+        try {
+          setLoading(prev => ({ ...prev, filteredTable: true }));
+          const response = await axios.get(
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetSipasStatusit?statusi=${statusiIFiltrimit}&dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+            authentikimi
+          );
+          const filtered = response.data.filter(
+            (item) => item.llojiKalkulimit === KALKULIM_TYPE
+          );
+          setKalkulimetEFiltruara(filtered);
+        } catch (err) {
+          console.error("Error fetching filtered kalkulimet:", err);
+        } finally {
+          setLoading(prev => ({ ...prev, filteredTable: false }));
+        }
+      };
 
-  useEffect(() => {
-    const shfaqKalkulimet = async () => {
-      try {
-        const kalkulimet = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetSipasStatusit?statusi=${statusiIFiltrimit}`,
-          authentikimi
-        );
-        const kthimet = kalkulimet.data.filter(
-          (item) => item.llojiKalkulimit === "FAT"
-        );
-        setKalkulimetEFiltruara(kthimet);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+      fetchFilteredKalkulimet();
+    }, DEBOUNCE_DELAY);
 
-    shfaqKalkulimet();
-  }, [hapKalkulimin, fshijKalkulimin, statusiIFiltrimit]);
+    return () => clearTimeout(timer);
+  }, [statusiIFiltrimit, dataFillim, dataMbarim, authentikimi]);
 
-  async function ndryshoStatusinKalkulimit() {
+  // Update kalkulim status with parallel API calls
+  const ndryshoStatusinKalkulimit = useCallback(async () => {
     try {
-      await axios
-        .put(
-          `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${nrKalkulimit}&statusi=false`,
-          {},
+      setLoading(prev => ({ ...prev, action: true }));
+
+      await axios.put(
+        `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${selectedKalkulim.nrKalkulimit}&statusi=false`,
+        {},
+        authentikimi
+      );
+
+      const { data: teDhenat } = await axios.get(
+        `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${selectedKalkulim.nrKalkulimit}`,
+        authentikimi
+      );
+
+      // Parallel stock updates
+      const updatePromises = teDhenat.map((p) =>
+        axios.get(
+          `${API_BASE_URL}/api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin?idProdukti=${p.idProduktit}&idTeDhenatKalkulimit=${p.id}&lloji=AS`,
           authentikimi
         )
-        .then(() => {
-          filtroKalkulimet("hapKalkulimet");
-          setHapKalkulimin(false);
-        });
+      );
 
-      await axios
-        .get(
-          `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${nrKalkulimit}`,
-          authentikimi
-        )
-        .then(async (teDhenat) => {
-          for (let p of teDhenat.data) {
-            await axios.get(
-              `${API_BASE_URL}/api/Faturat/hapAsgjesiminKthimin/perditesoStokunQmimin?idProdukti=${p.idProduktit}&idTeDhenatKalkulimit=${p.id}&lloji=AS`,
-              authentikimi
-            );
-          }
-        });
+      await Promise.allSettled(updatePromises);
 
-      filtroKalkulimet("hapKalkulimet");
+      setModals(prev => ({ ...prev, hapKalkulimin: false }));
+      setStatusiIFiltrimit(STATUS_CLOSED);
     } catch (error) {
-      console.error(error);
+      console.error("Error updating kalkulim:", error);
+      alert("Gabim gjatë përditesimit të kalkulimit");
+    } finally {
+      setLoading(prev => ({ ...prev, action: false }));
     }
-  }
+  }, [selectedKalkulim.nrKalkulimit, authentikimi]);
 
-  async function fshijKalkuliminFunksioni() {
+  // Delete kalkulim
+  const fshijKalkuliminFunksioni = useCallback(async () => {
     try {
-      await axios
-        .delete(
-          `${API_BASE_URL}/api/Faturat/fshijKalkulimin?idKalkulimi=${nrKalkulimit}`,
-          authentikimi
-        )
-        .then(() => {
-          filtroKalkulimet("fshijKalkulimet");
-        });
-
-      setFshijKalkulimin(false);
+      setLoading(prev => ({ ...prev, action: true }));
+      await axios.delete(
+        `${API_BASE_URL}/api/Faturat/fshijKalkulimin?idKalkulimi=${selectedKalkulim.nrKalkulimit}`,
+        authentikimi
+      );
+      setModals(prev => ({ ...prev, fshijKalkulimin: false }));
+      setStatusiIFiltrimit(STATUS_OPEN);
     } catch (error) {
-      console.error(error);
+      console.error("Error deleting kalkulim:", error);
+      alert("Gabim gjatë fshrjes së kalkulimit");
+    } finally {
+      setLoading(prev => ({ ...prev, action: false }));
     }
-  }
+  }, [selectedKalkulim.nrKalkulimit, authentikimi]);
 
-  function detajetRiKonfrimitKalkulimit(
-    emriBiznesit,
-    nrFatures,
-    nrKalkulimit,
-    dataFatures,
-    llojiFatures,
-    funksioni
-  ) {
-    setEmriBiznesit(emriBiznesit);
-    setNrFatures(nrFatures);
-    setNrKalkulimit(nrKalkulimit);
-    setDataFatures(dataFatures);
-    setLlojiFatures(llojiFatures);
+  // Open modal with selected kalkulim
+  const handleOpenModal = useCallback((kalkulim, modalType) => {
+    setSelectedKalkulim({
+      emriBiznesit: kalkulim.emriBiznesit,
+      nrFatures: kalkulim.nrFatures,
+      nrKalkulimit: kalkulim.idRegjistrimit,
+      dataFatures: kalkulim.dataRegjistrimit,
+      llojiFatures: kalkulim.llojiKalkulimit,
+    });
+    setModals(prev => ({ ...prev, [modalType]: true }));
+  }, []);
 
-    setPerditeso(Date.now());
+  // Filter kalkulimet
+  const filtroKalkulimet = useCallback((lloji) => {
+    const statusMap = {
+      hapKalkulimet: STATUS_CLOSED,
+      fshijKalkulimet: STATUS_OPEN,
+      teGjitha: "",
+    };
+    setStatusiIFiltrimit(statusMap[lloji] ?? "");
+  }, []);
 
-    if (funksioni === "hapKalkulimin") {
-      setHapKalkulimin(true);
-    }
+  // Reset to today
+  const resetToToday = useCallback(() => {
+    setDataFillim(today.toISOString().split("T")[0]);
+    setDataMbarim(tomorrow.toISOString().split("T")[0]);
+  }, [today, tomorrow]);
 
-    if (funksioni === "fshijKalkulimin") {
-      setFshijKalkulimin(true);
-    }
-  }
+  // Format date helper
+  const formatDate = useCallback((date) => 
+    new Date(date).toLocaleDateString("en-GB", { dateStyle: "short" })
+  , []);
 
-  function filtroKalkulimet(lloji) {
-    setPerditeso(Date.now());
-
-    if (lloji === "hapKalkulimet") {
-      setStatusiIFiltrimit("true");
-    }
-    if (lloji === "fshijKalkulimet") {
-      setStatusiIFiltrimit("false");
-    }
-  }
+  // Computed values
+  const isLoading = loading.action || loading.table || loading.filteredTable;
+  const displayedKalkulimet = statusiIFiltrimit ? kalkulimetEFiltruara : kalkulimet;
+  
+  const modalTitle = useMemo(() => {
+    if (statusiIFiltrimit === STATUS_CLOSED) return "Lista e Kalkulimeve te Mbyllura";
+    if (statusiIFiltrimit === STATUS_OPEN) return "Lista e Kalkulimeve te Hapura";
+    return "Lista e Kalkulimeve";
+  }, [statusiIFiltrimit]);
 
   return (
     <>
       <KontrolloAksesinNeFunksione
         roletELejuara={["Menaxher", "Kalkulant", "Faturist"]}
-        largo={() => props.largo()}
-        shfaqmesazhin={() => props.shfaqmesazhin()}
-        perditesoTeDhenat={() => props.perditesoTeDhenat()}
-        setTipiMesazhit={(e) => props.setTipiMesazhit(e)}
-        setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
+        largo={props.largo}
+        shfaqmesazhin={props.shfaqmesazhin}
+        perditesoTeDhenat={props.perditesoTeDhenat}
+        setTipiMesazhit={props.setTipiMesazhit}
+        setPershkrimiMesazhit={props.setPershkrimiMesazhit}
       />
-      {hapKalkulimin && (
-        <Modal
-          show={hapKalkulimin}
-          style={{ marginTop: "7em" }}
-          onHide={() => setHapKalkulimin(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title as="h5">Konfirmo Hapjen e Kalkulimit</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <strong style={{ fontSize: "10pt" }}>
-              A jeni te sigurt qe deshironi ta hapni kete kalkulim?
-            </strong>
-            <hr />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Nr. Kalkulimit:</strong> {nrKalkulimit}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Partneri:</strong> {emriBiznesit}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Nr. Fatures:</strong> {nrFatures}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Data Fatures: </strong>
-              {new Date(dataFatures).toLocaleDateString("en-GB", {
-                dateStyle: "short",
-              })}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Lloji Fatures:</strong> {llojiFatures}
-            </span>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => setHapKalkulimin(false)}>
-              Anulo <FontAwesomeIcon icon={faXmark} />
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                ndryshoStatusinKalkulimit();
-              }}>
-              Konfirmo <FontAwesomeIcon icon={faCheck} />
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
-      {fshijKalkulimin && (
-        <Modal
-          show={fshijKalkulimin}
-          style={{ marginTop: "7em" }}
-          onHide={() => setFshijKalkulimin(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title as="h5">Konfirmo Fshrijen e Kalkulimit</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <strong style={{ fontSize: "10pt" }}>
-              A jeni te sigurt qe deshironi ta fshini kete kalkulim?
-            </strong>
-            <hr />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Nr. Kalkulimit:</strong> {nrKalkulimit}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Partneri:</strong> {emriBiznesit}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Nr. Fatures:</strong> {nrFatures}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Data Fatures: </strong>
-              {new Date(dataFatures).toLocaleDateString("en-GB", {
-                dateStyle: "short",
-              })}
-            </span>
-            <br />
-            <span style={{ fontSize: "10pt" }}>
-              <strong>Lloji Fatures:</strong> {llojiFatures}
-            </span>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => setFshijKalkulimin(false)}>
-              Anulo <FontAwesomeIcon icon={faXmark} />
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                fshijKalkuliminFunksioni();
-                setPerditeso(Date.now());
-              }}>
-              Konfirmo <FontAwesomeIcon icon={faCheck} />
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+
+      {/* Confirmation Modals */}
+      <ConfirmModal
+        show={modals.hapKalkulimin}
+        onHide={() => setModals(prev => ({ ...prev, hapKalkulimin: false }))}
+        onConfirm={ndryshoStatusinKalkulimit}
+        title="Konfirmo Hapjen e Kalkulimit"
+        message="A jeni te sigurt qe deshironi ta hapni kete kalkulim?"
+        kalkulim={selectedKalkulim}
+        formatDate={formatDate}
+        loading={loading.action}
+      />
+
+      <ConfirmModal
+        show={modals.fshijKalkulimin}
+        onHide={() => setModals(prev => ({ ...prev, fshijKalkulimin: false }))}
+        onConfirm={fshijKalkuliminFunksioni}
+        title="Konfirmo Fshrijen e Kalkulimit"
+        message="A jeni te sigurt qe deshironi ta fshini kete kalkulim?"
+        kalkulim={selectedKalkulim}
+        formatDate={formatDate}
+        loading={loading.action}
+      />
+
+      {/* Main Modal */}
       <Modal
         size="lg"
         style={{ marginTop: "3em" }}
         show={props.show}
-        onHide={props.hide}>
+        onHide={props.hide}
+        centered>
         <Modal.Header closeButton>
-          <Modal.Title>
-            {kalkulimetEFiltruara.length === 0
-              ? "Lista e Kalkulimeve"
-              : statusiIFiltrimit === "true"
-              ? "Lista e Kalkulimeve te Mbyllura"
-              : "Lista e Kalkulimeve te Hapura"}
-          </Modal.Title>
+          <Modal.Title>{modalTitle}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Button
-            style={{ marginRight: "0.5em" }}
-            variant="success"
-            size="sm"
-            onClick={() => {
-              filtroKalkulimet("hapKalkulimet");
-            }}>
-            Hap Kalkulimet <FontAwesomeIcon icon={faPenToSquare} />
-          </Button>
-          <Button
-            style={{ marginRight: "0.5em" }}
-            variant="success"
-            size="sm"
-            onClick={() => {
-              filtroKalkulimet("fshijKalkulimet");
-            }}>
-            Fshij Kalkulimet <FontAwesomeIcon icon={faPenToSquare} />
-          </Button>
-          <Button
-            style={{ marginRight: "0.5em" }}
-            variant="success"
-            size="sm"
-            onClick={() => {
-              setKalkulimetEFiltruara([]);
-            }}>
-            Te gjitha Kalkulimet <FontAwesomeIcon icon={faPenToSquare} />
-          </Button>
-          <MDBTable small>
-            <MDBTableHead>
-              <tr>
-                {kalkulimetEFiltruara.length > 0 && (
-                  <th scope="col">Nr. Kalkulimit</th>
-                )}
-                {kalkulimetEFiltruara.length === 0 && <th scope="col">Nr.</th>}
-                <th scope="col">Nr. Fatures</th>
-                <th scope="col">Partneri</th>
-                <th scope="col">Totali Pa TVSH €</th>
-                <th scope="col">TVSH €</th>
-                <th scope="col">Data e Fatures</th>
-                <th scope="col">Lloji Fatures</th>
-                {kalkulimetEFiltruara.length === 0 && (
-                  <th scope="col">Statusi</th>
-                )}
-                {kalkulimetEFiltruara.length > 0 && (
-                  <th scope="col"> Funksione</th>
-                )}
-              </tr>
-            </MDBTableHead>
-            <MDBTableBody>
-              {kalkulimetEFiltruara &&
-                kalkulimetEFiltruara.map((k) => (
-                  <tr key={k.idRegjistrimit}>
-                    <td>{k.idRegjistrimit}</td>
-                    <td>{k.nrFatures}</td>
-                    <td>{k.emriBiznesit}</td>
-                    <td>{k.totaliPaTVSH.toFixed(2)} €</td>
-                    <td>{k.tvsh.toFixed(2)} €</td>
-                    <td>
-                      {new Date(k.dataRegjistrimit).toLocaleDateString(
-                        "en-GB",
-                        { dateStyle: "short" }
-                      )}
-                    </td>
-                    <td>{k.llojiKalkulimit}</td>
-                    <td>
-                      {statusiIFiltrimit === "true" ? (
-                        <Button
-                          style={{ marginRight: "0.5em" }}
-                          variant="warning"
-                          size="sm"
-                          onClick={() => {
-                            detajetRiKonfrimitKalkulimit(
-                              k.emriBiznesit,
-                              k.nrFatures,
-                              k.idRegjistrimit,
-                              k.dataRegjistrimit,
-                              k.llojiKalkulimit,
-                              "hapKalkulimin"
-                            );
-                          }}>
-                          <FontAwesomeIcon icon={faPenToSquare} />
-                        </Button>
-                      ) : (
-                        <Button
-                          style={{ marginRight: "0.5em" }}
-                          variant="danger"
-                          size="sm"
-                          onClick={() => {
-                            detajetRiKonfrimitKalkulimit(
-                              k.emriBiznesit,
-                              k.nrFatures,
-                              k.idRegjistrimit,
-                              k.dataRegjistrimit,
-                              k.llojiKalkulimit,
-                              "fshijKalkulimin"
-                            );
-                          }}>
-                          <FontAwesomeIcon icon={faXmark} />
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              {kalkulimetEFiltruara.length === 0 &&
-                kalkulimet.map((k) => (
-                  <tr key={k.idRegjistrimit}>
-                    <td>{k.idRegjistrimit}</td>
-                    <td>{k.nrFatures}</td>
-                    <td>{k.emriBiznesit}</td>
-                    <td>{k.totaliPaTVSH.toFixed(2)} €</td>
-                    <td>{k.tvsh.toFixed(2)} €</td>
-                    <td>
-                      {new Date(k.dataRegjistrimit).toLocaleDateString(
-                        "en-GB",
-                        { dateStyle: "short" }
-                      )}
-                    </td>
-                    <td>{k.llojiKalkulimit}</td>
-                    <td>{k.statusiKalkulimit === "true" ? "M" : "H"}</td>
-                  </tr>
-                ))}
-            </MDBTableBody>
-          </MDBTable>
+          {/* Date Range Filters */}
+          <Row className="mb-3">
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Data Fillim</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={dataFillim}
+                  onChange={(e) => setDataFillim(e.target.value)}
+                  disabled={isLoading}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Data Mbarim</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={dataMbarim}
+                  onChange={(e) => setDataMbarim(e.target.value)}
+                  disabled={isLoading}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3} className="d-flex align-items-end">
+              <Button
+                variant="secondary"
+                onClick={resetToToday}
+                disabled={isLoading}
+                className="w-100">
+                Sot
+              </Button>
+            </Col>
+          </Row>
+
+          {/* Filter Buttons */}
+          <FilterButtons
+            statusiIFiltrimit={statusiIFiltrimit}
+            filtroKalkulimet={filtroKalkulimet}
+            isLoading={isLoading}
+          />
+
+          {/* Loading Spinner */}
+          {isLoading && (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="primary" className="me-2" />
+              <span>Po ngarkohet...</span>
+            </div>
+          )}
+
+          {/* Data Table */}
+          {!isLoading && (
+            <KalkulimetTable
+              kalkulimet={displayedKalkulimet}
+              statusiIFiltrimit={statusiIFiltrimit}
+              handleOpenModal={handleOpenModal}
+              formatDate={formatDate}
+              loadingAction={loading.action}
+            />
+          )}
         </Modal.Body>
       </Modal>
     </>
+  );
+}
+
+// Reusable Confirm Modal Component
+function ConfirmModal({ show, onHide, onConfirm, title, message, kalkulim, formatDate, loading }) {
+  return (
+    <Modal show={show} onHide={onHide} centered>
+      <Modal.Header closeButton>
+        <Modal.Title as="h5">{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <strong style={{ fontSize: "10pt" }}>{message}</strong>
+        <hr />
+        <div style={{ fontSize: "10pt" }}>
+          <div className="mb-2">
+            <strong>Nr. Kalkulimit:</strong> {kalkulim.nrKalkulimit}
+          </div>
+          <div className="mb-2">
+            <strong>Partneri:</strong> {kalkulim.emriBiznesit}
+          </div>
+          <div className="mb-2">
+            <strong>Nr. Fatures:</strong> {kalkulim.nrFatures}
+          </div>
+          <div className="mb-2">
+            <strong>Data Fatures:</strong> {formatDate(kalkulim.dataFatures)}
+          </div>
+          <div>
+            <strong>Lloji Fatures:</strong> {kalkulim.llojiFatures}
+          </div>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button size="sm" variant="secondary" onClick={onHide} disabled={loading}>
+          Anulo <FontAwesomeIcon icon={faXmark} />
+        </Button>
+        <Button size="sm" onClick={onConfirm} disabled={loading}>
+          {loading && <Spinner animation="border" size="sm" className="me-2" />}
+          Konfirmo <FontAwesomeIcon icon={faCheck} />
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+// Filter Buttons Component
+function FilterButtons({ statusiIFiltrimit, filtroKalkulimet, isLoading }) {
+  const buttons = [
+    { label: "Hap Kalkulimet", key: "hapKalkulimet", status: STATUS_CLOSED },
+    { label: "Fshij Kalkulimet", key: "fshijKalkulimet", status: STATUS_OPEN },
+    { label: "Te gjitha Kalkulimet", key: "teGjitha", status: "" },
+  ];
+
+  return (
+    <div className="mb-3">
+      {buttons.map(({ label, key, status }) => (
+        <Button
+          key={key}
+          style={{ marginRight: "0.5em", marginBottom: "0.5em" }}
+          variant={statusiIFiltrimit === status ? "success" : "outline-success"}
+          size="sm"
+          onClick={() => filtroKalkulimet(key)}
+          disabled={isLoading}>
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+// Kalkulimet Table Component
+function KalkulimetTable({ kalkulimet, statusiIFiltrimit, handleOpenModal, formatDate, loadingAction }) {
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <MDBTable small hover>
+        <MDBTableHead>
+          <tr>
+            <th scope="col">Nr. Kalkulimit</th>
+            <th scope="col">Nr. Fatures</th>
+            <th scope="col">Partneri</th>
+            <th scope="col">Totali Pa TVSH €</th>
+            <th scope="col">TVSH €</th>
+            <th scope="col">Data e Fatures</th>
+            <th scope="col">Lloji Fatures</th>
+            <th scope="col">{statusiIFiltrimit ? "Funksione" : "Statusi"}</th>
+          </tr>
+        </MDBTableHead>
+        <MDBTableBody>
+          {kalkulimet.length > 0 ? (
+            kalkulimet.map((k) => (
+              <tr key={k.idRegjistrimit}>
+                <td>{k.idRegjistrimit}</td>
+                <td>{k.nrFatures}</td>
+                <td>{k.emriBiznesit}</td>
+                <td>{Number(k.totaliPaTVSH).toFixed(2)} €</td>
+                <td>{Number(k.tvsh).toFixed(2)} €</td>
+                <td>{formatDate(k.dataRegjistrimit)}</td>
+                <td>{k.llojiKalkulimit}</td>
+                <td>
+                  {statusiIFiltrimit ? (
+                    <Button
+                      variant={statusiIFiltrimit === STATUS_CLOSED ? "warning" : "danger"}
+                      size="sm"
+                      onClick={() =>
+                        handleOpenModal(
+                          k,
+                          statusiIFiltrimit === STATUS_CLOSED
+                            ? "hapKalkulimin"
+                            : "fshijKalkulimin"
+                        )
+                      }
+                      disabled={loadingAction}>
+                      <FontAwesomeIcon
+                        icon={statusiIFiltrimit === STATUS_CLOSED ? faPenToSquare : faXmark}
+                      />
+                    </Button>
+                  ) : (
+                    <span className="badge bg-info">
+                      {k.statusiKalkulimit === STATUS_CLOSED ? "M" : "H"}
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="text-center py-4 text-muted">
+                Asnjë kalkulim i disponueshëm
+              </td>
+            </tr>
+          )}
+        </MDBTableBody>
+      </MDBTable>
+    </div>
   );
 }
 

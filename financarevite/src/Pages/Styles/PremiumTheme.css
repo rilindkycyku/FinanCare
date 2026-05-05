@@ -1,0 +1,426 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+/* ══════════════════════════════════════════════════════════════
+   FINANCARE – Premium Core Theme System
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --sp-bg:          #080f1a;
+  --sp-surface:     #0f1827;
+  --sp-surface-2:   #162033;
+  --sp-surface-3:   #1e2d45;
+
+  --sp-border:      rgba(255,255,255,0.10);
+  --sp-border-glow: rgba(16,185,129,0.25);
+
+  --sp-emerald:     #10b981;
+  --sp-emerald-glow:rgba(16,185,129,0.15);
+  --sp-cyan:        #06b6d4;
+  --sp-cyan-glow:   rgba(6,182,212,0.12);
+  --sp-red:         #ef4444;
+  --sp-text:        #f1f5f9;
+  --sp-text-soft:   #e2e8f0;
+  --sp-text-muted:  #94a3b8;
+
+  --sp-radius-lg: 16px;
+  --sp-radius-md: 12px;
+  --sp-radius-sm: 8px;
+}
+
+/* ── Global Theme Application ────────────────────────────────── */
+body {
+  background-color: var(--sp-bg) !important;
+  color: var(--sp-text) !important;
+  font-family: 'Inter', sans-serif !important;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Premium Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--sp-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sp-surface-3);
+  border: 2px solid var(--sp-bg);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sp-text-muted);
+}
+
+/* ── Typography & Helpers ──────────────────────────────────────── */
+.text-muted { color: var(--sp-text-muted) !important; }
+.text-soft { color: var(--sp-text-soft) !important; }
+.text-emerald { color: var(--sp-emerald) !important; }
+
+.modal-title {
+  color: #fff !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* ── Container ────────────────────────────────────────────────── */
+.containerDashboardP {
+  background: transparent !important;
+  padding: 1.5rem !important;
+  min-height: 100vh;
+}
+
+.main-content {
+  background: var(--sp-bg) !important;
+}
+
+/* ── SP-CARD ────────────────────────────────────────────────── */
+.sp-card {
+  background: var(--sp-surface) !important;
+  border: 1px solid var(--sp-border) !important;
+  border-radius: var(--sp-radius-lg) !important;
+  overflow: visible !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important;
+}
+
+.sp-card-header {
+  padding: 1.25rem 1.5rem;
+  background: var(--sp-surface-2);
+  border-bottom: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-lg) var(--sp-radius-lg) 0 0;
+}
+
+.sp-card-header h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sp-text-soft);
+  margin: 0;
+}
+
+/* ───── Date Picker & Portal Styling ───── */
+#root-portal {
+  position: relative;
+  z-index: 10000;
+}
+
+.custom-datepicker-popper {
+  z-index: 10000 !important;
+}
+
+.react-datepicker {
+  background-color: var(--sp-surface-3) !important;
+  border: 1px solid var(--sp-border) !important;
+  border-radius: var(--sp-radius-md) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  font-family: 'Inter', sans-serif !important;
+  color: var(--sp-text) !important;
+}
+
+.react-datepicker__header {
+  background-color: var(--sp-surface-2) !important;
+  border-bottom: 1px solid var(--sp-border) !important;
+  border-radius: var(--sp-radius-md) var(--sp-radius-md) 0 0 !important;
+  padding-top: 10px !important;
+}
+
+.react-datepicker__current-month, 
+.react-datepicker__day-name {
+  color: var(--sp-text-soft) !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day {
+  color: var(--sp-text) !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--sp-emerald) !important;
+  color: white !important;
+  border-radius: 6px !important;
+}
+
+.react-datepicker__day--selected, 
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--sp-emerald) !important;
+  color: white !important;
+  border-radius: 6px !important;
+}
+
+.react-datepicker__navigation--next { border-left-color: var(--sp-text-muted) !important; }
+.react-datepicker__navigation--previous { border-right-color: var(--sp-text-muted) !important; }
+
+/* ── SP-INPUT & LABEL ────────────────────────────────────────── */
+.sp-label {
+  color: var(--sp-text-soft) !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+  display: block;
+}
+
+.sp-input {
+  background: var(--sp-surface-2) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text) !important;
+  border-radius: var(--sp-radius-md) !important;
+  padding: 0.7rem 1rem !important;
+  font-size: 0.95rem !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.sp-input:focus {
+  border-color: var(--sp-emerald) !important;
+  background: var(--sp-surface-3) !important;
+  box-shadow: 0 0 0 3px var(--sp-emerald-glow) !important;
+  outline: none;
+}
+
+/* ── SP-TABLE – Premium Dark Table ────────────────────────────── */
+.sp-table {
+  border-collapse: separate !important;
+  border-spacing: 0 4px !important;
+  background: transparent !important;
+}
+
+.sp-table thead th {
+  background: var(--sp-surface-2) !important;
+  color: var(--sp-text-muted) !important;
+  font-size: 0.65rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  padding: 1rem 1.25rem !important;
+  border: none !important;
+  border-bottom: 2px solid var(--sp-border) !important;
+}
+
+.sp-table tbody td {
+  background: var(--sp-surface) !important;
+  border: none !important;
+  border-top: 1px solid var(--sp-border) !important;
+  border-bottom: 1px solid var(--sp-border) !important;
+  padding: 1.1rem 1.25rem !important;
+  color: var(--sp-text) !important;
+}
+
+.sp-table tbody td:first-child { border-radius: var(--sp-radius-md) 0 0 var(--sp-radius-md) !important; border-left: 1px solid var(--sp-border) !important; }
+.sp-table tbody td:last-child { border-radius: 0 var(--sp-radius-md) var(--sp-radius-md) 0 !important; border-right: 1px solid var(--sp-border) !important; }
+
+.sp-table tbody tr:hover td {
+  background: var(--sp-surface-2) !important;
+  border-color: var(--sp-emerald) !important;
+  color: white !important;
+}
+
+/* ── PAGINATION ──────────────────────────────────────────────── */
+.pagination {
+  gap: 4px !important;
+  flex-wrap: wrap !important;
+}
+
+.pagination .page-link {
+  background: var(--sp-surface-2) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text-soft) !important;
+  border-radius: 6px !important;
+  padding: 0.4rem 0.6rem !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  min-width: 35px;
+  text-align: center;
+}
+
+.pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, var(--sp-emerald), var(--sp-cyan)) !important;
+  color: white !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2) !important;
+}
+
+/* ───── Date Picker Overrides ───── */
+.custom-date-input {
+  background: var(--sp-surface-2) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text) !important;
+  border-radius: var(--sp-radius-md) !important;
+  padding: 0.7rem 1rem !important;
+  font-size: 0.95rem !important;
+  width: 100%;
+}
+
+.custom-date-input:focus {
+  border-color: var(--sp-emerald) !important;
+  box-shadow: 0 0 0 3px var(--sp-emerald-glow) !important;
+}
+
+/* ── Premium Buttons ───────────────────────────────────────── */
+.btn-save {
+  background: linear-gradient(135deg, var(--sp-emerald), var(--sp-cyan)) !important;
+  border: none !important; color: white !important; font-weight: 800 !important;
+  border-radius: var(--sp-radius-md) !important;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.2) !important;
+}
+
+.btn-cancel {
+  background: var(--sp-surface-2) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text-soft) !important;
+  border-radius: var(--sp-radius-md) !important;
+}
+
+/* ── TABS ──────────────────────────────────────────────────── */
+.sp-tabs {
+  border: none !important;
+  gap: 1.5rem !important;
+  border-bottom: 1px solid var(--sp-border) !important;
+  margin-bottom: 2rem !important;
+}
+
+.sp-tabs .nav-link {
+  background: transparent !important;
+  border: none !important;
+  color: var(--sp-text-muted) !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 0.75rem 0.25rem !important;
+  transition: all 0.2s ease !important;
+  position: relative;
+}
+
+.sp-tabs .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--sp-emerald);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.sp-tabs .nav-link.active {
+  color: var(--sp-emerald) !important;
+}
+
+.sp-tabs .nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.sp-tabs .nav-link:hover {
+  color: white !important;
+}
+
+/* ───── Checkboxes and Switches ───── */
+.form-check-input {
+  background-color: var(--sp-surface-3) !important;
+  border: 1px solid var(--sp-border) !important;
+}
+
+.form-check-input:checked {
+  background-color: var(--sp-emerald) !important;
+  border-color: var(--sp-emerald) !important;
+}
+
+/* ───── Modal Backgrounds ───── */
+.modal-content {
+  background-color: var(--sp-bg) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text) !important;
+}
+
+/* ───── React Select Premium Styles ───── */
+.sp-select-container .sp-select__control {
+  background: var(--sp-surface-3) !important;
+  border: 1px solid var(--sp-border) !important;
+  border-radius: var(--sp-radius-md) !important;
+  min-height: 48px !important;
+  box-shadow: none !important;
+}
+
+.sp-select-container .sp-select__control--is-focused {
+  border-color: var(--sp-emerald) !important;
+  box-shadow: 0 0 0 4px var(--sp-emerald-glow) !important;
+}
+
+.sp-select-container .sp-select__single-value { 
+  color: var(--sp-text) !important; 
+  font-weight: 600; 
+}
+
+.sp-select-container .sp-select__placeholder { 
+  color: var(--sp-text-muted) !important; 
+}
+
+.sp-select-container .sp-select__menu { 
+  background: var(--sp-surface-2) !important; 
+  border: 1px solid var(--sp-border) !important;
+  border-radius: var(--sp-radius-md) !important;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
+}
+
+.sp-select-container .sp-select__option { 
+  padding: 0.75rem 1rem !important; 
+  cursor: pointer !important; 
+}
+
+.sp-select-container .sp-select__option--is-focused { 
+  background: var(--sp-surface-3) !important; 
+  color: var(--sp-text) !important; 
+}
+
+.sp-select-container .sp-select__option--is-selected { 
+  background: var(--sp-emerald) !important; 
+  color: white !important; 
+}
+
+/* ── Premium Buttons ───────────────────────────────────────── */
+.btn-premium-shto {
+  background: linear-gradient(135deg, var(--sp-emerald) 0%, #059669 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 800 !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 15px var(--sp-emerald-glow) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-premium-shto:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 12px 25px var(--sp-emerald-glow) !important;
+}
+
+.btn-premium-outline {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text-soft) !important;
+  font-weight: 700 !important;
+  padding: 0.7rem 1.4rem !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-premium-outline:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border-color: var(--sp-text-muted) !important;
+}
+
+/* ───── Common Layout Helpers ───── */
+.sp-loader-container {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  width: 100%;
+}

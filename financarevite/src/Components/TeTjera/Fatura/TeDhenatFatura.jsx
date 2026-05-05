@@ -1,4 +1,4 @@
-import "./Styles/Fatura.css";
+﻿import "./Styles/Fatura.css";
 import { View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 
 Font.register({

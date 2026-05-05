@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
-import { Container} from "react-bootstrap";
+import { Button, Col, Container, Form, Row} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import PerditesoStatusinKalk from "../../../Components/Materiali/Shitjet/ListaShitjeveMeParagon/PerditesoStatusinKalk";
 import TeDhenatKalkulimit from "../../../Components/Materiali/Shitjet/ListaShitjeveMeParagon/TeDhenatKalkulimit";
@@ -68,12 +68,20 @@ function ListaShitjeveMeParagon(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0] // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0] // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
           authentikimi
         );
         const kthimet = kalkulimi.data.filter(
@@ -103,7 +111,7 @@ function ListaShitjeveMeParagon(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]);
 
   useEffect(() => {
     if (getID) {
@@ -186,7 +194,7 @@ function ListaShitjeveMeParagon(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -198,6 +206,43 @@ function ListaShitjeveMeParagon(props) {
           !shfaqTeDhenat && (
             <>
               <Container fluid>
+                <Row className="mb-3">
+                  <Col md={3}>
+                    <Form.Group>
+                      <Form.Label>Data Fillim</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={dataFillim}
+                        onChange={(e) => {
+                          setDataFillim(e.target.value);
+                        }}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group>
+                      <Form.Label>Data Mbarim</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={dataMbarim}
+                        onChange={(e) => {
+                          setDataMbarim(e.target.value);
+                        }}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3} className="d-flex align-items-end">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setDataFillim(new Date().toISOString().split("T")[0]);
+                        setDataMbarim(new Date().toISOString().split("T")[0]);
+                      }}
+                      className="w-100">
+                      Sot
+                    </Button>
+                  </Col>
+                </Row>
                 <Tabela
                   data={kalkulimet}
                   tableName="Lista e Shitjeve me Paragon"

@@ -1,0 +1,2 @@
+# Docker secrets — never commit the real .env
+.env

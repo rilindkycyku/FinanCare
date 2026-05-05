@@ -1,22 +1,32 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import "../../../../Pages/Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
   faPlus,
   faPenToSquare,
   faArrowLeft,
+  faCalculator,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Form, Container, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { Modal } from "react-bootstrap";
+import {
+  Form,
+  Container,
+  Row,
+  Col,
+  Modal,
+  Card,
+  Badge,
+  InputGroup,
+} from "react-bootstrap";
 import useKeyboardNavigation from "../../../../Context/useKeyboardNavigation";
 import Select from "react-select";
 import Tabela from "../../../TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import { useNavigate } from "react-router-dom";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function RegjistroFaturen(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -56,11 +66,33 @@ function RegjistroFaturen(props) {
 
   const [konifirmoProduktinLista, setKonifirmoProduktinLista] = useState([]);
 
-  const [inputValue, setInputValue] = useState("");
-  const [filteredItems, setFilteredItems] = useState(produktet);
-  const selectedIndex = useKeyboardNavigation(filteredItems); // Use the custom hook
+  const [siteName, setSiteName] = useState("FinanCare");
 
-  const navigate = useNavigate();
+  const [options, setOptions] = useState([]);
+  const [optionsSelected, setOptionsSelected] = useState(null);
+  const [loadingProdukteve, setLoadingProdukteve] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  const handleInputChange = (val) => {
+    setInputValue(val);
+    return val;
+  };
+
+  const filteredOptions = useMemo(() => {
+    if (!inputValue || inputValue.length < 2) return [];
+
+    const lower = inputValue.toLowerCase();
+    const results = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].label.toLowerCase().includes(lower)) {
+        results.push(options[i]);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValue, options]);
+
+    const navigate = useNavigate();
 
   const getID = localStorage.getItem("id");
 
@@ -71,6 +103,21 @@ function RegjistroFaturen(props) {
       Authorization: `Bearer ${getToken}`,
     },
   };
+
+  useEffect(() => {
+    const vendosTeDhenatBiznesit = async () => {
+      try {
+        const teDhenat = await axios.get(
+          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
+          authentikimi
+        );
+        setSiteName(teDhenat?.data?.emriIBiznesit);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    vendosTeDhenatBiznesit();
+  }, [perditeso]);
 
   useEffect(() => {
     if (getID) {
@@ -124,26 +171,26 @@ function RegjistroFaturen(props) {
               "R. 3 %": parseFloat(k.rabati3).toFixed(2),
               "Qmimi Shites - Rabati": parseFloat(
                 k.qmimiShites -
+                k.qmimiShites * (k.rabati1 / 100) -
+                (k.qmimiShites - k.qmimiShites * (k.rabati1 / 100)) *
+                (k.rabati2 / 100) -
+                (k.qmimiShites -
                   k.qmimiShites * (k.rabati1 / 100) -
                   (k.qmimiShites - k.qmimiShites * (k.rabati1 / 100)) *
-                    (k.rabati2 / 100) -
-                  (k.qmimiShites -
-                    k.qmimiShites * (k.rabati1 / 100) -
-                    (k.qmimiShites - k.qmimiShites * (k.rabati1 / 100)) *
-                      (k.rabati2 / 100)) *
-                    (k.rabati3 / 100)
+                  (k.rabati2 / 100)) *
+                (k.rabati3 / 100)
               ).toFixed(2),
               "Totali €": parseFloat(
                 (k.qmimiShites -
                   k.qmimiShites * (k.rabati1 / 100) -
                   (k.qmimiShites - k.qmimiShites * (k.rabati1 / 100)) *
-                    (k.rabati2 / 100) -
+                  (k.rabati2 / 100) -
                   (k.qmimiShites -
                     k.qmimiShites * (k.rabati1 / 100) -
                     (k.qmimiShites - k.qmimiShites * (k.rabati1 / 100)) *
-                      (k.rabati2 / 100)) *
-                    (k.rabati3 / 100)) *
-                  k.sasiaStokut
+                    (k.rabati2 / 100)) *
+                  (k.rabati3 / 100)) *
+                k.sasiaStokut
               ).toFixed(2),
             }))
           );
@@ -395,15 +442,8 @@ function RegjistroFaturen(props) {
     setSasia(e.target.value);
   }
 
-  const [options, setOptions] = useState([]);
-  const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
   useEffect(() => {
+    setLoadingProdukteve(true);
     axios
       .get(
         `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
@@ -424,6 +464,9 @@ function RegjistroFaturen(props) {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoadingProdukteve(false);
       });
   }, []);
 
@@ -479,7 +522,7 @@ function RegjistroFaturen(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -489,182 +532,339 @@ function RegjistroFaturen(props) {
           </div>
         ) : (
           <>
-            <h1 className="title">Oferta</h1>
+            <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+              <div>
+                <h1 className="title mb-1">Oferta</h1>
+                <div className="text-muted" style={{ fontSize: "10pt" }}>
+                  Regjistro produktet për këtë ofertë.
+                </div>
+              </div>
+              <Button
+                variant="outline-secondary"
+                onClick={() => KthehuTekFaturat()}>
+                <FontAwesomeIcon icon={faArrowLeft} /> Kthehu mbrapa
+              </Button>
+            </div>
 
             <Container fluid>
-              <Row>
-                <Col>
-                  <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="idDheEmri">
-                      <Form.Label>Produkti</Form.Label>
-                      <Select
-                        value={optionsSelected}
-                        onChange={handleChange}
-                        options={options}
-                        id="produktiSelect" // Setting the id attribute
-                        inputId="produktiSelect-input" // Setting the input id attribute
-                        isDisabled={edito}
-                        styles={customStyles}
-                        autoFocus
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Sasia - {njesiaMatese}</Form.Label>
-                      <Form.Control
-                        id="sasia"
-                        type="number"
-                        placeholder={"0.00 " + njesiaMatese}
-                        value={sasia}
-                        onChange={(e) => {
-                          kontrolloQmimin(e);
-                        }}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "rabati");
-                        }}
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Rabati %</Form.Label>
-                      <Form.Control
-                        id="rabati"
-                        type="number"
-                        placeholder={"0.00 %"}
-                        value={rabati3}
-                        onChange={(e) => {
-                          setRabati3(e.target.value);
-                        }}
-                      />
-                    </Form.Group>
-                    <br />
-                    <div style={{ display: "flex", gap: "0.3em" }}>
-                      <Button variant="success" type="submit" disabled={edito}>
-                        Shto Produktin <FontAwesomeIcon icon={faPlus} />
-                      </Button>
-                      {edito && (
-                        <Button
-                          variant="warning"
-                          onClick={() => handleEdito(idTeDhenatKalk)}>
-                          Edito Produktin{" "}
-                          <FontAwesomeIcon icon={faPenToSquare} />
-                        </Button>
+              <Row className="g-3">
+                <Col lg={5} xl={4}>
+                  <Card className="shadow-sm">
+                    <Card.Header className="d-flex align-items-center justify-content-between">
+                      <div className="fw-semibold">Shto / Edito Produkt</div>
+                      {edito ? (
+                        <Badge bg="warning" text="dark">
+                          Editim
+                        </Badge>
+                      ) : (
+                        <Badge bg="success">Shtim</Badge>
                       )}
-                    </div>
-                  </Form>
+                    </Card.Header>
+                    <Card.Body>
+                      <Form onSubmit={handleSubmit}>
+                        <Form.Group controlId="idDheEmri" className="mb-3">
+                          <Form.Label className="fw-semibold">
+                            Produkti
+                          </Form.Label>
+                          <Select
+                            value={optionsSelected}
+                            onChange={handleChange}
+                            options={filteredOptions}
+                            id="produktiSelect"
+                            inputId="produktiSelect-input"
+                            isDisabled={edito || loadingProdukteve}
+                            isLoading={loadingProdukteve}
+                            styles={darkSelectStyles}
+                            placeholder={
+                              loadingProdukteve
+                                ? "Duke ngarkuar produktetâ€¦"
+                                : "Kërko produkt (min. 2 shkronja)â€¦"
+                            }
+                            onInputChange={handleInputChange}
+                            inputValue={inputValue}
+                            noOptionsMessage={() =>
+                              loadingProdukteve
+                                ? "Duke ngarkuarâ€¦"
+                                : inputValue.length < 2
+                                  ? "Shkruani të paktën 2 karaktere"
+                                  : "Nuk u gjet asnjë produkt"
+                            }
+                            autoFocus
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                          <Form.Label className="fw-semibold">
+                            Sasia - {njesiaMatese}
+                          </Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                              id="sasia"
+                              type="number"
+                              placeholder={"0.00 " + njesiaMatese}
+                              value={sasia}
+                              onChange={(e) => {
+                                kontrolloQmimin(e);
+                              }}
+                              onKeyDown={(e) => {
+                                ndrroField(e, "rabati");
+                              }}
+                            />
+                            <InputGroup.Text>{njesiaMatese}</InputGroup.Text>
+                          </InputGroup>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                          <Form.Label className="fw-semibold">
+                            Rabati %
+                          </Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                              id="rabati"
+                              type="number"
+                              placeholder={"0.00 %"}
+                              value={rabati3}
+                              onChange={(e) => {
+                                setRabati3(e.target.value);
+                              }}
+                            />
+                            <InputGroup.Text>%</InputGroup.Text>
+                          </InputGroup>
+                        </Form.Group>
+                        <div className="d-flex gap-2 mt-3">
+                          <Button
+                            variant="success"
+                            type="submit"
+                            disabled={edito}>
+                            Shto Produktin <FontAwesomeIcon icon={faPlus} />
+                          </Button>
+                          {edito && (
+                            <Button
+                              variant="warning"
+                              onClick={() => handleEdito(idTeDhenatKalk)}>
+                              Edito Produktin{" "}
+                              <FontAwesomeIcon icon={faPenToSquare} />
+                            </Button>
+                          )}
+                        </div>
+                      </Form>
+                    </Card.Body>
+                  </Card>
                 </Col>
-                <Col>
-                  <p>
-                    <strong>Sasia aktuale ne Stok:</strong>{" "}
-                    {Array.isArray(optionsSelected)
-                      ? optionsSelected
-                          .map((option) => option.item.sasiaNeStok)
-                          .join(", ")
-                      : optionsSelected?.item?.sasiaNeStok ?? 0}{" "}
-                    {Array.isArray(optionsSelected)
-                      ? optionsSelected
-                          .map((option) => option.item.emriNjesiaMatese)
-                          .join(", ")
-                      : optionsSelected?.item?.emriNjesiaMatese ?? "Copë"}
-                  </p>
-                  <p>
-                    <strong>Qmimi Bleres + TVSH:</strong>{" "}
-                    {parseFloat(
-                      Array.isArray(optionsSelected)
-                        ? optionsSelected
-                            .map((option) => option.item.qmimiBleres)
-                            .join(", ")
-                        : optionsSelected?.item?.qmimiBleres ?? 0
-                    ).toFixed(2)}{" "}
-                    €
-                  </p>
-                  <p>
-                    <strong>Qmimi Shites me Pakic + TVSH:</strong>{" "}
-                    {parseFloat(
-                      Array.isArray(optionsSelected)
-                        ? optionsSelected
-                            .map((option) => option.item.qmimiProduktit)
-                            .join(", ")
-                        : optionsSelected?.item?.qmimiProduktit ?? 0
-                    ).toFixed(2)}{" "}
-                    €
-                  </p>
-                  <p>
-                    <strong>Qmimi Shites me Shumic + TVSH:</strong>{" "}
-                    {parseFloat(
-                      Array.isArray(optionsSelected)
-                        ? optionsSelected
-                            .map((option) => option.item.qmimiMeShumic)
-                            .join(", ")
-                        : optionsSelected?.item?.qmimiMeShumic ?? 0
-                    ).toFixed(2)}{" "}
-                    €
-                  </p>
-                </Col>
-                <Col>
-                  <Row>
-                    <h5>
-                      <strong>Nr. Ofertes:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.nrRendorFatures}
-                    </h5>
-                    <h5>
-                      <strong>Partneri:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.idPartneri}{" "}
-                      -{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.emriBiznesit}
-                    </h5>
-                    <h5>
-                      <strong>Pershkrim Shtese:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.pershkrimShtese}
-                    </h5>
-                    <h5>
-                      <strong>Lloji Pageses:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.llojiPageses}
-                    </h5>
-                    <h5>
-                      <strong>Totali Produkteve ne Kalkulim:</strong>{" "}
-                      {totProdukteve}
-                    </h5>
-                    <h5>
-                      <strong>Sasia:</strong> {parseFloat(totStokut).toFixed(2)}
-                    </h5>
-                    <h5>
-                      <strong>Totali:</strong> {parseFloat(totFat).toFixed(2)} €
-                    </h5>
 
-                    <hr />
-                    <Col>
-                      <Button
-                        className="mb-3 Butoni"
-                        onClick={() => setKonfirmoMbylljenFatures(true)}>
-                        Mbyll Faturen <FontAwesomeIcon icon={faPlus} />
-                      </Button>
-                      <Button
-                        className="mb-3 Butoni"
-                        onClick={() => KthehuTekFaturat()}>
-                        <FontAwesomeIcon icon={faArrowLeft} /> Kthehu Mbrapa
-                      </Button>
-                    </Col>
-                  </Row>
+                <Col lg={7} xl={4}>
+                  <Card className="shadow-sm h-100">
+                    <Card.Header className="fw-semibold">
+                      Produkti i zgjedhur
+                    </Card.Header>
+                    <Card.Body>
+                      {!optionsSelected?.item ? (
+                        <div className="text-muted">
+                          Zgjidh një produkt për të parë detajet.
+                        </div>
+                      ) : (
+                        <>
+                          <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                            <div className="fw-semibold">
+                              {optionsSelected.item.emriProduktit}
+                            </div>
+                            <div className="d-flex align-items-center gap-2">
+                              {optionsSelected.item.kodiProduktit && (
+                                <Badge bg="info" text="dark">
+                                  {optionsSelected.item.kodiProduktit}
+                                </Badge>
+                              )}
+                              <Badge bg="secondary">
+                                {optionsSelected.item.barkodi}
+                              </Badge>
+                            </div>
+                          </div>
+                          <Row className="g-2">
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div
+                                    className="text-muted"
+                                    style={{ fontSize: "9pt" }}>
+                                    Sasia aktuale në stok
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {optionsSelected?.item?.sasiaNeStok ?? 0}{" "}
+                                    {optionsSelected?.item?.emriNjesiaMatese ??
+                                      "Copë"}
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div
+                                    className="text-muted"
+                                    style={{ fontSize: "9pt" }}>
+                                    Blerje + TVSH
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {parseFloat(
+                                      optionsSelected?.item?.qmimiBleres ?? 0
+                                    ).toFixed(2)}{" "}
+                                    €
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div
+                                    className="text-muted"
+                                    style={{ fontSize: "9pt" }}>
+                                    Pakic + TVSH
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {parseFloat(
+                                      optionsSelected?.item?.qmimiProduktit ?? 0
+                                    ).toFixed(2)}{" "}
+                                    €
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div
+                                    className="text-muted"
+                                    style={{ fontSize: "9pt" }}>
+                                    Shumic + TVSH
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {parseFloat(
+                                      optionsSelected?.item?.qmimiMeShumic ?? 0
+                                    ).toFixed(2)}{" "}
+                                    €
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                          </Row>
+                        </>
+                      )}
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col xl={4}>
+                  <Card
+                    className="shadow-sm h-100"
+                    style={{ position: "sticky", top: "1rem" }}>
+                    <Card.Header className="fw-semibold">
+                      Përmbledhje oferte
+                    </Card.Header>
+                    <Card.Body>
+                      <Row className="g-2">
+                        <Col sm={6}>
+                          <div
+                            className="text-muted"
+                            style={{ fontSize: "9pt" }}>
+                            Nr. Ofertes
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures.regjistrimet?.nrRendorFatures ??
+                              "-"}
+                          </div>
+                        </Col>
+                        <Col sm={6}>
+                          <div
+                            className="text-muted"
+                            style={{ fontSize: "9pt" }}>
+                            Lloji Pageses
+                          </div>
+                          <div className="fw-semibold text-truncate">
+                            {teDhenatFatures.regjistrimet?.llojiPageses ?? "-"}
+                          </div>
+                        </Col>
+                        <Col sm={12}>
+                          <div
+                            className="text-muted"
+                            style={{ fontSize: "9pt" }}>
+                            Partneri
+                          </div>
+                          <div className="fw-semibold text-truncate">
+                            {teDhenatFatures.regjistrimet?.emriBiznesit ?? "-"}
+                          </div>
+                        </Col>
+                      </Row>
+
+                      <hr />
+
+                      <Row className="g-2">
+                        <Col sm={6}>
+                          <div
+                            className="text-muted"
+                            style={{ fontSize: "9pt" }}>
+                            Totali Produkteve
+                          </div>
+                          <div className="fw-semibold">{totProdukteve}</div>
+                        </Col>
+                        <Col sm={6}>
+                          <div
+                            className="text-muted"
+                            style={{ fontSize: "9pt" }}>
+                            Sasia Totale
+                          </div>
+                          <div className="fw-semibold">
+                            {parseFloat(totStokut).toFixed(2)}
+                          </div>
+                        </Col>
+                        <Col sm={12}>
+                          <div
+                            className="text-muted"
+                            style={{ fontSize: "9pt" }}>
+                            Totali Fatures
+                          </div>
+                          <div
+                            className="fw-bold text-success"
+                            style={{ fontSize: "1.2rem" }}>
+                            {parseFloat(totFat).toFixed(2)} €
+                          </div>
+                        </Col>
+                      </Row>
+
+                      <div className="d-grid gap-2 mt-4">
+                        <Button
+                          variant="primary"
+                          onClick={() => setKonfirmoMbylljenFatures(true)}>
+                          Mbyll Faturen <FontAwesomeIcon icon={faPlus} />
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
                 </Col>
               </Row>
-              <div className="mt-2">
-                <Tabela
-                  data={produktetNeKalkulim}
-                  tableName="Tabela e Produkteve te Fatures"
-                  kaButona={true}
-                  funksionButonFshij={(e) => handleFshij(e)}
-                  funksionButonEdit={(e) => {
-                    handleEdit(e);
-                    setIdTeDhenatKalk(e);
-                  }}
-                  mosShfaqKerkimin
-                  mosShfaqID={true}
-                />
-              </div>
+
+              <Card className="shadow-sm mt-3">
+                <Card.Header className="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div className="fw-semibold">
+                    Tabela e Produkteve te Fatures
+                  </div>
+                  <Badge bg="success" style={{ fontSize: "10pt" }}>
+                    Totali: {parseFloat(totFat).toFixed(2)} €
+                  </Badge>
+                </Card.Header>
+                <Card.Body>
+                  <Tabela
+                    data={produktetNeKalkulim}
+                    tableName="Tabela e Produkteve te Fatures"
+                    kaButona={true}
+                    funksionButonFshij={(e) => handleFshij(e)}
+                    funksionButonEdit={(e) => {
+                      handleEdit(e);
+                      setIdTeDhenatKalk(e);
+                    }}
+                    mosShfaqKerkimin
+                    mosShfaqID={true}
+                  />
+                </Card.Body>
+              </Card>
             </Container>
           </>
         )}

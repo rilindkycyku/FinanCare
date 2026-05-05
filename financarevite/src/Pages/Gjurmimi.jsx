@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { AlertCircle, Home, LogOut } from "lucide-react";
 import {
   Button,
@@ -6,19 +6,19 @@ import {
   Row,
   Col,
   Form,
-  InputGroup,
   Pagination,
   Table,
+  Card
 } from "react-bootstrap";
 import axios from "axios";
 import useSortableData from "../Context/useSortableData";
 import SortIcon from "../Components/TeTjera/Tabela/SortIcon";
 import CustomDatePicker from "../Components/TeTjera/layout/CustomDatePicker";
 import EksportoTeDhenat from "../Components/TeTjera/Tabela/EksportoTeDhenat";
-import Titulli from "../Components/TeTjera/Titulli";
 import { format, parseISO } from "date-fns";
 import NavBar from "../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import "./Styles/PremiumTheme.css";
 
 export default function Gjurmimet() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -124,7 +124,7 @@ export default function Gjurmimet() {
   useEffect(() => {
     const tabelaDiv = document.querySelector(".tabelaDiv");
     if (tabelaDiv) {
-      tabelaDiv.style.zoom = "80%";
+      // tabelaDiv.style.zoom = "80%";
     }
   }, []);
 
@@ -209,19 +209,19 @@ export default function Gjurmimet() {
         />
       )}
       <aside
-        className={`position-fixed start-0 top-0 h-100 bg-white border-end ${sidebarOpen ? "d-block" : "d-none"} d-lg-none`}
-        style={{ width: "250px", zIndex: 1000, marginTop: "56px" }}>
+        className={`position-fixed start-0 top-0 h-100 border-end border-secondary ${sidebarOpen ? "d-block" : "d-none"} d-lg-none`}
+        style={{ width: "250px", zIndex: 1000, marginTop: "56px", background: "var(--sp-surface)" }}>
         <nav className="p-3">
           <a
             href="/"
-            className="d-flex align-items-center gap-2 text-decoration-none text-dark p-3 rounded hover-light mb-2">
-            <Home className="w-5 h-5" />
+            className="d-flex align-items-center gap-2 text-decoration-none text-soft p-3 rounded hover-dark-soft mb-2">
+            <Home className="w-5 h-5 text-emerald" />
             <span>Shtëpi</span>
           </a>
           <Button
             variant="link"
             onClick={handleLogout}
-            className="w-100 text-start text-danger p-3 rounded">
+            className="w-100 text-start text-danger p-3 rounded text-decoration-none">
             <LogOut className="w-5 h-5 me-2" />
             Dil
           </Button>
@@ -256,148 +256,221 @@ export default function Gjurmimet() {
         {/* Loading State */}
         {loading ? (
           <div className="d-flex align-items-center justify-content-center py-5">
-            <div className="spinner-border text-primary me-3" role="status">
+            <div className="spinner-border text-emerald me-3" role="status">
               <span className="visually-hidden">Duke ngarkuar...</span>
             </div>
-            <span className="text-muted">Duke ngarkuar...</span>
+            <span className="text-soft">Duke ngarkuar...</span>
           </div>
         ) : gjurmimet.length > 0 ? (
           <>
-            <Titulli titulli="Gjurmimi" />
-            <Table striped bordered hover responsive>
-              <thead>
-                <tr>
-                  <th colSpan={filteredHeaders.length}>
-                    <h5 className="text-center mb-0">Gjurmimi</h5>
-                  </th>
-                </tr>
+            <div className="containerDashboardP py-3">
+              <div className="text-center mb-4">
+                <h1 className="h2 fw-bold text-white mb-1">Gjurmimi i Sistemit</h1>
+                <p className="text-soft opacity-75 small">Monitoroni të gjitha veprimet e kryera në platformë</p>
+              </div>
 
-                <tr>
-                  <th colSpan={filteredHeaders.length}>
-                    <Row className="align-items-center g-2">
-                      <Col xs="auto">
+              <Row className="mb-4 g-4">
+                <Col lg={8}>
+                  <Card className="sp-card h-100">
+                    <div className="sp-card-header">
+                      <h3>Filtrimi & Kërkimi</h3>
+                    </div>
+                    <Card.Body className="p-4">
+                      <Row className="g-3 align-items-end">
+                        <Col md={3}>
+                          <Form.Label className="sp-label small">Data Fillimit</Form.Label>
+                          <CustomDatePicker
+                            selectedDate={startDate}
+                            onDateChange={setStartDate}
+                            placeholderText="Nga data"
+                            maxDate={endDate}
+                          />
+                        </Col>
+                        <Col md={3}>
+                          <Form.Label className="sp-label small">Data Mbarimit</Form.Label>
+                          <CustomDatePicker
+                            selectedDate={endDate}
+                            onDateChange={setEndDate}
+                            minDate={startDate}
+                            placeholderText="Deri më"
+                          />
+                        </Col>
+                        <Col md={4}>
+                          <Form.Label className="sp-label small">Kërko në të dhëna</Form.Label>
+                          <Form.Control
+                            className="sp-input"
+                            type="text"
+                            placeholder="Kërko arkëtar, veprim..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                          />
+                        </Col>
+                        <Col md={2}>
+                          <Button
+                            variant="outline-secondary"
+                            className="w-100 py-2"
+                            onClick={handleResetFilters}
+                          >
+                            Pastro
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col lg={4}>
+                  <Card className="sp-card h-100">
+                    <div className="sp-card-header">
+                      <h3>Veprime Rapide</h3>
+                    </div>
+                    <Card.Body className="p-4 d-flex flex-column justify-content-between h-100">
+                      <div className="d-flex gap-2 mb-3">
                         {gjurmimet.length > 0 && (
                           <EksportoTeDhenat
                             teDhenatJSON={gjurmimet}
                             emriDokumentit="Gjurmimet"
                           />
                         )}
-                      </Col>
-                      <Col xs="auto">
                         <Button
-                          variant="danger"
-                          size="sm"
+                          variant="outline-danger"
+                          className="flex-grow-1"
                           onClick={() => setShowClearModal(true)}
-                          disabled={gjurmimet.length === 0}>
-                          Fshi Gjurmimet
+                          disabled={gjurmimet.length === 0}
+                        >
+                          Fshi Log-et
                         </Button>
-                      </Col>
-                    </Row>
-                  </th>
-                </tr>
+                      </div>
+                      <div className="mt-auto">
+                        <Form.Select
+                          className="sp-input mt-2"
+                          value={itemsPerPage}
+                          onChange={(e) => handleItemsPerPageChange(parseInt(e.target.value))}
+                        >
+                          <option value={20}>20 rreshta per faqe</option>
+                          <option value={50}>50 rreshta per faqe</option>
+                          <option value={100}>100 rreshta per faqe</option>
+                        </Form.Select>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
 
-                <tr>
-                  <th colSpan={filteredHeaders.length}>
-                    <InputGroup className="gap-2 flex-wrap">
-                      <CustomDatePicker
-                        selectedDate={startDate}
-                        onDateChange={setStartDate}
-                        placeholderText="Data fillimit"
-                        maxDate={endDate}
-                      />
-                      <CustomDatePicker
-                        selectedDate={endDate}
-                        onDateChange={setEndDate}
-                        minDate={startDate}
-                        placeholderText="Data përfundimit"
-                      />
-                      <Form.Select
-                        value={itemsPerPage}
-                        onChange={(e) => handleItemsPerPageChange(parseInt(e.target.value))}
-                        style={{ width: "auto" }}>
-                        <option value={20}>20 rreshta per faqe</option>
-                        <option value={50}>50 rreshta per faqe</option>
-                        <option value={100}>100 rreshta per faqe</option>
-                      </Form.Select>
-                      <Form.Control
-                        type="text"
-                        placeholder="Kerkoni"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ flex: 1, minWidth: "200px" }}
-                      />
-                      <Button
-                        variant="secondary"
-                        onClick={handleResetFilters}>
-                        Pastro Filtrat
-                      </Button>
-                    </InputGroup>
-                  </th>
-                </tr>
+              <Card className="sp-card border-0 shadow-none bg-transparent">
+                <div className="table-responsive">
+                  <Table className="sp-table align-middle mb-0">
+                    <thead>
+                      <tr>
+                        {filteredHeaders.map((header) => (
+                          <th
+                            key={header}
+                            onClick={() => requestSort(header)}
+                            className={header === "Koha" ? "ps-4" : ""}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <div className="d-flex align-items-center gap-2">
+                              {header}
+                              {sortConfig.key === header ? (
+                                <SortIcon direction={sortConfig.direction} type="text" />
+                              ) : (
+                                <SortIcon opacity={0.3} />
+                              )}
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredItems.map((item) => (
+                        <tr key={item.ID}>
+                          {filteredHeaders.map((header) => (
+                            <td key={`${item.ID}-${header}`} className={header === "Koha" ? "ps-4" : ""}>
+                              {header === "Koha" ? (
+                                <div className="fw-bold">{formatDate(item[header])}</div>
+                              ) : header === "Veprimi" ? (
+                                <span className={`badge ${item[header] === "Shto" ? "bg-success-subtle text-success" :
+                                  item[header] === "Fshij" ? "bg-danger-subtle text-danger" :
+                                    "bg-info-subtle text-info"
+                                  } px-2 py-1`}>
+                                  {item[header]}
+                                </span>
+                              ) : header === "Detajet" ? (
+                                <div className="text-white-50 small" style={{ maxWidth: '350px', whiteSpace: 'normal' }}>
+                                  {item[header]}
+                                </div>
+                              ) : (
+                                item[header]
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              </Card>
 
-                <tr>
-                  {filteredHeaders.map((header) => (
-                    <th
-                      key={header}
-                      onClick={() => requestSort(header)}
-                      style={{ cursor: "pointer" }}>
-                      {header}{" "}
-                      {sortConfig.key === header ? (
-                        <SortIcon
-                          direction={sortConfig.direction}
-                          type="text"
-                        />
-                      ) : (
-                        <SortIcon />
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredItems.map((item) => (
-                  <tr key={item.ID}>
-                    {filteredHeaders.map((header) => (
-                      <td key={`${item.ID}-${header}`}>
-                        {header === "Koha"
-                          ? formatDate(item[header])
-                          : item[header]}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+              {pageCount > 1 && (
+                <Pagination className="justify-content-center mt-4">
+                  <Pagination.First onClick={() => goToPage(0)} disabled={currentPage === 0} />
+                  <Pagination.Prev onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} />
 
-            {pageCount > 1 && (
-              <Pagination className="justify-content-center mt-3">
-                {Array.from({ length: pageCount }, (_, i) => (
-                  <Pagination.Item
-                    key={i}
-                    active={i === currentPage}
-                    onClick={() => goToPage(i)}>
-                    {i + 1}
-                  </Pagination.Item>
-                ))}
-              </Pagination>
-            )}
+                  {/* Always show first page */}
+                  <Pagination.Item active={currentPage === 0} onClick={() => goToPage(0)}>1</Pagination.Item>
 
-            <div className="text-center mt-4 mb-4">
-              <Button
-                variant="primary"
-                onClick={fetchGjurmimet}
-                disabled={loading}>
-                <svg
-                  className="me-2"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16">
-                  <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
-                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
-                </svg>
-                Përditeso
-              </Button>
+                  {/* Left ellipsis */}
+                  {currentPage > 2 && <Pagination.Ellipsis disabled />}
+
+                  {/* Middle pages */}
+                  {Array.from({ length: pageCount }, (_, i) => {
+                    // Show middle pages around current
+                    if (i > 0 && i < pageCount - 1 && i >= currentPage - 1 && i <= currentPage + 1) {
+                      return (
+                        <Pagination.Item
+                          key={i}
+                          active={i === currentPage}
+                          onClick={() => goToPage(i)}>
+                          {i + 1}
+                        </Pagination.Item>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  {/* Right ellipsis */}
+                  {currentPage < pageCount - 3 && <Pagination.Ellipsis disabled />}
+
+                  {/* Always show last page */}
+                  {pageCount > 1 && (
+                    <Pagination.Item active={currentPage === pageCount - 1} onClick={() => goToPage(pageCount - 1)}>
+                      {pageCount}
+                    </Pagination.Item>
+                  )}
+
+                  <Pagination.Next onClick={() => goToPage(currentPage + 1)} disabled={currentPage === pageCount - 1} />
+                  <Pagination.Last onClick={() => goToPage(pageCount - 1)} disabled={currentPage === pageCount - 1} />
+                </Pagination>
+              )}
+
+              <div className="text-center mt-3 mb-5">
+                <Button
+                  variant="primary"
+                  className="btn-save px-4 py-2"
+                  onClick={fetchGjurmimet}
+                  disabled={loading}>
+                  <svg
+                    className="me-2"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16">
+                    <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
+                  </svg>
+                  Përditeso Gjurmimet
+                </Button>
+              </div>
             </div>
           </>
         ) : (
@@ -424,55 +497,62 @@ export default function Gjurmimet() {
           <div
             className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center"
             style={{ zIndex: 2000 }}>
-            <div className="bg-white rounded-3 p-4" style={{ maxWidth: "400px", width: "90%" }}>
-              <h5 className="mb-3">Fshi Gjurmimet</h5>
-              
-              <div className="mb-3">
-                <label className="form-label">Zgjedh opsionin:</label>
-                <div className="d-flex gap-2">
+            <div className="bg-dark border border-secondary rounded-3 p-4" style={{ maxWidth: "450px", width: "95%", color: "white" }}>
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h4 className="mb-0 text-white">Fshi Gjurmimet</h4>
+                <Button variant="link" className="text-white p-0" onClick={() => setShowClearModal(false)}>âœ•</Button>
+              </div>
+
+              <div className="mb-4">
+                <p className="text-white-50 small mb-2">OPSIONET E FSHIRJES:</p>
+                <div className="d-grid gap-2">
                   <Button
-                    variant="outline-danger"
-                    size="sm"
-                    className="flex-grow-1"
+                    variant="danger"
+                    className="py-3 fw-bold"
                     onClick={handleClearAllLogs}
                     disabled={isClearing}>
-                    Fshi Të Gjitha
+                    FSHI TÇ‹ GJITHA LOG-ET
                   </Button>
+                  <p className="text-danger small text-center mt-1">
+                    âš  Kjo veprim është i pakthyeshëm.
+                  </p>
                 </div>
               </div>
 
-              <div className="mb-3">
-                <label className="form-label">Ose fshi gjurmimet më të vjetra se:</label>
+              <div className="mb-4 pt-3 border-top border-secondary">
+                <p className="text-white-50 small mb-2">FSHI SIPAS KOHÇ‹S:</p>
                 <div className="d-flex gap-2">
                   <Form.Control
+                    className="sp-input"
                     type="number"
                     min="1"
-                    placeholder="Numri i ditëve"
+                    placeholder="Ditët (p.sh. 30)"
                     value={clearDays}
                     onChange={(e) => setClearDays(e.target.value)}
                     disabled={isClearing}
                   />
                   <Button
                     variant="warning"
-                    size="sm"
+                    className="px-4"
                     onClick={handleClearOldLogs}
                     disabled={isClearing || !clearDays}>
                     Fshi
                   </Button>
                 </div>
+                <p className="text-muted small mt-2">
+                  Fshin log-et më të vjetra se numri i ditëve të caktuar.
+                </p>
               </div>
 
-              <div className="d-flex gap-2">
+              <div className="d-grid">
                 <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-grow-1"
+                  variant="outline-light"
                   onClick={() => {
                     setShowClearModal(false);
                     setClearDays("");
                   }}
                   disabled={isClearing}>
-                  Mbyll
+                  Anulo
                 </Button>
               </div>
 

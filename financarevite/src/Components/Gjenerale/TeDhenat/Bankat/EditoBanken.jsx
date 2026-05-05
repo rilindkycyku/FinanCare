@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -135,24 +135,22 @@ function EditoBanken(props) {
         <Modal
           size="sm"
           show={fushatEZbrazura}
-          onHide={() => setFushatEZbrazura(false)}>
+          onHide={() => setFushatEZbrazura(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title style={{ color: "red" }} as="h6">
-              Ndodhi nje gabim
-            </Modal.Title>
+            <Modal.Title className="text-danger">Ndodhi një gabim</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <strong style={{ fontSize: "10pt" }}>
-              Ju lutemi plotesoni te gjitha fushat me{" "}
-              <span style={{ color: "red" }}>*</span>
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <div className="mb-3 text-danger">
+              <FontAwesomeIcon icon={faXmark} size="3x" />
+            </div>
+            <p className="text-white">Ju lutem plotësoni të gjitha fushat me *</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              onClick={() => setFushatEZbrazura(false)}
-              variant="secondary">
-              Mbylle <FontAwesomeIcon icon={faXmark} />
+              className="btn-cancel w-100"
+              onClick={() => setFushatEZbrazura(false)}>
+              Mbylle
             </Button>
           </Modal.Footer>
         </Modal>
@@ -161,84 +159,84 @@ function EditoBanken(props) {
         <Modal
           size="sm"
           show={kontrolloBanken}
-          onHide={() => setKontrolloBanken(false)}>
+          onHide={() => setKontrolloBanken(false)}
+          className="sp-modal">
           <Modal.Header closeButton>
-            <Modal.Title as="h6">Konfirmo vendosjen</Modal.Title>
+            <Modal.Title>Konfirmo Ndryshimin</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <span style={{ fontSize: "10pt" }}>
-              Kjo Banke ekziston ne sistem!
-            </span>
-            <br />
-            <strong style={{ fontSize: "10pt" }}>
-              A jeni te sigurt qe deshironi te vazhdoni?
-            </strong>
+          <Modal.Body className="text-center py-4">
+            <p className="text-warning mb-2">Kjo bankë ekziston në sistem!</p>
+            <p className="text-white small">A jeni të sigurt që dëshironi të vazhdoni?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              size="sm"
-              variant="secondary"
+              className="btn-cancel"
               onClick={() => setKontrolloBanken(false)}>
-              Korrigjo <FontAwesomeIcon icon={faXmark} />
+              Korrigjo
             </Button>
             <Button
-              size="sm"
               variant="warning"
-              onClick={() => {
-                handleSubmit();
-              }}>
-              Vazhdoni
+              className="px-4"
+              onClick={() => handleSubmit()}>
+              Vazhdo
             </Button>
           </Modal.Footer>
         </Modal>
       )}
-      <Modal className="modalEditShto" show={true} onHide={() => props.largo()}>
+      <Modal show={true} onHide={() => props.largo()} className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Edito Banken</Modal.Title>
+          <Modal.Title>Edito Bankën</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>ID Banka</Form.Label>
-              <Form.Control value={banka.bankaID} disabled />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>
-                Emri Bankes<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-              <Form.Control
-                onChange={handleChange("emriBankes")}
-                value={banka.emriBankes}
-                type="text"
-                placeholder="Emri Bankes"
-                autoFocus
-              />
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1">
-              <Form.Label>
-                Lokacioni Bankes<span style={{ color: "red" }}>*</span>
-              </Form.Label>
-              <select
-                placeholder="lokacioniBankes"
-                className="form-select"
-                value={banka.lokacioniBankes}
-                onChange={(e) => handlelokacioniBankesChange(e.target.value)}>
-                <option defaultValue selected value="Kombetare">
-                  Kombetare
-                </option>
-                <option value="Nderkombtare">Nderkombtare</option>
-              </select>
-            </Form.Group>
-          </Form>
+          <div className="sp-form-container p-2">
+            <Form>
+              <Row className="g-4 mb-3">
+                <Col md="4">
+                  <div className="sp-input-group">
+                    <label className="sp-label">ID</label>
+                    <Form.Control
+                      value={banka.bankaID}
+                      disabled
+                      className="sp-input"
+                      style={{ opacity: 0.6 }}
+                    />
+                  </div>
+                </Col>
+                <Col md="8">
+                  <div className="sp-input-group">
+                    <label className="sp-label">Emri i Bankës <span className="text-danger">*</span></label>
+                    <Form.Control
+                      onChange={handleChange("emriBankes")}
+                      value={banka.emriBankes}
+                      type="text"
+                      className="sp-input"
+                      placeholder="Emri i bankës..."
+                      autoFocus
+                    />
+                  </div>
+                </Col>
+              </Row>
+              <div className="sp-input-group mb-0">
+                <label className="sp-label">Lokacioni i Bankës <span className="text-danger">*</span></label>
+                <div className="sp-select-container">
+                  <Form.Select
+                    value={banka.lokacioniBankes}
+                    onChange={(e) => handlelokacioniBankesChange(e.target.value)}
+                    className="sp-input">
+                    <option value="Kombetare text-dark">Kombëtare</option>
+                    <option value="Nderkombtare text-dark">Ndërkombëtare</option>
+                  </Form.Select>
+                </div>
+              </div>
+            </Form>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={() => props.largo()}>
+            Anulo
           </Button>
-          <Button className="Butoni" onClick={handleKontrolli}>
-            Edito Banken <FontAwesomeIcon icon={faPenToSquare} />
+          <Button className="btn-save px-4" onClick={handleKontrolli}>
+            Përditëso Bankën
           </Button>
         </Modal.Footer>
       </Modal>

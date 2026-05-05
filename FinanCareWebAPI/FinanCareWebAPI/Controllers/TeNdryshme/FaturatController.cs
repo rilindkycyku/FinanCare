@@ -34,51 +34,87 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         }
 
         [Authorize]
-        [HttpGet]
-        [Route("shfaqRegjistrimet")]
-        public async Task<IActionResult> Get()
-        {
-            var regjistrimet = await _context.Faturat
-                .Include(x => x.BonusKartela)
-                .ThenInclude(x => x.Partneri)
-                .OrderByDescending(x => x.IDRegjistrimit)
-                .Select(x => new
-                {
-                    x.IDRegjistrimit,
-                    x.TotaliPaTVSH,
-                    x.TVSH,
-                    x.DataRegjistrimit,
-                    x.StafiID,
-                    x.Stafi.Username,
-                    x.NrFatures,
-                    x.Partneri.EmriBiznesit,
-                    x.Partneri.IDPartneri,
-                    x.LlojiKalkulimit,
-                    x.LlojiPageses,
-                    x.StatusiPageses,
-                    x.StatusiKalkulimit,
-                    x.PershkrimShtese,
-                    x.Rabati,
-                    x.NrRendorFatures,
-                    x.EshteFaturuarOferta,
-                    x.IDBonusKartela,
-                    x.BonusKartela,
-                    x.Transporti
-                }).ToListAsync();
+[HttpGet]
+[Route("shfaqRegjistrimet")]
+public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? dataMbarim = null)
+{
+    // If no dates provided, show today only
+    if (dataFillim == null && dataMbarim == null)
+    {
+        dataFillim = DateTime.Today;
+        dataMbarim = DateTime.Today.AddDays(1);
+    }
+    // If only dataFillim provided, set dataMbarim to next day
+    else if (dataMbarim == null)
+    {
+        dataMbarim = dataFillim?.AddDays(1);
+    }
 
-            return Ok(regjistrimet);
-        }
+    // Convert to nullable DateTime for comparison
+    DateTime startDate = dataFillim.Value.Date;
+    DateTime endDate = dataMbarim.Value.Date.AddDays(1); // Include entire end date
+
+    var regjistrimet = await _context.Faturat
+        .Include(x => x.BonusKartela)
+        .ThenInclude(x => x.Partneri)
+        .Where(x => x.DataRegjistrimit.HasValue && 
+                    x.DataRegjistrimit.Value.Date >= startDate && 
+                    x.DataRegjistrimit.Value.Date < endDate)
+        .OrderByDescending(x => x.IDRegjistrimit)
+        .Select(x => new
+        {
+            x.IDRegjistrimit,
+            x.TotaliPaTVSH,
+            x.TVSH,
+            x.DataRegjistrimit,
+            x.StafiID,
+            x.Stafi.Username,
+            x.NrFatures,
+            x.Partneri.EmriBiznesit,
+            x.Partneri.IDPartneri,
+            x.LlojiKalkulimit,
+            x.LlojiPageses,
+            x.StatusiPageses,
+            x.StatusiKalkulimit,
+            x.PershkrimShtese,
+            x.Rabati,
+            x.NrRendorFatures,
+            x.EshteFaturuarOferta,
+            x.IDBonusKartela,
+            x.BonusKartela,
+            x.Transporti
+        }).ToListAsync();
+
+    return Ok(regjistrimet);
+}
 
 
         [Authorize]
         [HttpGet]
         [Route("shfaqRegjistrimetSipasStatusit")]
-        public async Task<IActionResult> GetByStatusi(string statusi)
+        public async Task<IActionResult> GetByStatusi(string statusi,DateTime? dataFillim = null, DateTime? dataMbarim = null)
         {
+            // If no dates provided, show today only
+            if (dataFillim == null && dataMbarim == null)
+            {
+                dataFillim = DateTime.Today;
+                dataMbarim = DateTime.Today.AddDays(1);
+            }
+            // If only dataFillim provided, set dataMbarim to next day
+            else if (dataMbarim == null)
+            {
+                dataMbarim = dataFillim?.AddDays(1);
+            }
+
+            // Convert to nullable DateTime for comparison
+            DateTime startDate = dataFillim.Value.Date;
+            DateTime endDate = dataMbarim.Value.Date.AddDays(1); // Include entire end date
             var regjistrimet = await _context.Faturat
                 .Include(x => x.BonusKartela)
                 .ThenInclude(x => x.Partneri)
-                .Where(x => x.StatusiKalkulimit == statusi)
+                .Where(x => x.StatusiKalkulimit == statusi && (x.DataRegjistrimit.HasValue &&
+                    x.DataRegjistrimit.Value.Date >= startDate &&
+                    x.DataRegjistrimit.Value.Date < endDate) )
                 .OrderByDescending(x => x.IDRegjistrimit)
                 .Select(x => new
                 {
@@ -268,14 +304,29 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [AllowAnonymous]
         [HttpGet]
         [Route("shfaqRegjistrimetNgaProdukti")]
-        public async Task<IActionResult> ShfaqRegjistrimetNgaProdukti(int id)
+        public async Task<IActionResult> ShfaqRegjistrimetNgaProdukti(int id, int partneriID, DateTime? dataFillim = null, DateTime? dataMbarim = null)
         {
+            // If no dates provided, show today only
+            if (dataFillim == null && dataMbarim == null)
+            {
+                dataFillim = DateTime.Today;
+                dataMbarim = DateTime.Today.AddDays(1);
+            }
+            // If only dataFillim provided, set dataMbarim to next day
+            else if (dataMbarim == null)
+            {
+                dataMbarim = dataFillim?.AddDays(1);
+            }
+
+
             // Fetch invoice data based on IDProduktit
             var regjistrimet = await _context.TeDhenatFaturat
                 .Include(x => x.Faturat)
                 .ThenInclude(x => x.BonusKartela)
                 .ThenInclude(x => x.Partneri)
-                .Where(x => x.IDProduktit == id)
+                .Where(x => x.IDProduktit == id && x.Faturat.IDPartneri == partneriID && (x.Faturat.DataRegjistrimit.HasValue &&
+                    x.Faturat.DataRegjistrimit.Value.Date >= dataFillim &&
+                    x.Faturat.DataRegjistrimit.Value.Date < dataMbarim))
                 .Select(x => new
                 {
                     IDRegjistrimit = x.Faturat.IDRegjistrimit,
@@ -1057,7 +1108,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             {
                 await _context.SaveChangesAsync();
 
-                await LogAdminActionAsync("Perditeso", idKalulimit.ToString(), $"Eshte bere perditesimi i kalkulimit: {idKalulimit} - {fat.Partneri.EmriBiznesit}");
+                await LogAdminActionAsync("Perditeso", idKalulimit.ToString() ?? 0.ToString(), $"Eshte bere perditesimi i kalkulimit: {idKalulimit} - {fat?.Partneri?.EmriBiznesit}");
             }
             catch (DbUpdateConcurrencyException)
             {

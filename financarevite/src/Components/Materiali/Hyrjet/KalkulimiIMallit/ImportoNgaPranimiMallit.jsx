@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPenToSquare,
@@ -26,7 +26,7 @@ function ImportoNgaPranimiMallit(props) {
   const [fshijKalkulimin, setFshijKalkulimin] = useState(false);
 
   const [teDhenat, setTeDhenat] = useState([]);
-  
+
   const getID = localStorage.getItem("id");
   const getToken = localStorage.getItem("token");
 
@@ -37,33 +37,33 @@ function ImportoNgaPranimiMallit(props) {
   };
 
   useEffect(() => {
-      if (getID) {
-        const vendosTeDhenat = async () => {
-          try {
-            const perdoruesi = await axios.get(
-              `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-              authentikimi
-            );
-            setTeDhenat(perdoruesi.data);
-          } catch (err) {
-            console.log(err);
-          } finally {
-            setLoading(false);
-          }
-        };
-  
-        vendosTeDhenat();
-      } else {
-        navigate("/login");
-      }
-    }, [perditeso]);
+    if (getID) {
+      const vendosTeDhenat = async () => {
+        try {
+          const perdoruesi = await axios.get(
+            `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
+            authentikimi,
+          );
+          setTeDhenat(perdoruesi.data);
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      vendosTeDhenat();
+    } else {
+      navigate("/login");
+    }
+  }, [perditeso]);
 
   useEffect(() => {
     const vendosProduktet = async () => {
       try {
         const produktet = await axios.get(
           `${API_BASE_URL}/api/Produkti/Products`,
-          authentikimi
+          authentikimi,
         );
         setProduktet(produktet.data);
       } catch (err) {
@@ -74,15 +74,23 @@ function ImportoNgaPranimiMallit(props) {
     vendosProduktet();
   }, [perditeso]);
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-          authentikimi
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+          authentikimi,
         );
         const kalkulimet = kalkulimi.data.filter(
-          (item) => item.llojiKalkulimit === "PRM"
+          (item) => item.llojiKalkulimit === "PRM",
         );
         setKalkulimet(kalkulimet);
       } catch (err) {
@@ -91,7 +99,7 @@ function ImportoNgaPranimiMallit(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]);
 
   async function ndryshoStatusinKalkulimit() {
     try {
@@ -99,13 +107,12 @@ function ImportoNgaPranimiMallit(props) {
         .put(
           `${API_BASE_URL}/api/Faturat/BartNgaPranimiMallitKalkulim?id=${nrKalkulimit}&idPartneri=${teDhenat.perdoruesi.userID}`,
           {},
-          authentikimi
+          authentikimi,
         )
         .then(() => {
           setHapKalkulimin(false);
-          setPerditeso(Date.now())
+          setPerditeso(Date.now());
         });
-
     } catch (error) {
       console.error(error);
     }
@@ -202,6 +209,43 @@ function ImportoNgaPranimiMallit(props) {
           <Modal.Title>Lista e Kalkulimeve</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <Row className="mb-3">
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Data Fillim</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={dataFillim}
+                  onChange={(e) => {
+                    setDataFillim(e.target.value);
+                  }}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Data Mbarim</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={dataMbarim}
+                  onChange={(e) => {
+                    setDataMbarim(e.target.value);
+                  }}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3} className="d-flex align-items-end">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setDataFillim(new Date().toISOString().split("T")[0]);
+                  setDataMbarim(new Date().toISOString().split("T")[0]);
+                }}
+                className="w-100">
+                Sot
+              </Button>
+            </Col>
+          </Row>
           <MDBTable small>
             <MDBTableHead>
               <tr>
@@ -229,7 +273,7 @@ function ImportoNgaPranimiMallit(props) {
                         "en-GB",
                         {
                           dateStyle: "short",
-                        }
+                        },
                       )}
                     </td>
                     <td>
@@ -243,7 +287,7 @@ function ImportoNgaPranimiMallit(props) {
                             k.nrFatures,
                             k.idRegjistrimit,
                             k.dataRegjistrimit,
-                            k.llojiKalkulimit
+                            k.llojiKalkulimit,
                           );
                         }}>
                         <FontAwesomeIcon icon={faPenToSquare} />

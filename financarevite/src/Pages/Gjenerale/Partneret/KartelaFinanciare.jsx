@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+﻿import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -9,7 +9,8 @@ import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Select from "react-select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
-import { useReactToPrint } from "react-to-print";
+import { useReactToPrint } from "react-to-print";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function KartelaFinanciare(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -38,14 +39,7 @@ function KartelaFinanciare(props) {
 
    const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050,
-    }),
-  };
-
-  const handlePrint = useReactToPrint({
+    const handlePrint = useReactToPrint({
     contentRef: printRef,
     documentTitle: `Kartela_Financiare_${optionsSelected?.label || "Partner"}`,
   });
@@ -217,7 +211,7 @@ function KartelaFinanciare(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -238,7 +232,7 @@ function KartelaFinanciare(props) {
                   border: "none",
                 }}
               >
-                🖨️ Print Kartela
+                ðŸ–¨ï¸ Print Kartela
               </Button>
             </div>
 
@@ -259,7 +253,7 @@ function KartelaFinanciare(props) {
                           options={options}
                           id="produktiSelect"
                           inputId="produktiSelect-input"
-                          styles={customStyles}
+                          styles={darkSelectStyles}
                         />
                       </Form.Group>
                     </Form>

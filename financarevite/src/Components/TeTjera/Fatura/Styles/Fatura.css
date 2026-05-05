@@ -15,29 +15,30 @@
   max-width: 100%;
   margin: 0 auto;
   padding: 0.8em;
-  background: #fff;
+  background: #fff !important;
+  color: #000 !important;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative; /* For sticky title */
 }
 
-/* Fixed title within container */
-.title {
+/* Fixed title within container - scoped to avoid leakage */
+.fatura .title {
   position: sticky;
   top: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: #fff !important;
   padding: 0.4em 0;
   z-index: 10;
   border-bottom: 1px solid #e0e0e0;
 }
 
 /* Continuous content area */
-.fatura-content {
+.fatura .fatura-content {
   width: 100%;
   padding: 0.4em;
   margin-top: 2.5em; /* Space for sticky title */

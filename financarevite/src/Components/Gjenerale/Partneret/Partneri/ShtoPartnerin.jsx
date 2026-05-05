@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -250,368 +250,372 @@ function ShtoPartnerin(props) {
         setTipiMesazhit={(e) => props.setTipiMesazhit(e)}
         setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
       />
-      <Modal size="lg" show={true} onHide={() => props.largo()}>
+      <Modal size="lg" show={true} onHide={() => props.largo()} className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Shto Partnerin</Modal.Title>
+          <Modal.Title>Shto Partnerin e Ri</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Tabs
-            id="shenime-tabs"
+            id="partneri-tabs"
             activeKey={key}
             onSelect={(k) => setKey(k)}
-            className="mb-3">
+            className="sp-tabs mb-4">
             <Tab eventKey="klientPrivat" title="Klient Privat">
-              <Form>
-                <Form.Group className="mb-3" controlId="emriBiznesit">
-                  <Row>
-                    <Col>
-                      <Form.Label>
-                        Emri<span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Filan"
-                        id="emriKP"
-                        onChange={(e) => setEmri(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "mbiemriKP");
-                        }}
-                      />
+              <div className="sp-form-container p-2">
+                <Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Emri <span className="text-danger">*</span></label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Shënoni emrin..."
+                          id="emriKP"
+                          className="sp-input"
+                          onChange={(e) => setEmri(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "mbiemriKP")}
+                          autoFocus
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>
-                        Mbiemri<span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="mbiemriKP"
-                        type="text"
-                        placeholder="Fisteku"
-                        onChange={(e) => setMbiemri(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "adresaKP");
-                        }}
-                      />
-                    </Col>
-                  </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>Adresa</Form.Label>
-                      <Form.Control
-                        type="text"
-                        id="adresaKP"
-                        placeholder="Rr. B, Lagjja Kalabria, Nr. 56, 10000 Prishtina, Kosovo"
-                        onChange={(e) => setAdresa(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "nrKontaktitKP");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Nr. Kontaktit</Form.Label>
-                      <Form.Control
-                        id="nrKontaktitKP"
-                        type="text"
-                        placeholder="+38344111222"
-                        onChange={(e) => setNrKontaktit(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "emailKP");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control
-                        id="emailKP"
-                        type="text"
-                        placeholder="example@email.com"
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "rabatiKP");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Rabati</Form.Label>
-                      <Form.Control
-                        type="number"
-                        placeholder="0"
-                        onChange={(e) => setRabati(e.target.value)}
-                        onKeyDown={handleMenaxhoTastet}
-                        id="rabatiKP"
-                      />
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Mbiemri <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="mbiemriKP"
+                          type="text"
+                          placeholder="Shënoni mbiemrin..."
+                          className="sp-input"
+                          onChange={(e) => setMbiemri(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "adresaKP")}
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-              </Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="12">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Adresa</label>
+                        <Form.Control
+                          type="text"
+                          id="adresaKP"
+                          className="sp-input"
+                          placeholder="Rr. B, Lagjja Kalabria, Nr. 56..."
+                          onChange={(e) => setAdresa(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "nrKontaktitKP")}
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row className="g-4 mb-2">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Kontaktit</label>
+                        <Form.Control
+                          id="nrKontaktitKP"
+                          type="text"
+                          className="sp-input"
+                          placeholder="+383 4X XXX XXX"
+                          onChange={(e) => setNrKontaktit(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "emailKP")}
+                        />
+                      </div>
+                    </Col>
+                    <Col md="5">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Email</label>
+                        <Form.Control
+                          id="emailKP"
+                          type="email"
+                          className="sp-input"
+                          placeholder="example@email.com"
+                          onChange={(e) => setEmail(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "rabatiKP")}
+                        />
+                      </div>
+                    </Col>
+                    <Col md="3">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Rabati %</label>
+                        <Form.Control
+                          type="number"
+                          className="sp-input"
+                          placeholder="0"
+                          onChange={(e) => setRabati(e.target.value)}
+                          onKeyDown={handleMenaxhoTastet}
+                          id="rabatiKP"
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
             </Tab>
+
             <Tab eventKey="klientBiznesi" title="Klient Biznesor">
-              <Form>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>
-                        Emri Biznesit<span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="emriKB"
-                        type="text"
-                        placeholder="FinanCare SH.P.K."
-                        onChange={(e) => setEmriPartnerit(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "shkurtesaPartneritKB");
-                        }}
-                      />
+              <div className="sp-form-container p-2">
+                <Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="8">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Emri i Biznesit <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="emriKB"
+                          type="text"
+                          className="sp-input"
+                          placeholder="Shënoni emrin zyrtar..."
+                          onChange={(e) => setEmriPartnerit(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "shkurtesaPartneritKB")}
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>
-                        Shkurtesa Partnerit
-                        <span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="shkurtesaPartneritKB"
-                        type="text"
-                        placeholder="FC"
-                        onChange={(e) => setShkurtesaEmrit(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "NUIKB");
-                        }}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Shkurtesa <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="shkurtesaPartneritKB"
+                          type="text"
+                          className="sp-input"
+                          placeholder="Psh: FC"
+                          onChange={(e) => setShkurtesaEmrit(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "NUIKB")}
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>
-                        Numri Unik Identifikues: NUI
-                        <span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="NUIKB"
-                        type="number"
-                        placeholder="111222333"
-                        onChange={(e) => setNUI(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "NFKB");
-                        }}
-                      />
+                  <Row className="g-4 mb-3">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">NUI <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="NUIKB"
+                          type="number"
+                          className="sp-input"
+                          placeholder="81XXXXXXXX"
+                          onChange={(e) => setNUI(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "NFKB")}
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Numri Fiskal: NF / NRF</Form.Label>
-                      <Form.Control
-                        id="NFKB"
-                        type="number"
-                        placeholder="111222333"
-                        onChange={(e) => setNF(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "TVSHKB");
-                        }}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Fiskal (NF)</label>
+                        <Form.Control
+                          id="NFKB"
+                          type="number"
+                          className="sp-input"
+                          placeholder="NF"
+                          onChange={(e) => setNF(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "TVSHKB")}
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Numri TVSH: NRTVSH</Form.Label>
-                      <Form.Control
-                        id="TVSHKB"
-                        type="number"
-                        placeholder="111222333"
-                        onChange={(e) => setNRTVSH(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "adresaKB");
-                        }}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. TVSH</label>
+                        <Form.Control
+                          id="TVSHKB"
+                          type="number"
+                          className="sp-input"
+                          placeholder="Nr. TVSH"
+                          onChange={(e) => setNRTVSH(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "adresaKB")}
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>
-                        Adresa<span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="adresaKB"
-                        type="text"
-                        placeholder="Rr. B, Lagjja Kalabria, Nr. 56, 10000 Prishtina, Kosovo"
-                        onChange={(e) => setAdresa(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "nrKontaktitKB");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Nr. Kontaktit</Form.Label>
-                      <Form.Control
-                        id="nrKontaktitKB"
-                        type="text"
-                        placeholder="+38344111222"
-                        onChange={(e) => setNrKontaktit(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "emailKB");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control
-                        id="emailKB"
-                        type="text"
-                        placeholder="example@email.com"
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "rabatiKB");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Rabati</Form.Label>
-                      <Form.Control
-                        id="rabatiKB"
-                        type="number"
-                        placeholder="0"
-                        onChange={(e) => setRabati(e.target.value)}
-                        onKeyDown={handleMenaxhoTastet}
-                      />
+                  <Row className="g-4 mb-3">
+                    <Col md="12">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Adresa <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="adresaKB"
+                          type="text"
+                          className="sp-input"
+                          placeholder="Qyteti, Rruga, Nr..."
+                          onChange={(e) => setAdresa(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "nrKontaktitKB")}
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-              </Form>
+                  <Row className="g-4 mb-2">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Kontakt</label>
+                        <Form.Control
+                          id="nrKontaktitKB"
+                          type="text"
+                          className="sp-input"
+                          placeholder="+383 4X XXX XXX"
+                          onChange={(e) => setNrKontaktit(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "emailKB")}
+                        />
+                      </div>
+                    </Col>
+                    <Col md="5">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Email</label>
+                        <Form.Control
+                          id="emailKB"
+                          type="email"
+                          className="sp-input"
+                          placeholder="example@email.com"
+                          onChange={(e) => setEmail(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "rabatiKB")}
+                        />
+                      </div>
+                    </Col>
+                    <Col md="3">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Rabati %</label>
+                        <Form.Control
+                          id="rabatiKB"
+                          type="number"
+                          className="sp-input"
+                          placeholder="0"
+                          onChange={(e) => setRabati(e.target.value)}
+                          onKeyDown={handleMenaxhoTastet}
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
             </Tab>
-            <Tab eventKey="furnitor" title="Furnitor">
-              <Form>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>
-                        Emri Biznesit<span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="emriF"
-                        type="text"
-                        placeholder="FinanCare SH.P.K."
-                        onChange={(e) => setEmriPartnerit(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "shkurtesaPartneritF");
-                        }}
-                      />
+
+            <Tab eventKey="furnitor" title="Furnitorë">
+              <div className="sp-form-container p-2">
+                <Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="8">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Emri i Furnitorit <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="emriF"
+                          type="text"
+                          className="sp-input"
+                          placeholder="Emri i Biznesit Furnitor..."
+                          onChange={(e) => setEmriPartnerit(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "shkurtesaPartneritF")}
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>
-                        Shkurtesa Partnerit
-                        <span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="shkurtesaPartneritF"
-                        type="text"
-                        placeholder="FC"
-                        onChange={(e) => setShkurtesaEmrit(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "NUIF");
-                        }}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Shkurtesa <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="shkurtesaPartneritF"
+                          type="text"
+                          className="sp-input"
+                          placeholder="Psh: ABC"
+                          onChange={(e) => setShkurtesaEmrit(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "NUIF")}
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>
-                        Numri Unik Identifikues: NUI
-                        <span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="NUIF"
-                        type="number"
-                        placeholder="111222333"
-                        onChange={(e) => setNUI(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "NFF");
-                        }}
-                      />
+                  <Row className="g-4 mb-3">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">NUI <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="NUIF"
+                          type="number"
+                          className="sp-input"
+                          placeholder="81XXXXXXXX"
+                          onChange={(e) => setNUI(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "NFF")}
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Numri Fiskal: NF / NRF</Form.Label>
-                      <Form.Control
-                        id="NFF"
-                        type="number"
-                        placeholder="111222333"
-                        onChange={(e) => setNF(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "TVSHF");
-                        }}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Fiskal</label>
+                        <Form.Control
+                          id="NFF"
+                          type="number"
+                          className="sp-input"
+                          placeholder="NF"
+                          onChange={(e) => setNF(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "TVSHF")}
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Numri TVSH: NRTVSH</Form.Label>
-                      <Form.Control
-                        id="TVSHF"
-                        type="number"
-                        placeholder="111222333"
-                        onChange={(e) => setNRTVSH(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "adresaF");
-                        }}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. TVSH</label>
+                        <Form.Control
+                          id="TVSHF"
+                          type="number"
+                          className="sp-input"
+                          placeholder="Nr. TVSH"
+                          onChange={(e) => setNRTVSH(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "adresaF")}
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>
-                        Adresa<span style={{ color: "red" }}>*</span>
-                      </Form.Label>
-                      <Form.Control
-                        id="adresaF"
-                        type="text"
-                        placeholder="Rr. B, Lagjja Kalabria, Nr. 56, 10000 Prishtina, Kosovo"
-                        onChange={(e) => setAdresa(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "nrKontaktitF");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Nr. Kontaktit</Form.Label>
-                      <Form.Control
-                        id="nrKontaktitF"
-                        type="text"
-                        placeholder="+38344111222"
-                        onChange={(e) => setNrKontaktit(e.target.value)}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "emailF");
-                        }}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control
-                        id="emailF"
-                        type="text"
-                        placeholder="example@email.com"
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyDown={handleMenaxhoTastet}
-                      />
+                  <Row className="g-4 mb-3">
+                    <Col md="12">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Adresa <span className="text-danger">*</span></label>
+                        <Form.Control
+                          id="adresaF"
+                          type="text"
+                          className="sp-input"
+                          placeholder="Adresa e plotë..."
+                          onChange={(e) => setAdresa(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "nrKontaktitF")}
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-              </Form>
+                  <Row className="g-4 mb-2">
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Kontaktit</label>
+                        <Form.Control
+                          id="nrKontaktitF"
+                          type="text"
+                          className="sp-input"
+                          placeholder="+383 4X XXX XXX"
+                          onChange={(e) => setNrKontaktit(e.target.value)}
+                          onKeyDown={(e) => ndrroField(e, "emailF")}
+                        />
+                      </div>
+                    </Col>
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Email</label>
+                        <Form.Control
+                          id="emailF"
+                          type="email"
+                          className="sp-input"
+                          placeholder="example@email.com"
+                          onChange={(e) => setEmail(e.target.value)}
+                          onKeyDown={handleMenaxhoTastet}
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
             </Tab>
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={() => props.largo()}>
+            Anulo
           </Button>
           <Button
-            className="Butoni"
+            className="btn-save px-4"
             onClick={(e) =>
               key == "klientPrivat"
                 ? ShtoPartnerinBleres(e)
                 : ShtoPartnerinFurnitor(e)
             }>
-            Shto Partnerin <FontAwesomeIcon icon={faPenToSquare} />
+            Shto Partnerin
           </Button>
         </Modal.Footer>
       </Modal>

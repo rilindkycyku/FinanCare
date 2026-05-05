@@ -1,4 +1,4 @@
-import NavBar from "../../../Components/TeTjera/layout/NavBar";
+﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import "../../Styles/PerditesoTeDhenat.css";
@@ -183,7 +183,7 @@ function PerditesoTeDhenat(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}

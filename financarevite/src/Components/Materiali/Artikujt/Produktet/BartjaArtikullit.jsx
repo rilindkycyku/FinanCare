@@ -1,16 +1,12 @@
-import { useState, useEffect } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+﻿import { useState, useEffect } from "react";
+import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { MDBCol, MDBInput, MDBRow } from "mdb-react-ui-kit";
-import { Form } from "react-bootstrap";
 import Select from "react-select";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 
-const ShtoProduktin = (props) => {
+const BartjaArtikullit = (props) => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
   const getToken = localStorage.getItem('token');
   const authentikimi = { headers: { Authorization: `Bearer ${getToken}` } };
@@ -21,7 +17,7 @@ const ShtoProduktin = (props) => {
   const [optionsBarkodiSelectedNew, setOptionsBarkodiSelectedNew] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const [oldProdukti, setOldProduktit] = useState({
+  const [oldProdukti, setOldProdukti] = useState({
     emriProduktit: '',
     sasiaNeStok: '',
     qmimiMeShumic: '',
@@ -38,10 +34,28 @@ const ShtoProduktin = (props) => {
   });
 
   const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050,
+    control: (base) => ({
+      ...base,
+      background: 'rgba(255, 255, 255, 0.05)',
+      borderColor: 'rgba(255, 255, 255, 0.1)',
+      borderRadius: '8px',
+      color: 'white'
     }),
+    menu: (base) => ({
+      ...base,
+      background: '#1a1d21',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      zIndex: 1050
+    }),
+    option: (base, state) => ({
+      ...base,
+      background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+      color: 'white'
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: 'white'
+    })
   };
 
   // Compute filtered options for New Product Select
@@ -78,7 +92,7 @@ const ShtoProduktin = (props) => {
   const handleChangeOldProduct = (selected) => {
     setOptionsBarkodiSelectedOld(selected);
     if (selected) {
-      setOldProduktit({
+      setOldProdukti({
         emriProduktit: selected.emriProduktit,
         sasiaNeStok: selected.sasiaNeStok,
         qmimiMeShumic: selected.qmimiMeShumic,
@@ -174,30 +188,27 @@ const ShtoProduktin = (props) => {
         size="sm"
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
+        className="sp-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title as="h6">Konfirmo Transferimin</Modal.Title>
+          <Modal.Title>Konfirmo Transferimin</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <p style={{ fontSize: '10pt' }}>
-            Çmimet dhe stoku i artikullit të vjetër do të vendosen në 0, dhe artikulli i ri do të
-            përditësohet me të dhënat e artikullit të vjetër.
+        <Modal.Body className="text-center py-4">
+          <p className="text-warning mb-3 small">
+            Çmimet dhe stoku i artikullit të vjetër do të barten te artikulli i ri. Artikulli i vjetër do të mbetet me 0.
           </p>
-          <strong style={{ fontSize: '10pt' }}>
-            A jeni të sigurt që dëshironi të vazhdoni?
-          </strong>
+          <h6 className="text-white">A jeni të sigurt?</h6>
         </Modal.Body>
         <Modal.Footer>
           <Button
-            size="sm"
-            variant="secondary"
+            className="btn-cancel"
             onClick={() => setShowConfirmModal(false)}
           >
-            Anulo <FontAwesomeIcon icon={faXmark} />
+            Anulo
           </Button>
           <Button
-            size="sm"
             variant="warning"
+            className="px-4"
             onClick={handleConfirmSubmit}
           >
             Vazhdo
@@ -206,7 +217,7 @@ const ShtoProduktin = (props) => {
       </Modal>
       <Modal
         size="xl"
-        className="modalEditShto"
+        className="sp-modal"
         show={props.show}
         onHide={props.hide}
       >
@@ -214,135 +225,132 @@ const ShtoProduktin = (props) => {
           <Modal.Title>Transfero Artikullin</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <MDBRow className="g-3">
-            <MDBCol
-              md="6"
-              style={{
-                borderRight: '2px solid #ccc',
-                paddingRight: '20px',
-              }}
-            >
-              <h5>Artikulli i Vjetër (Artikulli nga i cili do merren të dhënat)</h5>
-              <Form.Group controlId="oldProduktiSelect">
-                <Form.Label>Zgjidh Artikullin e Vjetër</Form.Label>
-                <Select
-                  value={optionsBarkodiSelectedOld}
-                  onChange={handleChangeOldProduct}
-                  options={optionsBarkodi}
-                  id="barkodiSelectOld"
-                  inputId="barkodiSelectOld-input"
-                  styles={customStyles}
-                  autoFocus
-                  isClearable
-                />
-              </Form.Group>
-              <MDBInput
-                value={oldProdukti.emriProduktit}
-                name="emriProduktit"
-                type="text"
-                label="Emri"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={oldProdukti.sasiaNeStok}
-                name="sasiaNeStok"
-                type="number"
-                label="Sasia Aktuale në Stok"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={oldProdukti.qmimiMeShumic}
-                name="qmimiMeShumic"
-                type="number"
-                label="Qmimi Shumicë"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={oldProdukti.qmimiShites}
-                name="qmimiShites"
-                type="number"
-                label="Qmimi Pakicë"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={oldProdukti.qmimiBlerjes}
-                name="qmimiBlerjes"
-                type="number"
-                label="Qmimi Blerjes"
-                disabled
-                className="mt-3"
-              />
-            </MDBCol>
-            <MDBCol md="6" style={{ paddingLeft: '20px' }}>
-              <h5>Artikulli i Ri (Artikulli në të cilin do barten të dhënat)</h5>
-              <Form.Group controlId="newProduktiSelect">
-                <Form.Label>Zgjidh Artikullin e Ri</Form.Label>
-                <Select
-                  value={optionsBarkodiSelectedNew}
-                  onChange={handleChangeNewProduct}
-                  options={filteredOptionsBarkodiNew}
-                  id="barkodiSelectNew"
-                  inputId="barkodiSelectNew-input"
-                  styles={customStyles}
-                  isClearable
-                />
-              </Form.Group>
-              <MDBInput
-                value={newProdukti.emriProduktit}
-                name="emriProduktit"
-                type="text"
-                label="Emri"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={newProdukti.sasiaNeStok}
-                name="sasiaNeStok"
-                type="number"
-                label="Sasia Aktuale në Stok"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={newProdukti.qmimiMeShumic}
-                name="qmimiMeShumic"
-                type="number"
-                label="Qmimi Shumicë"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={newProdukti.qmimiShites}
-                name="qmimiShites"
-                type="number"
-                label="Qmimi Pakicë"
-                disabled
-                className="mt-3"
-              />
-              <MDBInput
-                value={newProdukti.qmimiBlerjes}
-                name="qmimiBlerjes"
-                type="number"
-                label="Qmimi Blerjes"
-                disabled
-                className="mt-3"
-              />
-            </MDBCol>
-          </MDBRow>
+          <div className="sp-form-container p-2">
+            <Row className="g-0">
+              <Col md="6" className="pe-md-4 border-end border-secondary border-opacity-25">
+                <div className="d-flex align-items-center mb-4">
+                  <div className="bg-danger bg-opacity-10 p-2 rounded-circle me-3">
+                    <div className="text-danger small fw-bold">NGA</div>
+                  </div>
+                  <h6 className="text-white mb-0">Artikulli i Vjetër</h6>
+                </div>
+
+                <div className="sp-input-group mb-3">
+                  <label className="sp-label">Zgjidh Burimin <span className="text-danger">*</span></label>
+                  <div className="sp-select-container">
+                    <Select
+                      value={optionsBarkodiSelectedOld}
+                      onChange={handleChangeOldProduct}
+                      options={optionsBarkodi}
+                      placeholder="Barkodi ose Kodi..."
+                      styles={darkSelectStyles}
+                      autoFocus
+                      isClearable
+                    />
+                  </div>
+                </div>
+
+                <Row className="g-3">
+                  <Col xs={12}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Emri i Artikullit</label>
+                      <Form.Control value={oldProdukti.emriProduktit} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Sasia Aktuale</label>
+                      <Form.Control value={oldProdukti.sasiaNeStok} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Çmimi Blerjes</label>
+                      <Form.Control value={oldProdukti.qmimiBlerjes} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Çmimi Pakicë</label>
+                      <Form.Control value={oldProdukti.qmimiShites} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Çmimi Shumicë</label>
+                      <Form.Control value={oldProdukti.qmimiMeShumic} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+
+              <Col md="6" className="ps-md-4 mt-4 mt-md-0">
+                <div className="d-flex align-items-center mb-4">
+                  <div className="bg-success bg-opacity-10 p-2 rounded-circle me-3">
+                    <div className="text-success small fw-bold">TE</div>
+                  </div>
+                  <h6 className="text-white mb-0">Artikulli i Ri</h6>
+                </div>
+
+                <div className="sp-input-group mb-3">
+                  <label className="sp-label">Zgjidh Destinacionin <span className="text-danger">*</span></label>
+                  <div className="sp-select-container">
+                    <Select
+                      value={optionsBarkodiSelectedNew}
+                      onChange={handleChangeNewProduct}
+                      options={filteredOptionsBarkodiNew}
+                      placeholder="Zgjidh artikullin tjetër..."
+                      styles={darkSelectStyles}
+                      isClearable
+                    />
+                  </div>
+                </div>
+
+                <Row className="g-3">
+                  <Col xs={12}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Emri i Artikullit</label>
+                      <Form.Control value={newProdukti.emriProduktit} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Sasia Aktuale</label>
+                      <Form.Control value={newProdukti.sasiaNeStok} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Çmimi Blerjes</label>
+                      <Form.Control value={newProdukti.qmimiBlerjes} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Çmimi Pakicë</label>
+                      <Form.Control value={newProdukti.qmimiShites} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div className="sp-input-group">
+                      <label className="sp-label">Çmimi Shumicë</label>
+                      <Form.Control value={newProdukti.qmimiMeShumic} disabled className="sp-input opacity-75" />
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={props.hide}>
-            Close <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={props.hide}>
+            Anulo
           </Button>
           <Button
-            style={{ backgroundColor: '#009879', border: 'none' }}
+            className="btn-save px-4"
             onClick={handleSubmit}
           >
-            Save Changes
+            Ekzekuto Transferimin
           </Button>
         </Modal.Footer>
       </Modal>
@@ -350,4 +358,4 @@ const ShtoProduktin = (props) => {
   );
 };
 
-export default ShtoProduktin;
+export default BartjaArtikullit;

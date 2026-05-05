@@ -1,197 +1,532 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { Form, Container, Row, Col } from "react-bootstrap";
-import Select from "react-select";
+import { Container, Row, Col, Badge } from "react-bootstrap";
+import ReactSelect from "react-select";
+import { Package, Tag, Search, TrendingUp, Info } from "lucide-react";
 import Titulli from "../Components/TeTjera/Titulli";
 import NavBar from "../Components/TeTjera/layout/NavBar";
 
-function ShikimiQmimeve(props) {
+function ShikimiQmimeve() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [produktiID, setproduktiID] = useState(0);
-  const [kartelaEProduktit, setKartelaEProduktit] = useState([]);
+  const [kartelaEProduktit, setKartelaEProduktit] = useState(null);
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [isFetchingDetail, setIsFetchingDetail] = useState(false);
 
   const getToken = localStorage.getItem("token");
-
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
+  const authentikimi = useMemo(() => ({
+    headers: { Authorization: `Bearer ${getToken}` }
+  }), [getToken]);
 
   useEffect(() => {
-    const vendosProduktet = async () => {
+    let active = true;
+    const fetchProduktet = async () => {
       try {
-        const produktet = await axios.get(
-          `${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`,
-          authentikimi
-        );
-        setOptions(
-          produktet.data.map((item) => ({
-            value: item.produktiID,
-            label: item.barkodi + " - " + item.emriProduktit,
-          }))
-        );
+        console.log("Fetching products started...");
+        setIsLoading(true);
+        const res = await axios.get(`${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`, authentikimi);
+
+        if (!active) return;
+
+        console.log("Products received from server:", res.status);
+
+        // Robust data detection ($values wrapper, nested .data, or direct array)
+        let rawData = res.data;
+        if (rawData && rawData.$values) rawData = rawData.$values;
+        if (rawData && rawData.data && Array.isArray(rawData.data)) rawData = rawData.data;
+        if (!Array.isArray(rawData)) {
+          console.warn("API did not return an array. Data received:", rawData);
+          rawData = [];
+        }
+
+        const formatted = rawData.map(item => {
+          // Flexible mapping to handle both camelCase and PascalCase
+          const id = item.produktiID || item.ProduktiID || 0;
+          const barkodi = item.barkodi || item.Barkodi || "Pa barkod";
+          const emri = item.emriProduktit || item.EmriProduktit || "Pa emër";
+
+          return {
+            value: id,
+            label: `${barkodi} - ${emri}`,
+            data: item
+          };
+        });
+
+        console.log(`Successfully formatted ${formatted.length} products.`);
+        setOptions(formatted);
       } catch (err) {
-        console.log(err);
+        console.error("Fetch products failed in ShikimiQmimeve:", err);
+      } finally {
+        if (active) setIsLoading(false);
       }
     };
-
-    vendosProduktet();
-  }, []);
+    fetchProduktet();
+    return () => { active = false; };
+  }, [API_BASE_URL, authentikimi]);
 
   useEffect(() => {
     if (produktiID) {
-      const kartelaEProduktit = async () => {
+      const fetchKartela = async () => {
         try {
-          const kartela = await axios.get(
-            `${API_BASE_URL}/api/Produkti/KartelaArtikullit?id=${produktiID}`,
-            authentikimi
-          );
-          setKartelaEProduktit(kartela.data);
+          setIsFetchingDetail(true);
+          const res = await axios.get(`${API_BASE_URL}/api/Produkti/KartelaArtikullit?id=${produktiID}`, authentikimi);
+          setKartelaEProduktit(res.data);
         } catch (err) {
-          console.log(err);
+          console.error(err);
+        } finally {
+          setIsFetchingDetail(false);
         }
       };
-
-      kartelaEProduktit();
+      fetchKartela();
     }
-  }, [produktiID]);
+  }, [produktiID, API_BASE_URL, authentikimi]);
 
-  const handleChange = async (partneri) => {
-    setOptionsSelected(partneri);
-    setproduktiID(partneri.value);
+  const filteredOptions = useMemo(() => {
+    if (!inputValue || inputValue.length < 2) return [];
+
+    const lower = inputValue.toLowerCase();
+    const results = [];
+    for (let i = 0; i < options.length; i++) {
+      const option = options[i];
+      if (option && option.label && option.label.toLowerCase().includes(lower)) {
+        results.push(option);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValue, options]);
+
+  const handleChange = (selected) => {
+    setOptionsSelected(selected);
+    if (selected) {
+      setproduktiID(selected.value);
+    } else {
+      setproduktiID(0);
+      setKartelaEProduktit(null);
+    }
   };
 
-  const qmimiPakic = parseFloat(
-    kartelaEProduktit?.produkti?.qmimiProduktit ?? 0
-  ).toFixed(2);
+  const product = kartelaEProduktit?.produkti;
+  const qmimiPakic = parseFloat(product?.qmimiProduktit || 0).toFixed(2);
+  const qmimiShitesMeShumic = parseFloat(product?.qmimiMeShumic || 0).toFixed(2);
+  const rabati = parseFloat(product?.rabati || 0);
+  const qmimiMeZbritje = rabati > 0 ? (qmimiPakic - (qmimiPakic * (rabati / 100))).toFixed(2) : null;
 
-  const rabati = parseFloat(kartelaEProduktit?.produkti?.rabati ?? 0);
-  const qmimiMeZbritje = rabati
-    ? (qmimiPakic - qmimiPakic * (rabati / 100)).toFixed(2)
-    : null;
+  const selectStyles = {
+    control: (base) => ({
+      ...base,
+      borderRadius: '16px',
+      padding: '8px 12px',
+      border: '1px solid rgba(0,0,0,0.08)',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+      background: 'rgba(255, 255, 255, 0.9)',
+      backdropFilter: 'blur(8px)',
+      '&:hover': { borderColor: '#4f46e5' }
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: '#94a3b8',
+      fontWeight: '500'
+    }),
+    option: (base, { isSelected, isFocused }) => ({
+      ...base,
+      backgroundColor: isSelected ? '#4f46e5' : isFocused ? '#f8fafc' : 'transparent',
+      color: isSelected ? 'white' : '#334155',
+      padding: '12px 16px',
+      fontWeight: '500',
+      cursor: 'pointer'
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '16px',
+      overflow: 'hidden',
+      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+      border: '1px solid rgba(0,0,0,0.05)'
+    })
+  };
 
   return (
-    <>
-      <Titulli titulli={"Kontrollo Qmimin e Produktit"} />
+    <div className="price-checker-wrapper">
+      <Titulli titulli={"Shikimi i Çmimeve"} />
       <NavBar />
 
-      <div className="containerDashboardP">
-        <div className="kartela">
-          <h1 className="title text-center">Kontrollo Qmimin e Produktit</h1>
+      <Container className="py-5">
+        <header className="page-header text-center mb-5" data-aos="fade-down">
+          <div className="search-icon-container mb-3">
+            <div className="icon-ring"></div>
+            <Search size={32} className="header-icon" />
+          </div>
+          <h1 className="main-title mb-2">Kontrollo Çmimin</h1>
+          <p className="subtitle">Mënyra më e shpejtë për të kërkuar çmimet dhe stokun e produkteve tuaja.</p>
+        </header>
 
-          <Container fluid>
-            {/* Section 1: Search */}
-            <Row className="mb-4">
-              <Col>
-                <Form>
-                  <Form.Group controlId="idDheEmri">
-                    <Form.Label>Produkti</Form.Label>
-                    <Select
-                      value={optionsSelected}
-                      onChange={handleChange}
-                      options={options}
-                    />
-                  </Form.Group>
-                </Form>
-              </Col>
-            </Row>
-
-            {/* Section 2: Main Section */}
-            <Row>
-              {/* Sasia Section */}
-              <Col md={6}>
-                <div className="sasia-section">
-                  <h4 className="section-title">Sasia</h4>
-                  <Row className="mb-3">
-                    <Col>
-                      <strong>Sasia ne Stok:</strong>
-                    </Col>
-                    <Col>
-                      <span style={{ fontSize: "1.8rem" }}>
-                        {kartelaEProduktit?.produkti?.sasiaNeStok ?? 0}{" "}
-                        {kartelaEProduktit?.produkti?.emriNjesiaMatese ?? ""}
-                      </span>
-                    </Col>
-                  </Row>
-                  <Row className="mb-3">
-                    <Col>
-                      <strong>Sasia e Shumice:</strong>
-                    </Col>
-                    <Col>
-                      <span style={{ fontSize: "1.8rem" }}>
-                        {kartelaEProduktit?.produkti?.sasiaShumices ?? 0}
-                      </span>
-                    </Col>
-                  </Row>
+        <Row className="justify-content-center mb-5">
+          <Col lg={7} xl={6}>
+            <div className="glass-card shadow-ultra animate-float">
+              <div className="p-4">
+                <div className="d-flex align-items-center gap-2 mb-3">
+                  <div className="badge-dot pulse"></div>
+                  <span className="section-tag">Zgjidhni Produktin</span>
                 </div>
-              </Col>
-
-              {/* Qmimi Section */}
-              <Col md={6}>
-                <div className="qmimi-section">
-                  <h4 className="section-title">Qmimi</h4>
-
-                  <Row className="mb-3">
-                    <Col>
-                      <strong>Qmimi Shites me Pakic + TVSH:</strong>
-                    </Col>
-                    <Col>
-                      <span
-                        style={{
-                          fontSize: "2.5rem",
-                          fontWeight: "bold",
-                        }}>
-                        {qmimiPakic} €
-                      </span>
-                    </Col>
-                  </Row>
-
-                  <Row className="mb-3">
-                    <Col>
-                      <strong>Qmimi Shites me Shumic + TVSH:</strong>
-                    </Col>
-                    <Col>
-                      <span
-                        style={{
-                          fontSize: "2.5rem",
-                          fontWeight: "bold",
-                        }}>
-                        {parseFloat(
-                          kartelaEProduktit?.produkti?.qmimiMeShumic ?? 0
-                        ).toFixed(2)}{" "}
-                        €
-                      </span>
-                    </Col>
-                  </Row>
-
-                  {rabati !== null && rabati > 0 && (
-                    <Row className="mb-3">
-                      <Col>
-                        <strong>Qmimi me Zbritje:</strong>
-                      </Col>
-                      <Col>
-                        <span
-                          style={{
-                            fontSize: "3rem",
-                            fontWeight: "bold",
-                            color: "green",
-                          }}>
-                          {qmimiMeZbritje} €
-                        </span>
-                      </Col>
-                    </Row>
-                  )}
+                <ReactSelect
+                  value={optionsSelected}
+                  onChange={handleChange}
+                  onInputChange={(val) => setInputValue(val)}
+                  options={filteredOptions}
+                  styles={selectStyles}
+                  placeholder={isLoading ? "Duke u ngarkuar..." : "Kërko emrin ose barkodin..."}
+                  isClearable
+                  isLoading={isLoading}
+                  noOptionsMessage={() =>
+                    inputValue.length < 2
+                      ? "Shkruani të paktën 2 karaktere..."
+                      : "Nuk u gjet asnjë produkt"
+                  }
+                />
+                <div className="mt-3 d-flex align-items-center gap-2 text-muted-premium">
+                  <Info size={14} />
+                  <span>Shtypni Enter ose zgjidhni nga lista për të parë detajet</span>
                 </div>
-              </Col>
-            </Row>
-          </Container>
-        </div>
-      </div>
-    </>
+              </div>
+            </div>
+          </Col>
+        </Row>
+
+        {isFetchingDetail && (
+          <div className="loading-state text-center py-5" data-aos="fade">
+            <div className="spinner-premium mb-3"></div>
+            <p className="text-indigo fw-600">Duke marrë të dhënat e produktit...</p>
+          </div>
+        )}
+
+        {!isFetchingDetail && product && (
+          <Row className="g-4 product-details-view" data-aos="fade-up">
+            <Col xl={6}>
+              <div className="glass-card h-100 shadow-ultra overflow-hidden">
+                <div className="card-accent-line bg-indigo"></div>
+                <div className="p-4">
+                  <div className="d-flex align-items-center justify-content-between mb-4">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="icon-box-premium bg-indigo-soft text-indigo">
+                        <Package size={24} />
+                      </div>
+                      <h4 className="section-title mb-0">Informacioni i Produktit</h4>
+                    </div>
+                  </div>
+
+                  <div className="stok-display-box mb-4">
+                    <span className="premium-label">Sasia Aktuale ne Stok</span>
+                    <div className="sasia-wrapper">
+                      <h2 className={`sasia-value ${product.sasiaNeStok <= 0 ? 'text-danger' : 'text-slate'}`}>
+                        {parseFloat(product.sasiaNeStok || 0).toLocaleString()}
+                      </h2>
+                      <span className="njesia-tag">{product.emriNjesiaMatese}</span>
+                    </div>
+                  </div>
+
+                  <div className="detail-grid">
+                    <div className="detail-item">
+                      <span className="premium-label">Sasia e Shumicës</span>
+                      <div className="d-flex align-items-center gap-2">
+                        <TrendingUp size={16} className="text-emerald" />
+                        <span className="detail-value">{product.sasiaShumices || 0}</span>
+                      </div>
+                    </div>
+                    <div className="detail-item">
+                      <span className="premium-label">Barkodi i Produktit</span>
+                      <span className="detail-value text-monospace">{product.barkodi}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Col>
+
+            <Col xl={6}>
+              <div className="glass-card h-100 shadow-ultra overflow-hidden price-focus-card">
+                <div className="card-accent-line bg-emerald"></div>
+                <div className="p-4">
+                  <div className="d-flex align-items-center justify-content-between mb-4">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="icon-box-premium bg-emerald-soft text-emerald">
+                        <Tag size={24} />
+                      </div>
+                      <h4 className="section-title mb-0">Detajet e Çmimit</h4>
+                    </div>
+                    {rabati > 0 && (
+                      <Badge className="discount-badge">
+                        <TrendingUp size={12} className="me-1" />
+                        -{rabati}% Zbritje
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="price-main-section mb-4 text-center text-xl-start">
+                    <span className="premium-label">Çmimi Pakicë me TVSH</span>
+                    <div className="price-stack">
+                      {rabati > 0 && <span className="old-price-line">{qmimiPakic} €</span>}
+                      <h2 className="price-value-primary">
+                        {rabati > 0 ? qmimiMeZbritje : qmimiPakic} €
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="modern-divider mb-4"></div>
+
+                  <div className="shumica-section">
+                    <div className="d-flex align-items-center justify-content-between px-3 py-3 rounded-4 bg-slate-50 border-slate-100 border">
+                      <span className="premium-label mb-0">Çmimi i Shumicës</span>
+                      <span className="price-value-secondary text-indigo">{qmimiShitesMeShumic} €</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        )}
+
+
+      </Container>
+
+      <style>{`
+        .price-checker-wrapper {
+          background: radial-gradient(circle at top right, #fdfcfb 0%, #e2d1c3 100%);
+          background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+          min-height: 100vh;
+          font-family: 'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, oxygen, ubuntu, cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .main-title {
+          font-weight: 900;
+          color: #0f172a;
+          letter-spacing: -0.04em;
+          font-size: 3.5rem;
+        }
+
+        .subtitle {
+          color: #64748b;
+          font-size: 1.1rem;
+          max-width: 600px;
+          margin: 0 auto;
+        }
+
+        .search-icon-container {
+          position: relative;
+          width: 80px;
+          height: 80px;
+          margin: 0 auto;
+        }
+
+        .icon-ring {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border: 4px solid #4f46e5;
+          border-radius: 50%;
+          border-left-color: transparent;
+          border-bottom-color: transparent;
+          animation: spin 3s linear infinite;
+        }
+
+        .header-icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: #4f46e5;
+        }
+
+        .glass-card {
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.8);
+          border-radius: 28px;
+          position: relative;
+        }
+
+        .shadow-ultra {
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .section-tag {
+          font-size: 0.75rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          color: #6366f1;
+          letter-spacing: 0.1em;
+        }
+
+        .badge-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #6366f1;
+        }
+
+        .pulse {
+          box-shadow: 0 0 0 rgba(99, 102, 241, 0.4);
+          animation: pulse 2s infinite;
+        }
+
+        .text-muted-premium {
+          color: #94a3b8;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .card-accent-line {
+          height: 6px;
+          width: 100%;
+        }
+
+        .icon-box-premium {
+          width: 52px;
+          height: 52px;
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .section-title {
+          color: #1e293b;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+        }
+
+        .premium-label {
+          display: block;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          color: #94a3b8;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.75rem;
+        }
+
+        .sasia-value {
+          font-size: 4.5rem;
+          font-weight: 900;
+          letter-spacing: -0.05em;
+          line-height: 1;
+          margin-bottom: 0;
+        }
+
+        .njesia-tag {
+          background: #f1f5f9;
+          padding: 4px 12px;
+          border-radius: 10px;
+          font-weight: 700;
+          color: #475569;
+          font-size: 0.9rem;
+        }
+
+        .detail-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+        }
+
+        .detail-value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #334155;
+        }
+
+        .price-stack {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .price-value-primary {
+          font-size: 5.5rem;
+          font-weight: 950;
+          color: #0f172a;
+          letter-spacing: -0.06em;
+          line-height: 1;
+        }
+
+        .old-price-line {
+          font-size: 1.75rem;
+          color: #cbd5e1;
+          text-decoration: line-through;
+          font-weight: 600;
+          margin-bottom: -0.75rem;
+        }
+
+        .price-value-secondary {
+          font-size: 2rem;
+          font-weight: 800;
+        }
+
+        .discount-badge {
+          background: #ef4444;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 14px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+        }
+
+        .bg-indigo-soft { background: #eef2ff; }
+        .text-indigo { color: #4f46e5; }
+        .bg-indigo { background: #4f46e5; }
+        
+        .bg-emerald-soft { background: #ecfdf5; }
+        .text-emerald { color: #10b981; }
+        .bg-emerald { background: #10b981; }
+
+        .spinner-premium {
+          width: 40px;
+          height: 40px;
+          border: 3px solid rgba(79, 70, 229, 0.1);
+          border-top-color: #4f46e5;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin: 0 auto;
+        }
+
+        .modern-divider {
+          height: 1px;
+          background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.05), rgba(0,0,0,0));
+        }
+
+
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+          0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+
+        @media (max-width: 1200px) {
+          .price-value-primary { font-size: 4rem; }
+          .sasia-value { font-size: 3.5rem; }
+        }
+
+        @media (max-width: 768px) {
+          .main-title { font-size: 2.5rem; }
+          .price-value-primary { font-size: 3.5rem; }
+          .detail-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
+    </div>
   );
 }
 

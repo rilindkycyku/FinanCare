@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +14,8 @@ import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/FleteLejime
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function KalkulimiIMallit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -71,16 +70,24 @@ function KalkulimiIMallit(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
-          authentikimi
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
+          authentikimi,
         );
         const kalkulimet = kalkulimi.data.filter(
-          (item) => item.llojiKalkulimit === "FL"
+          (item) => item.llojiKalkulimit === "FL",
         );
         setKalkulimet(
           kalkulimet.map((k) => ({
@@ -96,7 +103,7 @@ function KalkulimiIMallit(props) {
             "Lloji Pageses": k.llojiPageses,
             "Statusi Kalkulimit":
               k.statusiKalkulimit === "true" ? "I Mbyllur" : "I Hapur",
-          }))
+          })),
         );
         setLoading(false);
       } catch (err) {
@@ -106,7 +113,7 @@ function KalkulimiIMallit(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]);
 
   useEffect(() => {
     if (getID) {
@@ -114,7 +121,7 @@ function KalkulimiIMallit(props) {
         try {
           const perdoruesi = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-            authentikimi
+            authentikimi,
           );
           setTeDhenat(perdoruesi.data);
         } catch (err) {
@@ -135,7 +142,7 @@ function KalkulimiIMallit(props) {
       try {
         const partneri = await axios.get(
           `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
-          authentikimi
+          authentikimi,
         );
         setPartneret(partneri.data);
       } catch (err) {
@@ -151,7 +158,7 @@ function KalkulimiIMallit(props) {
       try {
         const nrFat = await axios.get(
           `${API_BASE_URL}/api/Faturat/getNumriFaturesMeRradhe?llojiKalkulimit=FL`,
-          authentikimi
+          authentikimi,
         );
         setNrRendorKalkulimit(parseInt(nrFat.data));
       } catch (err) {
@@ -187,7 +194,7 @@ function KalkulimiIMallit(props) {
             pershkrimShtese: pershkrimShtese,
             nrRendorFatures: nrRendorKalkulimit + 1,
           },
-          authentikimi
+          authentikimi,
         )
         .then((response) => {
           if (response.status === 200 || response.status === 201) {
@@ -210,7 +217,7 @@ function KalkulimiIMallit(props) {
         .put(
           `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${idKalkulimitEdit}&statusi=true`,
           {},
-          authentikimi
+          authentikimi,
         )
         .then(() => {
           setRegjistroKalkulimin(false);
@@ -244,21 +251,17 @@ function KalkulimiIMallit(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
-      .get(
-        `${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`,
-        authentikimi
-      )
+      .get(`${API_BASE_URL}/api/Partneri/shfaqPartneretBleres`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data
-          .filter((item) => item.idPartneri !== 1 && item.idPartneri !== 2 && item.idPartneri !== 3)
+          .filter(
+            (item) =>
+              item.idPartneri !== 1 &&
+              item.idPartneri !== 2 &&
+              item.idPartneri !== 3,
+          )
           .map((item) => ({
             value: item.idPartneri,
             label: item.emriBiznesit,
@@ -283,9 +286,13 @@ function KalkulimiIMallit(props) {
     }
   };
 
+
+
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Faturist"]} />
+      <KontrolloAksesinNeFaqe
+        roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Faturist"]}
+      />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -318,7 +325,7 @@ function KalkulimiIMallit(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -357,7 +364,7 @@ function KalkulimiIMallit(props) {
                         id="produktiSelect" // Setting the id attribute
                         inputId="produktiSelect-input" // Setting the input id attribute
                         isDisabled={edito}
-                        styles={customStyles}
+                        styles={darkSelectStyles}
                       />
                     </Form.Group>
                   </Col>
@@ -401,6 +408,44 @@ function KalkulimiIMallit(props) {
                   </Col>
                 </Row>
                 <div className="mt-2">
+                  <Row className="mb-3">
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Fillim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataFillim}
+                          onChange={(e) => {
+                            setDataFillim(e.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group>
+                        <Form.Label>Data Mbarim</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={dataMbarim}
+                          onChange={(e) => {
+                            setDataMbarim(e.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={3} className="d-flex align-items-end">
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setDataFillim(new Date().toISOString().split("T")[0]);
+                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                        }}
+                        className="w-100">
+                        Sot
+                      </Button>
+                    </Col>
+                  </Row>
+
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Flete Lejimeve"

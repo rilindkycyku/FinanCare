@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
   faPlus
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
@@ -15,7 +15,8 @@ import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/PranimiIMal
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function KalkulimiIMallit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -69,12 +70,20 @@ function KalkulimiIMallit(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0], // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
           authentikimi
         );
         const kalkulimet = kalkulimi.data.filter(
@@ -100,7 +109,7 @@ function KalkulimiIMallit(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]);
 
   useEffect(() => {
     if (getID) {
@@ -226,8 +235,8 @@ function KalkulimiIMallit(props) {
                 stafiID: r.data.regjistrimet.stafiID,
                 totaliPaTVSH: parseFloat(
                   r.data.regjistrimet.totaliPaTVSH +
-                    r.data.regjistrimet.tvsh -
-                    r.data.rabati
+                  r.data.regjistrimet.tvsh -
+                  r.data.rabati
                 ),
                 tvsh: 0,
                 idPartneri: r.data.regjistrimet.idPartneri,
@@ -266,13 +275,7 @@ function KalkulimiIMallit(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
       .get(
         `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
@@ -307,7 +310,7 @@ function KalkulimiIMallit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant",  "Pergjegjes i Porosive"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive"]} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -336,32 +339,34 @@ function KalkulimiIMallit(props) {
           />
         )}
         {loading ? (
-          <div className="Loader">
+          <div className="d-flex align-items-center justify-content-center py-5">
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
-              wrapperStyle={{}}
-              wrapperClass=""
               visible={true}
             />
+            <span className="text-soft ms-3">Duke ngarkuar...</span>
           </div>
         ) : (
           !regjistroKalkulimin &&
           !shfaqTeDhenat && (
             <>
-              <h1 className="title">Pranimi i Mallit</h1>
+              <div className="mb-4">
+                <h1 className="h2 fw-bold text-white mb-1">Pranimi i Mallit</h1>
+                <p className="text-soft opacity-75 small">Regjistrimi dhe menaxhimi i pranimit të mallit</p>
+              </div>
 
               <Container fluid>
                 <Row>
-                  <Col>
-                    <Form>
-                      <Form.Group controlId="idDheEmri">
-                        <Form.Label>Nr. Rendor i Kalkulimit</Form.Label>
+                  <Form className="row">
+                    <Col md={4} className="mb-3">
+                      <Form.Group controlId="nrRendorKalkulimit">
+                        <Form.Label className="sp-label">Nr. Rendor i Kalkulimit</Form.Label>
                         <Form.Control
-                          id="nrRendorKalkulimit"
+                          className="sp-input"
                           type="number"
                           value={
                             nrRendorKalkulimit ? nrRendorKalkulimit + 1 : 1
@@ -369,24 +374,33 @@ function KalkulimiIMallit(props) {
                           disabled
                         />
                       </Form.Group>
-                      <Form.Group controlId="idDheEmri">
-                        <Form.Label>Partneri</Form.Label>
+                    </Col>
+                    <Col md={4} className="mb-3">
+                      <Form.Group controlId="produktiSelect">
+                        <Form.Label className="sp-label">Partneri</Form.Label>
                         <Select
+                          className="sp-select-container"
+                          classNamePrefix="sp-select"
                           value={optionsSelected}
                           onChange={handleChange}
                           options={options}
-                          id="produktiSelect" // Setting the id attribute
-                          inputId="produktiSelect-input" // Setting the input id attribute
+                          id="produktiSelect"
+                          inputId="produktiSelect-input"
                           isDisabled={edito}
-                          styles={customStyles}
+                          styles={darkSelectStyles}
+                          placeholder="Zgjidh partnerin..."
                         />
                       </Form.Group>
-                      <Form.Group>
-                        <Form.Label>Nr. Fatures</Form.Label>
+                    </Col>
+                    <Col md={4} className="mb-3">
+                      <Form.Group controlId="nrFatures">
+                        <Form.Label className="sp-label">Nr. Fatures</Form.Label>
                         <Form.Control
+                          className="sp-input"
                           id="nrFatures"
                           type="text"
                           value={nrFatures}
+                          placeholder="Shkruaj numrin e faturës"
                           onChange={(e) => {
                             setNrFatures(e.target.value);
                           }}
@@ -395,12 +409,13 @@ function KalkulimiIMallit(props) {
                           }}
                         />
                       </Form.Group>
-                    </Form>
-                  </Col>
-                  <Col>
-                    <Form.Group>
-                      <Form.Label>Data e Fatures</Form.Label>
+                    </Col>
+                  </Form>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="dataEFatures">
+                      <Form.Label className="sp-label">Data e Fatures</Form.Label>
                       <Form.Control
+                        className="sp-input"
                         id="dataEFatures"
                         type="date"
                         value={dataEFatures}
@@ -412,12 +427,13 @@ function KalkulimiIMallit(props) {
                         }}
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Lloji i Pageses</Form.Label>
-                      <select
+                  </Col>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="llojiIPageses">
+                      <Form.Label className="sp-label">Lloji i Pageses</Form.Label>
+                      <Form.Select
                         id="llojiIPageses"
-                        placeholder="LlojiIPageses"
-                        className="form-select"
+                        className="sp-input"
                         value={llojiIPageses ? llojiIPageses : 0}
                         onChange={(e) => {
                           setLlojiIPageses(e.target.value);
@@ -428,25 +444,20 @@ function KalkulimiIMallit(props) {
                         onKeyDown={(e) => {
                           ndrroField(e, "totPaTVSH");
                         }}>
-                        <option defaultValue value={0} key={0} disabled>
+                        <option value={0} disabled>
                           Zgjedhni Llojin e Pageses
                         </option>
-                        <option key={1} value="Cash">
-                          Cash
-                        </option>
-                        <option key={2} value="Banke">
-                          Banke
-                        </option>
-                        <option key={3} value="Borxh">
-                          Borxh
-                        </option>
-                      </select>
+                        <option value="Cash">Cash</option>
+                        <option value="Banke">Banke</option>
+                        <option value="Borxh">Borxh</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
-                  <Col>
-                    <Form.Group>
-                      <Form.Label>Totali Pa TVSH</Form.Label>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="totPaTVSH">
+                      <Form.Label className="sp-label">Totali Pa TVSH</Form.Label>
                       <Form.Control
+                        className="sp-input"
                         id="totPaTVSH"
                         type="number"
                         value={totPaTVSH}
@@ -458,9 +469,12 @@ function KalkulimiIMallit(props) {
                         }}
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>TVSH</Form.Label>
+                  </Col>
+                  <Col md={4} className="mb-3">
+                    <Form.Group controlId="TVSH">
+                      <Form.Label className="sp-label">TVSH</Form.Label>
                       <Form.Control
+                        className="sp-input"
                         id="TVSH"
                         type="number"
                         value={TVSH}
@@ -470,15 +484,58 @@ function KalkulimiIMallit(props) {
                         onKeyDown={handleMenaxhoTastetPagesa}
                       />
                     </Form.Group>
-                    <br />
+                  </Col>
+                  <Col md={4} className="d-flex align-items-end mb-3">
                     <Button
-                      className="mb-3 Butoni"
+                      className="btn-premium-shto w-100"
                       onClick={() => handleRegjistroKalkulimin()}>
-                      Regjistro <FontAwesomeIcon icon={faPlus} />
+                      Regjistro <FontAwesomeIcon icon={faPlus} className="ms-2" />
                     </Button>
                   </Col>
                 </Row>
                 <div className="mt-2">
+                  <Row className="mb-4 g-3 align-items-end">
+                    <Col md={4}>
+                      <Form.Group controlId="dataFillimFilter">
+                        <Form.Label className="sp-label small">Data Fillim</Form.Label>
+                        <Form.Control
+                          className="sp-input"
+                          type="date"
+                          value={dataFillim}
+                          onChange={(e) => {
+                            setDataFillim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Form.Group controlId="dataMbarimFilter">
+                        <Form.Label className="sp-label small">Data Mbarim</Form.Label>
+                        <Form.Control
+                          className="sp-input"
+                          type="date"
+                          value={dataMbarim}
+                          onChange={(e) => {
+                            setDataMbarim(e.target.value);
+                            setPageNumber(1);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={4}>
+                      <Button
+                        className="btn-premium-outline w-100"
+                        onClick={() => {
+                          setDataFillim(new Date().toISOString().split("T")[0]);
+                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                        }}>
+                        Sot
+                      </Button>
+                    </Col>
+                  </Row>
+
+
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Kalkulimeve"

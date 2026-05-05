@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Titulli from "../components/Titulli";
 import SignupPDF from "../components/SignupPDF";
 import { pdf } from "@react-pdf/renderer";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Building2, User, Phone, Mail, MapPin, Hash, CheckCircle2, ArrowLeft, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
 const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
@@ -21,9 +22,7 @@ export default function Signup() {
     nrf: "",
     tvsh: "",
   });
-  const [showPassword, setShowPassword] = useState(false); // NEW STATE
-  const togglePassword = () => setShowPassword(!showPassword);
-
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,57 +37,26 @@ export default function Signup() {
       setError("Konfigurimi i Telegram mungon!");
       return false;
     }
-
     try {
       const pdfStream = await pdf(<SignupPDF data={formData} />);
       const pdfBlob = await pdfStream.toBlob();
-
-      // Hap PDF në tab të ri (për përdoruesin)
       const url = URL.createObjectURL(pdfBlob);
       window.open(url, "_blank");
 
-      const caption = `
-<b>Kërkesë e Re për Regjistrim</b>
-
-<b>Biznesi:</b> <i>${formData.emriBiznesit}</i>
-<b>Username:</b> <code>${formData.username}</code>
-<b>Email:</b> <i>${formData.email || "-"}</i>
-<b>Telefon:</b> <code>${formData.nrKontaktit}</code>
-<b>Adresa:</b> ${formData.adresa}
-
-<b>NUI:</b> <code>${formData.nui || "-"}</code> • <b>NRF:</b> <code>${
-        formData.nrf || "-"
-      }</code> • <b>TVSH:</b> <code>${formData.tvsh || "-"}</code>
-
-Data: <b>${new Date().toLocaleDateString("sq-AL")}</b>
-`.trim();
+      const caption = `<b>Kërkesë e Re për Regjistrim</b>\n\n<b>Biznesi:</b> <i>${formData.emriBiznesit}</i>\n<b>Username:</b> <code>${formData.username}</code>\n<b>Telefon:</b> <code>${formData.nrKontaktit}</code>\n<b>Adresa:</b> ${formData.adresa}`.trim();
 
       const formDataTg = new FormData();
       formDataTg.append("chat_id", CHAT_ID);
-      formDataTg.append(
-        "document",
-        pdfBlob,
-        `KerkesePerRegjistim_${formData.emriBiznesit}.pdf`
-      );
+      formDataTg.append("document", pdfBlob, `KerkesePerRegjistim_${formData.emriBiznesit}.pdf`);
       formDataTg.append("caption", caption);
       formDataTg.append("parse_mode", "HTML");
 
-      const res = await fetch(
-        `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
-        {
-          method: "POST",
-          body: formDataTg,
-        }
-      );
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.description || "Gabim nga Telegram");
-      }
-
-      return true;
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
+        method: "POST",
+        body: formDataTg,
+      });
+      return res.ok;
     } catch (err: any) {
-      console.error(err);
       setError("Gabim: " + err.message);
       return false;
     }
@@ -97,293 +65,163 @@ Data: <b>${new Date().toLocaleDateString("sq-AL")}</b>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess(false);
     setLoading(true);
-
-    if (
-      !formData.emriBiznesit.trim() ||
-      !formData.username.trim() ||
-      !formData.password.trim() ||
-      !formData.nrKontaktit.trim() ||
-      !formData.adresa.trim()
-    ) {
+    if (!formData.emriBiznesit.trim() || !formData.username.trim() || !formData.password.trim() || !formData.nrKontaktit.trim() || !formData.adresa.trim()) {
       setError("Fushat me yll (*) janë të detyrueshme!");
       setLoading(false);
       return;
     }
-
-      const sent = await sendToTelegram();
-      if (!sent) {
-        setLoading(false);
-        return;
-      }
-
-    // KY ËSHTË MOMENTI I RI – KRIJO PËRDORUES TË PËRKOHSHËM!
-    const pendingUser = {
-      IDPartneri: Date.now(), // ID e përkohshme
-      EmriBiznesit: formData.emriBiznesit,
-      Username: formData.username,
-      Password: formData.password, // e ruajmë të enkriptuar më vonë, por për tani ok
-      Email: formData.email || null,
-      NrKontaktit: formData.nrKontaktit,
-      Adresa: formData.adresa,
-      NUI: formData.nui || null,
-      NRF: formData.nrf || null,
-      TVSH: formData.tvsh || null,
-      IDKategoritEPartnerit: 0, // 0 = në pritje (ose 999)
-      EmriKategoris: "Në Pritje të Miratimit",
-      isPendingApproval: true, // KY ËSHTË ÇELËSI!
-    };
-
-    // Ruaj si përdorues aktiv (që të mund të kyçet menjëherë)
-    localStorage.setItem("user", JSON.stringify(pendingUser));
-
+    const sent = await sendToTelegram();
+    if (!sent) { setLoading(false); return; }
+    localStorage.setItem("user", JSON.stringify({ IDPartneri: Date.now(), ...formData, isPendingApproval: true }));
     setSuccess(true);
     setLoading(false);
-
-    toast.success(
-  <div className="flex items-center gap-4">
-    <div className="relative">
-      <svg
-        className="w-12 h-12 text-white"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={3}
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <div className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-75"></div>
-    </div>
-    <div>
-      <p className="font-bold text-lg">Llogaria u krijua me sukses!</p>
-      <p className="text-sm opacity-90">Tani mund të porositësh menjëherë</p>
-    </div>
-  </div>,
-  {
-    duration: 6000,
-    style: {
-      background: "linear-gradient(135deg, #10b981, #059669)",
-      color: "white",
-      borderRadius: "16px",
-      padding: "18px 24px",
-      boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
-      border: "none",
-    },
-    icon: null, // e heqim sepse e kemi vetë SVG-në
-  }
-);
-
-    // Ridrejto te faqja kryesore pas 2 sekondash
+    toast.success("Llogaria u krijua me sukses!");
     setTimeout(() => navigate("/"), 2000);
   };
 
   return (
-    <>
+    <div className="min-h-screen pt-24 pb-20 relative overflow-hidden">
       <Titulli titulli="Regjistrim" />
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10">
-            <h1 className="text-4xl sm:text-5xl font-bold text-blue-900 mb-3">
-              Regjistro Biznesin Tënd
-            </h1>
-            <p className="text-lg text-gray-700">
-              Plotëso të dhënat dhe kërkesa do të shqyrtohet brenda 48 orëve
+      {/* Background glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] pointer-events-none opacity-10"
+        style={{ background: "radial-gradient(ellipse, rgba(16,185,129,1) 0%, transparent 70%)" }}
+      />
+
+      <div className="max-w-3xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 badge-emerald rounded-full text-xs font-black uppercase tracking-widest mb-5">
+            Bëhu Partner
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">
+            Regjistro <span className="gradient-text">Biznesin</span>
+          </h1>
+          <p className="text-slate-500 font-medium text-lg">
+            Plotëso të dhënat për të filluar bashkëpunimin tonë.
+          </p>
+        </motion.div>
+
+        {/* Form card */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass-card rounded-3xl overflow-hidden"
+        >
+          <form onSubmit={handleSubmit} className="p-8 md:p-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+              <SectionTitle title="Të dhënat Kryesore" step={1} />
+
+              <div className="md:col-span-2">
+                <InputField label="Emri i Biznesit" name="emriBiznesit" value={formData.emriBiznesit} onChange={handleChange} icon={<Building2 size={16} />} placeholder="Psh. Market ABC" required />
+              </div>
+              <InputField label="Username" name="username" value={formData.username} onChange={handleChange} icon={<User size={16} />} placeholder="marketi_abc" required />
+              <div className="relative">
+                <InputField label="Fjalëkalimi" name="password" type={showPassword ? "text" : "password"} value={formData.password} onChange={handleChange} icon={<EyeIcon size={16} />} placeholder="••••••••" required />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-[42px] text-slate-500 hover:text-brand-400 transition-colors"
+                >
+                  {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                </button>
+              </div>
+
+              <SectionTitle title="Kontakt & Adresa" step={2} />
+
+              <InputField label="Numri i Telefonit" name="nrKontaktit" value={formData.nrKontaktit} onChange={handleChange} icon={<Phone size={16} />} placeholder="+383 49 123 456" required />
+              <InputField label="Email (Opsionale)" name="email" value={formData.email} onChange={handleChange} icon={<Mail size={16} />} placeholder="info@shembull.com" />
+
+              <div className="md:col-span-2">
+                <InputField label="Adresa Fizike" name="adresa" value={formData.adresa} onChange={handleChange} icon={<MapPin size={16} />} placeholder="Rr. Agim Ramadani, Prishtinë" required />
+              </div>
+
+              <SectionTitle title="Të dhënat Fiskale (Opsionale)" step={3} />
+
+              <InputField label="NUI" name="nui" value={formData.nui} onChange={handleChange} icon={<Hash size={16} />} />
+              <InputField label="NRF / NF" name="nrf" value={formData.nrf} onChange={handleChange} icon={<Hash size={16} />} />
+              <InputField label="Numri TVSH" name="tvsh" value={formData.tvsh} onChange={handleChange} icon={<Hash size={16} />} />
+            </div>
+
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="mb-6 p-4 badge-red rounded-2xl text-sm font-bold text-center"
+              >
+                {error}
+              </motion.div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                type="submit"
+                disabled={loading || success}
+                className="flex-[2] btn-primary py-4.5 rounded-2xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-3 disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #10b981, #06b6d4)" }}
+              >
+                {loading ? "Duke u procesuar..." : success ? <><CheckCircle2 size={20} /> U Krye!</> : <>Regjistrohu <ArrowRight size={18} /></>}
+              </motion.button>
+
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                className="flex-1 btn-ghost py-4.5 rounded-2xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2"
+              >
+                <ArrowLeft size={16} /> Anulo
+              </button>
+            </div>
+
+            <p className="mt-6 text-center text-xs text-slate-600 font-medium">
+              Duke u regjistruar, ju pranoni Kushtet tona të Shërbimit.
             </p>
-          </div>
-
-          {success && (
-            <div className="mb-8 p-6 bg-green-100 border-2 border-green-500 rounded-xl text-center text-green-800">
-              <p className="text-2xl font-bold mb-2">
-                Kërkesa u dërgua me sukses!
-              </p>
-              <p className="text-lg">
-                Do të njoftoheni në email sapo llogaria të aktivizohet.
-              </p>
-            </div>
-          )}
-
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="p-6 sm:p-10">
-              <form
-                onSubmit={handleSubmit}
-                className="grid grid-cols-1 md:grid-cols-2 gap-7">
-                {/* FUSHAT E DETYRUARA */}
-                <div className="md:col-span-2">
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
-                    Emri i Biznesit <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="emriBiznesit"
-                    value={formData.emriBiznesit}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition"
-                    placeholder="Market ABC sh.p.k. | Filan Fisteku"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
-                    Username <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="marketi_abc"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
-                    Fjalëkalimi <span className="text-red-600">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-5 py-4 pr-14 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      onClick={togglePassword}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-600 hover:text-blue-600 transition">
-                      {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
-                    Nr. Kontaktit <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="nrKontaktit"
-                    value={formData.nrKontaktit}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="+383 49 123 456"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="info@biznesi.com"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
-                    Adresa <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="adresa"
-                    value={formData.adresa}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
-                    placeholder="Rr. Agim Ramadani, Prishtinë"
-                  />
-                </div>
-
-                {/* FUSHAT OPSIONALE */}
-                <div>
-                  <label className="block text-gray-600 mb-2">NUI</label>
-                  <input
-                    type="text"
-                    name="nui"
-                    value={formData.nui}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 border border-gray-200 rounded-xl"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-600 mb-2">NRF / NF</label>
-                  <input
-                    type="text"
-                    name="nrf"
-                    value={formData.nrf}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 border border-gray-200 rounded-xl"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-600 mb-2">Numri TVSH</label>
-                  <input
-                    type="text"
-                    name="tvsh"
-                    value={formData.tvsh}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 border border-gray-200 rounded-xl"
-                  />
-                </div>
-
-                {error && (
-                  <div className="md:col-span-2 p-5 bg-red-100 border-2 border-red-500 text-red-800 rounded-xl text-center font-medium">
-                    {error}
-                  </div>
-                )}
-
-                <div className="md:col-span-2 flex flex-col sm:flex-row gap-4 mt-6">
-                  <button
-                    type="submit"
-                    disabled={loading || success}
-                    className={`flex-1 py-5 py-5 text-xl font-bold text-white rounded-xl transition transform hover:scale-105 ${
-                      loading || success
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-green-600 to-green-700 shadow-lg hover:shadow-xl"
-                    }`}>
-                    {loading
-                      ? "Duke dërguar..."
-                      : success
-                      ? "U Dërgua!"
-                      : "Dërgo Kërkesën"}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => navigate("/login")}
-                    className="px-8 py-5 bg-gray-200 text-gray-800 rounded-xl font-semibold hover:bg-gray-300 transition">
-                    Kthehu te Kyçja
-                  </button>
-                </div>
-              </form>
-
-              <p className="text-center text-sm text-gray-500 mt-10">
-                <strong>Shënim:</strong> Pas dërgimit, do të hapet një dritare
-                me PDF-në që u dërgua te administratori.
-              </p>
-            </div>
-          </div>
-        </div>
+          </form>
+        </motion.div>
       </div>
-    </>
+    </div>
+  );
+}
+
+function SectionTitle({ title, step }: { title: string; step: number }) {
+  return (
+    <div className="md:col-span-2 flex items-center gap-4 mt-4 first:mt-0">
+      <div className="w-7 h-7 rounded-lg bg-brand-500/15 border border-brand-500/25 text-brand-400 flex items-center justify-center font-black text-xs shrink-0">
+        {step}
+      </div>
+      <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">{title}</h3>
+      <div className="flex-1 h-px bg-white/[0.05]" />
+    </div>
+  );
+}
+
+function InputField({ label, name, type = "text", value, onChange, icon, placeholder, required }: any) {
+  return (
+    <div className="space-y-2">
+      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+        {label} {required && <span className="text-brand-400">*</span>}
+      </label>
+      <div className="relative group">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-brand-400 transition-colors">
+          {icon}
+        </div>
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          required={required}
+          className="input-dark w-full pl-11 pr-4 py-3.5 rounded-xl font-bold placeholder:text-slate-700"
+        />
+      </div>
+    </div>
   );
 }

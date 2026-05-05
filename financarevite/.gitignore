@@ -1,4 +1,7 @@
 # Logs
+# Docker secrets — never commit
+.env
+
 logs
 *.log
 npm-debug.log*

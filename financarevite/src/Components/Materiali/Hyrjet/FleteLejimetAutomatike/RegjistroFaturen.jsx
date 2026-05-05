@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../../../Pages/Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -12,7 +12,7 @@ import {
   faCookieBite,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Form, Container, Row, Col } from "react-bootstrap";
+import { Form, Container, Row, Col, Card, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Tabela from "../../../TeTjera/Tabela/Tabela";
@@ -406,7 +406,7 @@ function RegjistroFaturen(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -416,152 +416,242 @@ function RegjistroFaturen(props) {
           </div>
         ) : (
           <>
-            <h1 className="title">Flete Lejimet</h1>
+            <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+              <div>
+                <h1 className="title mb-1">Flete Lejimet Automatike</h1>
+                <div className="text-muted" style={{ fontSize: "10pt" }}>
+                  Përditëso sasiat e produkteve në fletën e lejimit automatik.
+                </div>
+              </div>
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => setShikoFaturatEShitjesPartneri(true)}>
+                  <FontAwesomeIcon icon={faFileInvoice} /> Faturat
+                </Button>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => setShikoFaturatEShitjesProdukti(true)}>
+                  <FontAwesomeIcon icon={faCookieBite} /> Produkti
+                </Button>
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => KthehuTekFaturat()}>
+                  <FontAwesomeIcon icon={faArrowLeft} /> Kthehu mbrapa
+                </Button>
+              </div>
+            </div>
 
             <Container fluid>
-              <Row>
-                <Row>
-                  <Col md={6}>
-                    <Button
-                      className="mb-3 w-100"
-                      style={{
-                        backgroundColor: "#009879",
-                        borderColor: "#009879",
-                      }}
-                      onClick={() => setShikoFaturatEShitjesPartneri(true)}>
-                      Faturat <FontAwesomeIcon icon={faFileInvoice} />
-                    </Button>
-                  </Col>
-                  <Col md={6}>
-                    <Button
-                      className="mb-3 w-100"
-                      style={{
-                        backgroundColor: "#009879",
-                        borderColor: "#009879",
-                      }}
-                      onClick={() => setShikoFaturatEShitjesProdukti(true)}>
-                      Produkti <FontAwesomeIcon icon={faCookieBite} />
-                    </Button>
-                  </Col>
-                </Row>
-                <Col>
-                  <Form>
-                    <Form.Group controlId="idDheEmri">
-                      <Form.Label>Produkti</Form.Label>
-                      <Form.Control
-                        id="emriProduktit"
-                        type="text"
-                        placeholder={"Emri Produktit"}
-                        value={emriProduktit}
-                        disabled={true}
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Sasia - {njesiaMatese}</Form.Label>
-                      <Form.Control
-                        id="sasia"
-                        type="number"
-                        placeholder={"0.00 " + njesiaMatese}
-                        value={sasia}
-                        onChange={(e) => {
-                          kontrolloQmimin(e);
-                        }}
-                        onKeyDown={(e) => {
-                          ndrroField(e, "butoniEdit");
-                        }}
-                        disabled={!edito}
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Qmimi Shites €</Form.Label>
-                      <Form.Control
-                        id="qmimiShites"
-                        type="number"
-                        placeholder={"0.00 €"}
-                        value={qmimiSH}
-                        disabled
-                      />
-                    </Form.Group>
-                    <br />
-                    <div style={{ display: "flex", gap: "0.3em" }}>
-                      {edito && (
-                        <Button
-                          id="butoniEdit"
-                          variant="warning"
-                          onClick={() => handleEdito(idTeDhenatKalk)}>
-                          Edito Produktin{" "}
-                          <FontAwesomeIcon icon={faPenToSquare} />
-                        </Button>
-                      )}
-                    </div>
-                  </Form>
-                </Col>
-                <Col>
-                  <Row>
-                    <h5>
-                      <strong>Nr. Flete Lejimit:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.nrRendorFatures}
-                    </h5>
-                    <h5>
-                      <strong>Partneri:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.idPartneri}{" "}
-                      -{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.emriBiznesit}
-                    </h5>
-                    <h5>
-                      <strong>Pershkrim Shtese:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.pershkrimShtese}
-                    </h5>
-                    <h5>
-                      <strong>Lloji Pageses:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.llojiPageses}
-                    </h5>
-                    <h5>
-                      <strong>Totali Produkteve ne Kalkulim:</strong>{" "}
-                      {totProdukteve}
-                    </h5>
-                    <h5>
-                      <strong>Sasia:</strong> {parseFloat(totStokut).toFixed(2)}
-                    </h5>
-                    <h5>
-                      <strong>Totali:</strong> {parseFloat(totFat).toFixed(2)} €
-                    </h5>
+              <Row className="g-3">
+                <Col lg={5} xl={4}>
+                  <Card className="shadow-sm">
+                    <Card.Header className="d-flex align-items-center justify-content-between">
+                      <div className="fw-semibold">Edito Produktin</div>
+                      <Badge bg="info">Përditësim</Badge>
+                    </Card.Header>
+                    <Card.Body>
+                      <Form>
+                        <Form.Group controlId="idDheEmri" className="mb-3">
+                          <Form.Label className="fw-semibold">
+                            Produkti
+                          </Form.Label>
+                          <Form.Control
+                            id="emriProduktit"
+                            type="text"
+                            placeholder="Emri Produktit"
+                            value={emriProduktit}
+                            disabled={true}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                          <Form.Label className="fw-semibold">
+                            Sasia - {njesiaMatese}
+                          </Form.Label>
+                          <Form.Control
+                            id="sasia"
+                            type="number"
+                            placeholder="0.00"
+                            value={sasia}
+                            onChange={(e) => {
+                              kontrolloQmimin(e);
+                            }}
+                            onKeyDown={(e) => {
+                              ndrroField(e, "butoniEdit");
+                            }}
+                            disabled={!edito}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                          <Form.Label className="fw-semibold">
+                            Qmimi Shites €
+                          </Form.Label>
+                          <Form.Control
+                            id="qmimiShites"
+                            type="number"
+                            placeholder="0.00 €"
+                            value={qmimiSH}
+                            disabled
+                          />
+                        </Form.Group>
 
-                    <hr />
-                    <Col>
-                      <Button
-                        className="mb-3 Butoni"
-                        onClick={() => setKonfirmoMbylljenFatures(true)}>
-                        Mbyll Faturen <FontAwesomeIcon icon={faPlus} />
-                      </Button>
-                      <Button
-                        className="mb-3 Butoni"
-                        onClick={() => KthehuTekFaturat()}>
-                        <FontAwesomeIcon icon={faArrowLeft} /> Kthehu Mbrapa
-                      </Button>
-                    </Col>
-                  </Row>
+                        <div className="d-grid gap-2">
+                          {edito && (
+                            <Button
+                              id="butoniEdit"
+                              variant="warning"
+                              onClick={() => handleEdito(idTeDhenatKalk)}>
+                              Përditëso Produktin{" "}
+                              <FontAwesomeIcon icon={faPenToSquare} />
+                            </Button>
+                          )}
+                        </div>
+                      </Form>
+                    </Card.Body>
+                    <Card.Footer className="text-muted" style={{ fontSize: "9pt" }}>
+                      Zgjidh një produkt nga tabela për të redaktuar.
+                    </Card.Footer>
+                  </Card>
+                </Col>
+
+                <Col lg={7} xl={4}>
+                  <Card className="shadow-sm h-100">
+                    <Card.Header className="fw-semibold">
+                      Informacioni i Fatures
+                    </Card.Header>
+                    <Card.Body>
+                      <Row className="g-2 mb-3">
+                        <Col sm={6}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Nr. Lejimit
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures?.regjistrimet?.nrRendorFatures ??
+                              "-"}
+                          </div>
+                        </Col>
+                        <Col sm={6}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Nr. Fat
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures?.regjistrimet?.nrFatures ?? "-"}
+                          </div>
+                        </Col>
+                        <Col sm={12}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Partneri
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures?.regjistrimet?.emriBiznesit ?? "-"}
+                          </div>
+                        </Col>
+                        <Col sm={12}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Pershkrim Shtese
+                          </div>
+                          <div className="fw-semibold" style={{ fontSize: "9pt" }}>
+                            {teDhenatFatures?.regjistrimet?.pershkrimShtese ??
+                              "-"}
+                          </div>
+                        </Col>
+                        <Col sm={12}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Lloji Pageses
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures?.regjistrimet?.llojiPageses ?? "-"}
+                          </div>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col xl={4}>
+                  <Card className="shadow-sm h-100" style={{ position: "sticky", top: "1rem" }}>
+                    <Card.Header className="fw-semibold">
+                      Përmbledhje Fature
+                    </Card.Header>
+                    <Card.Body>
+                      <Row className="g-2">
+                        <Col sm={4}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Produkte
+                          </div>
+                          <div className="fw-semibold">
+                            {totProdukteve}
+                          </div>
+                        </Col>
+                        <Col sm={4}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Sasia
+                          </div>
+                          <div className="fw-semibold">
+                            {parseFloat(totStokut).toFixed(2)}
+                          </div>
+                        </Col>
+                        <Col sm={4}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Totali
+                          </div>
+                          <div className="fw-bold">
+                            {parseFloat(totFat).toFixed(2)} €
+                          </div>
+                        </Col>
+                      </Row>
+
+                      <div className="d-grid gap-2 mt-3">
+                        <Button
+                          variant="primary"
+                          onClick={() => setKonfirmoMbylljenFatures(true)}>
+                          Mbyll Faturen <FontAwesomeIcon icon={faPlus} />
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
                 </Col>
               </Row>
-              <div className="mt-2">
-                <Tabela
-                  data={produktetNeKalkulim}
-                  tableName="Tabela e Produkteve te Fatures"
-                  kaButona={true}
-                  funksionButonFshij={(e) => handleFshij(e)}
-                  funksionButonEdit={(e) => {
-                    handleEdit(e);
-                    setIdTeDhenatKalk(e);
-                  }}
-                  mosShfaqKerkimin
-                  mosShfaqID={true}
-                />
-              </div>
+
+              <Card className="shadow-sm mt-3">
+                <Card.Header className="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div className="fw-semibold">Tabela e Produkteve</div>
+                  <div className="d-flex align-items-center gap-2">
+                    <Badge bg="dark">
+                      {Array.isArray(produktetNeKalkulim)
+                        ? produktetNeKalkulim.length
+                        : 0}{" "}
+                      rreshta
+                    </Badge>
+                    <Badge bg="success">
+                      Totali: {parseFloat(totFat).toFixed(2)} €
+                    </Badge>
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  {Array.isArray(produktetNeKalkulim) &&
+                  produktetNeKalkulim.length === 0 ? (
+                    <div className="text-muted">
+                      Ende nuk ka produkte në faturë. Shto produkte duke përdorur butonat "Faturat" ose "Produkti" më lart.
+                    </div>
+                  ) : (
+                    <Tabela
+                      data={produktetNeKalkulim}
+                      tableName="Tabela e Produkteve te Fatures"
+                      kaButona={true}
+                      funksionButonFshij={(e) => handleFshij(e)}
+                      funksionButonEdit={(e) => {
+                        handleEdit(e);
+                        setIdTeDhenatKalk(e);
+                      }}
+                      mosShfaqKerkimin
+                      mosShfaqID={true}
+                    />
+                  )}
+                </Card.Body>
+              </Card>
             </Container>
           </>
         )}

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
@@ -12,7 +12,8 @@ import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Select from "react-select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function ShtoPagesat(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -210,13 +211,7 @@ function ShtoPagesat(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
       .get(`${API_BASE_URL}/api/Partneri/shfaqPartneret`, authentikimi)
       .then((response) => {
@@ -261,7 +256,7 @@ function ShtoPagesat(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -286,7 +281,7 @@ function ShtoPagesat(props) {
                         options={options}
                         id="produktiSelect" // Setting the id attribute
                         inputId="produktiSelect-input" // Setting the input id attribute
-                        styles={customStyles}
+                        styles={darkSelectStyles}
                       />
                     </Form.Group>
                   </Form>

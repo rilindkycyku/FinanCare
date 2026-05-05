@@ -1,21 +1,32 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import "../../../../Pages/Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
   faPlus,
   faPenToSquare,
   faArrowLeft,
+  faCalculator,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import { Form, Container, Row, Col, Modal } from "react-bootstrap";
+import {
+  Form,
+  Container,
+  Row,
+  Col,
+  Modal,
+  Card,
+  Badge,
+  InputGroup,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import Tabela from "../../../TeTjera/Tabela/Tabela";
 import PrintLabels from "../../../TeTjera/PrintLabels";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function RegjistroFaturen(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -365,13 +376,12 @@ function RegjistroFaturen(props) {
                     const rabati = parseFloat(p.rabati) || 0;
                     const vlera = totaliPaTVSH + tvsh - rabati;
                     console.log(
-                      `Transaction ${index + 1}: llojiKalkulimit=${
-                        p.llojiKalkulimit
+                      `Transaction ${index + 1}: llojiKalkulimit=${p.llojiKalkulimit
                       }, ` +
-                        `totaliPaTVSH=${totaliPaTVSH.toFixed(
-                          2
-                        )}, tvsh=${tvsh.toFixed(2)}, ` +
-                        `rabati=${rabati.toFixed(2)}, vlera=${vlera.toFixed(2)}`
+                      `totaliPaTVSH=${totaliPaTVSH.toFixed(
+                        2
+                      )}, tvsh=${tvsh.toFixed(2)}, ` +
+                      `rabati=${rabati.toFixed(2)}, vlera=${vlera.toFixed(2)}`
                     );
                     if (
                       ["HYRJE", "FAT", "AS", "PARAGON"].includes(
@@ -386,8 +396,7 @@ function RegjistroFaturen(props) {
                     }
                   });
                   console.log(
-                    `Calculated saldo for ${
-                      partneri.emriBiznesit
+                    `Calculated saldo for ${partneri.emriBiznesit
                     }: ${saldo.toFixed(2)}€`
                   );
                   if (saldo !== 0) {
@@ -605,14 +614,23 @@ function RegjistroFaturen(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050,
-    }),
+  const [loadingProdukteve, setLoadingProdukteve] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  const handleInputChange = (val) => {
+    setInputValue(val);
+    return val;
   };
 
-  useEffect(() => {
+  const filteredOptions = useMemo(() => {
+    if (inputValue.length < 2) return [];
+    const lower = inputValue.toLowerCase();
+    return options
+      .filter((o) => o.label.toLowerCase().includes(lower))
+      .slice(0, 30);
+  }, [inputValue, options]);
+    useEffect(() => {
+    setLoadingProdukteve(true);
     axios
       .get(`${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`, authentikimi)
       .then((response) => {
@@ -630,6 +648,9 @@ function RegjistroFaturen(props) {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoadingProdukteve(false);
       });
   }, []);
 
@@ -674,6 +695,10 @@ function RegjistroFaturen(props) {
     }
   };
 
+  const totaliPaTVSH = teDhenatFatures.regjistrimet && teDhenatFatures.regjistrimet.totaliPaTVSH;
+  const tvsh = teDhenatFatures.regjistrimet && teDhenatFatures.regjistrimet.tvsh;
+  const totaliFatures = teDhenatFatures.regjistrimet && (teDhenatFatures.regjistrimet.totaliPaTVSH + teDhenatFatures.regjistrimet.tvsh);
+
   return (
     <>
       <KontrolloAksesinNeFunksione
@@ -699,7 +724,7 @@ function RegjistroFaturen(props) {
                 <TailSpin
                   height="80"
                   width="80"
-                  color="#009879"
+                  color="#10b981"
                   ariaLabel="tail-spin-loading"
                   radius="1"
                   wrapperStyle={{}}
@@ -773,7 +798,7 @@ function RegjistroFaturen(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -783,197 +808,314 @@ function RegjistroFaturen(props) {
           </div>
         ) : (
           <>
-            <h1 className="title">Kalkulimi i Mallit</h1>
+            <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+              <div>
+                <h1 className="title mb-1">Kalkulimi Fillestar Vjetor</h1>
+                <div className="text-muted" style={{ fontSize: "10pt" }}>
+                  Shtoni produktet dhe mbyllni faturën kur të jeni gati.
+                </div>
+              </div>
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                <PrintLabels storeName={siteName} products={produktetQmimore} />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => KthehuTekFaturat()}>
+                  <FontAwesomeIcon icon={faArrowLeft} /> Kthehu mbrapa
+                </Button>
+              </div>
+            </div>
+
             <Container fluid>
-              <Row>
-                <Col>
-                  <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="idDheEmri">
-                      <Form.Label>Produkti</Form.Label>
-                      <Select
-                        value={optionsSelected}
-                        onChange={handleChange}
-                        options={options}
-                        id="produktiSelect"
-                        inputId="produktiSelect-input"
-                        isDisabled={edito || isLoadingKartela}
-                        styles={customStyles}
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Sasia - {njesiaMatese}</Form.Label>
-                      <Form.Control
-                        id="sasia"
-                        type="number"
-                        placeholder={"0.00 " + njesiaMatese}
-                        value={sasia}
-                        onChange={(e) => setSasia(e.target.value)}
-                        onKeyDown={handleMenaxhoTastetPagesa}
-                        disabled={isLoadingKartela}
-                      />
-                    </Form.Group>
-                    {edito && (
-                      <span className="text-danger fw-bold">
-                        KUJDES: Ndryshimi aplikohet për të gjithë sasinë në
-                        kalkulim
-                      </span>
-                    )}
-                    <br />
-                    <div style={{ display: "flex", gap: "0.3em" }}>
-                      <Button
-                        variant="success"
-                        type="submit"
-                        disabled={edito || isLoadingKartela}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSubmit();
-                        }}>
-                        Shto Produktin <FontAwesomeIcon icon={faPlus} />
-                      </Button>
-                      {edito && (
-                        <Button
-                          variant="warning"
-                          onClick={() => handleEdito(idTeDhenatKalk)}
-                          disabled={isLoadingKartela}>
-                          Edito Produktin{" "}
-                          <FontAwesomeIcon icon={faPenToSquare} />
-                        </Button>
+              <Row className="g-3">
+                <Col lg={5} xl={4}>
+                  <Card className="shadow-sm">
+                    <Card.Header className="d-flex align-items-center justify-content-between">
+                      <div className="fw-semibold">Shto / Edito Produkt</div>
+                      {edito ? (
+                        <Badge bg="warning" text="dark">
+                          Editim
+                        </Badge>
+                      ) : (
+                        <Badge bg="success">Shtim</Badge>
                       )}
-                    </div>
-                  </Form>
+                    </Card.Header>
+                    <Card.Body>
+                      <Form onSubmit={handleSubmit}>
+                        <Form.Group controlId="idDheEmri" className="mb-3">
+                          <Form.Label className="fw-semibold">
+                            Produkti
+                          </Form.Label>
+                          <Select
+                            value={optionsSelected}
+                            onChange={handleChange}
+                            options={filteredOptions}
+                            id="produktiSelect"
+                            inputId="produktiSelect-input"
+                            isDisabled={edito || isLoadingKartela || loadingProdukteve}
+                            isLoading={loadingProdukteve}
+                            styles={darkSelectStyles}
+                            placeholder={
+                              loadingProdukteve
+                                ? "Duke ngarkuar produktetâ€¦"
+                                : "Kërko produkt (min. 2 shkronja)â€¦"
+                            }
+                            onInputChange={handleInputChange}
+                            inputValue={inputValue}
+                            noOptionsMessage={() =>
+                              loadingProdukteve
+                                ? "Duke ngarkuarâ€¦"
+                                : inputValue.length < 2
+                                  ? "Shkruani të paktën 2 karaktere"
+                                  : "Nuk u gjet asnjë produkt"
+                            }
+                          />
+                        </Form.Group>
+
+                        <Form.Group className="mb-2">
+                          <Form.Label className="fw-semibold">
+                            Sasia - {njesiaMatese}
+                          </Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                              id="sasia"
+                              type="number"
+                              placeholder={"0.00 " + njesiaMatese}
+                              value={sasia}
+                              onChange={(e) => setSasia(e.target.value)}
+                              onKeyDown={handleMenaxhoTastetPagesa}
+                              disabled={isLoadingKartela}
+                            />
+                            <InputGroup.Text>{njesiaMatese}</InputGroup.Text>
+                          </InputGroup>
+                        </Form.Group>
+
+                        {edito && (
+                          <div className="text-danger fw-bold mb-2" style={{ fontSize: "9pt" }}>
+                            KUJDES: Ndryshimi aplikohet për të gjithë sasinë në kalkulim
+                          </div>
+                        )}
+
+                        <div className="d-flex gap-2 flex-wrap mt-3">
+                          <Button
+                            variant="success"
+                            type="submit"
+                            disabled={edito || isLoadingKartela}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleSubmit();
+                            }}>
+                            Shto Produktin <FontAwesomeIcon icon={faPlus} />
+                          </Button>
+                          {edito && (
+                            <Button
+                              variant="warning"
+                              onClick={() => handleEdito(idTeDhenatKalk)}
+                              disabled={isLoadingKartela}>
+                              Edito Produktin{" "}
+                              <FontAwesomeIcon icon={faPenToSquare} />
+                            </Button>
+                          )}
+                        </div>
+                      </Form>
+                    </Card.Body>
+                  </Card>
                 </Col>
-                <Col>
-                  <p>
-                    <strong>Sasia aktuale ne Stok:</strong>{" "}
-                    {Array.isArray(optionsSelected)
-                      ? optionsSelected
-                          .map((option) => option.item.sasiaNeStok)
-                          .join(", ")
-                      : optionsSelected?.item?.sasiaNeStok ?? 0}{" "}
-                    {Array.isArray(optionsSelected)
-                      ? optionsSelected
-                          .map((option) => option.item.emriNjesiaMatese)
-                          .join(", ")
-                      : optionsSelected?.item?.emriNjesiaMatese ?? "Copë"}
-                  </p>
-                  <p>
-                    <strong>Qmimi Bleres + TVSH:</strong>{" "}
-                    {parseFloat(
-                      Array.isArray(optionsSelected)
-                        ? optionsSelected
-                            .map((option) => option.item.qmimiBleres)
-                            .join(", ")
-                        : optionsSelected?.item?.qmimiBleres ?? 0
-                    ).toFixed(2)}{" "}
-                    €
-                  </p>
-                  <p>
-                    <strong>Qmimi Shites me Pakic + TVSH:</strong>{" "}
-                    {parseFloat(
-                      Array.isArray(optionsSelected)
-                        ? optionsSelected
-                            .map((option) => option.item.qmimiProduktit)
-                            .join(", ")
-                        : optionsSelected?.item?.qmimiProduktit ?? 0
-                    ).toFixed(2)}{" "}
-                    €
-                  </p>
-                  <p>
-                    <strong>Qmimi Shites me Shumic + TVSH:</strong>{" "}
-                    {parseFloat(
-                      Array.isArray(optionsSelected)
-                        ? optionsSelected
-                            .map((option) => option.item.qmimiMeShumic)
-                            .join(", ")
-                        : optionsSelected?.item?.qmimiMeShumic ?? 0
-                    ).toFixed(2)}{" "}
-                    €
-                  </p>
+
+                <Col lg={7} xl={4}>
+                  <Card className="shadow-sm h-100">
+                    <Card.Header className="fw-semibold">
+                      Produkti i zgjedhur
+                    </Card.Header>
+                    <Card.Body>
+                      {!optionsSelected?.item ? (
+                        <div className="text-muted">
+                          Zgjidh një produkt për të parë detajet.
+                        </div>
+                      ) : (
+                        <>
+                          <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                            <div className="fw-semibold">
+                              {optionsSelected.item.emriProduktit}
+                            </div>
+                            <div className="d-flex align-items-center gap-2 flex-wrap">
+                              {optionsSelected?.item?.kodiProduktit ? (
+                                <Badge bg="info" text="dark">
+                                  {optionsSelected.item.kodiProduktit}
+                                </Badge>
+                              ) : null}
+                              <Badge bg="secondary">
+                                {optionsSelected.item.barkodi}
+                              </Badge>
+                            </div>
+                          </div>
+                          <Row className="g-2">
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div className="text-muted" style={{ fontSize: "9pt" }}>
+                                    Sasia aktuale në stok
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {optionsSelected?.item?.sasiaNeStok ?? 0}{" "}
+                                    {optionsSelected?.item?.emriNjesiaMatese ?? "Copë"}
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div className="text-muted" style={{ fontSize: "9pt" }}>
+                                    Blerje + TVSH
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {parseFloat(optionsSelected?.item?.qmimiBleres ?? 0).toFixed(2)} €
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div className="text-muted" style={{ fontSize: "9pt" }}>
+                                    Pakic + TVSH
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {parseFloat(optionsSelected?.item?.qmimiProduktit ?? 0).toFixed(2)} €
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                            <Col sm={6}>
+                              <Card className="border-0 bg-light">
+                                <Card.Body className="py-2">
+                                  <div className="text-muted" style={{ fontSize: "9pt" }}>
+                                    Shumic + TVSH
+                                  </div>
+                                  <div className="fw-semibold">
+                                    {parseFloat(optionsSelected?.item?.qmimiMeShumic ?? 0).toFixed(2)} €
+                                  </div>
+                                </Card.Body>
+                              </Card>
+                            </Col>
+                          </Row>
+                        </>
+                      )}
+                    </Card.Body>
+                  </Card>
                 </Col>
-                <Col>
-                  <Row>
-                    <h5>
-                      <strong>Nr. Kalkulimit:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.idRegjistrimit}
-                    </h5>
-                    <h5>
-                      <strong>Partneri:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.emriBiznesit}
-                    </h5>
-                    <h5>
-                      <strong>Nr. Fat:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.nrFatures}
-                    </h5>
-                    <h5>
-                      <strong>Totali Fatures pa TVSH:</strong>{" "}
-                      {parseFloat(
-                        teDhenatFatures.regjistrimet &&
-                          teDhenatFatures.regjistrimet.totaliPaTVSH
-                      ).toFixed(2)}{" "}
-                      €
-                    </h5>
-                    <h5>
-                      <strong>TVSH:</strong>{" "}
-                      {parseFloat(
-                        teDhenatFatures.regjistrimet &&
-                          teDhenatFatures.regjistrimet.tvsh
-                      ).toFixed(2)}{" "}
-                      €
-                    </h5>
-                    <h5>
-                      <strong>Totali Fatures:</strong>{" "}
-                      {parseFloat(
-                        teDhenatFatures.regjistrimet &&
-                          teDhenatFatures.regjistrimet.totaliPaTVSH +
-                            teDhenatFatures.regjistrimet.tvsh
-                      ).toFixed(2)}{" "}
-                      €
-                    </h5>
-                    <h5>
-                      <strong>Totalet Nga Regjistrimi:</strong>{" "}
-                      {teDhenatFatures.regjistrimet &&
-                        teDhenatFatures.regjistrimet.pershkrimShtese}
-                    </h5>
-                    <hr />
-                    <Col>
-                      <Button
-                        className="mb-3 Butoni"
-                        onClick={() => setKonfirmoMbylljenFatures(true)}
-                        disabled={isLoadingKartela}>
-                        Mbyll Faturen <FontAwesomeIcon icon={faPlus} />
-                      </Button>
-                      <Button
-                        className="mb-3 Butoni"
-                        onClick={() => KthehuTekFaturat()}
-                        disabled={isLoadingKartela}>
-                        <FontAwesomeIcon icon={faArrowLeft} /> Kthehu Mbrapa
-                      </Button>
-                      <PrintLabels
-                        storeName={siteName}
-                        products={produktetQmimore}
-                      />
-                    </Col>
-                  </Row>
+
+                <Col xl={4}>
+                  <Card className="shadow-sm h-100" style={{ position: "sticky", top: "1rem" }}>
+                    <Card.Header className="fw-semibold">
+                      Përmbledhje fature
+                    </Card.Header>
+                    <Card.Body>
+                      <Row className="g-2">
+                        <Col sm={6}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Nr. Kalkulimit
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures.regjistrimet?.idRegjistrimit ?? "-"}
+                          </div>
+                        </Col>
+                        <Col sm={6}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Nr. Fat
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures.regjistrimet?.nrFatures ?? "-"}
+                          </div>
+                        </Col>
+                        <Col sm={12}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Partneri
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures.regjistrimet?.emriBiznesit ?? "-"}
+                          </div>
+                        </Col>
+                      </Row>
+
+                      <hr />
+
+                      <Row className="g-2">
+                        <Col sm={4}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Pa TVSH
+                          </div>
+                          <div className="fw-semibold">
+                            {parseFloat(totaliPaTVSH || 0).toFixed(2)} €
+                          </div>
+                        </Col>
+                        <Col sm={4}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            TVSH
+                          </div>
+                          <div className="fw-semibold">
+                            {parseFloat(tvsh || 0).toFixed(2)} €
+                          </div>
+                        </Col>
+                        <Col sm={4}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Totali
+                          </div>
+                          <div className="fw-bold">
+                            {parseFloat(totaliFatures || 0).toFixed(2)} €
+                          </div>
+                        </Col>
+                        <Col sm={12}>
+                          <div className="text-muted" style={{ fontSize: "9pt" }}>
+                            Përshkrim
+                          </div>
+                          <div className="fw-semibold">
+                            {teDhenatFatures.regjistrimet?.pershkrimShtese ?? "-"}
+                          </div>
+                        </Col>
+                      </Row>
+
+                      <div className="d-grid gap-2 mt-3">
+                        <Button
+                          variant="primary"
+                          onClick={() => setKonfirmoMbylljenFatures(true)}
+                          disabled={isLoadingKartela}>
+                          Mbyll Faturen <FontAwesomeIcon icon={faPlus} />
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
                 </Col>
               </Row>
-              <div className="mt-2">
-                <Tabela
-                  data={produktetNeKalkulim}
-                  tableName="Tabela e Produkteve te Fatures"
-                  kaButona={true}
-                  funksionButonFshij={(e) => handleFshij(e)}
-                  funksionButonEdit={(e) => {
-                    handleEdit(e);
-                    setIdTeDhenatKalk(e);
-                  }}
-                  mosShfaqKerkimin
-                  mosShfaqID={true}
-                  shfaqEksporto
-                />
-              </div>
+
+              <Card className="shadow-sm mt-3">
+                <Card.Header className="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div className="fw-semibold">Tabela e Produkteve te Fatures</div>
+                  <div className="d-flex align-items-center gap-2">
+                    <Badge bg="dark">
+                      {produktetNeKalkulim.length} rreshta
+                    </Badge>
+                    <Badge bg="success">
+                      Totali: {parseFloat(totaliFatures || 0).toFixed(2)} €
+                    </Badge>
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  <Tabela
+                    data={produktetNeKalkulim}
+                    tableName="Tabela e Produkteve te Fatures"
+                    kaButona={true}
+                    funksionButonFshij={(e) => handleFshij(e)}
+                    funksionButonEdit={(e) => {
+                      handleEdit(e);
+                      setIdTeDhenatKalk(e);
+                    }}
+                    mosShfaqKerkimin
+                    mosShfaqID={true}
+                    shfaqEksporto
+                  />
+                </Card.Body>
+              </Card>
             </Container>
           </>
         )}

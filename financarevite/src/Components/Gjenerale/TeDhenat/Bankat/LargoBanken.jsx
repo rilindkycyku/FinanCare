@@ -1,4 +1,4 @@
-import axios from "axios";
+﻿import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -44,19 +44,23 @@ function LargoBanken(props) {
         setTipiMesazhit={(e) => props.setTipiMesazhit(e)}
         setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
       />
-      <Modal show={true} onHide={() => props.largo()}>
+      <Modal show={true} onHide={() => props.largo()} className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title style={{ color: "red" }}>Largo Banken</Modal.Title>
+          <Modal.Title className="text-danger">Largo Bankën</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <h6>A jeni te sigurt qe deshironi ta fshini kete banke?</h6>
+        <Modal.Body className="text-center py-4">
+          <div className="mb-3 text-danger">
+            <FontAwesomeIcon icon={faBan} size="3x" />
+          </div>
+          <h5 className="text-white mb-3">A jeni të sigurt?</h5>
+          <p className="text-muted">Deshironi ta fshini këtë bankë? Ky veprim mund të ndikojë në regjistrimet e transaksioneve.</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={() => props.largo()}>
+            Anulo
           </Button>
-          <Button variant="danger" onClick={handleSubmit}>
-            Largo Banken <FontAwesomeIcon icon={faBan} />
+          <Button variant="danger" className="px-4" onClick={handleSubmit}>
+            Konfirmo Largimin
           </Button>
         </Modal.Footer>
       </Modal>

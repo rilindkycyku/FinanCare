@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import classes from "./Styles/TabelaEKompanive.module.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -88,7 +88,7 @@ function TeDhenatKalkulimit(props) {
               <TailSpin
                 height="80"
                 width="80"
-                color="#009879"
+                color="#10b981"
                 ariaLabel="tail-spin-loading"
                 radius="1"
                 wrapperStyle={{}}

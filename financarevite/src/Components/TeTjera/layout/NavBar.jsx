@@ -1,4 +1,4 @@
-import "./Styles/ModalDheTabela.css";
+import { useEffect, useState, useMemo } from "react";
 import {
   MDBContainer,
   MDBNavbar,
@@ -8,340 +8,200 @@ import {
   MDBNavbarItem,
   MDBNavbarLink,
   MDBCollapse,
-  MDBIcon,
   MDBDropdown,
   MDBDropdownMenu,
-  MDBDropdownItem,
   MDBDropdownToggle
 } from "mdb-react-ui-kit";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faRightFromBracket,
-  faRightToBracket,
-} from "@fortawesome/free-solid-svg-icons";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+  LogOut,
+  LogIn,
+  Menu as MenuIcon,
+  ChevronDown,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import { roleBasedDropdowns } from "./roleBasedDropdowns";
+import "./Styles/NavBarModern.css";
 
 function NavBar() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
+  const getID = localStorage.getItem("id");
+
+  const [teDhenat, setTeDhenat] = useState(null);
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState([]);
+  const [showNav, setShowNav] = useState(false);
+  const [userRoles, setUserRoles] = useState([]);
   const [perditeso, setPerditeso] = useState("");
 
-  const [teDhenat, setTeDhenat] = useState([]);
+  const authentikimi = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
-  const [showNav, setShowNav] = useState(false);
-
-  const [userRoles, setUserRoles] = useState([]);
-
-  const getID = localStorage.getItem("id");
-  const getToken = localStorage.getItem("token");
-
-  const authentikimi = {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  };
-
+  // Handle Role Detection from Token
   useEffect(() => {
     if (token) {
-      const decodedToken = jwtDecode(token);
-      const kohaAktive = new Date(decodedToken.exp * 1000);
-      const kohaTanishme = new Date();
-
-      if (kohaAktive < kohaTanishme) {
-        localStorage.removeItem("token");
-        navigate("/LogIn");
-      } else {
-        setUserRoles(decodedToken.role || []); // Assuming roles are in the decoded token
-      }
-    } else {
-      navigate("/login");
-    }
-  }, [token, navigate]);
-
-  useEffect(() => {
-    const ShfaqTeDhenat = async () => {
       try {
-        const teDhenat = await axios.get(
-          `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`,
-          authentikimi
-        );
-        setTeDhenatBiznesit(teDhenat.data);
+        const decodedToken = jwtDecode(token);
+        const kohaAktive = new Date(decodedToken.exp * 1000);
+        if (kohaAktive < new Date()) {
+          handleSignOut();
+          return;
+        }
+
+        // ASP.NET Identity roles can be under multiple claim names
+        let roles = decodedToken.role || decodedToken.roles || decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        if (!roles) roles = [];
+        if (typeof roles === "string") roles = [roles];
+
+        setUserRoles(roles);
       } catch (err) {
-        console.log(err);
+        console.error("Token decode error:", err);
+        handleSignOut();
       }
-    };
+    }
+  }, [token]);
 
-    ShfaqTeDhenat();
-  }, [perditeso]);
-
+  // Fetch Business Data
   useEffect(() => {
-    if (getID) {
-      const vendosTeDhenat = async () => {
+    const fetchBiznesi = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`, authentikimi);
+        setTeDhenatBiznesit(res.data);
+      } catch (err) { console.error("Business data fetch error:", err); }
+    };
+    if (token) fetchBiznesi();
+  }, [token, API_BASE_URL, authentikimi]);
+
+  // Fetch User Data
+  useEffect(() => {
+    if (getID && token) {
+      const fetchUserData = async () => {
         try {
-          const perdoruesi = await axios.get(
+          const res = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
             authentikimi
           );
-          setTeDhenat(perdoruesi.data);
+          setTeDhenat(res.data);
+          // If token roles are empty, fallback to API roles
+          if (res.data && res.data.rolet && (userRoles.length === 0)) {
+            setUserRoles(res.data.rolet);
+          }
         } catch (err) {
-          console.log(err);
+          console.error("User data fetch error:", err);
         }
       };
-
-      vendosTeDhenat();
-    } else {
-      navigate("/login");
+      fetchUserData();
     }
-  }, [perditeso]);
-
-  useEffect(() => {
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      const kohaAktive = new Date(decodedToken.exp * 1000);
-      const kohaTanishme = new Date();
-      const id = localStorage.getItem("id");
-
-      if (kohaAktive < kohaTanishme) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("id");
-        navigate("/LogIn");
-      }
-
-      if (id !== decodedToken.Id) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("id");
-        navigate("/LogIn");
-      }
-    }
-  }, []);
+  }, [getID, token, API_BASE_URL, authentikimi]);
 
   const handleSignOut = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("id");
+    localStorage.clear();
+    navigate("/LogIn");
   };
 
-  if (!userRoles || userRoles.length === 0) {
-    console.log("No roles available for the user.");
-    return null; // or a fallback UI
-  }
+  const userInitial = teDhenat?.perdoruesi?.emri?.charAt(0) || "U";
+  const primaryRole = userRoles.filter(r => r !== "User")[0] || userRoles[0] || "Përdorues";
+
+  const hasAccess = (rolesNeeded) => {
+    if (!rolesNeeded || rolesNeeded.length === 0) return true;
+    return rolesNeeded.some(role => userRoles.includes(role));
+  };
 
   return (
-    <>
-      <MDBNavbar
-        sticky
-        expand="lg"
-        light
-        style={{ backgroundColor: "#009879" }}>
-        <MDBContainer fluid>
-          <MDBNavbarBrand href="/">
-            <img
-              src={`/img/web/d144a4e21cb54a7fb9c5a21d4eebdd50.svg`}
-              height="30"
-              alt=""
-              loading="lazy"
-            />
-          </MDBNavbarBrand>
-          <MDBNavbarToggler
-            type="button"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-            onClick={() => setShowNav(!showNav)}>
-            <MDBIcon icon="bars" fas />
-          </MDBNavbarToggler>
-          <MDBCollapse navbar show={showNav}>
-            <MDBNavbarNav className="d-flex mr-auto">
-              {token && (
-                <>
-                  {roleBasedDropdowns.map((dropdown, index) => {
-                    return (
-                      <MDBDropdown key={index}>
-                        <MDBDropdownToggle className="btnNav btnNav-primary">
-                          {dropdown.label}
-                        </MDBDropdownToggle>
-                        <MDBDropdownMenu>
-                          {dropdown.items.map((item, itemIndex) => {
-                            const hasAccess = item.roles
-                              ? item.roles.some((role) =>
-                                  userRoles.includes(role)
-                                )
-                              : false;
+    <MDBNavbar expand="lg" light sticky className="modern-navbar">
+      <MDBContainer fluid>
+        <MDBNavbarBrand href="/" className="fw-800">
+          <img src="/img/web/Logo.svg" alt="FinanCare Logo" className="brand-logo" />
+        </MDBNavbarBrand>
 
-                            return (
-                              <MDBDropdown key={itemIndex} dropright>
-                                <MDBDropdownToggle
-                                  className="btnNav btnNav-primary"
-                                  disabled={!hasAccess} // Disable the dropdown if no access
-                                >
-                                  {item.label}
-                                </MDBDropdownToggle>
-                                <MDBDropdownMenu>
-                                  {item.subItems &&
-                                    item.subItems.map(
-                                      (subItem, subItemIndex) => {
-                                        const hasSubAccess = subItem.roles
-                                          ? subItem.roles.some((role) =>
-                                              userRoles.includes(role)
-                                            )
-                                          : false;
+        <MDBNavbarToggler
+          type="button"
+          onClick={() => setShowNav(!showNav)}
+          className="shadow-none border-0"
+        >
+          <MenuIcon size={24} />
+        </MDBNavbarToggler>
 
-                                        if (subItem.isDivider) {
-                                          return (
-                                            <MDBDropdownItem
-                                              divider
-                                              key={subItemIndex}
-                                            />
-                                          );
-                                        }
-
-                                        return (
-                                          <MDBDropdownItem
-                                            key={subItemIndex}
-                                            disabled={!hasSubAccess}>
-                                            {hasSubAccess ? (
-                                              <Link
-                                                onMouseOver={(e) => {
-                                                  e.currentTarget.style.color =
-                                                    "#009879"; // Hover effect for disabled
-                                                }}
-                                                onMouseOut={(e) => {
-                                                  e.currentTarget.style.color =
-                                                    "black"; // Reset background
-                                                }}
-                                                style={{
-                                                  padding: "3px 3px", // Adjust padding as needed
-                                                  display: "inline-block", // Ensures the padding is applied correctly
-                                                  transition:
-                                                    "background-color 0.3s", // Smooth transition for hover
-                                                }}
-                                                to={subItem.path}>
-                                                {subItem.label}
-                                              </Link>
-                                            ) : (
-                                              <span
-                                                style={{
-                                                  color: "rgba(0, 0, 0, 0.38)",
-                                                  pointerEvents: "none",
-                                                  textDecoration: "none",
-                                                  padding: "3px 3px", // Adjust padding as needed
-                                                  display: "inline-block", // Ensures the padding is applied correctly
-                                                  transition:
-                                                    "background-color 0.3s", // Smooth transition for hover
-                                                }}
-                                                onMouseOver={(e) => {
-                                                  e.currentTarget.style.backgroundColor =
-                                                    "#f0f0f0"; // Change to your desired hover color
-                                                }}
-                                                onMouseOut={(e) => {
-                                                  e.currentTarget.style.backgroundColor =
-                                                    "transparent"; // Reset to transparent
-                                                }}>
-                                                {subItem.label}
-                                              </span>
-                                            )}
-                                          </MDBDropdownItem>
-                                        );
-                                      }
-                                    )}
-                                </MDBDropdownMenu>
-                              </MDBDropdown>
-                            );
-                          })}
-                        </MDBDropdownMenu>
-                      </MDBDropdown>
-                    );
-                  })}
-
-                  <MDBNavbarItem className="btnNav btnNav-primary">
-                    <MDBNavbarLink href="ShikimiQmimeve">
-                      Kontrollo Qmimin e Produktit
-                    </MDBNavbarLink>
-                  </MDBNavbarItem>
-                </>
-              )}
-              <MDBNavbarNav
-                right={showNav ? false : true}
-                fullWidth={false}
-                className="mb-2 mb-lg-0">
-                {token && (
-                  <>
-                    <MDBNavbarItem>
-                      <MDBNavbarLink>
-                        <Link to="/Dashboard">
-                          <div style={{ display: "inline-block" }}>
-                            {" "}
-                            {/* Wrap the content inside a block container */}
-                            Miresevini,{" "}
-                            <strong>
-                              {teDhenat.perdoruesi && teDhenat.perdoruesi.emri}
-                            </strong>{" "}
-                            -
-                            <small
-                              style={{
-                                fontSize: "0.85em",
-                                fontStyle: "italic",
-                              }}>
-                              {" "}
-                              {/* Smaller, italic text */}
-                              {teDhenat.rolet &&
-                                teDhenat.rolet
-                                  .filter((role) => role !== "User") // Exclude the "User" role
-                                  .map((role, index) => (
-                                    <span key={index}>
-                                      {role}
-                                      {index < teDhenat.rolet.length - 2
-                                        ? ", "
-                                        : ""}{" "}
-                                      {/* Add comma for separation */}
-                                    </span>
-                                  ))}
-                            </small>
+        <MDBCollapse navbar show={showNav}>
+          <MDBNavbarNav className="d-flex align-items-center mb-2 mb-lg-0 mx-auto justify-content-center">
+            {token && roleBasedDropdowns
+              .filter(dropdown => dropdown.items.some(item => hasAccess(item.roles)))
+              .map((dropdown, index) => (
+                <MDBDropdown key={index} className="modern-dropdown mx-1">
+                  <MDBDropdownToggle ripple={false} className="nav-link-modern btn-transparent border-0 shadow-none">
+                    {dropdown.label} <ChevronDown size={14} />
+                  </MDBDropdownToggle>
+                  <MDBDropdownMenu className="flat-dropdown-menu">
+                    {dropdown.items
+                      .filter(item => hasAccess(item.roles))
+                      .map((item, itemIdx) => (
+                        <div key={itemIdx}>
+                          {/* Category header */}
+                          <div className="dropdown-category-header">
+                            {item.label}
                           </div>
-                        </Link>
-                      </MDBNavbarLink>
-                    </MDBNavbarItem>
+                          {/* All sub-items flat */}
+                          {item.subItems
+                            ?.filter(sub => sub.isDivider || hasAccess(sub.roles))
+                            .map((sub, sIndex) => {
+                              if (sub.isDivider) return <hr key={sIndex} className="dropdown-divider my-1" />;
+                              if (!sub.label) return null;
+                              return (
+                                <Link key={sIndex} to={sub.path} className="dropdown-item">
+                                  {sub.label}
+                                </Link>
+                              );
+                            }).filter(Boolean)}
+                          {/* Divider between categories (not after the last one) */}
+                          {itemIdx < dropdown.items.filter(i => hasAccess(i.roles)).length - 1 && (
+                            <hr className="dropdown-divider my-2" />
+                          )}
+                        </div>
+                      ))}
+                  </MDBDropdownMenu>
+                </MDBDropdown>
+              ))}
 
-                    <MDBNavbarItem>
-                      <MDBNavbarLink>
-                        <Link to="/Login" onClick={handleSignOut}>
-                          Sign out <FontAwesomeIcon icon={faRightFromBracket} />
-                        </Link>
-                      </MDBNavbarLink>
-                    </MDBNavbarItem>
-                  </>
-                )}
-                {!token && (
-                  <>
-                    <MDBNavbarItem>
-                      <MDBNavbarLink>
-                        <Link to="/LogIn">
-                          Sign in <FontAwesomeIcon icon={faRightToBracket} />
-                        </Link>
-                      </MDBNavbarLink>
-                    </MDBNavbarItem>
-                    <MDBNavbarItem>
-                      <MDBNavbarLink>
-                        <Link to="/SignUp">
-                          Sign up <FontAwesomeIcon icon={faUserPlus} />
-                        </Link>
-                      </MDBNavbarLink>
-                    </MDBNavbarItem>
-                  </>
-                )}
-              </MDBNavbarNav>
-            </MDBNavbarNav>
-          </MDBCollapse>
-        </MDBContainer>
-      </MDBNavbar>
-    </>
+            {token && (
+              <MDBNavbarItem className="mx-1">
+                <MDBNavbarLink ripple={false} href="/ShikimiQmimeve" className="nav-link-modern">
+                  Çmimet
+                </MDBNavbarLink>
+              </MDBNavbarItem>
+            )}
+          </MDBNavbarNav>
+
+          <MDBNavbarNav className="ms-auto d-flex align-items-center gap-3">
+            {token ? (
+              <>
+                <Link to="/Dashboard" className="user-profile-nav ms-2">
+                  <div className="user-avatar-small">{userInitial}</div>
+                  <div className="user-info-text d-none d-xl-flex">
+                    <span className="user-name-top">
+                      {teDhenat?.perdoruesi?.emri || "Përdorues"}
+                    </span>
+                    <span className="user-role-badge">{primaryRole}</span>
+                  </div>
+                </Link>
+
+                <MDBNavbarItem className="list-unstyled">
+                  <MDBNavbarLink ripple={false} onClick={handleSignOut} className="sign-out-btn cursor-pointer">
+                    <LogOut size={20} />
+                  </MDBNavbarLink>
+                </MDBNavbarItem>
+              </>
+            ) : (
+              <Link to="/LogIn" className="nav-link-modern">
+                <LogIn size={18} /> Sign In
+              </Link>
+            )}
+          </MDBNavbarNav>
+        </MDBCollapse>
+      </MDBContainer>
+    </MDBNavbar>
   );
 }
 

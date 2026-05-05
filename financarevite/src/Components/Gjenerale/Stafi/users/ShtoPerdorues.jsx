@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
-import {
+import {
   Modal,
   Button,
   Tab,
@@ -16,18 +16,19 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Styles/costumStyles.css";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function ShtoPerdorues(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [emri, setEmri] = useState(null);
   const [mbiemri, setMbiemri] = useState(null);
   const [dataFillimitKontrates, setDataFillimitKontrates] = useState(null);
-  const [dataMbarimitKontrates, setDataMbarimitKontrates] =  useState(null);
+  const [dataMbarimitKontrates, setDataMbarimitKontrates] = useState(null);
   const [nrLeternjoftimit, setNrLeternjoftimit] = useState("1122334455");
   const [pagaBruto, setPagaBruto] = useState(99999.99);
   const [adresa, setAdresa] = useState("P.A.");
-  const [dataLindjes, setDataLindjes] =  useState(null);
+  const [dataLindjes, setDataLindjes] = useState(null);
   const [nrKontaktit, setNrKontaktit] = useState("+38344123456");
   const [emailPrivat, setEmailPrivat] = useState("email@domain.com");
   const [profesioni, setProfesioni] = useState("P.P.");
@@ -72,13 +73,7 @@ function ShtoPerdorues(props) {
   const [optionsSelected, setOptionsSelected] = useState(null);
   const [optionsRolet, setOptionsRolet] = useState([]);
   const [optionsSelectedRolet, setOptionsSelectedRolet] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
       .get(
         `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
@@ -156,8 +151,7 @@ function ShtoPerdorues(props) {
       props.shfaqmesazhin();
     } else {
       const gjeneroTeDhenatPerHyrje = await axios.get(
-        `${API_BASE_URL}/api/Perdoruesi/GjeneroTeDhenatPerHyrje?e=${emri}&m=${mbiemri}&domain=${
-          teDhenatBiznesit && teDhenatBiznesit.emailDomain
+        `${API_BASE_URL}/api/Perdoruesi/GjeneroTeDhenatPerHyrje?e=${emri}&m=${mbiemri}&domain=${teDhenatBiznesit && teDhenatBiznesit.emailDomain
         }`,
         authentikimi
       );
@@ -238,19 +232,16 @@ function ShtoPerdorues(props) {
             props.largo();
             props.setPershkrimiMesazhit(
               "<strong>Llogaria u krijua me sukses</strong>" +
-                "<br> </br>" +
-                `<p><strong>Email:</strong> ${
-                  gjeneroTeDhenatPerHyrje &&
-                  gjeneroTeDhenatPerHyrje.data.emailGjeneruar
-                }</p>` +
-                `<p><strong>Username:</strong> ${
-                  gjeneroTeDhenatPerHyrje &&
-                  gjeneroTeDhenatPerHyrje.data.usernameGjeneruar
-                }</p>` +
-                `<p><strong>Password:</strong> ${
-                  gjeneroTeDhenatPerHyrje &&
-                  gjeneroTeDhenatPerHyrje.data.passwordiGjeneruar
-                }</p>`
+              "<br> </br>" +
+              `<p><strong>Email:</strong> ${gjeneroTeDhenatPerHyrje &&
+              gjeneroTeDhenatPerHyrje.data.emailGjeneruar
+              }</p>` +
+              `<p><strong>Username:</strong> ${gjeneroTeDhenatPerHyrje &&
+              gjeneroTeDhenatPerHyrje.data.usernameGjeneruar
+              }</p>` +
+              `<p><strong>Password:</strong> ${gjeneroTeDhenatPerHyrje &&
+              gjeneroTeDhenatPerHyrje.data.passwordiGjeneruar
+              }</p>`
             );
             props.setTipiMesazhit("success");
             props.shfaqmesazhin();
@@ -282,220 +273,306 @@ function ShtoPerdorues(props) {
         setTipiMesazhit={(e) => props.setTipiMesazhit(e)}
         setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
       />
-      <Modal size="lg" show={true} onHide={() => props.largo()}>
+      <Modal size="lg" show={true} onHide={() => props.largo()} className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Shto Perdoruesin</Modal.Title>
+          <Modal.Title>Shto Përdoruesin</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Tabs
             id="shenime-tabs"
             activeKey={key}
             onSelect={(k) => setKey(k)}
-            className="mb-3">
-            {/* Shënimet Kryesore */}
+            className="sp-tabs mb-4">
             <Tab eventKey="kryesore" title="Shënimet Kryesore">
-              <Form>
-                <Form.Group className="mb-3" controlId="emriBiznesit">
-                  <Row>
-                    <Col>
-                      <Form.Label>Emri</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Filan"
-                        onChange={(e) => setEmri(e.target.value)}
-                      />
+              <div className="sp-form-container p-2">
+                <Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Emri <span className="text-danger">*</span></label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Filan"
+                          onChange={(e) => setEmri(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Mbiemri</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Fisteku"
-                        onChange={(e) => setMbiemri(e.target.value)}
-                      />
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Mbiemri <span className="text-danger">*</span></label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Fisteku"
+                          onChange={(e) => setMbiemri(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
 
-                <Form.Group className="mb-3" controlId="adresa">
-                  <Row>
-                    <Col>
-                      <Form.Label>Data e fillimit te kontrates</Form.Label>
-                      <DatePicker
-                        selected={dataFillimitKontrates}
-                        onChange={setDataFillimitKontrates}
-                        dateFormat="dd/MM/yyyy"
-                        className="custom-datepicker"
-                        popperClassName="custom-datepicker-popper"
-                        maxDate={dataMbarimitKontrates}
-                      />
+                  <Row className="g-4 mb-3">
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Fillimi i Kontratës</label>
+                        <div className="sp-datepicker-wrapper">
+                          <DatePicker
+                            selected={dataFillimitKontrates}
+                            onChange={setDataFillimitKontrates}
+                            dateFormat="dd/MM/yyyy"
+                            className="sp-input w-100"
+                            popperClassName="sp-datepicker-popper"
+                            maxDate={dataMbarimitKontrates}
+                            placeholderText="Zgjedh datën"
+                          />
+                        </div>
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Data e mbarimit te kontrates</Form.Label>
-                      <DatePicker
-                        selected={dataMbarimitKontrates}
-                        onChange={setDataMbarimitKontrates}
-                        dateFormat="dd/MM/yyyy"
-                        className="custom-datepicker"
-                        popperClassName="custom-datepicker-popper"
-                        minDate={dataFillimitKontrates}
-                      />
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Mbarimi i Kontratës</label>
+                        <div className="sp-datepicker-wrapper">
+                          <DatePicker
+                            selected={dataMbarimitKontrates}
+                            onChange={setDataMbarimitKontrates}
+                            dateFormat="dd/MM/yyyy"
+                            className="sp-input w-100"
+                            popperClassName="sp-datepicker-popper"
+                            minDate={dataFillimitKontrates}
+                            placeholderText="Zgjedh datën"
+                          />
+                        </div>
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="adresa">
-                  <Row>
-                    <Col>
-                      <Form.Label>Nr. Leternjoftimit</Form.Label>
-                      <Form.Control
-                        type="number"
-                        placeholder="1173127843"
-                        onChange={(e) => setNrLeternjoftimit(e.target.value)}
-                      />
+
+                  <Row className="g-4 mb-1">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Letërnjoftimit</label>
+                        <Form.Control
+                          type="number"
+                          placeholder="1173127843"
+                          onChange={(e) => setNrLeternjoftimit(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Paga Bruto</Form.Label>
-                      <InputGroup className="mb-3">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Paga Bruto (€)</label>
                         <Form.Control
                           type="number"
                           placeholder="750.00"
                           onChange={(e) => setPagaBruto(e.target.value)}
+                          className="sp-input"
                         />
-                        <InputGroup.Text id="basic-addon2">€</InputGroup.Text>
-                      </InputGroup>
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Pozita</Form.Label>
-                      <Select
-                        value={optionsSelectedRolet}
-                        onChange={handleChangeRolet}
-                        options={optionsRolet}
-                        id="produktiSelect" // Setting the id attribute
-                        inputId="produktiSelect-input" // Setting the input id attribute
-                        styles={customStyles}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Pozita / Roli <span className="text-danger">*</span></label>
+                        <div className="sp-select-container">
+                          <Select
+                            value={optionsSelectedRolet}
+                            onChange={handleChangeRolet}
+                            options={optionsRolet}
+                            styles={{
+                              control: (base) => ({
+                                ...base,
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderRadius: '8px',
+                                color: 'white'
+                              }),
+                              menu: (base) => ({
+                                ...base,
+                                background: '#1a1d21',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }),
+                              option: (base, state) => ({
+                                ...base,
+                                background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                color: 'white'
+                              }),
+                              singleValue: (base) => ({
+                                ...base,
+                                color: 'white'
+                              })
+                            }}
+                          />
+                        </div>
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-              </Form>
+                </Form>
+              </div>
             </Tab>
 
-            {/* Shënimet Ndihmëse */}
             <Tab eventKey="ndihmese" title="Shënimet Ndihmëse">
-              <Form>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>Adresa</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Rr. B, Lagjja Kalabria, Nr. 56, 10000 Prishtina, Kosovo"
-                        onChange={(e) => setAdresa(e.target.value)}
-                      />
+              <div className="sp-form-container p-2">
+                <Form>
+                  <Row className="g-4 mb-3">
+                    <Col md="8">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Adresa</label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Rr. B, Lagjja Kalabria..."
+                          onChange={(e) => setAdresa(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Datelindja</Form.Label>
-                      <br />
-                      <DatePicker
-                        selected={dataLindjes}
-                        onChange={setDataLindjes}
-                        dateFormat="dd/MM/yyyy"
-                        className="custom-datepicker"
-                        popperClassName="custom-datepicker-popper"
-                      />
-                    </Col>
-                  </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>Nr. Kontaktit</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="+38344111222"
-                        onChange={(e) => setNrKontaktit(e.target.value)}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Email Privat</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="example@email.com"
-                        onChange={(e) => setEmailPrivat(e.target.value)}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Datëlindja</label>
+                        <div className="sp-datepicker-wrapper">
+                          <DatePicker
+                            selected={dataLindjes}
+                            onChange={setDataLindjes}
+                            dateFormat="dd/MM/yyyy"
+                            className="sp-input w-100"
+                            popperClassName="sp-datepicker-popper"
+                            placeholderText="Zgjedh datën"
+                          />
+                        </div>
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>Profesioni</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Menaxher Dyqani"
-                        onChange={(e) => setProfesioni(e.target.value)}
-                      />
+
+                  <Row className="g-4 mb-3">
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Kontaktit</label>
+                        <Form.Control
+                          type="text"
+                          placeholder="+383 44 111 222"
+                          onChange={(e) => setNrKontaktit(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Specializimi</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Menaxhim në Shitje me Pakicë"
-                        onChange={(e) => setSpecializimi(e.target.value)}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Label>Kualifikimi</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Diplomë në Menaxhim Biznesi, Certifikim në Operacione të Shitjes me Pakicë"
-                        onChange={(e) => setKualifikimi(e.target.value)}
-                      />
+                    <Col md="6">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Email Privat</label>
+                        <Form.Control
+                          type="email"
+                          placeholder="example@email.com"
+                          onChange={(e) => setEmailPrivat(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="nui">
-                  <Row>
-                    <Col>
-                      <Form.Label>Banka</Form.Label>
-                      <Select
-                        value={optionsSelected}
-                        onChange={handleChangeBanka}
-                        options={options}
-                        id="produktiSelect" // Setting the id attribute
-                        inputId="produktiSelect-input" // Setting the input id attribute
-                        styles={customStyles}
-                      />
+
+                  <Row className="g-4 mb-3">
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Profesioni</label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Menaxher"
+                          onChange={(e) => setProfesioni(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Nr. Llogaris Bankare</Form.Label>
-                      <Form.Control
-                        type="number"
-                        placeholder="1300001500005275"
-                        onChange={(e) => setNrLlogarisBankare(e.target.value)}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Specializimi</label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Sales Assistant"
+                          onChange={(e) => setSpecializimi(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
-                    <Col>
-                      <Form.Label>Statusi Puntorit</Form.Label>
-                      <Form.Check // prettier-ignore
-                        type="checkbox"
-                        id={`eshtePuntorAktiv`}
-                        label="Eshte puntor aktiv"
-                        checked={eshtePuntorAktiv}
-                        onChange={(e) => setEshtePuntorAktiv(e.target.checked)}
-                      />
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Kualifikimi</label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Diplomë..."
+                          onChange={(e) => setKualifikimi(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
                     </Col>
                   </Row>
-                </Form.Group>
-              </Form>
+
+                  <Row className="g-4 align-items-end">
+                    <Col md="5">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Banka</label>
+                        <div className="sp-select-container">
+                          <Select
+                            value={optionsSelected}
+                            onChange={handleChangeBanka}
+                            options={options}
+                            styles={{
+                              control: (base) => ({
+                                ...base,
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderRadius: '8px',
+                                color: 'white'
+                              }),
+                              menu: (base) => ({
+                                ...base,
+                                background: '#1a1d21',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }),
+                              option: (base, state) => ({
+                                ...base,
+                                background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                color: 'white'
+                              }),
+                              singleValue: (base) => ({
+                                ...base,
+                                color: 'white'
+                              })
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md="4">
+                      <div className="sp-input-group">
+                        <label className="sp-label">Nr. Llogarisë Bankare</label>
+                        <Form.Control
+                          type="number"
+                          placeholder="13000..."
+                          onChange={(e) => setNrLlogarisBankare(e.target.value)}
+                          className="sp-input"
+                        />
+                      </div>
+                    </Col>
+                    <Col md="3">
+                      <div className="sp-input-group pb-2">
+                        <Form.Check
+                          type="checkbox"
+                          id="eshtePuntorAktiv"
+                          label="Punëtor Aktiv"
+                          className="sp-checkbox-custom"
+                          checked={eshtePuntorAktiv}
+                          onChange={(e) => setEshtePuntorAktiv(e.target.checked)}
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
             </Tab>
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.largo()}>
-            Anulo <FontAwesomeIcon icon={faXmark} />
+          <Button className="btn-cancel" onClick={() => props.largo()}>
+            Anulo
           </Button>
-          <Button className="Butoni" onClick={CreateAcc}>
-            Shto Perdoruesin <FontAwesomeIcon icon={faPenToSquare} />
+          <Button className="btn-save px-4" onClick={CreateAcc}>
+            Shto Përdoruesin
           </Button>
         </Modal.Footer>
       </Modal>

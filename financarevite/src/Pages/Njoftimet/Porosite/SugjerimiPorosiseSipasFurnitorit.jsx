@@ -1,23 +1,61 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import axios from "axios";
 import Select from "react-select";
+import { Modal, Button } from "react-bootstrap";
 import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Spinner,
-  Table,
-  Badge,
-  Alert,
-  Form,
-  Modal,
-  Button,
-} from "react-bootstrap";
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  AlertTriangle,
+  Package,
+  Truck,
+  CheckCircle,
+  XCircle
+} from "lucide-react";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import "../../../Pages/Styles/SugjerimiPorosise.css";
 
+/* â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function LevelBadge({ level }) {
+  const icons = {
+    CRITICAL: <AlertTriangle size={10} />,
+    HIGH: <AlertTriangle size={10} />,
+    MEDIUM: <Package size={10} />,
+    LOW: <CheckCircle size={10} />,
+    OK: <CheckCircle size={10} />,
+  };
+  const labels = {
+    CRITICAL: "KRITIKE",
+    HIGH: "E LARTÇ‹",
+    MEDIUM: "MESME",
+    LOW: "E ULÇ‹T",
+    OK: "OK",
+  };
+  return (
+    <span className={`sp-level sp-level-${level || "OK"}`}>
+      {icons[level] || null}
+      {labels[level] || level || "â€”"}
+    </span>
+  );
+}
+
+function TrendBadge({ trending }) {
+  if (trending === true)
+    return <span className="sp-trend up"><TrendingUp size={13} /> Në rritje</span>;
+  if (trending === false)
+    return <span className="sp-trend down"><TrendingDown size={13} /> Në rënie</span>;
+  return <span className="sp-trend flat"><Minus size={13} /> Stabile</span>;
+}
+
+function stockClass(stock, avgWeekly) {
+  if (stock <= 0) return "sp-stock-danger";
+  if (stock < avgWeekly) return "sp-stock-low";
+  return "sp-stock-ok";
+}
+
+/* â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function SugjerimiPorosiseSipasFurnitorit() {
   const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || "https://localhost:7285";
@@ -25,19 +63,19 @@ function SugjerimiPorosiseSipasFurnitorit() {
   const [furnitoret, setFurnitoret] = useState([]);
   const [selectedFurnitor, setSelectedFurnitor] = useState(null);
   const [produktetOrigjinale, setProduktetOrigjinale] = useState([]);
-  const [produktet, setProduktet] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingFurnitoret, setLoadingFurnitoret] = useState(true);
   const [loadingProduktet, setLoadingProduktet] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-  // Modal state
+  // Modal
   const [showModal, setShowModal] = useState(false);
   const [selectedProduktDetaje, setSelectedProduktDetaje] = useState(null);
 
   const token = localStorage.getItem("token");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
 
-  // Ngarko furnitorët
+  // Load suppliers
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`, auth)
@@ -46,28 +84,22 @@ function SugjerimiPorosiseSipasFurnitorit() {
           .filter((f) => ![1, 2, 3].includes(f.idPartneri))
           .map((f) => ({
             value: f.idPartneri,
-            label: `${f.emriBiznesit} ${
-              f.shkurtesaPartnerit ? `(${f.shkurtesaPartnerit})` : ""
-            }`.trim(),
+            label: `${f.emriBiznesit}${f.shkurtesaPartnerit ? ` (${f.shkurtesaPartnerit})` : ""}`.trim(),
           }));
         setFurnitoret(options);
         setLoadingFurnitoret(false);
       })
-      .catch((err) => {
-        console.error("Gabim në ngarkimin e furnitorëve:", err);
-        setLoadingFurnitoret(false);
-      });
+      .catch(() => setLoadingFurnitoret(false));
   }, []);
 
-  // Ngarko produktet për furnitorin
+  // Load products for selected supplier
   useEffect(() => {
     if (!selectedFurnitor) {
       setProduktetOrigjinale([]);
-      setProduktet([]);
       return;
     }
-
     setLoadingProduktet(true);
+    setProgress(0);
 
     axios
       .get(`${API_BASE_URL}/api/Produkti/ProduktetPerKalkulim`, auth)
@@ -75,66 +107,79 @@ function SugjerimiPorosiseSipasFurnitorit() {
         const produktetEFurnitorit = res.data.filter(
           (p) => p.idPartneri === selectedFurnitor.value
         );
+        const totalItems = produktetEFurnitorit.length;
+        if (totalItems === 0) {
+          setProduktetOrigjinale([]);
+          setLoadingProduktet(false);
+          return;
+        }
 
-        const sugjerimet = await Promise.all(
-          produktetEFurnitorit.map(async (p) => {
-            try {
-              const sug = await axios.post(
-                `${API_BASE_URL}/api/Njoftimet/suggest-order/${p.produktiID}`,
-                {
-                  leadTimeWeeks: 1,
-                  desiredWeeksCoverage: 2,
-                  safetyStockWeeks: 1,
-                },
-                auth
-              );
-              return { ...p, suggestion: sug.data };
-            } catch {
-              return {
-                ...p,
-                suggestion: {
-                  currentStock: p.stokuAktual || 0,
-                  averageWeeklySales: 0,
-                  recommendedOrderQuantity: 0,
-                  currentWeeksCoverage: 0,
-                  projectedWeeksCoverage: 0,
-                  message: "Gabim në llogaritje",
-                  moq: 0,
-                  packSize: 1,
-                  lastPurchasePrice: 0,
-                  lastSupplier: selectedFurnitor.label,
-                },
-              };
-            }
-          })
+        const chunkSize = 100;
+        let sugjerimetArray = [];
+
+        for (let i = 0; i < totalItems; i += chunkSize) {
+          const chunk = produktetEFurnitorit.slice(i, i + chunkSize);
+          const sugjerimetChunk = await Promise.all(
+            chunk.map(async (p) => {
+              try {
+                const sug = await axios.post(
+                  `${API_BASE_URL}/api/Njoftimet/suggest-order/${p.produktiID}`,
+                  { leadTimeWeeks: 1, desiredWeeksCoverage: 2, safetyStockWeeks: 1 },
+                  auth
+                );
+                return { ...p, suggestion: sug.data };
+              } catch {
+                return {
+                  ...p,
+                  suggestion: {
+                    currentStock: p.stokuAktual || 0,
+                    averageWeeklySales: 0,
+                    recommendedOrderQuantity: 0,
+                    currentWeeksCoverage: 0,
+                    projectedWeeksCoverage: 0,
+                    message: "Gabim në llogaritje",
+                    moq: 0,
+                    packSize: 1,
+                    lastPurchasePrice: 0,
+                    lastSupplier: selectedFurnitor.label,
+                    suggestionLevel: "OK",
+                    isOutOfStock: false,
+                    isSalesTrendingUp: null,
+                  },
+                };
+              }
+            })
+          );
+          sugjerimetArray.push(...sugjerimetChunk);
+          setProgress(Math.round(((i + chunk.length) / totalItems) * 100));
+        }
+
+        // Sort: CRITICAL first, then HIGH, MEDIUM, LOW, OK, rest
+        const order = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3, OK: 4 };
+        sugjerimetArray.sort(
+          (a, b) =>
+            (order[a.suggestion?.suggestionLevel] ?? 5) -
+            (order[b.suggestion?.suggestionLevel] ?? 5)
         );
 
-        setProduktetOrigjinale(sugjerimet);
-        setProduktet(sugjerimet);
+        setProduktetOrigjinale(sugjerimetArray);
         setLoadingProduktet(false);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setProduktetOrigjinale([]);
-        setProduktet([]);
         setLoadingProduktet(false);
       });
   }, [selectedFurnitor]);
 
-  // Kërkimi live
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setProduktet(produktetOrigjinale);
-      return;
-    }
-
+  // Live search (memoized)
+  const produktet = useMemo(() => {
+    if (!searchTerm.trim()) return produktetOrigjinale;
     const term = searchTerm.toLowerCase();
-    const filtruar = produktetOrigjinale.filter(
+    return produktetOrigjinale.filter(
       (p) =>
-        p.barkodi.toLowerCase().includes(term) ||
-        p.emriProduktit.toLowerCase().includes(term)
+        (p.barkodi && p.barkodi.toLowerCase().includes(term)) ||
+        (p.emriProduktit && p.emriProduktit.toLowerCase().includes(term))
     );
-    setProduktet(filtruar);
   }, [searchTerm, produktetOrigjinale]);
 
   const handleFurnitorChange = (selected) => {
@@ -147,7 +192,48 @@ function SugjerimiPorosiseSipasFurnitorit() {
     setShowModal(true);
   };
 
-  const handleCloseModal = () => setShowModal(false);
+  // â”€â”€ Custom virtualizer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const ROW_HEIGHT = 52;
+  const OVERSCAN = 5;
+  const containerRef = useRef(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(500);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    setContainerHeight(el.clientHeight);
+    const onScroll = () => setScrollTop(el.scrollTop);
+    const onResize = () => setContainerHeight(el.clientHeight);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [produktet]);
+
+  const visibleRange = useMemo(() => {
+    const start = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
+    const end = Math.min(
+      produktet.length,
+      Math.ceil((scrollTop + containerHeight) / ROW_HEIGHT) + OVERSCAN
+    );
+    return { start, end };
+  }, [scrollTop, containerHeight, produktet.length]);
+
+  // â”€â”€ Week mode toggle (1 or 4 weeks) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const [weekMode, setWeekMode] = useState(4);
+
+  // Computes actual ORDER quantity needed to cover `weeks` weeks,
+  // accounting for current stock and rounded up to pack size.
+  const calcSugjerimi = useCallback((s, avgWeekly, weeks) => {
+    const packSize = s.packSize || 1;
+    const needed = avgWeekly * weeks - Math.max(0, s.currentStock ?? 0);
+    if (needed <= 0) return 0;
+    return Math.ceil(needed / packSize) * packSize;
+  }, []);
+
 
   return (
     <>
@@ -157,374 +243,346 @@ function SugjerimiPorosiseSipasFurnitorit() {
       />
       <NavBar />
 
-      <Container className="py-4 py-md-5">
-        <div className="text-center mb-5">
-          <h1 className="display-5 fw-bold text-primary mb-3">
-            Porosi javore dhe mujore sipas Furnitorit
-          </h1>
-          <p className="lead text-muted">
-            Zgjidh furnitorin, kërko produktet dhe kliko për detaje
-          </p>
-        </div>
+      <div className="sp-page">
+        <div className="sp-inner">
 
-        {/* Zgjidh Furnitorin */}
-        <Row className="justify-content-center mb-4">
-          <Col lg={8} xl={6}>
+          {/* Hero */}
+          <div className="sp-hero">
+            <h1>Sugjerim Porosie sipas Furnitorit</h1>
+            <p>Zgjidh furnitorin, kërko produktet dhe kliko rreshtin për detaje</p>
+          </div>
+
+          {/* Controls */}
+          <div className="sp-controls">
             <Select
+              className="sp-select"
+              classNamePrefix="sp-select"
               value={selectedFurnitor}
               onChange={handleFurnitorChange}
               options={furnitoret}
               placeholder="Zgjidh furnitorin..."
               isClearable
               isLoading={loadingFurnitoret}
-              className="shadow-sm"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: "12px",
-                  padding: "8px",
-                  fontSize: "1.1rem",
-                }),
-              }}
             />
-          </Col>
-
-          {/* Kërkimi */}
-          {selectedFurnitor && (
-            <Col lg={8} xl={6}>
-              <Form.Control
+            {selectedFurnitor && (
+              <input
+                className="sp-search"
                 type="text"
                 placeholder="Kërko me barkod ose emër produkti..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="shadow-sm"
-                style={{
-                  borderRadius: "12px",
-                  padding: "12px",
-                  fontSize: "1.1rem",
-                }}
                 autoFocus
               />
-            </Col>
-          )}
-        </Row>
-        {/* Loading */}
-        {loadingProduktet && (
-          <div className="text-center py-5">
-            <Spinner animation="border" variant="primary" size="lg" />
-            <p className="mt-4 fs-4 text-muted">
-              Duke llogaritur sugjerimet për të gjithë produktet...
-            </p>
+            )}
           </div>
-        )}
 
-        {/* Tabela */}
-        {selectedFurnitor && !loadingProduktet && produktet.length > 0 && (
-          <Card className="shadow border-0">
-            <Card.Header className="bg-primary text-white text-center py-4">
-              <h3 className="mb-0">
-                Sugjerime për: <strong>{selectedFurnitor.label}</strong>
-                {searchTerm && (
-                  <span className="ms-3 small opacity-90">
-                    (Rezultate për: "{searchTerm}")
+          {/* Loading progress */}
+          {loadingProduktet && (
+            <div className="sp-loading">
+              <h5>Duke llogaritur sugjerimet...</h5>
+              <div className="sp-progress-wrap">
+                <div className="sp-progress-bar" style={{ width: `${progress}%` }}>
+                  {progress > 10 ? `${progress}%` : ""}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Table */}
+          {selectedFurnitor && !loadingProduktet && produktet.length > 0 && (
+            <div className="sp-card">
+              <div className="sp-card-header">
+                <h3>
+                  <Truck size={16} style={{ marginRight: "0.5rem", opacity: 0.7 }} />
+                  {selectedFurnitor.label}
+                  <span style={{ fontWeight: 500, color: "var(--sp-text-muted)", marginLeft: "0.5rem", fontSize: "0.78rem" }}>
+                    Â· {produktet.length} produkte
                   </span>
-                )}
-              </h3>
-            </Card.Header>
-            <Card.Body className="p-0">
-              <div className="table-responsive">
-                <Table
-                  hover
-                  className="mb-0 align-middle"
-                  style={{ cursor: "pointer" }}>
-                  <thead className="table-light">
-                    <tr>
-                      <th>Barkodi</th>
-                      <th>Emri Produktit</th>
-                      <th className="text-center">Stoku Aktual</th>
-                      <th className="text-center">Shitje Javore</th>
-                      <th className="text-center text-success">Për 1 Javë</th>
-                      <th className="text-center text-success">Për 4 Javë</th>
-                      <th className="text-center text-primary">
-                        Sugjerim Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {produktet.map((p) => {
+                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  {searchTerm && (
+                    <span className="search-hint">Rezultate për: "{searchTerm}"</span>
+                  )}
+                  {/* Week mode toggle */}
+                  <div className="sp-week-toggle">
+                    <button
+                      className={`sp-week-btn${weekMode === 1 ? ' active' : ''}`}
+                      onClick={() => setWeekMode(1)}
+                    >
+                      1 Javë
+                    </button>
+                    <button
+                      className={`sp-week-btn${weekMode === 4 ? ' active' : ''}`}
+                      onClick={() => setWeekMode(4)}
+                    >
+                      4 Javë
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Virtualized table */}
+              <div className="sp-vtable-wrap">
+                {/* Sticky header */}
+                <div className="sp-vhead">
+                  <div className="sp-vcell sp-vcol-level">Niveli</div>
+                  <div className="sp-vcell sp-vcol-barcode">Barkodi</div>
+                  <div className="sp-vcell sp-vcol-name">Emri Produktit</div>
+                  <div className="sp-vcell sp-vcol-num" style={{ justifyContent: "flex-end" }}>Stoku</div>
+                  <div className="sp-vcell sp-vcol-num" style={{ justifyContent: "flex-end" }}>Shitje/Javë</div>
+                  <div className="sp-vcell sp-vcol-sug" style={{ justifyContent: "flex-end", color: 'var(--sp-emerald)' }}>Sugjerimi ({weekMode}j)</div>
+                  <div style={{ width: '8px', flexShrink: 0 }} />
+                </div>
+                {/* Scroll container */}
+                <div
+                  ref={containerRef}
+                  style={{ height: Math.min(produktet.length * ROW_HEIGHT, Math.floor(window.innerHeight * 0.6)), overflowY: 'auto', position: 'relative', scrollbarGutter: 'stable' }}
+                >
+                  {/* Total height spacer */}
+                  <div style={{ height: produktet.length * ROW_HEIGHT, position: 'relative' }}>
+                    {produktet.slice(visibleRange.start, visibleRange.end).map((p, i) => {
+                      const index = visibleRange.start + i;
                       const s = p.suggestion;
                       const avgWeekly = Math.round(s.averageWeeklySales || 0);
-                      const for1Week = avgWeekly;
-                      const for4Weeks = avgWeekly * 4;
-                      const recommended = Math.max(
-                        0,
-                        s.recommendedOrderQuantity || 0
-                      );
-
+                      const suggerimi = calcSugjerimi(s, avgWeekly, weekMode);
+                      const packSize = s.packSize || 1;
+                      const packs = packSize > 1 ? Math.ceil(suggerimi / packSize) : null;
                       return (
-                        <tr
+                        <div
                           key={p.produktiID}
-                          onClick={() => handleRowClick(p)}>
-                          <td>
-                            <Badge bg="secondary">{p.barkodi}</Badge>
-                          </td>
-                          <td className="fw-medium">{p.emriProduktit}</td>
-                          <td className="text-center">
-                            <span
-                              className={
-                                s.currentStock < avgWeekly
-                                  ? "text-danger fw-bold"
-                                  : ""
-                              }>
-                              {s.currentStock?.toLocaleString() || 0}
+                          style={{ position: 'absolute', top: index * ROW_HEIGHT, left: 0, right: 0, height: ROW_HEIGHT, display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                          className={`sp-vrow${index % 2 === 0 ? ' sp-vrow-even' : ''}`}
+                          onClick={() => handleRowClick(p)}
+                        >
+                          <div className="sp-vcell sp-vcol-level"><LevelBadge level={s.suggestionLevel} /></div>
+                          <div className="sp-vcell sp-vcol-barcode"><span className="sp-barcode">{p.barkodi}</span></div>
+                          <div className="sp-vcell sp-vcol-name">
+                            <span style={{ fontWeight: 600 }} title={p.emriProduktit}>{p.emriProduktit}</span>
+                            {s.isOutOfStock && <span className="sp-oos"><XCircle size={9} /> Jashtë stok</span>}
+                          </div>
+                          <div className="sp-vcell sp-vcol-num" style={{ justifyContent: 'flex-end' }}>
+                            <span className={stockClass(s.currentStock, avgWeekly)}>{(s.currentStock ?? 0).toLocaleString()}</span>
+                          </div>
+                          <div className="sp-vcell sp-vcol-num" style={{ justifyContent: 'flex-end', color: 'var(--sp-text-soft)' }}>{avgWeekly.toLocaleString()}</div>
+                          <div className="sp-vcell sp-vcol-sug" style={{ justifyContent: 'flex-end', flexDirection: 'column', alignItems: 'flex-end', gap: 0 }}>
+                            <span style={{ fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: suggerimi > 0 ? 'var(--sp-emerald)' : 'var(--sp-text-muted)', lineHeight: 1.2 }}>
+                              {suggerimi > 0 ? suggerimi.toLocaleString() : 'â€”'}
                             </span>
-                          </td>
-                          <td className="text-center">
-                            {avgWeekly.toLocaleString()}
-                          </td>
-                          <td className="text-center text-success fw-bold">
-                            {for1Week.toLocaleString()}
-                          </td>
-                          <td className="text-center text-success fw-bold">
-                            {for4Weeks.toLocaleString()}
-                          </td>
-                          <td className="text-center text-primary fw-bold">
-                            {recommended > 0
-                              ? recommended.toLocaleString()
-                              : "-"}
-                          </td>
-                        </tr>
+                            {packs && suggerimi > 0 && (
+                              <span style={{ fontSize: '0.65rem', color: 'var(--sp-text-muted)', lineHeight: 1.2 }}>
+                                {packs >= 1000 ? `${(packs / 1000).toFixed(1)}k` : packs} pako
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       );
                     })}
-                  </tbody>
-                </Table>
+                  </div>
+                </div>
               </div>
-            </Card.Body>
-          </Card>
-        )}
+            </div>
+          )}
 
-        {/* Modal për detaje */}
-        <Modal show={showModal} onHide={handleCloseModal} size="xl" centered>
-          {selectedProduktDetaje && (
+          {/* No search results */}
+          {selectedFurnitor && !loadingProduktet && searchTerm && produktet.length === 0 && (
+            <div className="sp-alert warning">
+              Nuk u gjet asnjë produkt për "<strong>{searchTerm}</strong>"
+            </div>
+          )}
+
+          {/* No products for supplier */}
+          {selectedFurnitor && !loadingProduktet && !searchTerm && produktet.length === 0 && (
+            <div className="sp-alert">
+              <strong>{selectedFurnitor.label}</strong> nuk ka produkte aktive.
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!selectedFurnitor && !loadingFurnitoret && (
+            <div className="sp-empty">
+              <Truck size={90} />
+              <h3>Zgjidh një furnitor për të parë sugjerimet</h3>
+              <p>Pas zgjedhjes, sistemi llogarit automatikisht nevojat e porosisë</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Detail modal */}
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        size="xl"
+        centered
+        className="sp-modal"
+      >
+        {selectedProduktDetaje && (() => {
+          const p = selectedProduktDetaje;
+          const s = p.suggestion;
+          const avgWeekly = Math.round(s.averageWeeklySales || 0);
+          const for1Week = avgWeekly;
+          const for4Weeks = avgWeekly * 4;
+          const recommended = Math.max(0, s.recommendedOrderQuantity || 0);
+          const packs1Week = s.packSize > 1 ? Math.ceil(for1Week / s.packSize) : 0;
+          const packs4Weeks = s.packSize > 1 ? Math.ceil(for4Weeks / s.packSize) : 0;
+          const packsRecommended = s.packSize > 1 ? Math.ceil(recommended / s.packSize) : 0;
+          const estimatedCost = recommended * (s.lastPurchasePrice || 0);
+
+          return (
             <>
-              <Modal.Header closeButton className="bg-primary text-white">
+              <Modal.Header closeButton>
                 <Modal.Title>
-                  {selectedProduktDetaje.emriProduktit}
+                  {p.emriProduktit}
+                  {s.isOutOfStock && <span className="sp-oos ms-2"><XCircle size={10} /> Jashtë Stok</span>}
                   <br />
-                  <small className="opacity-90">
-                    Barkodi: <strong>{selectedProduktDetaje.barkodi}</strong>
-                  </small>
+                  <small>{p.barkodi} &nbsp;Â·&nbsp; <LevelBadge level={s.suggestionLevel} /></small>
                 </Modal.Title>
               </Modal.Header>
-              <Modal.Body className="py-5">
-                {(() => {
-                  const p = selectedProduktDetaje;
-                  const s = p.suggestion;
-                  const avgWeekly = Math.round(s.averageWeeklySales || 0);
-                  const for1Week = avgWeekly;
-                  const for4Weeks = avgWeekly * 4;
-                  const recommended = Math.max(
-                    0,
-                    s.recommendedOrderQuantity || 0
-                  );
 
-                  const packs1Week =
-                    s.packSize > 1 ? Math.ceil(for1Week / s.packSize) : 0;
-                  const packs4Weeks =
-                    s.packSize > 1 ? Math.ceil(for4Weeks / s.packSize) : 0;
-                  const packsRecommended =
-                    s.packSize > 1 ? Math.ceil(recommended / s.packSize) : 0;
+              <Modal.Body>
+                {/* Stat cards */}
+                <div className="sp-stat-grid">
+                  <div className="sp-stat-card">
+                    <div className="label">Stoku Aktual</div>
+                    <div className={`value ${stockClass(s.currentStock, avgWeekly)}`}>
+                      {(s.currentStock ?? 0).toLocaleString()}
+                    </div>
+                    <div className="unit">copë</div>
+                  </div>
+                  <div className="sp-stat-card">
+                    <div className="label">Shitje / Javë</div>
+                    <div className="value" style={{ color: "var(--sp-cyan)" }}>
+                      {avgWeekly.toLocaleString()}
+                    </div>
+                    <div className="unit">
+                      <TrendBadge trending={s.isSalesTrendingUp} />
+                    </div>
+                  </div>
+                  <div className="sp-stat-card">
+                    <div className="label">Mbulim Aktual</div>
+                    <div className="value" style={{ color: s.currentWeeksCoverage < 1 ? "var(--sp-red)" : "var(--sp-text)" }}>
+                      {(s.currentWeeksCoverage ?? 0).toFixed(1)}
+                    </div>
+                    <div className="unit">javë mbulim</div>
+                  </div>
+                  <div className="sp-stat-card">
+                    <div className="label">Mbulim Pas Porosisë</div>
+                    <div className="value" style={{ color: "var(--sp-emerald)" }}>
+                      {(s.projectedWeeksCoverage ?? 0).toFixed(1)}
+                    </div>
+                    <div className="unit">javë mbulim</div>
+                  </div>
+                </div>
 
-                  return (
+                {/* Recommended total */}
+                <div className="sp-recommend-box">
+                  <div className="rec-label">Sugjerimi Inteligjent i Sistemit</div>
+                  <span className="rec-qty">
+                    {recommended > 0 ? recommended.toLocaleString() : "âœ“"}
+                  </span>
+                  {recommended > 0 ? (
                     <>
-                      {/* Header me emrin dhe barkodin */}
-                      <div className="text-center mb-5">
-                        <h2 className="fw-bold">{p.emriProduktit}</h2>
-                        <Badge bg="secondary" className="fs-5 px-4 py-2">
-                          {p.barkodi}
-                        </Badge>
-                      </div>
-
-                      {/* Statistikat kryesore */}
-                      <Row className="g-4 text-center mb-5">
-                        <Col xs={6} md={3}>
-                          <div className="bg-light rounded py-4 border">
-                            <p className="text-muted small mb-1">
-                              Stoku Aktual
-                            </p>
-                            <h3
-                              className={
-                                s.currentStock < avgWeekly
-                                  ? "text-danger"
-                                  : "text-dark"
-                              }>
-                              {s.currentStock?.toLocaleString() || 0}
-                            </h3>
-                            <small>copë</small>
-                          </div>
-                        </Col>
-                        <Col xs={6} md={3}>
-                          <div className="bg-light rounded py-4 border">
-                            <p className="text-muted small mb-1">
-                              Shitje Javore
-                            </p>
-                            <h3 className="text-primary">
-                              {avgWeekly.toLocaleString()}
-                            </h3>
-                            <small>copë/javë</small>
-                          </div>
-                        </Col>
-                        <Col xs={6} md={3}>
-                          <div className="bg-light rounded py-4 border">
-                            <p className="text-muted small mb-1">
-                              Mbulim Aktual
-                            </p>
-                            <h3>{s.currentWeeksCoverage.toFixed(1)}</h3>
-                            <small>javë</small>
-                          </div>
-                        </Col>
-                        <Col xs={6} md={3}>
-                          <div className="bg-light rounded py-4 border">
-                            <p className="text-muted small mb-1">
-                              Mbulim Pas Porosisë
-                            </p>
-                            <h3 className="text-success">
-                              {s.projectedWeeksCoverage.toFixed(1)}
-                            </h3>
-                            <small>javë</small>
-                          </div>
-                        </Col>
-                      </Row>
-
-                      {/* POROSITË – SHTESA KRYESORE E RE! */}
-                      <div className="text-center mb-5">
-                        <h3 className="fw-bold text-dark mb-4">
-                          Sasitë e Sugjeruara për Porosi
-                        </h3>
-                        <Row className="g-4 justify-content-center">
-                          {/* 1 Javë */}
-                          <Col xs={12} md={4}>
-                            <div className="border rounded-4 py-4 bg-success bg-opacity-10">
-                              <p className="text-success small fw-bold mb-2">
-                                PËR 1 JAVË
-                              </p>
-                              <h1 className="text-success fw-bold">
-                                {for1Week.toLocaleString()} copë
-                              </h1>
-                              {packs1Week > 0 && (
-                                <p className="text-success mb-0">
-                                  <strong>{packs1Week} pako</strong> ×{" "}
-                                  {s.packSize} copë/pako
-                                </p>
-                              )}
-                            </div>
-                          </Col>
-
-                          {/* 4 Javë (Mujore) */}
-                          <Col xs={12} md={4}>
-                            <div className="border rounded-4 py-4 bg-primary bg-opacity-10">
-                              <p className="text-primary small fw-bold mb-2">
-                                PËR 4 JAVË (MUJORE)
-                              </p>
-                              <h1 className="text-primary fw-bold">
-                                {for4Weeks.toLocaleString()} copë
-                              </h1>
-                              {packs4Weeks > 0 && (
-                                <p className="text-primary mb-0">
-                                  <strong>{packs4Weeks} pako</strong> ×{" "}
-                                  {s.packSize} copë/pako
-                                </p>
-                              )}
-                            </div>
-                          </Col>
-                        </Row>
-
-                        {/* Sugjerimi Total (i sistemit) */}
-                        <div className="mt-5 p-4 bg-primary text-white rounded-4">
-                          <p className="small mb-2 opacity-90">
-                            SUGJERIMI INTELIGJENT I SISTEMIT
-                          </p>
-                          <h1 className="fw-bold mb-2">
-                            {recommended > 0
-                              ? `${recommended.toLocaleString()} copë`
-                              : "STOK I MJAFTUESHËM"}
-                          </h1>
-                          {packsRecommended > 0 && (
-                            <h4 className="mb-0">
-                              <strong>{packsRecommended} pako</strong> ×{" "}
-                              {s.packSize} copë/pako
-                            </h4>
-                          )}
-                          <p className="lead mt-3 mb-0">{s.message}</p>
-                        </div>
-                      </div>
-
-                      {/* Info shtesë */}
-                      <div className="border-top pt-4 text-muted small">
-                        <Row>
-                          <Col md={6}>
-                            <strong>MOQ:</strong> {s.moq || 0} copë
-                            <br />
-                            <strong>Pako:</strong> {s.packSize || 1} copë/pako
-                            <br />
-                            <strong>Çmimi i fundit:</strong>{" "}
-                            {s.lastPurchasePrice || 0} €
-                          </Col>
-                          <Col md={6} className="text-md-end">
-                            <strong>Furnitori:</strong>{" "}
-                            {s.lastSupplier || selectedFurnitor.label}
-                          </Col>
-                        </Row>
-
-                        {s.dataQualityWarning && (
-                          <Alert variant="warning" className="mt-4 small">
-                            {s.dataQualityWarning}
-                          </Alert>
+                      <div className="rec-packs">
+                        {packsRecommended > 0 && (
+                          <span>{packsRecommended} pako Ç— {s.packSize} copë/pako &nbsp;Â·&nbsp; </span>
                         )}
+                        <span>copë</span>
                       </div>
+                      {s.lastPurchasePrice > 0 && (
+                        <div className="rec-packs" style={{ marginBottom: "0.4rem" }}>
+                          Kosto e vlerësuar: <strong>≈ {estimatedCost.toLocaleString("sq-AL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong>
+                        </div>
+                      )}
                     </>
-                  );
-                })()}
+                  ) : (
+                    <div className="rec-packs">STOK I MJAFTUESHÇ‹M</div>
+                  )}
+                  <div className="rec-msg">{s.message}</div>
+                </div>
+
+                {/* 1 week / 4 weeks */}
+                <div className="sp-order-grid">
+                  <div className="sp-order-box green">
+                    <div className="box-label">Për 1 Javë</div>
+                    <div className="box-qty">{for1Week.toLocaleString()}</div>
+                    <div className="box-packs">
+                      {packs1Week > 0
+                        ? `${packs1Week} pako Ç— ${s.packSize}`
+                        : "copë"}
+                    </div>
+                  </div>
+                  <div className="sp-order-box blue">
+                    <div className="box-label">Për 4 Javë (Mujore)</div>
+                    <div className="box-qty">{for4Weeks.toLocaleString()}</div>
+                    <div className="box-packs">
+                      {packs4Weeks > 0
+                        ? `${packs4Weeks} pako Ç— ${s.packSize}`
+                        : "copë"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Meta info */}
+                <div className="sp-meta">
+                  <div className="sp-meta-item">
+                    <div className="mi-label">MOQ</div>
+                    <div className="mi-value">{s.moq || 0} copë</div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Pako</div>
+                    <div className="mi-value">{s.packSize || 1} copë/pako</div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Çmimi i Fundit</div>
+                    <div className="mi-value">{s.lastPurchasePrice || 0} €</div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Furnitori</div>
+                    <div className="mi-value" style={{ fontFamily: "inherit", fontSize: "0.8rem" }}>
+                      {s.lastSupplier || selectedFurnitor?.label || "â€”"}
+                    </div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Blerja e Fundit</div>
+                    <div className="mi-value">{s.lastPurchaseDate ? new Date(s.lastPurchaseDate).toLocaleDateString("sq-AL") : "â€”"}</div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Periudha Analizës</div>
+                    <div className="mi-value" style={{ fontSize: "0.7rem" }}>{s.analysisPeriod || "â€”"}</div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Muaj me Shitje</div>
+                    <div className="mi-value">{s.monthsWithSales ?? "â€”"}</div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Trendi</div>
+                    <div className="mi-value" style={{ fontFamily: "inherit" }}>
+                      <TrendBadge trending={s.isSalesTrendingUp} />
+                    </div>
+                  </div>
+                  <div className="sp-meta-item">
+                    <div className="mi-label">Shitje Mujore</div>
+                    <div className="mi-value">{Math.round(s.averageMonthlySales || 0).toLocaleString()}</div>
+                  </div>
+                </div>
+
+                {s.dataQualityWarning && (
+                  <div className="sp-modal-warning">
+                    <AlertTriangle size={13} style={{ marginRight: "0.4rem" }} />
+                    {s.dataQualityWarning}
+                  </div>
+                )}
               </Modal.Body>
+
               <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseModal}>
+                <Button variant="secondary" onClick={() => setShowModal(false)}>
                   Mbyll
                 </Button>
               </Modal.Footer>
             </>
-          )}
-        </Modal>
-
-        {/* Asnjë rezultat */}
-        {selectedFurnitor &&
-          !loadingProduktet &&
-          searchTerm &&
-          produktet.length === 0 && (
-            <Alert variant="warning" className="text-center">
-              Nuk u gjet asnjë produkt për "<strong>{searchTerm}</strong>"
-            </Alert>
-          )}
-
-        {/* Asnjë produkt */}
-        {selectedFurnitor &&
-          !loadingProduktet &&
-          !searchTerm &&
-          produktet.length === 0 && (
-            <Alert variant="info" className="text-center">
-              <strong>{selectedFurnitor.label}</strong> nuk ka produkte aktive.
-            </Alert>
-          )}
-
-        {/* Empty state */}
-        {!selectedFurnitor && !loadingFurnitoret && (
-          <div className="text-center py-5">
-            <i className="bi bi-truck display-1 text-muted mb-4"></i>
-            <h3 className="text-muted">
-              Zgjidh një furnitor për të parë sugjerimet
-            </h3>
-          </div>
-        )}
-      </Container>
+          );
+        })()}
+      </Modal>
     </>
   );
 }

@@ -1,14 +1,66 @@
+﻿import { useState, useEffect, useMemo, useCallback } from "react";
+import axios from "axios";
+import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
+import { Col, Row, Card, Badge, Container, Tabs, Tab, Button } from "react-bootstrap";
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  Package,
+  Users,
+  BarChart3,
+  RefreshCw,
+  UserCheck,
+  Store,
+  Receipt,
+  Layers
+} from "lucide-react";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import ChartComponent from "../../../Components/TeTjera/Chart/ChartComponent";
+import Titulli from "../../../Components/TeTjera/Titulli";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { TailSpin } from "react-loader-spinner";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import "../../Styles/Statistika.css";
 import "../../Styles/DizajniPergjithshem.css";
-import Card from "react-bootstrap/Card";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
-import ChartComponent from "../../../Components/TeTjera/Chart/ChartComponent";
-import { Col, Row } from "react-bootstrap";
-import Titulli from "../../../Components/TeTjera/Titulli";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+
+const StatCard = ({ title, value, icon: Icon, color, trend, trendValue, delay }) => (
+  <Card className="stat-card-modern h-100" data-aos="fade-up" data-aos-delay={delay}>
+    <Card.Body>
+      <div className={`icon-box bg-${color}-subtle text-${color}`}>
+        <Icon size={24} />
+      </div>
+      <div className="kpi-label mb-1">{title}</div>
+      <h3 className="kpi-value mb-2">{value}</h3>
+      {trend && (
+        <div className={`trend-badge ${trend === "up" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"}`}>
+          {trend === "up" ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+          <span>{trendValue}</span>
+        </div>
+      )}
+    </Card.Body>
+  </Card>
+);
+
+const ComparisonCard = ({ title, value, compareValue, suffix, isCurrency, delay }) => {
+  const diff = value - compareValue;
+  const isPositive = diff >= 0;
+
+  return (
+    <Card className="stat-card-modern h-100" data-aos="fade-up" data-aos-delay={delay}>
+      <Card.Body>
+        <div className="kpi-label mb-1">{title}</div>
+        <h3 className="kpi-value mb-3">{isCurrency ? `${parseFloat(value || 0).toFixed(2)} €` : value}</h3>
+        <div className={`p-2 rounded-3 d-flex align-items-center gap-2 ${isPositive ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"}`} style={{ fontSize: "0.85rem" }}>
+          {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+          <span className="fw-bold">{Math.abs(diff).toFixed(isCurrency ? 2 : 0)}{isCurrency ? " €" : ""}</span>
+          <span className="opacity-75">{suffix}</span>
+        </div>
+      </Card.Body>
+    </Card>
+  );
+};
 
 function Statistika() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -18,728 +70,320 @@ function Statistika() {
   const [top15Produktet, setTop15Produktet] = useState([]);
   const [shitjetJavore, setShitjetJavore] = useState([]);
   const [shitjetMeParagon, setShitjetMeParagon] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
+
+  const fetchAllData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [
+        totaletRes,
+        bleresitRes,
+        biznesetRes,
+        produktetRes,
+        javoreRes,
+        paragonRes,
+      ] = await Promise.all([
+        axios.get(`${API_BASE_URL}/api/Statistikat/totaleTeNdryshme`, authentikimi),
+        axios.get(`${API_BASE_URL}/api/Statistikat/15BleresitQytetarMeSeShumtiBlerje`, authentikimi),
+        axios.get(`${API_BASE_URL}/api/Statistikat/15BleresitBiznesorMeSeShumtiBlerje`, authentikimi),
+        axios.get(`${API_BASE_URL}/api/Statistikat/15ProduktetMeTeShitura`, authentikimi),
+        axios.get(`${API_BASE_URL}/api/Statistikat/TotaletJavore`, authentikimi),
+        axios.get(`${API_BASE_URL}/api/Statistikat/ShitjetMeParagonSipasOperatorit`, authentikimi),
+      ]);
+
+      setTotaleTeNdryshme(totaletRes.data);
+      setTop15Bleresit(bleresitRes.data);
+      setTop15Bizneset(biznesetRes.data);
+      setTop15Produktet(produktetRes.data);
+      setShitjetJavore(javoreRes.data);
+      setShitjetMeParagon(paragonRes.data);
+    } catch (e) {
+      console.error("Error fetching statistics:", e);
+    } finally {
+      setLoading(false);
+    }
+  }, [API_BASE_URL, authentikimi]);
 
   useEffect(() => {
-    const vendosTotalinPerdoruesve = async () => {
-      try {
-        const totalet = await axios.get(
-          `${API_BASE_URL}/api/Statistikat/totaleTeNdryshme`,
-          authentikimi
-        );
-        setTotaleTeNdryshme(totalet.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+    fetchAllData();
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: "ease-out-quad"
+    });
+  }, [fetchAllData]);
 
-    const vendosTop15Bleresit = async () => {
-      try {
-        const bleresit = await axios.get(
-          `${API_BASE_URL}/api/Statistikat/15BleresitQytetarMeSeShumtiBlerje`,
-          authentikimi
-        );
-        setTop15Bleresit(bleresit.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+  const produktetData = useMemo(() => ({
+    labels: top15Produktet?.map((k) => k.produkti?.emriProduktit) || [],
+    datasets: [
+      {
+        label: "Sasia e Shitur",
+        data: top15Produktet?.map((k) => k.totaliPorosive) || [],
+        backgroundColor: "rgba(16, 185, 129, 0.7)",
+        borderColor: "#10b981",
+        borderRadius: 8,
+      },
+      {
+        label: "Vlera në €",
+        data: top15Produktet?.map((k) => parseFloat(k.totaliBlerjeve || 0).toFixed(2)) || [],
+        backgroundColor: "rgba(6, 182, 212, 0.7)",
+        borderColor: "#06b6d4",
+        borderRadius: 8,
+      },
+    ],
+  }), [top15Produktet]);
 
-    const vendosTop15Bizneset = async () => {
-      try {
-        const bleresit = await axios.get(
-          `${API_BASE_URL}/api/Statistikat/15BleresitBiznesorMeSeShumtiBlerje`,
-          authentikimi
-        );
-        setTop15Bizneset(bleresit.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+  const shitjetJavoreData = useMemo(() => ({
+    labels: shitjetJavore?.totaletDitore?.map((k) => {
+      const d = new Date(k.data);
+      const days = ["Dje", "Hën", "Mar", "Mër", "Enj", "Pre", "Sht"];
+      return days[d.getDay()];
+    }) || [],
+    datasets: [
+      {
+        label: "Shitjet €",
+        data: shitjetJavore?.totaletDitore?.map((k) => parseFloat(k.totaliShitjeveDitore || 0).toFixed(2)) || [],
+        borderColor: "#10b981",
+        backgroundColor: "rgba(16, 185, 129, 0.15)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointBackgroundColor: "#10b981",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+      },
+    ],
+  }), [shitjetJavore]);
 
-    const vendosTop15Produktet = async () => {
-      try {
-        const produktet = await axios.get(
-          `${API_BASE_URL}/api/Statistikat/15ProduktetMeTeShitura`,
-          authentikimi
-        );
-        setTop15Produktet(produktet.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+  const chartOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { color: '#f1f5f9' } },
+    },
+    scales: {
+      y: { grid: { display: false, color: 'rgba(255,255,255,0.05)' }, beginAtZero: true, ticks: { color: '#94a3b8' } },
+      x: { grid: { display: false, color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+    },
+  }), []);
 
-    const vendosShitjetJavore = async () => {
-      try {
-        const dita = await axios.get(
-          `${API_BASE_URL}/api/Statistikat/TotaletJavore`,
-          authentikimi
-        );
-        setShitjetJavore(dita.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+  const totalShitjeveGjithsej = parseFloat(
+    (totaleTeNdryshme?.totaliShitjeve || 0) +
+    (totaleTeNdryshme?.totaliShitjeveParagonEuro || 0)
+  ).toFixed(2);
 
-    const vendosShitjetMeParagon = async () => {
-      try {
-        const dita = await axios.get(
-          `${API_BASE_URL}/api/Statistikat/ShitjetMeParagonSipasOperatorit`,
-          authentikimi
-        );
-        setShitjetMeParagon(dita.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    vendosTotalinPerdoruesve();
-    vendosTop15Bleresit();
-    vendosTop15Produktet();
-    vendosTop15Bizneset();
-    vendosShitjetJavore();
-    vendosShitjetMeParagon();
-  }, []);
-
-  function shfaqDiten(data) {
-    const options = { weekday: "long" };
-    const dataAktuale = new Date(data);
-    const emriDites = dataAktuale.toLocaleDateString("sq-AL", options);
-
-    const shkronjatEPara = emriDites.slice(0, 3).toUpperCase();
-
-    const emriDitesIKonvertuar = shkronjatEPara + emriDites.slice(3);
-
-    return emriDitesIKonvertuar;
+  // ============================================================================
+  // Loading State
+  // ============================================================================
+  if (loading) {
+    return (
+      <div className="stat-dashboard-container">
+        <KontrolloAksesinNeFaqe roletELejuara={["Menaxher"]} />
+        <Titulli titulli={"Statistika | Dashboard"} />
+        <NavBar />
+        <Container className="py-4 d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
+          <div className="d-flex flex-column align-items-center gap-3">
+            <TailSpin height="60" width="60" color="#10b981" ariaLabel="tail-spin-loading" radius="1" visible={true} />
+            <span className="text-muted fw-bold">Duke ngarkuar të dhënat...</span>
+          </div>
+        </Container>
+      </div>
+    );
   }
 
-  const produktetData = {
-    labels:
-      top15Produktet && top15Produktet.map((k) => k.produkti.emriProduktit),
-    datasets: [
-      {
-        label: "Totali Porosive",
-        data: top15Produktet && top15Produktet.map((k) => k.totaliPorosive),
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        fill: false,
-      },
-      {
-        label: "Totali Shitjeve €",
-        data:
-          top15Produktet &&
-          top15Produktet.map((k) => parseFloat(k.totaliBlerjeve).toFixed(2)),
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  // Data for Weekly Sales Chart
-  const shitjetJavoreData = {
-    labels:
-      shitjetJavore &&
-      shitjetJavore.totaletDitore &&
-      shitjetJavore.totaletDitore.map((k) =>
-        new Date(k.data).toLocaleDateString("en-GB", { dateStyle: "short" })
-      ),
-    datasets: [
-      {
-        label: "Shitjet Ditore €",
-        data:
-          shitjetJavore &&
-          shitjetJavore.totaletDitore &&
-          shitjetJavore.totaletDitore.map((k) =>
-            parseFloat(k.totaliShitjeveDitore).toFixed(2)
-          ),
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
-        borderColor: "rgba(255, 99, 132, 1)",
-        fill: false,
-      },
-      {
-        label: "Porosite Ditore",
-        data:
-          shitjetJavore &&
-          shitjetJavore.totaletDitore &&
-          shitjetJavore.totaletDitore.map((k) => k.totaliPorosiveDitore),
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        fill: false,
-      },
-    ],
-  };
-
-  // Chart options (you can customize this further)
-  const chartOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
   return (
-    <>
-      <KontrolloAksesinNeFaqe
-        roletELejuara={["Menaxher"]}
-      />
-      <Titulli titulli={"Statistika"} />
+    <div className="stat-dashboard-container">
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher"]} />
+      <Titulli titulli={"Statistika | Dashboard"} />
       <NavBar />
-      <div className="containerDashboardP">
-        <h1 className="title">Statistikat e Dyqanit</h1>
-        <hr />
-        <h1 className="title">Statistikat e Pergjithshme</h1>
-        <div className="cardStatisitkat">
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Shitjeve</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {parseFloat(
-                    totaleTeNdryshme?.totaliShitjeve +
-                      totaleTeNdryshme?.totaliShitjeveParagonEuro
-                  ).toFixed(2)}{" "}
-                  €
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Produkteve</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {totaleTeNdryshme.totaliProdukteve}
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Bleresve Qytetar</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {totaleTeNdryshme.totaliKlient}
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Bleresve Biznesor</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {totaleTeNdryshme.totaliKlientBiznesi}
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
 
-        <div className="cardStatisitkat">
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Shitjeve me Fatura</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {parseFloat(totaleTeNdryshme.totaliShitjeve).toFixed(2)} €
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Porosive me Fatura</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {totaleTeNdryshme.totaliPorosive}
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Shitjeve me Paragon</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {parseFloat(
-                    totaleTeNdryshme?.totaliShitjeveParagonEuro
-                  ).toFixed(2)}{" "}
-                  €
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card className="KartaStatistikave" border="dark">
-            <Card.Header>Totali Paragonave</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {totaleTeNdryshme.totaliShitjeveParagon}
-                </span>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-        <hr />
-        <h1 className="title">Statistikat Ditore dhe Mujore</h1>
-        <div className="cardStatisitkat">
-          <Card
-            className="KartaStatistikave"
-            bg={
-              totaleTeNdryshme.totaliShitjeveSotme >
-              totaleTeNdryshme.totaliShitjeveDjeshme
-                ? "success"
-                : totaleTeNdryshme.totaliShitjeveDjeshme ===
-                  totaleTeNdryshme.totaliShitjeveSotme
-                ? "light"
-                : "danger"
-            }
-            text={
-              totaleTeNdryshme.totaliShitjeveSotme ===
-              totaleTeNdryshme.totaliShitjeveDjeshme
-                ? "dark"
-                : "white"
-            }>
-            <Card.Header>Totali Shitjev Sotme</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {parseFloat(totaleTeNdryshme.totaliShitjeveSotme).toFixed(2)}{" "}
-                  €
-                </span>
-                <p>
-                  {totaleTeNdryshme.totaliShitjeveSotme >
-                  totaleTeNdryshme.totaliShitjeveDjeshme
-                    ? (
-                        totaleTeNdryshme.totaliShitjeveSotme -
-                        totaleTeNdryshme.totaliShitjeveDjeshme
-                      ).toFixed(2) + "€ Shitje me shume se Dje"
-                    : totaleTeNdryshme.totaliShitjeveDjeshme ===
-                      totaleTeNdryshme.totaliShitjeveSotme
-                    ? "Njesoj si Dje"
-                    : (
-                        totaleTeNdryshme.totaliShitjeveDjeshme -
-                        totaleTeNdryshme.totaliShitjeveSotme
-                      ).toFixed(2) + "€ Shitje me pak se Dje"}
-                </p>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card
-            className="KartaStatistikave"
-            bg={
-              totaleTeNdryshme.totaliPorosiveSotme >
-              totaleTeNdryshme.totaliPorosiveDjeshme
-                ? "success"
-                : totaleTeNdryshme.totaliPorosiveDjeshme ===
-                  totaleTeNdryshme.totaliPorosiveSotme
-                ? "light"
-                : "danger"
-            }
-            text={
-              totaleTeNdryshme.totaliPorosiveSotme ===
-              totaleTeNdryshme.totaliPorosiveDjeshme
-                ? "dark"
-                : "white"
-            }>
-            <Card.Header>Totali Porosive Sotme</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {totaleTeNdryshme.totaliPorosiveSotme}
-                </span>
-                <p>
-                  {totaleTeNdryshme.totaliPorosiveSotme >
-                  totaleTeNdryshme.totaliPorosiveDjeshme
-                    ? totaleTeNdryshme.totaliPorosiveSotme -
-                      totaleTeNdryshme.totaliPorosiveDjeshme +
-                      " Porosi me shume se Dje"
-                    : totaleTeNdryshme.totaliPorosiveDjeshme ===
-                      totaleTeNdryshme.totaliPorosiveSotme
-                    ? "Njesoj si Dje"
-                    : totaleTeNdryshme.totaliPorosiveDjeshme -
-                      totaleTeNdryshme.totaliPorosiveSotme +
-                      " Porosi me pak se Dje"}
-                </p>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card
-            className=".KartaStatistikave"
-            bg={
-              totaleTeNdryshme.totaliShitjeveKeteMuaj >
-              totaleTeNdryshme.totaliShitjeveMuajinKaluar
-                ? "success"
-                : totaleTeNdryshme.totaliShitjeveMuajinKaluar ===
-                  totaleTeNdryshme.totaliShitjeveKeteMuaj
-                ? "light"
-                : "danger"
-            }
-            text={
-              totaleTeNdryshme.totaliShitjeveKeteMuaj ===
-              totaleTeNdryshme.totaliShitjeveMuajinKaluar
-                ? "dark"
-                : "white"
-            }>
-            <Card.Header>Totali Shitjev Kete muaj</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {parseFloat(totaleTeNdryshme.totaliShitjeveKeteMuaj).toFixed(
-                    2
-                  )}{" "}
-                  €
-                </span>
-                <p>
-                  {totaleTeNdryshme.totaliShitjeveKeteMuaj >
-                  totaleTeNdryshme.totaliShitjeveMuajinKaluar
-                    ? (
-                        totaleTeNdryshme.totaliShitjeveKeteMuaj -
-                        totaleTeNdryshme.totaliShitjeveMuajinKaluar
-                      ).toFixed(2) + "€ Shitje me shume se muajin e Kaluar"
-                    : totaleTeNdryshme.totaliShitjeveMuajinKaluar ===
-                      totaleTeNdryshme.totaliShitjeveKeteMuaj
-                    ? "Njesoj si muajin e kaluar"
-                    : (
-                        totaleTeNdryshme.totaliShitjeveMuajinKaluar -
-                        totaleTeNdryshme.totaliShitjeveKeteMuaj
-                      ).toFixed(2) + "€ Shitje me pak se muajin e Kaluar"}
-                </p>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card
-            className="KartaStatistikave"
-            bg={
-              totaleTeNdryshme.totaliPorosiveKeteMuaj >
-              totaleTeNdryshme.totaliPorosiveMuajinKaluar
-                ? "success"
-                : totaleTeNdryshme.totaliPorosiveMuajinKaluar ===
-                  totaleTeNdryshme.totaliPorosiveKeteMuaj
-                ? "light"
-                : "danger"
-            }
-            text={
-              totaleTeNdryshme.totaliPorosiveKeteMuaj ===
-              totaleTeNdryshme.totaliPorosiveMuajinKaluar
-                ? "dark"
-                : "white"
-            }>
-            <Card.Header>Totali Porosive Kete muaj</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <span className="TekstiStatistika">
-                  {totaleTeNdryshme.totaliPorosiveKeteMuaj}
-                </span>
-                <p>
-                  {totaleTeNdryshme.totaliPorosiveKeteMuaj >
-                  totaleTeNdryshme.totaliPorosiveMuajinKaluar
-                    ? totaleTeNdryshme.totaliPorosiveKeteMuaj -
-                      totaleTeNdryshme.totaliPorosiveMuajinKaluar +
-                      " Porosi me shume se muajin e Kaluar"
-                    : totaleTeNdryshme.totaliPorosiveMuajinKaluar ===
-                      totaleTeNdryshme.totaliPorosiveKeteMuaj
-                    ? "Njesoj si muajin e kaluar"
-                    : totaleTeNdryshme.totaliPorosiveMuajinKaluar -
-                      totaleTeNdryshme.totaliPorosiveKeteMuaj +
-                      " Porosi me pak se muajin e Kaluar"}
-                </p>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-        <div className="cardStatisitkat">
-          <Card border="dark">
-            <Card.Header>
-              Shitjet Ditore |{" "}
-              {new Date(shitjetMeParagon?.today).toLocaleDateString("en-GB", {
-                dateStyle: "short",
-              })}
-            </Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <MDBTable align="middle">
-                  <MDBTableHead>
-                    <tr>
-                      <th scope="col">Operatori</th>
-                      <th scope="col">Totali Paragonave</th>
-                      <th scope="col">Totali Shitjeve €</th>
-                    </tr>
-                  </MDBTableHead>
-                  <MDBTableBody>
-                    {shitjetMeParagon?.shitjetDitore?.shitjetDitoreSipasOperatorit.map(
-                      (k) => (
-                        <tr key={k?.stafi?.userID}>
-                          <td>{k?.stafi?.username}</td>
-                          <td>{k.numriBlerjeve}</td>
-                          <td>
-                            {parseFloat(k.totaliBlerjeveEuro).toFixed(2)} €
-                          </td>
-                        </tr>
-                      )
-                    )}
-                    <tr>
-                      <td>
-                        <strong>-</strong>
-                      </td>
-                      <td>
-                        <strong>
-                          {
-                            shitjetMeParagon?.shitjetDitore
-                              ?.shitjetDitoreParagon
-                          }
-                        </strong>
-                      </td>
-                      <td>
-                        <strong>
-                          {parseFloat(
-                            shitjetMeParagon?.shitjetDitore?.shitjetDitoreEuro
-                          ).toFixed(2)}{" "}
-                          €
-                        </strong>
-                      </td>
-                    </tr>
-                  </MDBTableBody>
-                </MDBTable>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card border="dark">
-            <Card.Header>
-              Shitjet Javore |{" "}
-              {new Date(shitjetMeParagon?.startOfWeek).toLocaleDateString(
-                "en-GB",
-                { dateStyle: "short" }
-              )}{" "}
-              -{" "}
-              {new Date(shitjetMeParagon?.endOfWeek).toLocaleDateString(
-                "en-GB",
-                { dateStyle: "short" }
-              )}
-            </Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <MDBTable align="middle">
-                  <MDBTableHead>
-                    <tr>
-                      <th scope="col">Operatori</th>
-                      <th scope="col">Totali Paragonave</th>
-                      <th scope="col">Totali Shitjeve €</th>
-                    </tr>
-                  </MDBTableHead>
-                  <MDBTableBody>
-                    {shitjetMeParagon?.shitjetJavore?.shitjetJavoreSipasOperatorit?.map(
-                      (k) => (
-                        <tr key={k?.stafi?.userID}>
-                          <td>{k?.stafi?.username}</td>
-                          <td>{k.numriBlerjeve}</td>
-                          <td>
-                            {parseFloat(k.totaliBlerjeveEuro).toFixed(2)} €
-                          </td>
-                        </tr>
-                      )
-                    )}
-                    <tr>
-                      <td>
-                        <strong>-</strong>
-                      </td>
-                      <td>
-                        <strong>
-                          {
-                            shitjetMeParagon?.shitjetJavore
-                              ?.shitjetJavoreParagon
-                          }
-                        </strong>
-                      </td>
-                      <td>
-                        <strong>
-                          {parseFloat(
-                            shitjetMeParagon?.shitjetJavore?.shitjetJavoreEuro
-                          ).toFixed(2)}{" "}
-                          €
-                        </strong>
-                      </td>
-                    </tr>
-                  </MDBTableBody>
-                </MDBTable>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card border="dark">
-            <Card.Header>
-              Shitjet Mujore |{" "}
-              {new Date(shitjetMeParagon?.startOfMonth).toLocaleDateString(
-                "en-GB",
-                { dateStyle: "short" }
-              )}{" "}
-              -{" "}
-              {new Date(shitjetMeParagon?.endOfMonth).toLocaleDateString(
-                "en-GB",
-                { dateStyle: "short" }
-              )}
-            </Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <MDBTable align="middle">
-                  <MDBTableHead>
-                    <tr>
-                      <th scope="col">Operatori</th>
-                      <th scope="col">Totali Paragonave</th>
-                      <th scope="col">Totali Shitjeve €</th>
-                    </tr>
-                  </MDBTableHead>
-                  <MDBTableBody>
-                    {shitjetMeParagon?.shitjetMujore?.shitjetMujoreSipasOperatorit?.map(
-                      (k) => (
-                        <tr key={k?.stafi?.userID}>
-                          <td>{k?.stafi?.username}</td>
-                          <td>{k.numriBlerjeve}</td>
-                          <td>
-                            {parseFloat(k.totaliBlerjeveEuro).toFixed(2)} €
-                          </td>
-                        </tr>
-                      )
-                    )}
-                    <tr>
-                      <td>
-                        <strong>-</strong>
-                      </td>
-                      <td>
-                        <strong>
-                          {
-                            shitjetMeParagon?.shitjetMujore
-                              ?.shitjetMujoreParagon
-                          }
-                        </strong>
-                      </td>
-                      <td>
-                        <strong>
-                          {parseFloat(
-                            shitjetMeParagon?.shitjetMujore?.shitjetMujoreEuro
-                          ).toFixed(2)}{" "}
-                          €
-                        </strong>
-                      </td>
-                    </tr>
-                  </MDBTableBody>
-                </MDBTable>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-        <hr />
-        <h1 className="title">Statistikat Tabelare</h1>
+      <Container className="py-4">
+        <header className="d-flex align-items-center justify-content-between mb-5 flex-wrap gap-3" data-aos="fade-down">
+          <div>
+            <h2 className="fw-bold text-white mb-1">Qendra e Statistikave</h2>
+            <p className="text-secondary mb-0">Monitoroni performancën në kohë reale.</p>
+          </div>
+          <Button variant="outline-light" className="btn-white shadow-sm rounded-pill px-4 d-flex align-items-center gap-2 py-2" onClick={fetchAllData}>
+            <RefreshCw size={18} className={loading ? "spin" : ""} />
+            Përditëso
+          </Button>
+        </header>
 
-        <div className="cardStatisitkat"></div>
-        <div className="cardStatisitkat">
-          <Card border="dark">
-            <Card.Header>
-              Bleresit Qytetar me se Shumti Blerje{" "}
-              <span style={{ fontStyle: "italic", fontWeight: "bold" }}>
-                (Nuk zbriten Kthimet)
-              </span>
-            </Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <MDBTable align="middle">
-                  <MDBTableHead>
-                    <tr>
-                      <th scope="col">Kartela Klientit</th>
-                      <th scope="col">Partneri</th>
-                      <th scope="col">Totali Blerjeve</th>
-                      <th scope="col">Shuma Totale Blerjes</th>
-                    </tr>
-                  </MDBTableHead>
-                  <MDBTableBody>
-                    {top15Bleresit.map((k) => (
-                      <tr key={k?.partneri?.kartela?.kodiKartela}>
-                        <td>{k?.partneri?.kartela?.kodiKartela}</td>
-                        <td>{k?.partneri?.emriBiznesit}</td>
-                        <td>{k?.numriBlerjeve}</td>
-                        <td>
-                          {parseFloat(k?.totaliBlerjeveEuro).toFixed(2)} €
-                        </td>
-                      </tr>
-                    ))}
-                  </MDBTableBody>
-                </MDBTable>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card border="dark">
-            <Card.Header>
-              Bizneset me se Shumti Blerje{" "}
-              <span style={{ fontStyle: "italic", fontWeight: "bold" }}>
-                (Nuk zbriten Flete Lejimet)
-              </span>
-            </Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <MDBTable align="middle">
-                  <MDBTableHead>
-                    <tr>
-                      <th scope="col">Partneri</th>
-                      <th scope="col">Totali Porosive</th>
-                      <th scope="col">Shuma Totale Porosive</th>
-                    </tr>
-                  </MDBTableHead>
-                  <MDBTableBody>
-                    {top15Bizneset.map((k) => (
-                      <tr key={k?.partneri?.idPartneri}>
-                        <td>{k?.partneri?.emriBiznesit}</td>
-                        <td>{k?.numriBlerjeve}</td>
-                        <td>
-                          {parseFloat(k?.totaliBlerjeveEuro).toFixed(2)} €
-                        </td>
-                      </tr>
-                    ))}
-                  </MDBTableBody>
-                </MDBTable>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-        <h1 className="title">Statistikat Charts</h1>
-        <Row className="mb-3">
-          <Col md="6">
-            {/* Card for Top 15 Products */}
-            <Card border="dark">
-              <Card.Header>Produktet me Te Shitura</Card.Header>
-              <Card.Body>
-                <ChartComponent
-                  chartType="bar"
-                  chartData={produktetData}
-                  chartOptions={chartOptions}
-                />
-              </Card.Body>
-            </Card>
-          </Col>
+        <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="custom-tabs mb-5 border-0" id="statistikat-tabs">
+          <Tab eventKey="overview" title={<div className="d-flex align-items-center gap-2"><Layers size={18} /> Përmbledhja</div>}>
+            <div className="mt-4">
+              <Row className="g-4 mb-5">
+                <Col lg={3} sm={6}>
+                  <StatCard title="Shitjet Totale" value={`${totalShitjeveGjithsej} €`} icon={DollarSign} color="primary" delay={0} />
+                </Col>
+                <Col lg={3} sm={6}>
+                  <StatCard title="Stoku Total" value={totaleTeNdryshme.totaliProdukteve} icon={Package} color="info" delay={100} />
+                </Col>
+                <Col lg={3} sm={6}>
+                  <StatCard title="Klientë" value={totaleTeNdryshme.totaliKlient} icon={Users} color="success" delay={200} />
+                </Col>
+                <Col lg={3} sm={6}>
+                  <StatCard title="Paragonë" value={totaleTeNdryshme.totaliShitjeveParagon} icon={Receipt} color="warning" delay={300} />
+                </Col>
+              </Row>
 
-          <Col md="6">
-            {/* Card for Weekly Sales */}
-            <Card border="dark">
-              <Card.Header>Statistikat Javore</Card.Header>
-              <Card.Body>
-                <ChartComponent
-                  chartType="line"
-                  chartData={shitjetJavoreData}
-                  chartOptions={chartOptions}
-                />
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    </>
+              <Row className="g-4 mb-5">
+                <Col lg={8} data-aos="fade-right">
+                  <Card className="stat-card-modern border-0">
+                    <Card.Body className="p-4">
+                      <div className="d-flex align-items-center justify-content-between mb-4">
+                        <h5 className="fw-bold mb-0 text-white">Trendi i Shitjeve Javore</h5>
+                        <Badge bg="primary-subtle" text="primary" className="rounded-pill px-3">7 Ditët e Fundit</Badge>
+                      </div>
+                      <div style={{ height: "350px" }}>
+                        <ChartComponent chartType="line" chartData={shitjetJavoreData} chartOptions={chartOptions} />
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col lg={4}>
+                  <h6 className="kpi-label mb-3 px-1">Performanca Ditore vs Mujore</h6>
+                  <div className="d-flex flex-column gap-3">
+                    <ComparisonCard
+                      title="Sot"
+                      value={totaleTeNdryshme.totaliShitjeveSotme}
+                      compareValue={totaleTeNdryshme.totaliShitjeveDjeshme}
+                      suffix="vs dje"
+                      isCurrency={true}
+                      delay={0}
+                    />
+                    <ComparisonCard
+                      title="Këtë Muaj"
+                      value={totaleTeNdryshme.totaliShitjeveKeteMuaj}
+                      compareValue={totaleTeNdryshme.totaliShitjeveMuajinKaluar}
+                      suffix="vs kaluar"
+                      isCurrency={true}
+                      delay={100}
+                    />
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </Tab>
+
+          <Tab eventKey="operations" title={<div className="d-flex align-items-center gap-2"><UserCheck size={18} /> Operimet</div>}>
+            <Row className="g-4 mt-2">
+              {[
+                { title: "Shitjet Ditore", data: shitjetMeParagon?.shitjetDitore, opKey: "shitjetDitoreSipasOperatorit", totalPar: "shitjetDitoreParagon", totalEur: "shitjetDitoreEuro" },
+                { title: "Shitjet Javore", data: shitjetMeParagon?.shitjetJavore, opKey: "shitjetJavoreSipasOperatorit", totalPar: "shitjetJavoreParagon", totalEur: "shitjetJavoreEuro" },
+                { title: "Shitjet Mujore", data: shitjetMeParagon?.shitjetMujore, opKey: "shitjetMujoreSipasOperatorit", totalPar: "shitjetMujoreParagon", totalEur: "shitjetMujoreEuro" }
+              ].map((period, idx) => (
+                <Col key={idx} lg={4} data-aos="zoom-in" data-aos-delay={idx * 100}>
+                  <Card className="stat-card-modern border-0">
+                    <Card.Header className="bg-transparent border-0 pt-4 px-4 pb-2">
+                      <h6 className="fw-bold text-white mb-0">{period.title}</h6>
+                    </Card.Header>
+                    <Card.Body className="p-0">
+                      <div className="premium-table-container">
+                        <MDBTable hover striped small className="mb-0 text-center">
+                          <MDBTableHead className="bg-light">
+                            <tr className="small text-muted text-uppercase">
+                              <th className="py-3">Stafi</th>
+                              <th className="py-3">Par.</th>
+                              <th className="py-3">Vlera</th>
+                            </tr>
+                          </MDBTableHead>
+                          <MDBTableBody>
+                            {period.data?.[period.opKey]?.map((k) => (
+                              <tr key={k?.stafi?.userID}>
+                                <td className="py-3 fw-semibold">{k?.stafi?.username}</td>
+                                <td className="py-3">{k.numriBlerjeve}</td>
+                                <td className="py-3 text-info fw-bold">{parseFloat(k.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
+                              </tr>
+                            ))}
+                            <tr className="table-light fw-bold border-top">
+                              <td className="py-3">TOTALI</td>
+                              <td className="py-3">{period.data?.[period.totalPar]}</td>
+                              <td className="py-3 text-danger">{parseFloat(period.data?.[period.totalEur] || 0).toFixed(2)} €</td>
+                            </tr>
+                          </MDBTableBody>
+                        </MDBTable>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Tab>
+
+          <Tab eventKey="insights" title={<div className="d-flex align-items-center gap-2"><BarChart3 size={18} /> Analitika</div>}>
+            <div className="mt-4">
+              <Row className="g-4 mb-5">
+                <Col lg={7} data-aos="fade-right">
+                  <Card className="stat-card-modern border-0">
+                    <Card.Body className="p-4">
+                      <h5 className="fw-bold mb-4 text-white">Top 15 Produktet më të Shitura</h5>
+                      <div style={{ height: "400px" }}>
+                        <ChartComponent chartType="bar" chartData={produktetData} chartOptions={chartOptions} />
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col lg={5}>
+                  <div className="d-flex flex-column gap-4">
+                    <Card className="stat-card-modern border-0" data-aos="fade-left">
+                      <Card.Header className="bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between">
+                        <h6 className="fw-bold mb-0 text-white">Top Blerësit Qytetarë</h6>
+                        <UserCheck size={18} className="text-info" />
+                      </Card.Header>
+                      <Card.Body className="p-4 pt-2">
+                        <div className="table-responsive" style={{ maxHeight: "300px" }}>
+                          <MDBTable hover small striped className="mb-0">
+                            <MDBTableBody>
+                              {top15Bleresit.slice(0, 8).map((k, i) => (
+                                <tr key={i} className="border-0">
+                                  <td className="border-0 py-2"><div className="fw-bold">{k?.partneri?.emriBiznesit}</div><small className="text-muted">{k?.partneri?.kartela?.kodiKartela || "Pa Kartelë"}</small></td>
+                                  <td className="border-0 text-end py-2 align-middle text-primary fw-bold">{parseFloat(k?.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
+                                </tr>
+                              ))}
+                            </MDBTableBody>
+                          </MDBTable>
+                        </div>
+                      </Card.Body>
+                    </Card>
+
+                    <Card className="stat-card-modern border-0" data-aos="fade-left" data-aos-delay="100">
+                      <Card.Header className="bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between">
+                        <h6 className="fw-bold mb-0 text-white">Partnerët Biznesorë Top</h6>
+                        <Store size={18} className="text-primary" />
+                      </Card.Header>
+                      <Card.Body className="p-4 pt-2">
+                        <div className="table-responsive" style={{ maxHeight: "300px" }}>
+                          <MDBTable hover small striped className="mb-0">
+                            <MDBTableBody>
+                              {top15Bizneset.slice(0, 8).map((k, i) => (
+                                <tr key={i} className="border-0">
+                                  <td className="border-0 py-2"><div className="fw-bold">{k?.partneri?.emriBiznesit}</div></td>
+                                  <td className="border-0 text-end py-2 align-middle text-primary fw-bold">{parseFloat(k?.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
+                                </tr>
+                              ))}
+                            </MDBTableBody>
+                          </MDBTable>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </Tab>
+        </Tabs>
+      </Container>
+    </div>
   );
 }
 

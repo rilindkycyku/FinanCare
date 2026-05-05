@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -14,7 +14,8 @@ import TeDhenatKalkulimit from "../../../Components/Materiali/Shitjet/KthimIMall
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function KthimIMallitTeBlere(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -68,12 +69,20 @@ function KthimIMallitTeBlere(props) {
     setMbyllFaturen(false);
   };
 
+  // Add these state variables at the top of your component
+  const [dataFillim, setDataFillim] = useState(
+    new Date().toISOString().split("T")[0] // Today
+  );
+  const [dataMbarim, setDataMbarim] = useState(
+    new Date().toISOString().split("T")[0] // Today
+  );
+
   useEffect(() => {
     const shfaqKalkulimet = async () => {
       try {
         setLoading(true);
         const kalkulimi = await axios.get(
-          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet`,
+          `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${dataFillim}&dataMbarim=${dataMbarim}`,
           authentikimi
         );
         const kthimet = kalkulimi.data.filter(
@@ -98,7 +107,7 @@ function KthimIMallitTeBlere(props) {
     };
 
     shfaqKalkulimet();
-  }, [perditeso]);
+  }, [perditeso, dataFillim, dataMbarim]);
 
   useEffect(() => {
     if (getID) {
@@ -237,13 +246,7 @@ function KthimIMallitTeBlere(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 1050, // Ensure this is higher than the z-index of the thead
-    }),
-  };
-  useEffect(() => {
+    useEffect(() => {
     axios
       .get(
         `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
@@ -310,7 +313,7 @@ function KthimIMallitTeBlere(props) {
             <TailSpin
               height="80"
               width="80"
-              color="#009879"
+              color="#10b981"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
@@ -349,7 +352,7 @@ function KthimIMallitTeBlere(props) {
                         id="produktiSelect" // Setting the id attribute
                         inputId="produktiSelect-input" // Setting the input id attribute
                         isDisabled={edito}
-                        styles={customStyles}
+                        styles={darkSelectStyles}
                       />
                     </Form.Group>
                   </Col>
@@ -393,6 +396,44 @@ function KthimIMallitTeBlere(props) {
                   </Col>
                 </Row>
                 <div className="mt-2">
+                  <Row className="mb-3">
+                  <Col md={3}>
+                    <Form.Group>
+                      <Form.Label>Data Fillim</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={dataFillim}
+                        onChange={(e) => {
+                          setDataFillim(e.target.value);
+                        }}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group>
+                      <Form.Label>Data Mbarim</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={dataMbarim}
+                        onChange={(e) => {
+                          setDataMbarim(e.target.value);
+                        }}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3} className="d-flex align-items-end">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setDataFillim(new Date().toISOString().split("T")[0]);
+                        setDataMbarim(new Date().toISOString().split("T")[0]);
+                      }}
+                      className="w-100">
+                      Sot
+                    </Button>
+                  </Col>
+                </Row>
+                
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Kthimeve te Mallit te Blere"
