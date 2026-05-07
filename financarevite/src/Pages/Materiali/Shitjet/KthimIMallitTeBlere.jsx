@@ -16,6 +16,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import EditoDetajetFatures from "../../../Components/Materiali/Shitjet/KthimIMallitTeBlere/EditoDetajetFatures";
 
 function KthimIMallitTeBlere(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -30,7 +31,7 @@ function KthimIMallitTeBlere(props) {
   const [pershkrimShtese, setPershkrimShtese] = useState("");
   const [Partneri, setPartneri] = useState(0);
   const today = new Date();
-  const initialDate = today.toISOString().split("T")[0]; // Format as 'yyyy-MM-dd'
+  const initialDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]; // Format as 'yyyy-MM-dd'
   const [dataEFatures, setDataEFatures] = useState(initialDate);
   const [llojiIPageses, setLlojiIPageses] = useState("Cash");
   const [statusiIPageses, setStatusiIPageses] = useState("E Paguar");
@@ -71,10 +72,10 @@ function KthimIMallitTeBlere(props) {
 
   // Add these state variables at the top of your component
   const [dataFillim, setDataFillim] = useState(
-    new Date().toISOString().split("T")[0] // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] // Today
   );
   const [dataMbarim, setDataMbarim] = useState(
-    new Date().toISOString().split("T")[0] // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] // Today
   );
 
   useEffect(() => {
@@ -246,7 +247,11 @@ function KthimIMallitTeBlere(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-    useEffect(() => {
+
+
+  // Edit invoice header modal
+  const [shfaqEditoFaturen, setShfaqEditoFaturen] = useState(false);
+  const [idKalkulimitPerEdito, setIdKalkulimitPerEdito] = useState(null);    useEffect(() => {
     axios
       .get(
         `${API_BASE_URL}/api/Partneri/shfaqPartneretFurntiore`,
@@ -308,6 +313,12 @@ function KthimIMallitTeBlere(props) {
             hide={() => ndryshoStatusin(false)}
           />
         )}
+        <EditoDetajetFatures
+          show={shfaqEditoFaturen}
+          onHide={() => setShfaqEditoFaturen(false)}
+          idKalkulimit={idKalkulimitPerEdito}
+          perditesoTeDhenat={() => setPerditeso(Date.now())}
+        />
         {loading ? (
           <div className="Loader">
             <TailSpin
@@ -425,8 +436,8 @@ function KthimIMallitTeBlere(props) {
                     <Button
                       variant="secondary"
                       onClick={() => {
-                        setDataFillim(new Date().toISOString().split("T")[0]);
-                        setDataMbarim(new Date().toISOString().split("T")[0]);
+                        setDataFillim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                        setDataMbarim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                       }}
                       className="w-100">
                       Sot
@@ -439,6 +450,10 @@ function KthimIMallitTeBlere(props) {
                     tableName="Lista e Kthimeve te Mallit te Blere"
                     kaButona={true}
                     funksionShfaqFature={(e) => handleShfaqTeDhenat(e)}
+                    funksionEditoFaturen={(id) => {
+                      setIdKalkulimitPerEdito(id);
+                      setShfaqEditoFaturen(true);
+                    }}
                     funksionNdryshoStatusinEFatures={() => setEdito(true)}
                     funksionButonEdit={(e) => {
                       setIdKalkulimitEdit(e);

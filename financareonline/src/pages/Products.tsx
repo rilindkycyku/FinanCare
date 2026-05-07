@@ -52,6 +52,15 @@ export default function Products() {
     return result;
   }, [products, selectedCategory, searchTerm]);
 
+  const [displayCount, setDisplayCount] = useState(50);
+
+  useEffect(() => {
+    // Reset display count when filters change
+    setDisplayCount(50);
+  }, [searchTerm, selectedCategory]);
+
+  const displayedProducts = filtered.slice(0, displayCount);
+
   return (
     <div className="pt-24 min-h-screen pb-24">
       <Titulli titulli="Produktet" />
@@ -187,15 +196,28 @@ export default function Products() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className={
+              className="flex flex-col gap-6"
+            >
+              <div className={
                 viewMode === "grid"
                   ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5"
                   : "flex flex-col gap-3"
-              }
-            >
-              {filtered.map((product) => (
-                <ProductCard key={product.ProduktiID} product={product} viewMode={viewMode} />
-              ))}
+              }>
+                {displayedProducts.map((product) => (
+                  <ProductCard key={product.ProduktiID} product={product} viewMode={viewMode} />
+                ))}
+              </div>
+              
+              {filtered.length > displayCount && (
+                <div className="flex justify-center mt-4">
+                  <button 
+                    onClick={() => setDisplayCount(prev => prev + 50)}
+                    className="px-8 py-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.07] rounded-xl text-white font-bold transition-all flex items-center gap-2"
+                  >
+                    Ngarko më shumë ({filtered.length - displayCount} të mbetura)
+                  </button>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

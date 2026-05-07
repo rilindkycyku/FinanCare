@@ -147,6 +147,9 @@ function SuccessScreen({ invoiceData, clientName, paymentLabel, onNewOrder, onDo
 
           {/* Action buttons */}
           <div className="p-6">
+            <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-center">
+              <p className="text-yellow-400 text-xs font-medium">Shënim: Meqenëse të dhënat janë statike, nëse nuk ka stok të mjaftueshëm, ne do t'ju njoftojmë ose do t'i largojmë produktet nga porosia.</p>
+            </div>
             <button
               onClick={onDownloadPdf}
               className="w-full btn-primary flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest"

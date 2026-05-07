@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -6,6 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ShtoDitenEFurnizimit(props) {
@@ -42,7 +43,7 @@ function ShtoDitenEFurnizimit(props) {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  // Ngarko furnitorët (pa ID 1, 2, 3 â€“ si te edito)
+  // Ngarko furnitorët (pa ID 1, 2, 3 - si te edito)
   useEffect(() => {
     const fetchFurnitoret = async () => {
       try {
@@ -211,11 +212,9 @@ function ShtoDitenEFurnizimit(props) {
                 isClearable
                 isSearchable
                 noOptionsMessage={() => "Nuk u gjet furnitor"}
-                className="react-select-container"
-                classNamePrefix="react-select"
+                styles={darkSelectStyles}
                 autoFocus
-                menuPortalTarget={document.body} // opsionale, për z-index
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                menuPortalTarget={document.body}
               />
             </Form.Group>
 
@@ -237,8 +236,8 @@ function ShtoDitenEFurnizimit(props) {
                 options={ditetEJaves}
                 placeholder="Zgjidh ditën..."
                 isSearchable={false}
-                className="react-select-container"
-                classNamePrefix="react-select"
+                styles={darkSelectStyles}
+                menuPortalTarget={document.body}
               />
             </Form.Group>
           </Form>

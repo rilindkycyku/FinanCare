@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { Container, Row, Col, Badge } from "react-bootstrap";
 import ReactSelect from "react-select";
@@ -116,25 +116,33 @@ function ShikimiQmimeve() {
   const qmimiMeZbritje = rabati > 0 ? (qmimiPakic - (qmimiPakic * (rabati / 100))).toFixed(2) : null;
 
   const selectStyles = {
-    control: (base) => ({
+    control: (base, state) => ({
       ...base,
       borderRadius: '16px',
       padding: '8px 12px',
-      border: '1px solid rgba(0,0,0,0.08)',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-      background: 'rgba(255, 255, 255, 0.9)',
+      border: '1px solid var(--sp-border)',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(99, 102, 241, 0.15)' : 'none',
+      background: 'var(--sp-surface)',
       backdropFilter: 'blur(8px)',
       '&:hover': { borderColor: '#4f46e5' }
     }),
     placeholder: (base) => ({
       ...base,
-      color: '#94a3b8',
+      color: 'var(--sp-text-muted)',
       fontWeight: '500'
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: 'var(--sp-text)'
+    }),
+    input: (base) => ({
+      ...base,
+      color: 'var(--sp-text)'
     }),
     option: (base, { isSelected, isFocused }) => ({
       ...base,
-      backgroundColor: isSelected ? '#4f46e5' : isFocused ? '#f8fafc' : 'transparent',
-      color: isSelected ? 'white' : '#334155',
+      backgroundColor: isSelected ? '#4f46e5' : isFocused ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
+      color: isSelected ? 'white' : 'var(--sp-text)',
       padding: '12px 16px',
       fontWeight: '500',
       cursor: 'pointer'
@@ -143,8 +151,9 @@ function ShikimiQmimeve() {
       ...base,
       borderRadius: '16px',
       overflow: 'hidden',
-      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-      border: '1px solid rgba(0,0,0,0.05)'
+      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
+      border: '1px solid var(--sp-border)',
+      background: 'var(--sp-surface)'
     })
   };
 
@@ -220,7 +229,7 @@ function ShikimiQmimeve() {
                   <div className="stok-display-box mb-4">
                     <span className="premium-label">Sasia Aktuale ne Stok</span>
                     <div className="sasia-wrapper">
-                      <h2 className={`sasia-value ${product.sasiaNeStok <= 0 ? 'text-danger' : 'text-slate'}`}>
+                      <h2 className={`sasia-value ${product.sasiaNeStok <= 0 ? 'text-danger' : ''}`}>
                         {parseFloat(product.sasiaNeStok || 0).toLocaleString()}
                       </h2>
                       <span className="njesia-tag">{product.emriNjesiaMatese}</span>
@@ -292,21 +301,20 @@ function ShikimiQmimeve() {
 
       <style>{`
         .price-checker-wrapper {
-          background: radial-gradient(circle at top right, #fdfcfb 0%, #e2d1c3 100%);
-          background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+          background: var(--sp-bg);
           min-height: 100vh;
           font-family: 'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, oxygen, ubuntu, cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
         .main-title {
           font-weight: 900;
-          color: #0f172a;
+          color: var(--sp-text);
           letter-spacing: -0.04em;
           font-size: 3.5rem;
         }
 
         .subtitle {
-          color: #64748b;
+          color: var(--sp-text-soft);
           font-size: 1.1rem;
           max-width: 600px;
           margin: 0 auto;
@@ -339,15 +347,15 @@ function ShikimiQmimeve() {
         }
 
         .glass-card {
-          background: rgba(255, 255, 255, 0.7);
+          background: var(--sp-surface);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.8);
+          border: 1px solid var(--sp-border);
           border-radius: 28px;
           position: relative;
         }
 
         .shadow-ultra {
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .animate-float {
@@ -375,7 +383,7 @@ function ShikimiQmimeve() {
         }
 
         .text-muted-premium {
-          color: #94a3b8;
+          color: var(--sp-text-muted);
           font-size: 0.9rem;
           font-weight: 500;
         }
@@ -395,7 +403,7 @@ function ShikimiQmimeve() {
         }
 
         .section-title {
-          color: #1e293b;
+          color: var(--sp-text);
           font-weight: 800;
           letter-spacing: -0.01em;
         }
@@ -405,7 +413,7 @@ function ShikimiQmimeve() {
           font-size: 0.75rem;
           font-weight: 700;
           text-transform: uppercase;
-          color: #94a3b8;
+          color: var(--sp-text-muted);
           letter-spacing: 0.05em;
           margin-bottom: 0.75rem;
         }
@@ -416,14 +424,15 @@ function ShikimiQmimeve() {
           letter-spacing: -0.05em;
           line-height: 1;
           margin-bottom: 0;
+          color: var(--sp-text);
         }
 
         .njesia-tag {
-          background: #f1f5f9;
+          background: var(--sp-surface-2);
           padding: 4px 12px;
           border-radius: 10px;
           font-weight: 700;
-          color: #475569;
+          color: var(--sp-text-soft);
           font-size: 0.9rem;
         }
 
@@ -436,7 +445,7 @@ function ShikimiQmimeve() {
         .detail-value {
           font-size: 1.25rem;
           font-weight: 700;
-          color: #334155;
+          color: var(--sp-text);
         }
 
         .price-stack {
@@ -447,14 +456,14 @@ function ShikimiQmimeve() {
         .price-value-primary {
           font-size: 5.5rem;
           font-weight: 950;
-          color: #0f172a;
+          color: var(--sp-text);
           letter-spacing: -0.06em;
           line-height: 1;
         }
 
         .old-price-line {
           font-size: 1.75rem;
-          color: #cbd5e1;
+          color: var(--sp-text-muted);
           text-decoration: line-through;
           font-weight: 600;
           margin-bottom: -0.75rem;
@@ -475,12 +484,12 @@ function ShikimiQmimeve() {
           align-items: center;
         }
 
-        .bg-indigo-soft { background: #eef2ff; }
-        .text-indigo { color: #4f46e5; }
+        .bg-indigo-soft { background: rgba(79, 70, 229, 0.15); }
+        .text-indigo { color: #818cf8; }
         .bg-indigo { background: #4f46e5; }
         
-        .bg-emerald-soft { background: #ecfdf5; }
-        .text-emerald { color: #10b981; }
+        .bg-emerald-soft { background: rgba(16, 185, 129, 0.15); }
+        .text-emerald { color: #34d399; }
         .bg-emerald { background: #10b981; }
 
         .spinner-premium {
@@ -495,10 +504,16 @@ function ShikimiQmimeve() {
 
         .modern-divider {
           height: 1px;
-          background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.05), rgba(0,0,0,0));
+          background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.1), rgba(255,255,255,0));
         }
-
-
+        
+        .bg-slate-50 {
+          background: var(--sp-surface-2) !important;
+        }
+        
+        .border-slate-100 {
+          border-color: var(--sp-border) !important;
+        }
 
         @keyframes spin {
           to { transform: rotate(360deg); }

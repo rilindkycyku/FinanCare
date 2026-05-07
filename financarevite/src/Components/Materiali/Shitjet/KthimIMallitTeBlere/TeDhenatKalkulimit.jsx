@@ -100,8 +100,11 @@ function TeDhenatKalkulimit(props) {
             <>
               <Container fluid>
                 <Row>
-                  <h1 className="title">
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 w-100">
+                  <h1 className="title mb-0">
                     Te Dhenat e Fatures
+                  </h1>
+                  <div className="d-flex gap-2 align-items-center">
                     <Button className="mb-3 Butoni" onClick={handleSave}>
                       Mbyll Te Dhenat <FontAwesomeIcon icon={faXmark} />
                     </Button>
@@ -110,7 +113,8 @@ function TeDhenatKalkulimit(props) {
                       onClick={() => setShkarkoFaturen(true)}>
                       Fatura <FontAwesomeIcon icon={faFileInvoice} />
                     </Button>
-                  </h1>
+                  </div>
+                </div>
                 </Row>
                 <Row>
                   <Col className={classes.mobileResponsive}>
@@ -191,7 +195,7 @@ function TeDhenatKalkulimit(props) {
                     </p>
                   </Col>
                 </Row>
-                <Table striped bordered hover>
+                <Table striped bordered hover responsive className="table-responsive text-nowrap" style={{ whiteSpace: "nowrap" }}>
                   <thead>
                     <tr>
                       <th>Nr.</th>

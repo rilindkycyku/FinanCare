@@ -1,4 +1,4 @@
-﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
@@ -44,6 +44,7 @@ function TabelaEKategorive(props) {
             "Produkti": k.emriProduktit,
             "Data Skadimit": new Date(k.dataSkadimit).toLocaleDateString('en-GB'),
             "Personi Pergjegjes": k.emri + " " + k.mbiemri,
+            "Data Regjistrimit": k.dataRegjistrimit ? new Date(k.dataRegjistrimit).toLocaleDateString('en-GB') : "N/A",
           }))
         );
         setLoading(false);

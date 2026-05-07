@@ -1,4 +1,4 @@
-﻿import "./Styles/Fatura.css";
+import "./Styles/Fatura.css";
 import { View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 
 Font.register({
@@ -60,8 +60,46 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
   const konvertimiValutave = { USD: 1.1, CHF: 0.95 };
 
   const llojiKalkulimit = teDhenatFat?.regjistrimet?.llojiKalkulimit;
-  const totaliMeTVSH = parseFloat(teDhenatFat?.totaliMeTVSH) || 0;
-  const rabati = parseFloat(teDhenatFat?.rabati) || 0;
+
+  let calcTotaliMeTVSH = 0;
+  let calcTotaliPaTVSH = 0;
+  let calcTvsH8 = 0;
+  let calcTvsH18 = 0;
+  let calcRabati = 0;
+
+  if (produktet && produktet.length > 0) {
+    produktet.forEach(p => {
+      const sasia = p.sasiaStokut || p.sasia || 0;
+      const cmimi = p.qmimiShites || p.qmimi || 0;
+      const tvshPerc = p.llojiTVSH || p.produkti?.llojiTVSH || 0;
+      const rabatPerc = (p.rabati1 || p.rabati || 0) + (p.rabati2 || 0) + (p.rabati3 || 0);
+
+      const totalBeforeDiscount = sasia * cmimi;
+      const discountAmount = totalBeforeDiscount * (rabatPerc / 100);
+      const totalAfterDiscount = totalBeforeDiscount - discountAmount;
+
+      const paTvsh = totalAfterDiscount / (1 + tvshPerc / 100);
+      const tvshVal = totalAfterDiscount - paTvsh;
+
+      calcTotaliMeTVSH += totalAfterDiscount;
+      calcTotaliPaTVSH += paTvsh;
+      calcRabati += discountAmount;
+
+      if (tvshPerc === 8) {
+        calcTvsH8 += tvshVal;
+      } else if (tvshPerc === 18) {
+        calcTvsH18 += tvshVal;
+      }
+    });
+  }
+
+  const totaliMeTVSH = parseFloat(teDhenatFat?.totaliMeTVSH) || calcTotaliMeTVSH || 0;
+  const rabati = parseFloat(teDhenatFat?.rabati) || calcRabati || 0;
+  const totaliPaTVSHVal = parseFloat(teDhenatFat?.totaliPaTVSH) || calcTotaliPaTVSH || 0;
+  const tvsH8Val = parseFloat(teDhenatFat?.tvsH8) || calcTvsH8 || 0;
+  const tvsH18Val = parseFloat(teDhenatFat?.tvsH18) || calcTvsH18 || 0;
+  const transporti = parseFloat(teDhenatFat?.regjistrimet?.transporti) || 0;
+  const finalPrice = totaliMeTVSH + transporti;
 
   const activeBanks = bankat.filter(
     (banka) => banka.banka && banka.banka.isDeleted !== "true"
@@ -92,36 +130,20 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
         ))}
       </View>
     ) : (
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: "9pt",
-          marginTop: "5px",
-        }}>
+      <table className="tabela-bankave">
         <thead>
-          <tr style={{ backgroundColor: "#f0f0f0" }}>
-            <th style={{ border: "1px solid #ccc", padding: "4px" }}>
-              Emri i Bankës
-            </th>
-            <th style={{ border: "1px solid #ccc", padding: "4px" }}>
-              Numri i Llogarisë
-            </th>
-            <th style={{ border: "1px solid #ccc", padding: "4px" }}>Valuta</th>
+          <tr>
+            <th>Emri i Bankës</th>
+            <th>Numri i Llogarisë</th>
+            <th>Valuta</th>
           </tr>
         </thead>
         <tbody>
           {activeBanks.map((banka, index) => (
             <tr key={banka.idLlogariaBankare || index}>
-              <td style={{ border: "1px solid #ccc", padding: "4px" }}>
-                {banka.banka.emriBankes || ""}
-              </td>
-              <td style={{ border: "1px solid #ccc", padding: "4px" }}>
-                {banka.numriLlogaris || ""}
-              </td>
-              <td style={{ border: "1px solid #ccc", padding: "4px" }}>
-                {banka.valuta || ""}
-              </td>
+              <td>{banka.banka.emriBankes || ""}</td>
+              <td>{banka.numriLlogaris || ""}</td>
+              <td>{banka.valuta || ""}</td>
             </tr>
           ))}
         </tbody>
@@ -173,7 +195,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
                   Totali Pa TVSH
                 </Text>
                 <Text style={styles.cell}>
-                  {parseFloat(teDhenatFat?.totaliPaTVSH || 0).toFixed(2)} €
+                  {totaliPaTVSHVal.toFixed(2)} €
                 </Text>
               </View>
 
@@ -183,7 +205,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
                   TVSH 8%
                 </Text>
                 <Text style={styles.cell}>
-                  {parseFloat(teDhenatFat?.tvsH8 || 0).toFixed(2)} €
+                  {tvsH8Val.toFixed(2)} €
                 </Text>
               </View>
 
@@ -193,9 +215,21 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
                   TVSH 18%
                 </Text>
                 <Text style={styles.cell}>
-                  {parseFloat(teDhenatFat?.tvsH18 || 0).toFixed(2)} €
+                  {tvsH18Val.toFixed(2)} €
                 </Text>
               </View>
+
+              {/* Transporti */}
+              {transporti > 0 && (
+                <View style={styles.row}>
+                  <Text style={[styles.cell, styles.boldT, styles.header]}>
+                    Transporti
+                  </Text>
+                  <Text style={styles.cell}>
+                    {transporti.toFixed(2)} €
+                  </Text>
+                </View>
+              )}
 
               {/* Total Price */}
               <View style={styles.row}>
@@ -203,7 +237,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
                   Çmimi Total
                 </Text>
                 <Text style={[styles.cell, styles.header, styles.boldT]}>
-                  {totaliMeTVSH.toFixed(2)} €
+                  {finalPrice.toFixed(2)} €
                 </Text>
               </View>
 
@@ -213,7 +247,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
                   Çmimi Total $
                 </Text>
                 <Text style={[styles.cell, styles.header, styles.boldT]}>
-                  {(totaliMeTVSH * (konvertimiValutave?.USD || 1)).toFixed(2)} $
+                  {(finalPrice * (konvertimiValutave?.USD || 1)).toFixed(2)} $
                 </Text>
               </View>
 
@@ -222,7 +256,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
                   Çmimi Total CHF
                 </Text>
                 <Text style={[styles.cell, styles.header, styles.boldT]}>
-                  {(totaliMeTVSH * (konvertimiValutave?.CHF || 1)).toFixed(2)}{" "}
+                  {(finalPrice * (konvertimiValutave?.CHF || 1)).toFixed(2)}{" "}
                   CHF
                 </Text>
               </View>
@@ -236,13 +270,14 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
             <Text>(Emri, Mbiemri, Nënshkrimi & Vula)</Text>
             <Text>(Personi Përgjegjës)</Text>
             <Text style={styles.bold}>
-              Â© FinanCare - POS, eOrder & More by Rilind Kyçyku
+              © FinanCare - POS, eOrder & More by Rilind Kyçyku
             </Text>
           </View>
           <View style={styles.signature}>
             <Text>_________________________________________________</Text>
             <Text>(Emri, Mbiemri, Nënshkrimi & Vula)</Text>
             <Text>(Klienti)</Text>
+            <Text style={[styles.bold, { alignSelf: "flex-end", textAlign: "right" }]}>WWW.RILINDKYCYKU.DEV</Text>
           </View>
         </View>
       </View>
@@ -279,27 +314,33 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
           </p>
           <p>
             <strong>Totali Pa TVSH: </strong>
-            {parseFloat(teDhenatFat?.totaliPaTVSH || 0).toFixed(2)} €
+            {totaliPaTVSHVal.toFixed(2)} €
           </p>
           <p>
             <strong>TVSH 8%: </strong>
-            {parseFloat(teDhenatFat?.tvsH8 || 0).toFixed(2)} €
+            {tvsH8Val.toFixed(2)} €
           </p>
           <p>
             <strong>TVSH 18%: </strong>
-            {parseFloat(teDhenatFat?.tvsH18 || 0).toFixed(2)} €
+            {tvsH18Val.toFixed(2)} €
           </p>
+          {transporti > 0 && (
+            <p>
+              <strong>Transporti: </strong>
+              {transporti.toFixed(2)} €
+            </p>
+          )}
           <p>
             <strong style={{ fontSize: "14pt" }}>Çmimi Total: </strong>
             <strong style={{ fontSize: "14pt" }}>
-              {totaliMeTVSH.toFixed(2)} €
+              {finalPrice.toFixed(2)} €
             </strong>
           </p>
           <p style={{ fontSize: "10pt" }}>
-            {(totaliMeTVSH * (konvertimiValutave?.USD || 1)).toFixed(2)} $
+            {(finalPrice * (konvertimiValutave?.USD || 1)).toFixed(2)} $
           </p>
           <p style={{ fontSize: "10pt" }}>
-            {(totaliMeTVSH * (konvertimiValutave?.CHF || 1)).toFixed(2)} CHF
+            {(finalPrice * (konvertimiValutave?.CHF || 1)).toFixed(2)} CHF
           </p>
         </div>
       </div>
@@ -314,15 +355,17 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
       <div className="nenshkrimet">
         <div className="nenshkrimi">
           <span>_________________________________________________</span>
-          <span>(Emri, Mbiemri, Nëënshkrimi & Vula)</span>
+          <span>(Emri, Mbiemri, Nënshkrimi & Vula)</span>
           <span>(Personi Përgjegjës)</span>
           <br />
-          <strong>Â© FinanCare - POS, eOrder & More by Rilind Kyçyku</strong>
+          <strong>© FinanCare - POS, eOrder & More by Rilind Kyçyku</strong>
         </div>
         <div className="nenshkrimi">
           <span>_________________________________________________</span>
-          <span>(Emri, Mbiemri, Nëënshkrimi)</span>
+          <span>(Emri, Mbiemri, Nënshkrimi & Vula)</span>
           <span>(Klienti)</span>
+          <br />
+          <strong style={{ display: "block", textAlign: "right", width: "100%" }}>WWW.RILINDKYCYKU.DEV</strong>
         </div>
       </div>
     </div>

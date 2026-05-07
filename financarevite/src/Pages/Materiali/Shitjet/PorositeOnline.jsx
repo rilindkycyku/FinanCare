@@ -1,13 +1,15 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileImport, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faFileImport, faEye, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import Fatura from "../../../Components/TeTjera/Fatura/Fatura";
+import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { Col, Form, Row } from "react-bootstrap";
 
 function PorositeOnline() {
@@ -16,6 +18,7 @@ function PorositeOnline() {
   const [kalkulimet, setKalkulimet] = useState([]);
   const [perditeso, setPerditeso] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [shkarkoFaturen, setShkarkoFaturen] = useState(false);
   const [modalData, setModalData] = useState({
     regjistrimet: {
       idRegjistrimit: 0,
@@ -44,6 +47,20 @@ function PorositeOnline() {
     totTVSH8: [],
   });
 
+  const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
+  const [tipiMesazhit, setTipiMesazhit] = useState("");
+  const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [existingInvoiceDetails, setExistingInvoiceDetails] = useState(null);
+  const [pendingImportJson, setPendingImportJson] = useState(null);
+
+  const shfaqMesazhinFunc = (tipi, pershkrimi) => {
+    setTipiMesazhit(tipi);
+    setPershkrimiMesazhit(pershkrimi);
+    setShfaqMesazhin(true);
+  };
+
   const token = localStorage.getItem("token");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
 
@@ -51,8 +68,8 @@ function PorositeOnline() {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const [dataFillim, setDataFillim] = useState(today.toISOString().split("T")[0]);
-  const [dataMbarim, setDataMbarim] = useState(tomorrow.toISOString().split("T")[0]);
+  const [dataFillim, setDataFillim] = useState(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+  const [dataMbarim, setDataMbarim] = useState(new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
 
   // ============================================================================
   // OPTIMIZATION 1: Debounce date changes to avoid multiple API calls
@@ -63,7 +80,7 @@ function PorositeOnline() {
     }, 500); // Wait 500ms after user stops typing
 
     return () => clearTimeout(timer);
-  }, [dataFillim, dataMbarim]);
+  }, [dataFillim, dataMbarim, perditeso]);
 
   const loadFaturat = async () => {
     try {
@@ -123,10 +140,17 @@ function PorositeOnline() {
         `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${id}`,
         auth
       );
-      setModalData(res.data);
+      const prodRes = await axios.get(
+        `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${id}`,
+        auth
+      );
+      setModalData({
+        ...res.data,
+        produktetList: prodRes.data
+      });
       setShowModal(true);
     } catch (err) {
-      alert("Gabim gjatë marrjes së të dhënave të faturës");
+      shfaqMesazhinFunc("danger", "Gabim gjatë marrjes së të dhënave të faturës");
     } finally {
       setLoading(false);
     }
@@ -150,9 +174,9 @@ function PorositeOnline() {
         !json.IDKlienti ||
         !Array.isArray(json.Produktet)
       ) {
-        alert(
-          "JSON i pavlefshëm! Duhet: NrFatures, Data, IDKlienti, Produktet[]"
-        );
+        shfaqMesazhinFunc("danger", "JSON i pavlefshëm! Duhet: NrFatures, Data, IDKlienti, Produktet[]");
+        setLoading(false);
+        e.target.value = "";
         return;
       }
 
@@ -163,20 +187,30 @@ function PorositeOnline() {
       );
 
       if (checkResponse.data && checkResponse.data.idFatura) {
-        if (
-          !window.confirm(
-            `Fatura me numër "${nrFaturesToImport}" ekziston tashmë në sistem!\n\n` +
-              `ID: ${checkResponse.data.idFatura} | Data: ${new Date(checkResponse.data.data).toLocaleDateString("en-GB")}\n` +
-              `Partneri: ${checkResponse.data.emriPartnerit || "N/A"}\n\n` +
-              `A dëshironi ta anashkaloni? (OK = Anashkalo, Cancel = Ndal importin)`
-          )
-        ) {
-          alert("Importimi u ndalua nga përdoruesi.");
-          return;
-        }
-        alert(`Fatura "${nrFaturesToImport}" u anashkalua sepse ekziston.`);
+        setExistingInvoiceDetails({
+          ...checkResponse.data,
+          nrFaturesToImport: nrFaturesToImport
+        });
+        setPendingImportJson(json);
+        setShowConfirmModal(true);
+        setLoading(false);
+        e.target.value = "";
         return;
       }
+
+      await processImport(json);
+      e.target.value = "";
+    } catch (err) {
+      console.error(err);
+      shfaqMesazhinFunc("danger", "Gabim: " + (err.response?.data?.message || err.response?.data || err.message));
+      setLoading(false);
+      e.target.value = "";
+    }
+  };
+
+  const processImport = async (json) => {
+    try {
+      setLoading(true);
 
       const faturaResponse = await axios.post(
         `${API_BASE_URL}/api/Faturat/shtoFaturen`,
@@ -214,31 +248,87 @@ function PorositeOnline() {
       // Wait for all products to upload
       await Promise.allSettled(productPromises);
 
-      alert(`Fatura ${json.NrFatures} u importua me sukses!`);
+      shfaqMesazhinFunc("success", `Fatura ${json.NrFatures} u importua me sukses!`);
       setPerditeso(Date.now());
     } catch (err) {
       console.error(err);
-      alert(
-        "Gabim: " +
-          (err.response?.data?.message || err.response?.data || err.message)
-      );
+      shfaqMesazhinFunc("danger", "Gabim: " + (err.response?.data?.message || err.response?.data || err.message));
     } finally {
       setLoading(false);
-      e.target.value = "";
+      setShowConfirmModal(false);
+      setPendingImportJson(null);
     }
   };
 
-  const products = getAllProducts();
+  const handleAnashkalo = () => {
+    shfaqMesazhinFunc("info", `Fatura "${existingInvoiceDetails?.nrFaturesToImport}" u anashkalua sepse ekziston.`);
+    setShowConfirmModal(false);
+    setPendingImportJson(null);
+  };
+
+  const handleNdalImportin = () => {
+    shfaqMesazhinFunc("warning", "Importimi u ndalua nga përdoruesi.");
+    setShowConfirmModal(false);
+    setPendingImportJson(null);
+  };
+
+  const products = modalData?.produktetList?.length > 0 ? modalData.produktetList : getAllProducts();
   const regjistrimet = modalData?.regjistrimet || {};
   const transporti = regjistrimet?.transporti || 0;
-  const subtotalBeforeDiscount =
-    Number(modalData?.totaliMeTVSH || 0) + Number(modalData?.rabati || 0);
-  const finalTotal = Number(modalData?.totaliMeTVSH || 0) + Number(transporti);
+
+  // Calculate dynamic totals from products since API total arrays may not populate for custom imports
+  let calcPaTVSH8 = 0, calcTVSH8 = 0;
+  let calcPaTVSH18 = 0, calcTVSH18 = 0;
+  let calcPaTVSH = 0, calcTVSH = 0;
+  let calcRabati = 0;
+  let calcTotalParaRabatit = 0;
+
+  products.forEach(p => {
+    const sasia = p.sasiaStokut || p.sasia || 0;
+    const cmimi = p.qmimiShites || p.qmimi || 0;
+    const tvshPerc = p.llojiTVSH || p.produkti?.llojiTVSH || 0;
+    const rabatPerc = (p.rabati1 || p.rabati || 0) + (p.rabati2 || 0) + (p.rabati3 || 0);
+
+    const totalBeforeDiscount = sasia * cmimi;
+    const discountAmount = totalBeforeDiscount * (rabatPerc / 100);
+    const totalAfterDiscount = totalBeforeDiscount - discountAmount;
+
+    const paTvsh = totalAfterDiscount / (1 + tvshPerc / 100);
+    const tvshVal = totalAfterDiscount - paTvsh;
+
+    calcTotalParaRabatit += totalBeforeDiscount;
+    calcPaTVSH += paTvsh;
+    calcTVSH += tvshVal;
+    calcRabati += discountAmount;
+
+    if (tvshPerc === 8) {
+      calcPaTVSH8 += paTvsh;
+      calcTVSH8 += tvshVal;
+    } else if (tvshPerc === 18) {
+      calcPaTVSH18 += paTvsh;
+      calcTVSH18 += tvshVal;
+    }
+  });
+
+  const finalTotal = calcPaTVSH + calcTVSH + Number(transporti);
 
   return (
     <>
       <NavBar />
+      {shkarkoFaturen ? (
+        <Fatura
+          nrFatures={regjistrimet?.idRegjistrimit || modalData?.idRegjistrimit}
+          mbyllFaturen={() => setShkarkoFaturen(false)}
+        />
+      ) : (
       <div className="containerDashboardP" style={{ padding: "2rem" }}>
+        {shfaqMesazhin && (
+          <Mesazhi
+            setShfaqMesazhin={setShfaqMesazhin}
+            pershkrimi={pershkrimiMesazhit}
+            tipi={tipiMesazhit}
+          />
+        )}
         <h1 className="title">Menaxho Porosite Online</h1>
 
         <div className="mb-4">
@@ -284,8 +374,8 @@ function PorositeOnline() {
             <Button
               variant="secondary"
               onClick={() => {
-                setDataFillim(today.toISOString().split("T")[0]);
-                setDataMbarim(tomorrow.toISOString().split("T")[0]);
+                setDataFillim(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                setDataMbarim(new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
               }}
               className="w-100">
               Sot
@@ -326,8 +416,8 @@ function PorositeOnline() {
             </Modal.Title>
           </Modal.Header>
 
-          <Modal.Body className="p-4">
-            <div className="bg-light p-3 rounded mb-4 border">
+          <Modal.Body className="p-4 bg-dark text-white">
+            <div className="p-3 rounded mb-4 border border-secondary" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
               <div className="row mb-2">
                 <div className="col-md-6">
                   <strong>Partneri:</strong> {regjistrimet?.emriBiznesit}
@@ -396,9 +486,10 @@ function PorositeOnline() {
                 <tbody>
                   {products.length > 0 ? (
                     products.map((p, index) => {
-                      const totalBeforeDiscount = p.sasiaStokut * p.qmimiShites;
-                      const discountPercent =
-                        p.rabati1 + (p.rabati2 || 0) + (p.rabati3 || 0);
+                      const sasia = p.sasiaStokut || p.sasia || 0;
+                      const cmimi = p.qmimiShites || p.qmimi || 0;
+                      const totalBeforeDiscount = sasia * cmimi;
+                      const discountPercent = (p.rabati1 || p.rabati || 0) + (p.rabati2 || 0) + (p.rabati3 || 0);
                       const discountAmount =
                         totalBeforeDiscount * (discountPercent / 100);
                       const totalAfterDiscount =
@@ -409,22 +500,22 @@ function PorositeOnline() {
                           <td className="text-center fw-bold">{index + 1}</td>
                           <td>
                             <strong>
-                              {p.produkti?.emriProduktit || "N/A"}
+                              {p.emriProduktit || p.produkti?.emriProduktit || "N/A"}
                             </strong>
                             <br />
                             <small className="text-muted">
-                              {p.produkti?.barkodi}
+                              {p.barkodi || p.produkti?.barkodi}
                             </small>
                           </td>
                           <td className="text-center fw-bold">
-                            {p.sasiaStokut}
+                            {p.sasiaStokut || p.sasia}
                           </td>
                           <td className="text-end">
-                            {Number(p.qmimiShites).toFixed(2)} €
+                            {Number(p.qmimiShites || p.qmimi || 0).toFixed(2)} €
                           </td>
                           <td className="text-center">
                             <span className="badge bg-info">
-                              {p.produkti?.llojiTVSH}%
+                              {p.llojiTVSH || p.produkti?.llojiTVSH || 0}%
                             </span>
                           </td>
                           <td className="text-end fw-bold">
@@ -456,65 +547,65 @@ function PorositeOnline() {
 
             <div className="row mt-4">
               <div className="col-lg-6 mb-3 mb-lg-0">
-                <div className="bg-light p-3 rounded border h-100">
-                  <h6 className="mb-3 text-secondary fw-bold">
+                <div className="p-3 rounded border border-secondary h-100" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
+                  <h6 className="mb-3 text-info fw-bold">
                     Totalet sipas TVSH-s
                   </h6>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <small className="text-muted">Pa TVSH 8%:</small>
                     <strong>
-                      {Number(modalData?.totaliPaTVSH8 || 0).toFixed(2)} €
+                      {calcPaTVSH8.toFixed(2)} €
                     </strong>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <small className="text-muted">TVSH 8%:</small>
                     <strong className="text-info">
-                      {Number(modalData?.tvsH8 || 0).toFixed(2)} €
+                      {calcTVSH8.toFixed(2)} €
                     </strong>
                   </div>
 
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <small className="text-muted">Pa TVSH 18%:</small>
                     <strong>
-                      {Number(modalData?.totaliPaTVSH18 || 0).toFixed(2)} €
+                      {calcPaTVSH18.toFixed(2)} €
                     </strong>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <small className="text-muted">TVSH 18%:</small>
                     <strong className="text-info">
-                      {Number(modalData?.tvsH18 || 0).toFixed(2)} €
+                      {calcTVSH18.toFixed(2)} €
                     </strong>
                   </div>
 
                   <hr className="my-2" />
                   <div className="d-flex justify-content-between align-items-center">
-                    <strong className="text-dark">Total Pa TVSH:</strong>
+                    <strong className="text-white">Total Pa TVSH:</strong>
                     <strong className="fs-6 text-primary">
-                      {Number(modalData?.totaliPaTVSH || 0).toFixed(2)} €
+                      {calcPaTVSH.toFixed(2)} €
                     </strong>
                   </div>
                 </div>
               </div>
 
               <div className="col-lg-6">
-                <div className="bg-light p-3 rounded border h-100">
-                  <h6 className="mb-3 text-secondary fw-bold">
+                <div className="p-3 rounded border border-secondary h-100" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
+                  <h6 className="mb-3 text-info fw-bold">
                     Totali Përfundimtar
                   </h6>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="text-muted">Nentotali me TVSH:</span>
-                    <strong>{subtotalBeforeDiscount.toFixed(2)} €</strong>
+                    <strong>{calcTotalParaRabatit.toFixed(2)} €</strong>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="text-muted">Rabati:</span>
                     <strong className="text-danger">
-                      -{Number(modalData?.rabati || 0).toFixed(2)} €
+                      -{calcRabati.toFixed(2)} €
                     </strong>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="text-muted">Totali - Rabati:</span>
                     <strong>
-                      {Number(modalData?.totaliMeTVSH || 0).toFixed(2)} €
+                      {(calcPaTVSH + calcTVSH).toFixed(2)} €
                     </strong>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-3">
@@ -525,8 +616,8 @@ function PorositeOnline() {
                   </div>
                   <hr className="my-2" />
                   <div className="d-flex justify-content-between align-items-center">
-                    <strong className="text-dark fs-6">
-                      TOTALI PÇ‹RFUNDIMTAR:
+                    <strong className="text-white fs-6">
+                      TOTALI PËRFUNDIMTAR:
                     </strong>
                     <strong className="fs-5 text-success">
                       {finalTotal.toFixed(2)} €
@@ -537,7 +628,16 @@ function PorositeOnline() {
             </div>
           </Modal.Body>
 
-          <Modal.Footer className="bg-light">
+          <Modal.Footer className="bg-dark border-top border-secondary">
+            <Button
+              variant="info"
+              size="lg"
+              onClick={() => {
+                setShowModal(false);
+                setShkarkoFaturen(true);
+              }}>
+              <FontAwesomeIcon icon={faPrint} /> Printo
+            </Button>
             <Button
               variant="secondary"
               size="lg"
@@ -546,7 +646,42 @@ function PorositeOnline() {
             </Button>
           </Modal.Footer>
         </Modal>
+
+        {/* Custom Confirmation Modal for Duplicate Invoices */}
+        <Modal
+          show={showConfirmModal}
+          onHide={handleNdalImportin}
+          backdrop="static"
+          keyboard={false}
+          centered
+        >
+          <Modal.Header closeButton className="bg-warning text-dark">
+            <Modal.Title>Fatura Ekziston!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-4 bg-dark text-white border-top border-warning">
+            <p>
+              Fatura me numër <strong>"{existingInvoiceDetails?.nrFaturesToImport}"</strong> ekziston tashmë në sistem!
+            </p>
+            <div className="p-3 rounded border border-warning mb-3" style={{ backgroundColor: 'rgba(255,193,7,0.1)' }}>
+              <div><strong>ID:</strong> {existingInvoiceDetails?.idFatura}</div>
+              <div><strong>Data:</strong> {existingInvoiceDetails?.data ? new Date(existingInvoiceDetails.data).toLocaleDateString("en-GB") : ""}</div>
+              <div><strong>Partneri:</strong> {existingInvoiceDetails?.emriPartnerit || "N/A"}</div>
+            </div>
+            <p className="mb-0">A dëshironi ta anashkaloni?</p>
+          </Modal.Body>
+          <Modal.Footer className="bg-dark border-top border-warning">
+            <Button variant="secondary" onClick={handleNdalImportin}>
+              Ndal Importin
+            </Button>
+            <Button variant="warning" onClick={handleAnashkalo}>
+              Anashkalo
+            </Button>
+            {/* Optional: Add "Importo Gjithsesi" button here in the future if needed */}
+          </Modal.Footer>
+        </Modal>
+
       </div>
+      )}
     </>
   );
 }

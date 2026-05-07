@@ -15,8 +15,10 @@ import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import FaturoOferten from "../../../Components/Materiali/Shitjet/Ofertat/FaturoOferten";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import EditoDetajetFatures from "../../../Components/Materiali/Shitjet/Ofertat/EditoDetajetFatures";
 
 function Ofertat(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -58,10 +60,10 @@ function Ofertat(props) {
 
   // Add these state variables at the top of your component
   const [dataFillim, setDataFillim] = useState(
-    new Date().toISOString().split("T")[0], // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Today
   );
   const [dataMbarim, setDataMbarim] = useState(
-    new Date().toISOString().split("T")[0], // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Today
   );
 
   useEffect(() => {
@@ -241,7 +243,11 @@ function Ofertat(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-  const customStyles = {
+
+
+  // Edit invoice header modal
+  const [shfaqEditoFaturen, setShfaqEditoFaturen] = useState(false);
+  const [idKalkulimitPerEdito, setIdKalkulimitPerEdito] = useState(null);  const customStyles = {
     menu: (provided) => ({
       ...provided,
       zIndex: 1050,
@@ -342,6 +348,12 @@ function Ofertat(props) {
             setTipiMesazhit={(e) => setTipiMesazhit(e)}
           />
         )}
+        <EditoDetajetFatures
+          show={shfaqEditoFaturen}
+          onHide={() => setShfaqEditoFaturen(false)}
+          idKalkulimit={idKalkulimitPerEdito}
+          perditesoTeDhenat={() => setPerditeso(Date.now())}
+        />
         {loading ? (
           <div className="Loader">
             <TailSpin
@@ -466,20 +478,24 @@ function Ofertat(props) {
                       <Button
                         variant="secondary"
                         onClick={() => {
-                          setDataFillim(new Date().toISOString().split("T")[0]);
-                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                          setDataFillim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                          setDataMbarim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                         }}
                         className="w-100">
                         Sot
                       </Button>
                     </Col>
                   </Row>
-                  
+
                   <Tabela
                     data={kalkulimet}
                     tableName="Lista e Ofertave"
                     kaButona={true}
                     funksionShfaqFature={(e) => handleShfaqTeDhenat(e)}
+                    funksionEditoFaturen={(id) => {
+                      setIdKalkulimitPerEdito(id);
+                      setShfaqEditoFaturen(true);
+                    }}
                     funksionNdryshoStatusinEFatures={() => setEdito(true)}
                     funksionButonEdit={(e) => {
                       setIdKalkulimitEdit(e);

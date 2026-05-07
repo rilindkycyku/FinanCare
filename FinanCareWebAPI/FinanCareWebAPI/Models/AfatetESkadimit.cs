@@ -12,6 +12,7 @@ public partial class AfatetESkadimit
     public int? StafiID { get; set; }
     public int? IDProduktit { get; set; }
     public DateTime? DataSkadimit { get; set; } = DateTime.Now;
+    public DateTime? DataRegjistrimit { get; set; } = DateTime.Now;
 
     [ForeignKey(nameof(IDProduktit))]
     public virtual Produkti? Produkti { get; set; }

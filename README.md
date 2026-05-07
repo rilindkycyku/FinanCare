@@ -1,3 +1,9 @@
+
+## Statusi i Projektit
+
+> [!WARNING]
+> **KUJDES:** Ky projekt është ende në zhvillim e sipër (Work in Progress / Unfinished). Mund të ketë ndryshime dhe nuk është gati për t'u përdorur në produksion.
+
 # FinanCare - POS, eOrder & More by Rilind Kyçyku
 
 ### Logo
@@ -8,8 +14,9 @@ Projekti është i tipit Shitje dhe Kontabilitet.
 
 Ky projekt është i punuar në:
 
-- **React JS** - Frontend
-- **ASP.NET Core** - Backend
+- **React JS** (`financarevite`) - Frontend Administrativ (POS, Kalkulime, Statistika etj.)
+- **React JS** (`financareonline`) - Frontend Publik (Porosi Online / eOrder)
+- **ASP.NET Core** - Backend (WebAPI)
 - **MSSQL** – Database
 
 # Informata rreth Funksioneve, Konfigurimit dhe Pamjes
@@ -41,9 +48,10 @@ Ju mund ta startoni projektin në dy mënyra: duke përdorur **Docker** (më e l
    ```bash
    docker compose up -d --build
    ```
-   *(Kjo komandë do të ndërtojë dhe startojë automatikisht të tre shërbimet: databazën MSSQL, WebAPI-në dhe Frontend-in. Databaza do të migrohet dhe të dhënat fillestare do të shtohen vetë).*
+   *(Kjo komandë do të ndërtojë dhe startojë automatikisht të katër shërbimet: databazën MSSQL, WebAPI-në, Frontend-in Administrativ dhe Frontend-in Publik. Databaza do të migrohet dhe të dhënat fillestare do të shtohen vetë).*
 3. Pasi të jenë startuar të gjitha kontejnerët, hapni shfletuesin tuaj:
-   - **Frontend:** `http://localhost:3000`
+   - **Frontend Admin (`financarevite`):** `http://localhost:3000`
+   - **Frontend Online (`financareonline`):** `http://localhost:3001`
    - **API (Swagger):** `http://localhost:7286/swagger`
 
    > **Shënim:** Adresa IP dhe portet konfigurohen automatikisht. Nuk keni nevojë të ekzekutoni `npm run dev` kur përdorni Docker.
@@ -160,3 +168,7 @@ Në rast se dëshironi të përdorni të dhënat e FinanCare, ato mund t’i gje
 ### Statistikat
 
 ![](ReadMeImages/Statistikat.png)
+
+## Të Drejtat e Autorit (Copyright & License)
+
+Ky projekt është pronë intelektuale e **Rilind Kyçyku**. Nuk lejohet përdorimi, kopjimi, modifikimi apo shpërndarja e këtij kodi pa pëlqimin paraprak dhe miratimin me shkrim nga autori. Çdo përdorim i paautorizuar është rreptësisht i ndaluar.

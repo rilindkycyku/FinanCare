@@ -3218,6 +3218,11 @@
             "format": "date-time",
             "nullable": true
           },
+          "dataRegjistrimit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
           "produkti": {
             "$ref": "#/components/schemas/Produkti"
           },

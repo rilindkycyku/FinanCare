@@ -290,7 +290,7 @@ function Statistika() {
                     <Card.Body className="p-0">
                       <div className="premium-table-container">
                         <MDBTable hover striped small className="mb-0 text-center">
-                          <MDBTableHead className="bg-light">
+                          <MDBTableHead >
                             <tr className="small text-muted text-uppercase">
                               <th className="py-3">Stafi</th>
                               <th className="py-3">Par.</th>

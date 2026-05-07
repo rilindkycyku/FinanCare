@@ -33,8 +33,8 @@ function PerditesoStatusinKalk(props) {
 
   // Date range state
   const today = new Date();
-  const [dataFillim, setDataFillim] = useState(today.toISOString().split("T")[0]);
-  const [dataMbarim, setDataMbarim] = useState(today.toISOString().split("T")[0]);
+  const [dataFillim, setDataFillim] = useState(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+  const [dataMbarim, setDataMbarim] = useState(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
 
   // Fetch invoices for the partner
   useEffect(() => {
@@ -177,8 +177,7 @@ function PerditesoStatusinKalk(props) {
         </Modal.Body>
       </Modal>
 
-      <Modal
-        size="lg"
+      <Modal size="xl"
         className="mt-12"
         show={props.show}
         onHide={props.hide}>
@@ -237,7 +236,7 @@ function PerditesoStatusinKalk(props) {
                     variant="primary"
                     disabled={loadingInvoices}
                     onClick={() => {
-                      const todayStr = new Date().toISOString().split("T")[0];
+                      const todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
                       setDataFillim(todayStr);
                       setDataMbarim(todayStr);
                     }}
@@ -263,8 +262,8 @@ function PerditesoStatusinKalk(props) {
             <div className="card shadow-sm border-0">
               <div className="card-body p-0 rounded overflow-hidden">
                 <div className="table-responsive">
-                  <MDBTable hover align="middle" className="mb-0 bg-white">
-                    <MDBTableHead className="bg-light">
+                  <MDBTable hover align="middle" className="mb-0">
+                    <MDBTableHead >
                       <tr>
                         <th className="fw-bold text-secondary text-uppercase small" scope="col">Nr. Kalk</th>
                         <th className="fw-bold text-secondary text-uppercase small" scope="col">Nr. Fat</th>

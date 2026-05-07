@@ -530,8 +530,7 @@ function FaturoOferten(props) {
       </Modal>
 
       {/* Main Modal */}
-      <Modal
-        size="lg"
+      <Modal size="xl"
         style={{ marginTop: "3em" }}
         show={props.show}
         onHide={props.hide}

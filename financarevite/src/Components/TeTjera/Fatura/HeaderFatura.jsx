@@ -1,4 +1,4 @@
-﻿import "./Styles/Fatura.css";
+import "./Styles/Fatura.css";
 import { useRef } from "react";
 import { View, Text, StyleSheet, Image, Font } from "@react-pdf/renderer";
 import Barcode from "react-barcode"; // For UI
@@ -41,6 +41,7 @@ function HeaderFatura({ faturaID, Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
     OFERTE: "OFERTE",
     PAGES: "PAGES FATURE",
     PARAGON: "PARAGON",
+    ONLINE: "POROSI ONLINE",
   };
 
   // Generate barcode as data URL for PDF

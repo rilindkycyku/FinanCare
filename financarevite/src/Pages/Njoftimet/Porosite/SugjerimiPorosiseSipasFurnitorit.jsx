@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import axios from "axios";
 import Select from "react-select";
 import { Modal, Button } from "react-bootstrap";
@@ -28,15 +28,15 @@ function LevelBadge({ level }) {
   };
   const labels = {
     CRITICAL: "KRITIKE",
-    HIGH: "E LARTÇ‹",
+    HIGH: "E LARTË",
     MEDIUM: "MESME",
-    LOW: "E ULÇ‹T",
+    LOW: "E ULËT",
     OK: "OK",
   };
   return (
     <span className={`sp-level sp-level-${level || "OK"}`}>
       {icons[level] || null}
-      {labels[level] || level || "â€”"}
+      {labels[level] || level || "-"}
     </span>
   );
 }
@@ -366,7 +366,7 @@ function SugjerimiPorosiseSipasFurnitorit() {
                           <div className="sp-vcell sp-vcol-num" style={{ justifyContent: 'flex-end', color: 'var(--sp-text-soft)' }}>{avgWeekly.toLocaleString()}</div>
                           <div className="sp-vcell sp-vcol-sug" style={{ justifyContent: 'flex-end', flexDirection: 'column', alignItems: 'flex-end', gap: 0 }}>
                             <span style={{ fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: suggerimi > 0 ? 'var(--sp-emerald)' : 'var(--sp-text-muted)', lineHeight: 1.2 }}>
-                              {suggerimi > 0 ? suggerimi.toLocaleString() : 'â€”'}
+                              {suggerimi > 0 ? suggerimi.toLocaleString() : '-'}
                             </span>
                             {packs && suggerimi > 0 && (
                               <span style={{ fontSize: '0.65rem', color: 'var(--sp-text-muted)', lineHeight: 1.2 }}>
@@ -484,7 +484,7 @@ function SugjerimiPorosiseSipasFurnitorit() {
                     <>
                       <div className="rec-packs">
                         {packsRecommended > 0 && (
-                          <span>{packsRecommended} pako Ç— {s.packSize} copë/pako &nbsp;Â·&nbsp; </span>
+                          <span>{packsRecommended} pako × {s.packSize} copë/pako &nbsp;Â·&nbsp; </span>
                         )}
                         <span>copë</span>
                       </div>
@@ -495,7 +495,7 @@ function SugjerimiPorosiseSipasFurnitorit() {
                       )}
                     </>
                   ) : (
-                    <div className="rec-packs">STOK I MJAFTUESHÇ‹M</div>
+                    <div className="rec-packs">STOK I MJAFTUESHËM</div>
                   )}
                   <div className="rec-msg">{s.message}</div>
                 </div>
@@ -507,7 +507,7 @@ function SugjerimiPorosiseSipasFurnitorit() {
                     <div className="box-qty">{for1Week.toLocaleString()}</div>
                     <div className="box-packs">
                       {packs1Week > 0
-                        ? `${packs1Week} pako Ç— ${s.packSize}`
+                        ? `${packs1Week} pako × ${s.packSize}`
                         : "copë"}
                     </div>
                   </div>
@@ -516,7 +516,7 @@ function SugjerimiPorosiseSipasFurnitorit() {
                     <div className="box-qty">{for4Weeks.toLocaleString()}</div>
                     <div className="box-packs">
                       {packs4Weeks > 0
-                        ? `${packs4Weeks} pako Ç— ${s.packSize}`
+                        ? `${packs4Weeks} pako × ${s.packSize}`
                         : "copë"}
                     </div>
                   </div>
@@ -539,20 +539,20 @@ function SugjerimiPorosiseSipasFurnitorit() {
                   <div className="sp-meta-item">
                     <div className="mi-label">Furnitori</div>
                     <div className="mi-value" style={{ fontFamily: "inherit", fontSize: "0.8rem" }}>
-                      {s.lastSupplier || selectedFurnitor?.label || "â€”"}
+                      {s.lastSupplier || selectedFurnitor?.label || "-"}
                     </div>
                   </div>
                   <div className="sp-meta-item">
                     <div className="mi-label">Blerja e Fundit</div>
-                    <div className="mi-value">{s.lastPurchaseDate ? new Date(s.lastPurchaseDate).toLocaleDateString("sq-AL") : "â€”"}</div>
+                    <div className="mi-value">{s.lastPurchaseDate ? new Date(s.lastPurchaseDate).toLocaleDateString("sq-AL") : "-"}</div>
                   </div>
                   <div className="sp-meta-item">
                     <div className="mi-label">Periudha Analizës</div>
-                    <div className="mi-value" style={{ fontSize: "0.7rem" }}>{s.analysisPeriod || "â€”"}</div>
+                    <div className="mi-value" style={{ fontSize: "0.7rem" }}>{s.analysisPeriod || "-"}</div>
                   </div>
                   <div className="sp-meta-item">
                     <div className="mi-label">Muaj me Shitje</div>
-                    <div className="mi-value">{s.monthsWithSales ?? "â€”"}</div>
+                    <div className="mi-value">{s.monthsWithSales ?? "-"}</div>
                   </div>
                   <div className="sp-meta-item">
                     <div className="mi-label">Trendi</div>

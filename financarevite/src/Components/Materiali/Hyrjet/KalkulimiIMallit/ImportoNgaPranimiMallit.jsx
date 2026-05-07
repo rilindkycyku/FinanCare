@@ -47,9 +47,7 @@ function ImportoNgaPranimiMallit(props) {
           setTeDhenat(perdoruesi.data);
         } catch (err) {
           console.log(err);
-        } finally {
-          setLoading(false);
-        }
+        } 
       };
 
       vendosTeDhenat();
@@ -76,10 +74,10 @@ function ImportoNgaPranimiMallit(props) {
 
   // Add these state variables at the top of your component
   const [dataFillim, setDataFillim] = useState(
-    new Date().toISOString().split("T")[0], // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Today
   );
   const [dataMbarim, setDataMbarim] = useState(
-    new Date().toISOString().split("T")[0], // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Today
   );
 
   useEffect(() => {
@@ -200,8 +198,7 @@ function ImportoNgaPranimiMallit(props) {
         </Modal>
       )}
 
-      <Modal
-        size="lg"
+      <Modal size="xl"
         style={{ marginTop: "3em" }}
         show={props.show}
         onHide={props.hide}>
@@ -238,8 +235,8 @@ function ImportoNgaPranimiMallit(props) {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  setDataFillim(new Date().toISOString().split("T")[0]);
-                  setDataMbarim(new Date().toISOString().split("T")[0]);
+                  setDataFillim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                  setDataMbarim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                 }}
                 className="w-100">
                 Sot

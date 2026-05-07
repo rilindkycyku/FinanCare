@@ -511,7 +511,7 @@ export default function Gjurmimet() {
                     className="py-3 fw-bold"
                     onClick={handleClearAllLogs}
                     disabled={isClearing}>
-                    FSHI TÇ‹ GJITHA LOG-ET
+                    FSHI TË GJITHA LOG-ET
                   </Button>
                   <p className="text-danger small text-center mt-1">
                     âš  Kjo veprim është i pakthyeshëm.
@@ -520,7 +520,7 @@ export default function Gjurmimet() {
               </div>
 
               <div className="mb-4 pt-3 border-top border-secondary">
-                <p className="text-white-50 small mb-2">FSHI SIPAS KOHÇ‹S:</p>
+                <p className="text-white-50 small mb-2">FSHI SIPAS KOHËS:</p>
                 <div className="d-flex gap-2">
                   <Form.Control
                     className="sp-input"

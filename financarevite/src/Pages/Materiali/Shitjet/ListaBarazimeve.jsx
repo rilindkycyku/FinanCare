@@ -567,7 +567,7 @@ function ListaBarazimeve() {
 
                     <div className="mt-5">
                       <div className="sp-recommend-box mb-0">
-                        <div className="rec-label">DALLIMI FINAL I ARKÇ‹S</div>
+                        <div className="rec-label">DALLIMI FINAL I ARKËS</div>
                         <div className={`rec-qty ${dallimi > 0 ? "text-success" : dallimi < 0 ? "text-danger" : "text-white"}`}>
                           {dallimi > 0 ? "+" : ""}{dallimi.toFixed(2)} €
                         </div>

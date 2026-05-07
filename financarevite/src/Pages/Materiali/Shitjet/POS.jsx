@@ -1156,7 +1156,7 @@ function POS(props) {
                 </Button>
               </div>
               <div className="pos-header-info">
-                <span className="pos-nr-chip"><Hash size={13} /> {nrFatures || 'â€”'}</span>
+                <span className="pos-nr-chip"><Hash size={13} /> {nrFatures || '-'}</span>
                 <span><CalendarIcon size={14} className="me-1" style={{ opacity: 0.6 }} /> {currentDate}</span>
               </div>
             </div>

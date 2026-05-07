@@ -1,4 +1,4 @@
-﻿import axios from "axios";
+import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +18,7 @@ function LargoLlogarin(props) {
   async function handleSubmit() {
     try {
       await axios.delete(
-        `${API_BASE_URL}/api/TeDhenatBiznesit/FshijBanken?id=${props.id}`,
+        `${API_BASE_URL}/api/TeDhenatBiznesit/FshijLlogarinBankareBiznesit?id=${props.id}`,
         authentikimi
       );
       props.setTipiMesazhit("success");

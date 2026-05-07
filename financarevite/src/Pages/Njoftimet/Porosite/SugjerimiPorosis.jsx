@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
 import Select from "react-select";
 import {
@@ -28,15 +28,15 @@ function LevelBadge({ level }) {
   };
   const labels = {
     CRITICAL: "KRITIKE",
-    HIGH: "E LARTÇ‹",
+    HIGH: "E LARTË",
     MEDIUM: "MESME",
-    LOW: "E ULÇ‹T",
+    LOW: "E ULËT",
     OK: "OK",
   };
   return (
     <span className={`sp-level sp-level-${level || "OK"}`} style={{ fontSize: "0.75rem", padding: "0.25rem 0.8rem" }}>
       {icons[level] || null}
-      {labels[level] || level || "â€”"}
+      {labels[level] || level || "-"}
     </span>
   );
 }
@@ -66,7 +66,7 @@ function SugjerimiPorosise() {
         setOptions(
           res.data.map((p) => ({
             value: p.produktiID,
-            label: `${p.barkodi} â€“ ${p.emriProduktit}`,
+            label: `${p.barkodi} - ${p.emriProduktit}`,
             data: p,
           }))
         )
@@ -226,7 +226,7 @@ function SugjerimiPorosise() {
                   <>
                     <CheckCircle size={48} color="var(--sp-emerald)" style={{ marginBottom: "0.75rem" }} />
                     <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "2.2rem", fontWeight: 900, color: "var(--sp-emerald)", letterSpacing: "-0.03em" }}>
-                      STOK I MJAFTUESHÇ‹M
+                      STOK I MJAFTUESHËM
                     </div>
                     <p style={{ color: "var(--sp-text-muted)", fontSize: "0.9rem", marginTop: "0.4rem" }}>
                       Nuk ka nevojë për porosi
@@ -271,7 +271,7 @@ function SugjerimiPorosise() {
                     </div>
                     {packs && (
                       <div style={{ color: `${bannerAccent}bb`, fontSize: "1rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-                        {packs >= 1000 ? `${(packs / 1000).toFixed(1)}k` : packs} pako Ç— {s.packSize} copë/pako
+                        {packs >= 1000 ? `${(packs / 1000).toFixed(1)}k` : packs} pako - {s.packSize} copë/pako
                       </div>
                     )}
                     {estimatedCost > 0 && (
@@ -353,12 +353,12 @@ function SugjerimiPorosise() {
                 </div>
                 <div className="sp-meta-item">
                   <div className="mi-label">Furnitori</div>
-                  <div className="mi-value" style={{ fontFamily: "inherit", fontSize: "0.78rem" }}>{s.lastSupplier || "â€”"}</div>
+                  <div className="mi-value" style={{ fontFamily: "inherit", fontSize: "0.78rem" }}>{s.lastSupplier || "-"}</div>
                 </div>
                 <div className="sp-meta-item">
                   <div className="mi-label">Blerja e Fundit</div>
                   <div className="mi-value">
-                    {s.lastPurchaseDate ? new Date(s.lastPurchaseDate).toLocaleDateString("sq-AL") : "â€”"}
+                    {s.lastPurchaseDate ? new Date(s.lastPurchaseDate).toLocaleDateString("sq-AL") : "-"}
                   </div>
                 </div>
                 <div className="sp-meta-item">
@@ -367,11 +367,11 @@ function SugjerimiPorosise() {
                 </div>
                 <div className="sp-meta-item">
                   <div className="mi-label">Muaj me Shitje</div>
-                  <div className="mi-value">{s.monthsWithSales ?? "â€”"}</div>
+                  <div className="mi-value">{s.monthsWithSales ?? "-"}</div>
                 </div>
                 <div className="sp-meta-item">
                   <div className="mi-label">Periudha Analizës</div>
-                  <div className="mi-value" style={{ fontSize: "0.68rem" }}>{s.analysisPeriod || "â€”"}</div>
+                  <div className="mi-value" style={{ fontSize: "0.68rem" }}>{s.analysisPeriod || "-"}</div>
                 </div>
                 <div className="sp-meta-item">
                   <div className="mi-label">Trendi</div>
@@ -395,7 +395,7 @@ function SugjerimiPorosise() {
             <div className="sp-empty">
               <Search size={90} />
               <h3>Zgjidh një produkt për të parë sugjerimin</h3>
-              <p>Funksionon në çast â€“ pa pritje</p>
+              <p>Funksionon në çast - pa pritje</p>
             </div>
           )}
         </div>

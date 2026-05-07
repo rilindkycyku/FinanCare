@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import {
   User, Mail, Phone, Building, LogOut, FileText, CreditCard,
-  Store, Tag, Percent, Gift, Hash, ShieldCheck
+  Store, Tag, Percent, Gift, Hash, ShieldCheck, ShoppingBag
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -98,6 +98,22 @@ export default function Dashboard() {
             <InfoItem icon={<CreditCard size={16} />} label="NRF" value={user.NRF || "Pa vendosur"} />
             <InfoItem icon={<FileText size={16} />} label="TVSH" value={user.TVSH || "Pa vendosur"} />
           </div>
+        </motion.div>
+
+        {/* ── ORDERS SECTION */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-card rounded-3xl p-8 md:p-10 mt-6 text-center border border-brand-500/10"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mx-auto mb-4">
+            <ShoppingBag size={24} />
+          </div>
+          <h3 className="text-xl font-black text-white mb-2">Historiku i Porosive</h3>
+          <p className="text-slate-400 font-medium text-sm max-w-md mx-auto">
+            Sistemi për momentin funksionon me të dhëna statike. Për të kërkuar kopje të porosive tuaja të kaluara ose për të parë statusin e tyre, ju lutemi <span className="text-white font-bold">kontaktoni stafin tonë</span>.
+          </p>
         </motion.div>
 
       </div>

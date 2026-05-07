@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -10,6 +10,7 @@ import TeDhenatKalkulimit from "../../../Components/Materiali/Shitjet/ListaShitj
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import EditoDetajetFatures from "../../../Components/Materiali/Shitjet/ListaShitjeveMeParagon/EditoDetajetFatures";
 
 function ListaShitjeveMeParagon(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -25,7 +26,7 @@ function ListaShitjeveMeParagon(props) {
   const [Partneri, setPartneri] = useState(0);
   const [nrFatures, setNrFatures] = useState("");
   const today = new Date();
-  const initialDate = today.toISOString().split("T")[0]; // Format as 'yyyy-MM-dd'
+  const initialDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
   const [dataEFatures, setDataEFatures] = useState(initialDate);
   const [llojiIPageses, setLlojiIPageses] = useState("Cash");
   const [statusiIPageses, setStatusiIPageses] = useState("E Paguar");
@@ -50,6 +51,10 @@ function ListaShitjeveMeParagon(props) {
 
   const [teDhenat, setTeDhenat] = useState([]);
 
+  // Edit invoice header modal
+  const [shfaqEditoFaturen, setShfaqEditoFaturen] = useState(false);
+  const [idKalkulimitPerEdito, setIdKalkulimitPerEdito] = useState(null);
+
   const navigate = useNavigate();
 
   const getID = localStorage.getItem("id");
@@ -68,12 +73,11 @@ function ListaShitjeveMeParagon(props) {
     setMbyllFaturen(false);
   };
 
-  // Add these state variables at the top of your component
   const [dataFillim, setDataFillim] = useState(
-    new Date().toISOString().split("T")[0] // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]
   );
   const [dataMbarim, setDataMbarim] = useState(
-    new Date().toISOString().split("T")[0] // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]
   );
 
   useEffect(() => {
@@ -189,6 +193,12 @@ function ListaShitjeveMeParagon(props) {
             hide={() => ndryshoStatusin(false)}
           />
         )}
+        <EditoDetajetFatures
+          show={shfaqEditoFaturen}
+          onHide={() => setShfaqEditoFaturen(false)}
+          idKalkulimit={idKalkulimitPerEdito}
+          perditesoTeDhenat={() => setPerditeso(Date.now())}
+        />
         {loading ? (
           <div className="Loader">
             <TailSpin
@@ -235,8 +245,8 @@ function ListaShitjeveMeParagon(props) {
                     <Button
                       variant="secondary"
                       onClick={() => {
-                        setDataFillim(new Date().toISOString().split("T")[0]);
-                        setDataMbarim(new Date().toISOString().split("T")[0]);
+                        setDataFillim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                        setDataMbarim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                       }}
                       className="w-100">
                       Sot
@@ -248,8 +258,12 @@ function ListaShitjeveMeParagon(props) {
                   tableName="Lista e Shitjeve me Paragon"
                   kaButona={true}
                   funksionShfaqFature={(e) => handleShfaqTeDhenat(e)}
+                  funksionEditoFaturen={(id) => {
+                    setIdKalkulimitPerEdito(id);
+                    setShfaqEditoFaturen(true);
+                  }}
                   funksionNdryshoStatusinEFatures={() => setEdito(true)}
-                  dateField="Data e Fatures" // The field in your data that contains the date values
+                  dateField="Data e Fatures"
                   mosShfaqID={true}
                 />
               </Container>

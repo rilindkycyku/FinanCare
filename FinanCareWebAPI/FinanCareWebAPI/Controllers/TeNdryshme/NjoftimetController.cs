@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -79,7 +79,8 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                    p.IDProduktit,
                    p.Produkti.EmriProduktit,
                    p.PersoniPergjegjes.Emri,
-                   p.PersoniPergjegjes.Mbiemri
+                   p.PersoniPergjegjes.Mbiemri,
+                   p.DataRegjistrimit
                })
                .ToListAsync();
 
@@ -94,9 +95,14 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             await _context.AfatetESkadimit.AddAsync(afatetESkadimit);
             await _context.SaveChangesAsync();
 
+            var productName = await _context.Produkti
+                .Where(p => p.ProduktiID == afatetESkadimit.IDProduktit)
+                .Select(p => p.EmriProduktit)
+                .FirstOrDefaultAsync() ?? "Produkt i panjohur";
+
             var response = new { Message = "Success", Data = afatetESkadimit };
 
-            await LogAdminActionAsync("Shto", afatetESkadimit.ID.ToString(), $"Eshte shtuar afati i skadimit per: {afatetESkadimit.Produkti.EmriProduktit} - {afatetESkadimit.DataSkadimit}");
+            await LogAdminActionAsync("Shto", afatetESkadimit.ID.ToString(), $"Eshte shtuar afati i skadimit per: {productName} - {afatetESkadimit.DataSkadimit}");
             return Ok(response);
         }
 

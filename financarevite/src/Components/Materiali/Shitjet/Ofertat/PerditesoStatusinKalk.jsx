@@ -26,8 +26,8 @@ function PerditesoStatusinKalk(props) {
   }, []);
 
   // Date range state
-  const [dataFillim, setDataFillim] = useState(today.toISOString().split("T")[0]);
-  const [dataMbarim, setDataMbarim] = useState(tomorrow.toISOString().split("T")[0]);
+  const [dataFillim, setDataFillim] = useState(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+  const [dataMbarim, setDataMbarim] = useState(new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
 
   // Data state
   const [kalkulimet, setKalkulimet] = useState([]);
@@ -201,8 +201,8 @@ function PerditesoStatusinKalk(props) {
 
   // Reset to today
   const resetToToday = useCallback(() => {
-    setDataFillim(today.toISOString().split("T")[0]);
-    setDataMbarim(tomorrow.toISOString().split("T")[0]);
+    setDataFillim(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+    setDataMbarim(new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
   }, [today, tomorrow]);
 
   // Format date helper
@@ -255,8 +255,7 @@ function PerditesoStatusinKalk(props) {
       />
 
       {/* Main Modal */}
-      <Modal
-        size="lg"
+      <Modal size="xl"
         style={{ marginTop: "3em" }}
         show={props.show}
         onHide={props.hide}

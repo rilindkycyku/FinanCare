@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import Titulli from "../Components/TeTjera/Titulli";
@@ -45,7 +45,7 @@ const BartTeDhenat = () => {
         try {
           const res = await axios.post(`${API_BASE_URL}/api/ExportoTeDhenatTekKlienti/${route}`, {}, auth);
           results[key] = res.data;
-          await addLog(`âœ… ${name} transfer completed. Total: ${res.data.total ?? "-"} items.`, 500);
+          await addLog(`✓ ${name} transfer completed. Total: ${res.data.total ?? "-"} items.`, 500);
           setData({ ...results }); // update cards dynamically
         } catch (err) {
           await addLog(`âŒ Error transferring ${name}: ${err.message}`, 500);

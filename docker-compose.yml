@@ -64,6 +64,25 @@ services:
       timeout: 5s
       retries: 3
 
+  # ── React Online Portal (nginx) ──────────────────────────────────────────────
+  online:
+    build:
+      context: ./financareonline
+      dockerfile: Dockerfile
+    container_name: financare-online
+    ports:
+      - "3001:80"
+    depends_on:
+      - api
+    networks:
+      - app-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
 volumes:
   sqldata:
 

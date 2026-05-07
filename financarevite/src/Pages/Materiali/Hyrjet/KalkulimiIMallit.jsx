@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -15,8 +15,9 @@ import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
-import ImportoNgaPranimiMallit from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/ImportoNgaPranimiMallit";
+import ImportoNgaPranimiMallit from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/ImportoNgaPranimiMallit";
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import EditoDetajetFatures from "../../../Components/Materiali/Hyrjet/KalkulimiIMallit/EditoDetajetFatures";
 
 function KalkulimiIMallit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -31,7 +32,7 @@ function KalkulimiIMallit(props) {
   const [Partneri, setPartneri] = useState(0);
   const [nrFatures, setNrFatures] = useState("");
   const today = new Date();
-  const initialDate = today.toISOString().split("T")[0]; // Format as 'yyyy-MM-dd'
+  const initialDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]; // Format as 'yyyy-MM-dd'
   const [dataEFatures, setDataEFatures] = useState(initialDate);
   const [llojiIPageses, setLlojiIPageses] = useState("Cash");
   const [statusiIPageses, setStatusiIPageses] = useState("E Paguar");
@@ -54,6 +55,10 @@ function KalkulimiIMallit(props) {
 
   const [statusiIPagesesValue, setStatusiIPagesesValue] = useState("Pa Paguar");
 
+  // Edit invoice header modal
+  const [shfaqEditoFaturen, setShfaqEditoFaturen] = useState(false);
+  const [idKalkulimitPerEdito, setIdKalkulimitPerEdito] = useState(null);
+
   const navigate = useNavigate();
 
   const getID = localStorage.getItem("id");
@@ -74,10 +79,10 @@ function KalkulimiIMallit(props) {
 
   // Add these state variables at the top of your component
   const [dataFillim, setDataFillim] = useState(
-    new Date().toISOString().split("T")[0], // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Today
   );
   const [dataMbarim, setDataMbarim] = useState(
-    new Date().toISOString().split("T")[0], // Today
+    new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Today
   );
 
   useEffect(() => {
@@ -358,6 +363,12 @@ function KalkulimiIMallit(props) {
             hide={() => ndryshoImporto(false)}
           />
         )}
+        <EditoDetajetFatures
+          show={shfaqEditoFaturen}
+          onHide={() => setShfaqEditoFaturen(false)}
+          idKalkulimit={idKalkulimitPerEdito}
+          perditesoTeDhenat={() => setPerditeso(Date.now())}
+        />
         {loading ? (
           <div className="d-flex align-items-center justify-content-center py-5">
             <TailSpin
@@ -569,8 +580,8 @@ function KalkulimiIMallit(props) {
                       <Button
                         className="btn-premium-outline w-100"
                         onClick={() => {
-                          setDataFillim(new Date().toISOString().split("T")[0]);
-                          setDataMbarim(new Date().toISOString().split("T")[0]);
+                          setDataFillim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                          setDataMbarim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                         }}>
                         Sot
                       </Button>
@@ -582,6 +593,10 @@ function KalkulimiIMallit(props) {
                     tableName="Lista e Kalkulimeve"
                     kaButona={true}
                     funksionShfaqFature={(e) => handleShfaqTeDhenat(e)}
+                    funksionEditoFaturen={(id) => {
+                      setIdKalkulimitPerEdito(id);
+                      setShfaqEditoFaturen(true);
+                    }}
                     funksionNdryshoStatusinEFatures={() => setEdito(true)}
                     funksionImportoNgaPranimiMallit={() => setImporto(true)}
                     funksionButonEdit={(e) => {
@@ -589,8 +604,7 @@ function KalkulimiIMallit(props) {
                       setNrRendorKalkulimit(e);
                       setRegjistroKalkulimin(true);
                     }}
-                    dateField="Data e Fatures" // The field in your data that contains the date values
-                    kontrolloStatusin
+                    dateField="Data e Fatures"
                     mosShfaqID={true}
                   />
                 </div>

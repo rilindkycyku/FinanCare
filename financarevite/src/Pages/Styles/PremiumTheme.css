@@ -215,6 +215,44 @@ body {
   color: white !important;
 }
 
+/* ── GLOBALLY STYLE MODAL TABLES TO MATCH PREMIUM LOOK ────────────────────────────── */
+.modal-body table.table {
+  border-collapse: separate !important;
+  border-spacing: 0 4px !important;
+  background: transparent !important;
+  color: var(--sp-text) !important;
+}
+
+.modal-body table.table thead th {
+  background: var(--sp-surface-2) !important;
+  color: var(--sp-text-muted) !important;
+  font-size: 0.65rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  padding: 1rem 1.25rem !important;
+  border: none !important;
+  border-bottom: 2px solid var(--sp-border) !important;
+}
+
+.modal-body table.table tbody td {
+  background: var(--sp-surface) !important;
+  border: none !important;
+  border-top: 1px solid var(--sp-border) !important;
+  border-bottom: 1px solid var(--sp-border) !important;
+  padding: 1.1rem 1.25rem !important;
+  color: var(--sp-text) !important;
+}
+
+.modal-body table.table tbody td:first-child { border-radius: var(--sp-radius-md) 0 0 var(--sp-radius-md) !important; border-left: 1px solid var(--sp-border) !important; }
+.modal-body table.table tbody td:last-child { border-radius: 0 var(--sp-radius-md) var(--sp-radius-md) 0 !important; border-right: 1px solid var(--sp-border) !important; }
+
+.modal-body table.table tbody tr:hover td {
+  background: var(--sp-surface-2) !important;
+  border-color: var(--sp-emerald) !important;
+  color: white !important;
+}
+
 /* ── PAGINATION ──────────────────────────────────────────────── */
 .pagination {
   gap: 4px !important;

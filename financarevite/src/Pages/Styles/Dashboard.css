@@ -131,12 +131,19 @@
   line-height: 1.2;
 }
 
-/* Tab Styling */
 .modern-tabs .nav-tabs {
   border-bottom: 1px solid var(--sp-border);
   gap: 2rem;
   margin-bottom: 2.5rem;
   flex-wrap: nowrap;
+}
+
+.modern-tabs .nav-item {
+  margin-right: 2rem;
+}
+
+.modern-tabs .nav-item:last-child {
+  margin-right: 0;
 }
 
 .modern-tabs .nav-link {

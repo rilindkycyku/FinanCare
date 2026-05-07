@@ -499,7 +499,7 @@ function RegjistroFaturen(props) {
                 );
                 console.log(produktet);
                 await axios.put(
-                  `${API_BASE_URL}/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${prod.produktiID}`,
+                  `${API_BASE_URL}/api/Faturat/ruajKalkulimin/kalkulimifillestarvjetor/perditesoStokunQmimin?id=${prod?.produktiID}`,
                   {
                     qmimiBleres: produkti["Qmimi Bleres + TVSH €"],
                     qmimiProduktit: produkti["Qmimi Shites me Pakic + TVSH €"],
@@ -856,14 +856,14 @@ function RegjistroFaturen(props) {
                             styles={darkSelectStyles}
                             placeholder={
                               loadingProdukteve
-                                ? "Duke ngarkuar produktetâ€¦"
-                                : "Kërko produkt (min. 2 shkronja)â€¦"
+                                ? "Duke ngarkuar produktet..."
+                                : "Kërko produkt (min. 2 shkronja)..."
                             }
                             onInputChange={handleInputChange}
                             inputValue={inputValue}
                             noOptionsMessage={() =>
                               loadingProdukteve
-                                ? "Duke ngarkuarâ€¦"
+                                ? "Duke ngarkuar..."
                                 : inputValue.length < 2
                                   ? "Shkruani të paktën 2 karaktere"
                                   : "Nuk u gjet asnjë produkt"

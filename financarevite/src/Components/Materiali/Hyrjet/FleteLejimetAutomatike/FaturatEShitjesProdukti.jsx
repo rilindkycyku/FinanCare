@@ -140,10 +140,10 @@ function PerditesoStatusinKalk(props) {
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   const [dataFillim, setDataFillim] = useState(
-    today.toISOString().split("T")[0]
+    new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
   );
   const [dataMbarim, setDataMbarim] = useState(
-    tomorrow.toISOString().split("T")[0]
+    new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
   );
 
   // Fetch invoices with debounce
@@ -328,7 +328,7 @@ function PerditesoStatusinKalk(props) {
         </Modal.Body>
       </Modal>
 
-      <Modal size="lg" className="mt-12" show={props.show} onHide={props.hide}>
+      <Modal size="xl" className="mt-12" show={props.show} onHide={props.hide}>
         <Modal.Header closeButton className="border-bottom-0 pb-0">
           <Modal.Title className="fw-bold">Lista e Kalkulimeve</Modal.Title>
         </Modal.Header>
@@ -409,8 +409,8 @@ function PerditesoStatusinKalk(props) {
                   <Button
                     variant="primary"
                     onClick={() => {
-                      setDataFillim(today.toISOString().split("T")[0]);
-                      setDataMbarim(tomorrow.toISOString().split("T")[0]);
+                      setDataFillim(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                      setDataMbarim(new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                     }}
                     disabled={isLoading}
                     className="w-100 shadow-sm fw-medium border-0"
@@ -435,8 +435,8 @@ function PerditesoStatusinKalk(props) {
             <div className="card shadow-sm border-0">
               <div className="card-body p-0 rounded overflow-hidden">
                 <div className="table-responsive">
-                  <MDBTable hover align="middle" className="mb-0 bg-white">
-                    <MDBTableHead className="bg-light">
+                  <MDBTable hover align="middle" className="mb-0">
+                    <MDBTableHead >
                       <tr>
                         <th className="fw-bold text-secondary text-uppercase small" scope="col">Nr. Kalk</th>
                         <th className="fw-bold text-secondary text-uppercase small" scope="col">Nr. Fat</th>

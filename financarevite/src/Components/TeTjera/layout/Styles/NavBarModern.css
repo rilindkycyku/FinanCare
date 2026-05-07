@@ -24,6 +24,14 @@
   gap: 0.75rem;
 }
 
+.modern-navbar .navbar-toggler {
+  color: #f8fafc !important;
+}
+
+.modern-navbar .navbar-toggler:hover {
+  color: var(--sp-emerald) !important;
+}
+
 .brand-gradient {
   background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
   -webkit-background-clip: text;

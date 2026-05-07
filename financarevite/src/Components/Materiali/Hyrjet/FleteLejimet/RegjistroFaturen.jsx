@@ -307,7 +307,7 @@ function RegjistroFaturen(props) {
           );
 
           await axios.put(
-            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin?id=${prod.produktiID}`,
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/asgjesoStokun/perditesoStokunQmimin?id=${prod?.produktiID}`,
             {
               sasiaNeStok: -produkti["Sasia"],
             },
@@ -584,12 +584,12 @@ function RegjistroFaturen(props) {
                             inputValue={inputValue}
                             placeholder={
                               loadingProdukteve
-                                ? "Duke ngarkuar produktetâ€¦"
-                                : "Kërko produktâ€¦"
+                                ? "Duke ngarkuar produktet..."
+                                : "Kërko produkt..."
                             }
                             noOptionsMessage={() =>
                               loadingProdukteve
-                                ? "Duke ngarkuarâ€¦"
+                                ? "Duke ngarkuar..."
                                 : inputValue.length < 2
                                   ? "Shkruani të paktën 2 karaktere"
                                   : "Nuk u gjet produkt"

@@ -117,25 +117,29 @@
 }
 
 .tabelaETeDhenaveProduktit table {
-  width: 100%; /* Fill container, expand with min-width */
-  min-width: 700px; /* Force horizontal scroll beyond 595px */
+  width: 100%;
+  min-width: 100%;
   text-align: center;
   border-collapse: collapse;
-  font-size: 6pt;
-  table-layout: fixed;
+  font-size: 7pt;
+  table-layout: auto; /* Allow natural column sizing */
+  background-color: #ffffff !important;
+  color: #1e293b !important;
 }
 
 .tabelaETeDhenaveProduktit th,
 .tabelaETeDhenaveProduktit td {
-  padding: 2px;
-  border: 1px solid #ccc;
-  word-wrap: break-word;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 4px 2px;
+  border: 1px solid #cbd5e1 !important;
+  background-color: inherit !important;
+  color: inherit !important;
+  word-break: normal;
 }
 
 .tabelaETeDhenaveProduktit th {
-  background-color: #f0f0f0;
+  background-color: #f1f5f9 !important;
+  font-weight: bold !important;
+  color: #0f172a !important;
   position: sticky;
   top: 0;
   z-index: 1;
@@ -236,6 +240,31 @@
   border-width: 0;
   background-color: #333;
   margin: 0.4em 0;
+}
+
+/* Tabela e Bankave styling - forces white theme on invoice */
+.tabela-bankave {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8pt;
+  margin-top: 5px;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.tabela-bankave th,
+.tabela-bankave td {
+  border: 1px solid #cbd5e1 !important;
+  padding: 4px;
+  background-color: inherit !important;
+  color: inherit !important;
+  text-align: left;
+}
+
+.tabela-bankave th {
+  background-color: #f1f5f9 !important;
+  font-weight: bold !important;
+  color: #0f172a !important;
 }
 
 /* Mobile responsiveness */

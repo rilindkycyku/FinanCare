@@ -4,7 +4,8 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
+
   faPlus,
   faPenToSquare,
   faArrowLeft
@@ -15,7 +16,8 @@ import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 import Tabela from "../../../TeTjera/Tabela/Tabela";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function RegjistroFaturen(props) {
@@ -297,25 +299,27 @@ function RegjistroFaturen(props) {
         props.setPerditeso();
         props.mbyllPerkohesisht();
       } else {
-        for (let produkti of produktetNeKalkulim) {
-          console.log(produkti);
-          var prod = produktet.find(
-            (item) => item.emriProduktit == produkti["Emri Produktit"]
-          );
 
-          console.log(produktet);
+        //  Kjo do te perdoret per fatura qe nuk vijn nga pranimi i mallit.
+        // for (let produkti of produktetNeKalkulim) {
+        //   console.log(produkti);
+        //   var prod = produktet.find(
+        //     (item) => item.emriProduktit == produkti["Emri Produktit"]
+        //   );
 
-          await axios.put(
-            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStokunQmimin?id=${prod.produktiID}`,
-            {
-              qmimiBleres: produkti["Qmimi Bleres + TVSH €"],
-              qmimiProduktit: produkti["Qmimi Shites me Pakic + TVSH €"],
-              sasiaNeStok: produkti["Sasia"],
-              qmimiMeShumic: produkti["Qmimi Shites me Shumic + TVSH €"],
-            },
-            authentikimi
-          );
-        }
+        //   console.log(produktet);
+
+        //   await axios.put(
+        //     `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStokunQmimin?id=${prod?.produktiID}`,
+        //     {
+        //       qmimiBleres: produkti["Qmimi Bleres + TVSH €"],
+        //       qmimiProduktit: produkti["Qmimi Shites me Pakic + TVSH €"],
+        //       sasiaNeStok: produkti["Sasia"],
+        //       qmimiMeShumic: produkti["Qmimi Shites me Shumic + TVSH €"],
+        //     },
+        //     authentikimi
+        //   );
+        // }
 
         props.setPerditeso();
         props.mbyllKalkulimin();
@@ -549,12 +553,12 @@ function RegjistroFaturen(props) {
                             inputValue={inputValue}
                             placeholder={
                               loadingProdukteve
-                                ? "Duke ngarkuar produktetâ€¦"
-                                : "Kërko produktâ€¦"
+                                ? "Duke ngarkuar produktet..."
+                                : "Kërko produkt..."
                             }
                             noOptionsMessage={() =>
                               loadingProdukteve
-                                ? "Duke ngarkuarâ€¦"
+                                ? "Duke ngarkuar..."
                                 : inputValue.length < 2
                                   ? "Shkruani të paktën 2 karaktere"
                                   : "Nuk u gjet produkt"

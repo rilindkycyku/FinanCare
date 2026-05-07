@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -6,6 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
+import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoDitetEFurnizimit(props) {
@@ -41,7 +42,7 @@ function EditoDitetEFurnizimit(props) {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  /* ==================== NGARKO TÇ‹ DHÇ‹NAT ==================== */
+  /* ==================== NGARKO TË DHËNAT ==================== */
   useEffect(() => {
     if (!props.id) return;
 
@@ -210,7 +211,7 @@ function EditoDitetEFurnizimit(props) {
               />
             </Form.Group>
 
-            {/* Furnitori â€“ Enter zgjedh opsionin, pastaj kalon te dita kur zgjedhja përfundon */}
+            {/* Furnitori - Enter zgjedh opsionin, pastaj kalon te dita kur zgjedhja përfundon */}
             <Form.Group className="mb-3">
               <Form.Label>
                 Furnitori <span style={{ color: "red" }}>*</span>
@@ -219,7 +220,6 @@ function EditoDitetEFurnizimit(props) {
                 value={selectedPartnerOption}
                 onChange={(selected) => {
                   handlePartnerChange(selected);
-                  // Pas zgjedhjes, fokuso te fusha tjetër
                   setTimeout(() => ditaSelectRef.current?.focus(), 0);
                 }}
                 options={furnitoret}
@@ -227,14 +227,13 @@ function EditoDitetEFurnizimit(props) {
                 isClearable
                 isSearchable
                 noOptionsMessage={() => "Nuk u gjet furnitor"}
-                className="react-select-container"
-                classNamePrefix="react-select"
+                styles={darkSelectStyles}
+                menuPortalTarget={document.body}
                 autoFocus
-                // Hiq onKeyDown krejt â€“ lejo default behavior të Enter-it
               />
             </Form.Group>
 
-            {/* Dita e Furnizimit â€“ Enter zgjedh ditën, pastaj ruajt */}
+            {/* Dita e Furnizimit - Enter zgjedh ditën, pastaj ruajt */}
             <Form.Group className="mb-3">
               <Form.Label>
                 Dita e Furnizimit <span style={{ color: "red" }}>*</span>
@@ -244,15 +243,13 @@ function EditoDitetEFurnizimit(props) {
                 value={selectedDitaOption}
                 onChange={(selected) => {
                   handleDitaChange(selected);
-                  // Pas zgjedhjes së ditës, fokuso butonin e ruajtjes
                   setTimeout(() => saveButtonRef.current?.focus(), 0);
                 }}
                 options={ditetEJaves}
                 placeholder="Zgjidh ditën..."
                 isSearchable={false}
-                className="react-select-container"
-                classNamePrefix="react-select"
-                // Hiq onKeyDown â€“ Enter-i do të zgjedhë ditën automatikisht
+                styles={darkSelectStyles}
+                menuPortalTarget={document.body}
               />
             </Form.Group>
           </Form>

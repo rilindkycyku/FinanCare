@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -6,11 +6,16 @@ import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
-import { useEffect } from "react";
 
-import Select from "react-select";
+
+import Select from "react-select";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import { useNavigate } from "react-router-dom";
+
 function ShtoAfatinESkadimit(props) {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [dataSkadimit, setDataSkadimit] = useState("");
 
@@ -77,41 +82,81 @@ function ShtoAfatinESkadimit(props) {
         props.shfaqmesazhin();
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.response.data);
       });
   }
 
   const handleKontrolli = () => {
     if (isNullOrEmpty(dataSkadimit) || isNullOrEmpty(optionsSelected)) {
       setFushatEZbrazura(true);
-    } else {
-      handleSubmit();
+      return;
     }
+
+    const selectedDate = new Date(dataSkadimit);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      props.setTipiMesazhit("danger");
+      props.setPershkrimiMesazhit("Nuk mund të shtoni një afat skadimi në të kaluarën.");
+      props.shfaqmesazhin();
+      return;
+    }
+
+    handleSubmit();
   };
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-    useEffect(() => {
+  const [loadingProdukteve, setLoadingProdukteve] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
     axios
       .get(`${API_BASE_URL}/api/Produkti/Products`, authentikimi)
       .then((response) => {
-        console.log(response);
-        const fetchedoptions = response.data.map((item) => ({
-          value: item.produktiID,
-          label: item.emriProduktit,
-          item: item,
-        }));
-        setOptions(fetchedoptions);
+        if (isMounted) {
+          const fetchedoptions = response.data.map((item) => ({
+            value: item.produktiID,
+            label: item.emriProduktit + (item.barkodi ? ` - ${item.barkodi}` : "") + (item.kodiProduktit ? ` - ${item.kodiProduktit}` : ""),
+            item: item,
+          }));
+          setOptions(fetchedoptions);
+          setLoadingProdukteve(false);
+        }
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        if (isMounted) setLoadingProdukteve(false);
       });
+    return () => { isMounted = false; };
   }, []);
+
   const handleChange = async (partneri) => {
     setOptionsSelected(partneri);
     const element = document.getElementById("dataSkadimit");
-    element.focus();
+    if (element) element.focus();
   };
+
+  const [inputValue, setInputValue] = useState("");
+  const handleInputChange = (val) => {
+    setInputValue(val);
+    return val;
+  };
+
+  const filteredOptions = useMemo(() => {
+    if (!inputValue || inputValue.length < 2) return [];
+
+    const lower = inputValue.toLowerCase();
+    const results = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].label.toLowerCase().includes(lower)) {
+        results.push(options[i]);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValue, options]);
 
   return (
     <>
@@ -158,20 +203,39 @@ function ShtoAfatinESkadimit(props) {
         show={props.shfaq}
         onHide={() => props.largo()}>
         <Modal.Header closeButton>
-          <Modal.Title>Shto Kategorine</Modal.Title>
+          <Modal.Title>Shto Afatin e Skadimit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="idDheEmri">
+            <Form.Group className="mb-3" controlId="idDheEmri">
               <Form.Label>Produkti<span style={{ color: "red" }}>*</span></Form.Label>
               <Select
                 value={optionsSelected}
                 onChange={handleChange}
-                options={options}
-                id="produktiSelect" // Setting the id attribute
-                inputId="produktiSelect-input" // Setting the input id attribute
+                options={filteredOptions}
+                id="produktiSelect"
+                inputId="produktiSelect-input"
                 styles={darkSelectStyles}
+                onInputChange={handleInputChange}
+                inputValue={inputValue}
+                isDisabled={loadingProdukteve}
+                isLoading={loadingProdukteve}
+                placeholder={
+                  loadingProdukteve
+                    ? "Duke ngarkuar produktet..."
+                    : "Kërko produkt..."
+                }
+                noOptionsMessage={() =>
+                  loadingProdukteve
+                    ? "Duke ngarkuar..."
+                    : inputValue.length < 2
+                      ? "Shkruani të paktën 2 karaktere"
+                      : "Nuk u gjet produkt"
+                }
               />
+              <div className="text-muted mt-1" style={{ fontSize: "9pt" }}>
+                Këshillë: shkruani barkodin ose emrin e produktit.
+              </div>
             </Form.Group>
             <Form.Group className="mb-3" controlId="dataSkadimit">
               <Form.Label>Afati i Skadimit<span style={{ color: "red" }}>*</span></Form.Label>
@@ -181,12 +245,6 @@ function ShtoAfatinESkadimit(props) {
                 value={dataSkadimit}
                 type="date"
                 min={new Date().toISOString().substring(0, 10)}
-                onInput={(e) => {
-                  const minDate = new Date().toISOString().substring(0, 10); // get today's date
-                  if (e.target.value < minDate) {
-                    e.target.value = minDate; // set the date input value to today
-                  }
-                }}
                 autoFocus
               />
             </Form.Group>
@@ -197,7 +255,7 @@ function ShtoAfatinESkadimit(props) {
             Anulo <FontAwesomeIcon icon={faXmark} />
           </Button>
           <Button className="Butoni" onClick={handleKontrolli}>
-            Shto Njesine Matese <FontAwesomeIcon icon={faPlus} />
+            Shto Afatin e Skadimit <FontAwesomeIcon icon={faPlus} />
           </Button>
         </Modal.Footer>
       </Modal>

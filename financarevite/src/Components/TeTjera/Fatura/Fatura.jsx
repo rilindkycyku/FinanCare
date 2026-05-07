@@ -1,4 +1,4 @@
-﻿import "./Styles/FaturaModern.css";
+import "./Styles/FaturaModern.css";
 import axios from "axios";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -62,10 +62,9 @@ function Fatura({ nrFatures, mbyllFaturen }) {
 
   const barkodi = useMemo(() => {
     if (!teDhenatFat?.regjistrimet) return "";
-    return teDhenatFat.regjistrimet.llojiKalkulimit === "PARAGON"
+    return teDhenatFat.regjistrimet.llojiKalkulimit === "PARAGON" || teDhenatFat.regjistrimet.llojiKalkulimit === "ONLINE"
       ? teDhenatFat.regjistrimet.nrFatures || ""
-      : `${teDhenatBiznesit?.shkurtesaEmritBiznesit || "FAT"}-${dita}${muaji}${viti}-${teDhenatFat.regjistrimet.llojiKalkulimit || ""
-      }-${teDhenatFat.regjistrimet.nrRendorFatures || ""}`;
+      : `${teDhenatBiznesit?.shkurtesaEmritBiznesit || "FAT"}-${dita}${muaji}${viti}-${teDhenatFat.regjistrimet.llojiKalkulimit || ""}-${teDhenatFat.regjistrimet.nrRendorFatures || ""}`;
   }, [teDhenatFat, teDhenatBiznesit, dita, muaji, viti]);
 
   useEffect(() => {

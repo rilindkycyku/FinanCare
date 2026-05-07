@@ -23,7 +23,10 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Banknote,
-  RefreshCcw
+  RefreshCcw,
+  FileCheck,
+  Download,
+  FileText
 } from "lucide-react";
 import EksportoTeDhenat from "./EksportoTeDhenat";
 import SortIcon from "./SortIcon";
@@ -41,6 +44,7 @@ function Tabela({
   funksionButonEdit,
   funksionButonFshij,
   funksionShfaqFature,
+  funksionEditoFaturen,
   funksioniEditoStokunQmimin,
   funksionNdryshoStatusinEFatures,
   funksionImportoNgaPranimiMallit,
@@ -148,7 +152,7 @@ function Tabela({
                 </Button>
               )}
 
-              {data.length > 0 && (
+              {shfaqEksporto && data.length > 0 && (
                 <EksportoTeDhenat
                   teDhenatJSON={data}
                   emriDokumentit={tableName}
@@ -163,6 +167,17 @@ function Tabela({
                   <ArrowRightLeft size={16} className="me-2" /> Bartja
                 </Button>
               )}
+
+              {funksionImportoNgaPranimiMallit && (
+                <Button
+                  variant="warning"
+                  className="btn-premium-outline"
+                  style={{ color: '#fff', borderColor: '#eab308', background: 'rgba(234, 179, 8, 0.1)' }}
+                  onClick={() => funksionImportoNgaPranimiMallit()}>
+                  <Download size={16} className="me-2" /> Importo nga Pranimi i Mallit
+                </Button>
+              )}
+
               {funksionNdryshoStatusinEFatures && (
                 <Button
                   variant="outline-primary"
@@ -295,12 +310,23 @@ function Tabela({
                               <Info size={16} />
                             </button>
                           )}
+                          {funksionEditoFaturen && (
+                            <button
+                              className="btn-action edit"
+                              disabled={item["Statusi Kalkulimit"] === "I Mbyllur"}
+                              onClick={() => funksionEditoFaturen(item.ID)}
+                              title="Edito Detajet e Faturës"
+                              style={{ color: "#3b82f6" }}
+                            >
+                              <FileText size={16} />
+                            </button>
+                          )}
                           {funksionButonEdit && (
                             <button
                               className="btn-action edit"
                               disabled={item["Statusi Kalkulimit"] === "I Mbyllur"}
                               onClick={() => funksionButonEdit(item.ID)}
-                              title="Ndrysho"
+                              title="Ndrysho Produktet"
                             >
                               <Edit3 size={16} />
                             </button>
@@ -323,6 +349,16 @@ function Tabela({
                               title="Fshij"
                             >
                               <Trash2 size={16} />
+                            </button>
+                          )}
+                          {funksionFaturoOferten && (
+                            <button
+                              className="btn-action price"
+                              disabled={item["Statusi Kalkulimit"] === "I Mbyllur" || item["Eshte Faturuar"] === "Po" || item["Eshte Faturuar"] === "PO" || item["Eshte Faturuar"] === true}
+                              onClick={() => funksionFaturoOferten(item.ID)}
+                              title="Faturo Ofertën"
+                            >
+                              <FileCheck size={16} />
                             </button>
                           )}
                         </div>
@@ -459,6 +495,11 @@ function Tabela({
           border: 1px solid var(--sp-border) !important;
           font-weight: 600;
           padding: 0.6rem 1rem !important;
+        }
+        .premium-input-group .form-control::placeholder, 
+        .premium-select::placeholder {
+          color: var(--sp-text-muted) !important;
+          opacity: 0.8 !important;
         }
         .premium-input-group .form-control:focus, .premium-select:focus {
           border-color: var(--sp-emerald) !important;

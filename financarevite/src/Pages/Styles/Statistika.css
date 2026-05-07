@@ -111,7 +111,7 @@
 }
 
 .premium-table-container th {
-  background: #f8fafc !important;
+  background: var(--sp-surface-2, transparent) !important;
   font-weight: 800 !important;
   font-size: 0.7rem !important;
   color: #94a3b8 !important;
@@ -121,7 +121,7 @@
 .premium-table-container td {
   font-weight: 600 !important;
   font-size: 0.9rem !important;
-  color: #1e293b !important;
+  color: var(--sp-text-soft, #e2e8f0) !important;
   vertical-align: middle !important;
   padding: 0.75rem 1rem !important;
 }

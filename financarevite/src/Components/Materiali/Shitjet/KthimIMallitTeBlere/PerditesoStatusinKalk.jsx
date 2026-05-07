@@ -44,8 +44,8 @@ function PerditesoStatusinKalk(props) {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const [dataFillim, setDataFillim] = useState(today.toISOString().split("T")[0]);
-  const [dataMbarim, setDataMbarim] = useState(tomorrow.toISOString().split("T")[0]);
+  const [dataFillim, setDataFillim] = useState(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+  const [dataMbarim, setDataMbarim] = useState(new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
 
   // ============================================================================
   // OPTIMIZATION 1: Remove unused produktet API call
@@ -320,8 +320,7 @@ function PerditesoStatusinKalk(props) {
       </Modal>
 
       {/* Main Modal */}
-      <Modal
-        size="lg"
+      <Modal size="xl"
         style={{ marginTop: "3em" }}
         show={props.show}
         onHide={props.hide}
@@ -364,8 +363,8 @@ function PerditesoStatusinKalk(props) {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  setDataFillim(today.toISOString().split("T")[0]);
-                  setDataMbarim(tomorrow.toISOString().split("T")[0]);
+                  setDataFillim(new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
+                  setDataMbarim(new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                 }}
                 disabled={isLoading}
                 className="w-100">

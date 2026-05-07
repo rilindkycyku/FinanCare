@@ -298,7 +298,7 @@ function RegjistroFaturen(props) {
           console.log(produktet);
 
           await axios.put(
-            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStokunQmimin?id=${prod.produktiID}`,
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStokunQmimin?id=${prod?.produktiID}`,
             {
               qmimiBleres: produkti["Qmimi Bleres + TVSH €"],
               qmimiProduktit: produkti["Qmimi Shites me Pakic + TVSH €"],
@@ -417,7 +417,7 @@ function RegjistroFaturen(props) {
         );
         if (!isMounted) return;
         setListaProdukteve(response.data);
-        setProduktet(response.data);
+        setProduktet(Array.isArray(response.data) ? response.data : (response.data.$values || []));
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -626,12 +626,12 @@ function RegjistroFaturen(props) {
                             inputValue={inputValue}
                             placeholder={
                               loadingProdukteve
-                                ? "Duke ngarkuar produktet…"
-                                : "Kërko produkt…"
+                                ? "Duke ngarkuar produktet..."
+                                : "Kërko produkt..."
                             }
                             noOptionsMessage={() =>
                               loadingProdukteve
-                                ? "Duke ngarkuar…"
+                                ? "Duke ngarkuar..."
                                 : inputValue.length < 2
                                   ? "Shkruani të paktën 2 karaktere"
                                   : "Nuk u gjet produkt"
@@ -759,7 +759,7 @@ function RegjistroFaturen(props) {
                             </Button>
                           )}
                           <div className="text-muted ms-auto" style={{ fontSize: "9pt" }}>
-                            {loadingProdukteve ? "Duke ngarkuar produktet…" : "Enter: ruaj"}
+                            {loadingProdukteve ? "Duke ngarkuar produktet..." : "Enter: ruaj"}
                           </div>
                         </div>
                       </Form>

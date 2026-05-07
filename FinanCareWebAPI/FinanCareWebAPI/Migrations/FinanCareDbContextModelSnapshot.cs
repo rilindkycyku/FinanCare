@@ -63,6 +63,9 @@ namespace FinanCareWebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<DateTime?>("DataRegjistrimit")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("DataSkadimit")
                         .HasColumnType("datetime2");
 

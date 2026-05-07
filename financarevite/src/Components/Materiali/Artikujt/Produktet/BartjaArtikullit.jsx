@@ -1,8 +1,8 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 
@@ -58,10 +58,40 @@ const BartjaArtikullit = (props) => {
     })
   };
 
-  // Compute filtered options for New Product Select
-  const filteredOptionsBarkodiNew = optionsBarkodi.filter(
-    (option) => option.value !== optionsBarkodiSelectedOld?.value
-  );
+  // State and filtering for Old Product Select
+  const [inputValueOld, setInputValueOld] = useState("");
+  const handleInputChangeOld = (val) => { setInputValueOld(val); return val; };
+
+  const realFilteredOptionsOld = useMemo(() => {
+    if (!inputValueOld || inputValueOld.length < 2) return [];
+    const lower = inputValueOld.toLowerCase();
+    const results = [];
+    for (let i = 0; i < optionsBarkodi.length; i++) {
+      if (optionsBarkodi[i].label.toLowerCase().includes(lower)) {
+        results.push(optionsBarkodi[i]);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValueOld, optionsBarkodi]);
+
+  // State and filtering for New Product Select
+  const [inputValueNew, setInputValueNew] = useState("");
+  const handleInputChangeNew = (val) => { setInputValueNew(val); return val; };
+
+  const filteredOptionsBarkodiNew = useMemo(() => {
+    if (!inputValueNew || inputValueNew.length < 2) return [];
+    const lower = inputValueNew.toLowerCase();
+    const results = [];
+    for (let i = 0; i < optionsBarkodi.length; i++) {
+      if (optionsBarkodi[i].value !== optionsBarkodiSelectedOld?.value && 
+          optionsBarkodi[i].label.toLowerCase().includes(lower)) {
+        results.push(optionsBarkodi[i]);
+        if (results.length >= 50) break;
+      }
+    }
+    return results;
+  }, [inputValueNew, optionsBarkodi, optionsBarkodiSelectedOld]);
 
   useEffect(() => {
     const fetchProduktet = async () => {
@@ -241,11 +271,14 @@ const BartjaArtikullit = (props) => {
                     <Select
                       value={optionsBarkodiSelectedOld}
                       onChange={handleChangeOldProduct}
-                      options={optionsBarkodi}
-                      placeholder="Barkodi ose Kodi..."
+                      options={realFilteredOptionsOld}
+                      placeholder="Kërko artikull (min. 2 shkronja)..."
                       styles={darkSelectStyles}
                       autoFocus
                       isClearable
+                      onInputChange={handleInputChangeOld}
+                      inputValue={inputValueOld}
+                      noOptionsMessage={() => inputValueOld.length < 2 ? "Shkruani të paktën 2 karaktere" : "Nuk u gjet asnjë produkt"}
                     />
                   </div>
                 </div>
@@ -299,9 +332,12 @@ const BartjaArtikullit = (props) => {
                       value={optionsBarkodiSelectedNew}
                       onChange={handleChangeNewProduct}
                       options={filteredOptionsBarkodiNew}
-                      placeholder="Zgjidh artikullin tjetër..."
+                      placeholder="Kërko artikull (min. 2 shkronja)..."
                       styles={darkSelectStyles}
                       isClearable
+                      onInputChange={handleInputChangeNew}
+                      inputValue={inputValueNew}
+                      noOptionsMessage={() => inputValueNew.length < 2 ? "Shkruani të paktën 2 karaktere" : "Nuk u gjet asnjë produkt"}
                     />
                   </div>
                 </div>

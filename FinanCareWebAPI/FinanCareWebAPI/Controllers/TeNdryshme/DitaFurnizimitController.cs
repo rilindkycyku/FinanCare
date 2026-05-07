@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -81,7 +81,12 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             await _context.DitaFurnizimit.AddAsync(ditaEFurnizimit);
             await _context.SaveChangesAsync();
 
-            await LogAdminActionAsync("Shto", ditaEFurnizimit.IDDitaFurnizimit.ToString(), $"Eshte shtuar dita e furnizmit per: {ditaEFurnizimit.Partneri.EmriBiznesit} - {ditaEFurnizimit.DitaEFurnizimit}");
+            var partnerName = await _context.Partneri
+                .Where(p => p.IDPartneri == ditaEFurnizimit.IDPartneri)
+                .Select(p => p.EmriBiznesit)
+                .FirstOrDefaultAsync() ?? "Partner i panjohur";
+
+            await LogAdminActionAsync("Shto", ditaEFurnizimit.IDDitaFurnizimit.ToString(), $"Eshte shtuar dita e furnizmit per: {partnerName} - {ditaEFurnizimit.DitaEFurnizimit}");
 
             return CreatedAtAction("Get", ditaEFurnizimit.IDDitaFurnizimit, ditaEFurnizimit);
         }
