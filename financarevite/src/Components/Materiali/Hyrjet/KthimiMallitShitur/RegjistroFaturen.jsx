@@ -1,5 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
-import "../../../../Pages/Styles/DizajniPergjithshem.css"; // Fixed import for plain CSS
+import { useEffect, useMemo, useState } from "react";
+﻿import "../../../../Pages/Styles/DizajniPergjithshem.css"; // Fixed import for plain CSS
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
@@ -381,9 +381,12 @@ function RegjistroFaturen(props) {
     };
   }, [API_BASE_URL, authentikimi]);
 
-  const handleInputChange = (val) => {
-    setInputValue(val);
-    return val;
+  const handleInputChange = (val, { action }) => {
+    if (action === "input-change") {
+      setInputValue(val);
+    } else if (action === "set-value" || action === "menu-close") {
+      setInputValue("");
+    }
   };
 
   const filteredOptions = useMemo(() => {

@@ -476,9 +476,12 @@ function RegjistroFaturen(props) {
   };
 
   const [inputValue, setInputValue] = useState("");
-  const handleInputChange = (val) => {
-    setInputValue(val);
-    return val;
+  const handleInputChange = (val, { action }) => {
+    if (action === "input-change") {
+      setInputValue(val);
+    } else if (action === "set-value" || action === "menu-close") {
+      setInputValue("");
+    }
   };
   const filteredOptions = useMemo(() => {
     if (!inputValue || inputValue.length < 2) return [];

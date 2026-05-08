@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from "react";
-import classes from "./Styles/TabelaEKompanive.module.css";
+import { useEffect, useMemo, useState } from "react";
+﻿import classes from "./Styles/TabelaEKompanive.module.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,11 +19,11 @@ function TeDhenatKalkulimit(props) {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     const vendosTeDhenat = async () => {

@@ -1,5 +1,5 @@
-﻿import { useRef, useEffect } from "react";
-import { Modal, Form, Button, Alert } from "react-bootstrap";
+import { useEffect, useRef } from "react";
+﻿import { Modal, Form, Button, Alert } from "react-bootstrap";
 
 function CalculatorModal({
   show,

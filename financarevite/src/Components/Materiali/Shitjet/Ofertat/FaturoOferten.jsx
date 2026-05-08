@@ -1,5 +1,5 @@
-﻿import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+﻿import axios from "axios";
 import { Modal, Button, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -44,11 +44,11 @@ function FaturoOferten(props) {
   const getToken = localStorage.getItem("token");
   const getID = localStorage.getItem("id");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   const dataPorosise = new Date(
     detajetRegjistrimi &&

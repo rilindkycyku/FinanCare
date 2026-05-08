@@ -1,5 +1,5 @@
-﻿import { useEffect, useState, useMemo } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+﻿import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
@@ -33,11 +33,11 @@ function KartelaEArtikullit(props) {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     if (getID) {

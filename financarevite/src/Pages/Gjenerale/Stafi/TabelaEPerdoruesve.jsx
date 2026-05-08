@@ -1,5 +1,5 @@
-﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import { useEffect, useState } from "react";
+﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import "../../Styles/TabelaEPerdoruesve.css";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";

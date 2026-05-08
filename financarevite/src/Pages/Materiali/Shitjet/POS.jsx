@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -996,9 +996,12 @@ function POS(props) {
   };
 
   const [inputValue, setInputValue] = useState("");
-  const handleInputChange = (val) => {
-    setInputValue(val);
-    return val;
+  const handleInputChange = (val, { action }) => {
+    if (action === "input-change") {
+      setInputValue(val);
+    } else if (action === "set-value" || action === "menu-close") {
+      setInputValue("");
+    }
   };
   const filteredOptions = useMemo(() => {
     if (!inputValue || inputValue.length < 2) return [];
@@ -1042,7 +1045,8 @@ function POS(props) {
           <Modal
             show={vendosKartelenBleresit}
             onHide={() => setVendosKartelenBleresit(false)}
-            centered>
+            centered
+            className="pos-modal">
             <Modal.Header closeButton>
               <Modal.Title as="h6">Vendosni Kartelen</Modal.Title>
             </Modal.Header>
@@ -1078,7 +1082,8 @@ function POS(props) {
           <Modal
             show={vendosKartelenFshirjeProduktit}
             onHide={() => setVendosKartelenFshirjeProduktit(false)}
-            centered>
+            centered
+            className="pos-modal">
             <Modal.Header closeButton>
               <Modal.Title as="h6">Konfirmo Fshirjen</Modal.Title>
             </Modal.Header>
@@ -1186,8 +1191,13 @@ function POS(props) {
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="small fw-bold text-muted text-uppercase mb-1">Barkodi / Produkti</Form.Label>
+                            <style>{`
+                              .pos-input-card .pos-select__option--is-focused { background-color: rgba(16, 185, 129, 0.3) !important; color: white !important; cursor: pointer !important; }
+                              .pos-input-card .pos-select__option--is-selected { background-color: #10b981 !important; color: white !important; }
+                            `}</style>
                             <Select
                               id="barkodiSelect"
+                              classNamePrefix="pos-select"
                               placeholder="Kërko produktin ose skano barkodin..."
                               isClearable
                               ref={selectRef}

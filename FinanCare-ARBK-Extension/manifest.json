@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "FinanCare ARBK Bridge",
+  "version": "1.1",
+  "description": "Automatically sends ARBK business data directly to FinanCare.",
+  "permissions": ["storage", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://arbk.rks-gov.net/*"],
+      "js": ["arbkContent.js"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["finanCareContent.js"]
+    }
+  ],
+  "action": {
+    "default_title": "FinanCare Settings",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "icons": {
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

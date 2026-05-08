@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import { Col, Row, Card, Badge, Container, Tabs, Tab, Button } from "react-bootstrap";
@@ -190,10 +190,17 @@ function Statistika() {
         <KontrolloAksesinNeFaqe roletELejuara={["Menaxher"]} />
         <Titulli titulli={"Statistika | Dashboard"} />
         <NavBar />
-        <Container className="py-4 d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
-          <div className="d-flex flex-column align-items-center gap-3">
-            <TailSpin height="60" width="60" color="#10b981" ariaLabel="tail-spin-loading" radius="1" visible={true} />
-            <span className="text-muted fw-bold">Duke ngarkuar të dhënat...</span>
+        <Container className="py-4 d-flex justify-content-center align-items-center" style={{ minHeight: "75vh" }}>
+          <div className="d-flex flex-column align-items-center justify-content-center text-center p-5 stat-card-modern border-0" style={{ maxWidth: "450px" }}>
+            <div className="position-relative mb-4" style={{ width: '90px', height: '90px' }}>
+              <div className="position-absolute top-0 start-0 w-100 h-100 rounded-circle" style={{ border: '4px solid rgba(16, 185, 129, 0.1)' }}></div>
+              <div className="position-absolute top-0 start-0 w-100 h-100 rounded-circle spin" style={{ border: '4px solid #10b981', borderLeftColor: 'transparent', borderBottomColor: 'transparent' }}></div>
+              <div className="position-absolute top-50 start-50 translate-middle">
+                <BarChart3 size={32} className="text-emerald" />
+              </div>
+            </div>
+            <h4 className="fw-bold text-white mb-2">Duke Përgatitur Statistikat</h4>
+            <p className="text-secondary mb-0">Ju lutem prisni pak sekonda ndërkohë që po analizojmë të dhënat tuaja të shitjeve.</p>
           </div>
         </Container>
       </div>
@@ -289,29 +296,31 @@ function Statistika() {
                     </Card.Header>
                     <Card.Body className="p-0">
                       <div className="premium-table-container">
-                        <MDBTable hover striped small className="mb-0 text-center">
-                          <MDBTableHead >
-                            <tr className="small text-muted text-uppercase">
-                              <th className="py-3">Stafi</th>
-                              <th className="py-3">Par.</th>
-                              <th className="py-3">Vlera</th>
-                            </tr>
-                          </MDBTableHead>
-                          <MDBTableBody>
-                            {period.data?.[period.opKey]?.map((k) => (
-                              <tr key={k?.stafi?.userID}>
-                                <td className="py-3 fw-semibold">{k?.stafi?.username}</td>
-                                <td className="py-3">{k.numriBlerjeve}</td>
-                                <td className="py-3 text-info fw-bold">{parseFloat(k.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
+                        <div className="table-responsive">
+                          <table className="table sp-table mb-0 text-center">
+                            <thead>
+                              <tr>
+                                <th className="text-nowrap px-2">Stafi</th>
+                                <th className="text-nowrap px-2">Par.</th>
+                                <th className="text-nowrap px-2">Vlera</th>
                               </tr>
-                            ))}
-                            <tr className="table-light fw-bold border-top">
-                              <td className="py-3">TOTALI</td>
-                              <td className="py-3">{period.data?.[period.totalPar]}</td>
-                              <td className="py-3 text-danger">{parseFloat(period.data?.[period.totalEur] || 0).toFixed(2)} €</td>
-                            </tr>
-                          </MDBTableBody>
-                        </MDBTable>
+                            </thead>
+                            <tbody>
+                              {period.data?.[period.opKey]?.map((k) => (
+                                <tr key={k?.stafi?.userID}>
+                                  <td className="fw-semibold text-white text-truncate px-2" style={{ maxWidth: "110px" }} title={k?.stafi?.username}>{k?.stafi?.username}</td>
+                                  <td className="px-2">{k.numriBlerjeve}</td>
+                                  <td className="text-info fw-bold text-nowrap px-2">{parseFloat(k.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
+                                </tr>
+                              ))}
+                              <tr className="table-dark fw-bold">
+                                <td className="text-white px-2">TOTALI</td>
+                                <td className="text-white px-2">{period.data?.[period.totalPar]}</td>
+                                <td className="text-danger text-nowrap px-2">{parseFloat(period.data?.[period.totalEur] || 0).toFixed(2)} €</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </Card.Body>
                   </Card>
@@ -342,16 +351,16 @@ function Statistika() {
                       </Card.Header>
                       <Card.Body className="p-4 pt-2">
                         <div className="table-responsive" style={{ maxHeight: "300px" }}>
-                          <MDBTable hover small striped className="mb-0">
-                            <MDBTableBody>
+                          <table className="table sp-table mb-0">
+                            <tbody>
                               {top15Bleresit.slice(0, 8).map((k, i) => (
-                                <tr key={i} className="border-0">
-                                  <td className="border-0 py-2"><div className="fw-bold">{k?.partneri?.emriBiznesit}</div><small className="text-muted">{k?.partneri?.kartela?.kodiKartela || "Pa Kartelë"}</small></td>
-                                  <td className="border-0 text-end py-2 align-middle text-primary fw-bold">{parseFloat(k?.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
+                                <tr key={i}>
+                                  <td><div className="fw-bold text-white">{k?.partneri?.emriBiznesit}</div><small className="text-secondary">{k?.partneri?.kartela?.kodiKartela || "Pa Kartelë"}</small></td>
+                                  <td className="text-end align-middle text-info fw-bold">{parseFloat(k?.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
                                 </tr>
                               ))}
-                            </MDBTableBody>
-                          </MDBTable>
+                            </tbody>
+                          </table>
                         </div>
                       </Card.Body>
                     </Card>
@@ -363,16 +372,16 @@ function Statistika() {
                       </Card.Header>
                       <Card.Body className="p-4 pt-2">
                         <div className="table-responsive" style={{ maxHeight: "300px" }}>
-                          <MDBTable hover small striped className="mb-0">
-                            <MDBTableBody>
+                          <table className="table sp-table mb-0">
+                            <tbody>
                               {top15Bizneset.slice(0, 8).map((k, i) => (
-                                <tr key={i} className="border-0">
-                                  <td className="border-0 py-2"><div className="fw-bold">{k?.partneri?.emriBiznesit}</div></td>
-                                  <td className="border-0 text-end py-2 align-middle text-primary fw-bold">{parseFloat(k?.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
+                                <tr key={i}>
+                                  <td><div className="fw-bold text-white">{k?.partneri?.emriBiznesit}</div></td>
+                                  <td className="text-end align-middle text-info fw-bold">{parseFloat(k?.totaliBlerjeveEuro || 0).toFixed(2)} €</td>
                                 </tr>
                               ))}
-                            </MDBTableBody>
-                          </MDBTable>
+                            </tbody>
+                          </table>
                         </div>
                       </Card.Body>
                     </Card>

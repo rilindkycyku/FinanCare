@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import { useEffect, useMemo, useState } from "react";
+﻿import { Helmet } from "react-helmet-async";
 import axios from "axios";
 
 function Titulli({ titulli }) {
@@ -7,11 +7,11 @@ function Titulli({ titulli }) {
   const [siteName, setSiteName] = useState("FinanCare");
 
   const getToken = localStorage.getItem("token");
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     const vendosTeDhenatBiznesit = async () => {

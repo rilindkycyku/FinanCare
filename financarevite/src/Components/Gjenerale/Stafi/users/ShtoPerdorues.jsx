@@ -1,7 +1,9 @@
-﻿import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  UserPlus, User, Calendar, CreditCard, DollarSign,
+  Briefcase, MapPin, Phone, Mail, Award, Building, Building2
+} from "lucide-react";
 import {
   Modal,
   Button,
@@ -46,11 +48,11 @@ function ShtoPerdorues(props) {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     const ShfaqTeDhenat = async () => {
@@ -274,10 +276,13 @@ function ShtoPerdorues(props) {
         setPershkrimiMesazhit={(e) => props.setPershkrimiMesazhit(e)}
       />
       <Modal size="lg" show={true} onHide={() => props.largo()} className="sp-modal">
-        <Modal.Header closeButton>
-          <Modal.Title>Shto Përdoruesin</Modal.Title>
+        <Modal.Header closeButton className="border-bottom-0 pb-0 pt-4 px-4">
+          <Modal.Title className="fw-bold d-flex align-items-center gap-2 text-white">
+            <UserPlus size={24} className="text-emerald" />
+            Shto Përdoruesin
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="px-4">
           <Tabs
             id="shenime-tabs"
             activeKey={key}
@@ -290,23 +295,33 @@ function ShtoPerdorues(props) {
                     <Col md="6">
                       <div className="sp-input-group">
                         <label className="sp-label">Emri <span className="text-danger">*</span></label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Filan"
-                          onChange={(e) => setEmri(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <User size={18} />
+                          </div>
+                          <Form.Control
+                            type="text"
+                            placeholder="Filan"
+                            onChange={(e) => setEmri(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="6">
                       <div className="sp-input-group">
                         <label className="sp-label">Mbiemri <span className="text-danger">*</span></label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Fisteku"
-                          onChange={(e) => setMbiemri(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <User size={18} />
+                          </div>
+                          <Form.Control
+                            type="text"
+                            placeholder="Fisteku"
+                            onChange={(e) => setMbiemri(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                   </Row>
@@ -315,7 +330,10 @@ function ShtoPerdorues(props) {
                     <Col md="6">
                       <div className="sp-input-group">
                         <label className="sp-label">Fillimi i Kontratës</label>
-                        <div className="sp-datepicker-wrapper">
+                        <div className="sp-datepicker-wrapper position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 z-1 text-muted">
+                            <Calendar size={18} />
+                          </div>
                           <DatePicker
                             selected={dataFillimitKontrates}
                             onChange={setDataFillimitKontrates}
@@ -331,7 +349,10 @@ function ShtoPerdorues(props) {
                     <Col md="6">
                       <div className="sp-input-group">
                         <label className="sp-label">Mbarimi i Kontratës</label>
-                        <div className="sp-datepicker-wrapper">
+                        <div className="sp-datepicker-wrapper position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 z-1 text-muted">
+                            <Calendar size={18} />
+                          </div>
                           <DatePicker
                             selected={dataMbarimitKontrates}
                             onChange={setDataMbarimitKontrates}
@@ -350,23 +371,33 @@ function ShtoPerdorues(props) {
                     <Col md="4">
                       <div className="sp-input-group">
                         <label className="sp-label">Nr. Letërnjoftimit</label>
-                        <Form.Control
-                          type="number"
-                          placeholder="1173127843"
-                          onChange={(e) => setNrLeternjoftimit(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <CreditCard size={18} />
+                          </div>
+                          <Form.Control
+                            type="number"
+                            placeholder="1173127843"
+                            onChange={(e) => setNrLeternjoftimit(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="4">
                       <div className="sp-input-group">
                         <label className="sp-label">Paga Bruto (€)</label>
-                        <Form.Control
-                          type="number"
-                          placeholder="750.00"
-                          onChange={(e) => setPagaBruto(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <DollarSign size={18} />
+                          </div>
+                          <Form.Control
+                            type="number"
+                            placeholder="750.00"
+                            onChange={(e) => setPagaBruto(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="4">
@@ -416,18 +447,26 @@ function ShtoPerdorues(props) {
                     <Col md="8">
                       <div className="sp-input-group">
                         <label className="sp-label">Adresa</label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Rr. B, Lagjja Kalabria..."
-                          onChange={(e) => setAdresa(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <MapPin size={18} />
+                          </div>
+                          <Form.Control
+                            type="text"
+                            placeholder="Rr. B, Lagjja Kalabria..."
+                            onChange={(e) => setAdresa(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="4">
                       <div className="sp-input-group">
                         <label className="sp-label">Datëlindja</label>
-                        <div className="sp-datepicker-wrapper">
+                        <div className="sp-datepicker-wrapper position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 z-1 text-muted">
+                            <Calendar size={18} />
+                          </div>
                           <DatePicker
                             selected={dataLindjes}
                             onChange={setDataLindjes}
@@ -445,23 +484,33 @@ function ShtoPerdorues(props) {
                     <Col md="6">
                       <div className="sp-input-group">
                         <label className="sp-label">Nr. Kontaktit</label>
-                        <Form.Control
-                          type="text"
-                          placeholder="+383 44 111 222"
-                          onChange={(e) => setNrKontaktit(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <Phone size={18} />
+                          </div>
+                          <Form.Control
+                            type="text"
+                            placeholder="+383 44 111 222"
+                            onChange={(e) => setNrKontaktit(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="6">
                       <div className="sp-input-group">
                         <label className="sp-label">Email Privat</label>
-                        <Form.Control
-                          type="email"
-                          placeholder="example@email.com"
-                          onChange={(e) => setEmailPrivat(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <Mail size={18} />
+                          </div>
+                          <Form.Control
+                            type="email"
+                            placeholder="example@email.com"
+                            onChange={(e) => setEmailPrivat(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                   </Row>
@@ -470,34 +519,49 @@ function ShtoPerdorues(props) {
                     <Col md="4">
                       <div className="sp-input-group">
                         <label className="sp-label">Profesioni</label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Menaxher"
-                          onChange={(e) => setProfesioni(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <Briefcase size={18} />
+                          </div>
+                          <Form.Control
+                            type="text"
+                            placeholder="Menaxher"
+                            onChange={(e) => setProfesioni(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="4">
                       <div className="sp-input-group">
                         <label className="sp-label">Specializimi</label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Sales Assistant"
-                          onChange={(e) => setSpecializimi(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <Award size={18} />
+                          </div>
+                          <Form.Control
+                            type="text"
+                            placeholder="Sales Assistant"
+                            onChange={(e) => setSpecializimi(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="4">
                       <div className="sp-input-group">
                         <label className="sp-label">Kualifikimi</label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Diplomë..."
-                          onChange={(e) => setKualifikimi(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <Building size={18} />
+                          </div>
+                          <Form.Control
+                            type="text"
+                            placeholder="Diplomë..."
+                            onChange={(e) => setKualifikimi(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                   </Row>
@@ -541,12 +605,17 @@ function ShtoPerdorues(props) {
                     <Col md="4">
                       <div className="sp-input-group">
                         <label className="sp-label">Nr. Llogarisë Bankare</label>
-                        <Form.Control
-                          type="number"
-                          placeholder="13000..."
-                          onChange={(e) => setNrLlogarisBankare(e.target.value)}
-                          className="sp-input"
-                        />
+                        <div className="position-relative">
+                          <div className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+                            <Building2 size={18} />
+                          </div>
+                          <Form.Control
+                            type="number"
+                            placeholder="13000..."
+                            onChange={(e) => setNrLlogarisBankare(e.target.value)}
+                            className="sp-input sp-input-with-icon"
+                          />
+                        </div>
                       </div>
                     </Col>
                     <Col md="3">
@@ -566,12 +635,17 @@ function ShtoPerdorues(props) {
               </div>
             </Tab>
           </Tabs>
+          <style>{`
+            .sp-input-with-icon { padding-left: 2.5rem !important; }
+            .sp-datepicker-wrapper .sp-input { padding-left: 2.5rem !important; }
+          `}</style>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="border-top-0 pb-4 px-4">
           <Button className="btn-cancel" onClick={() => props.largo()}>
             Anulo
           </Button>
-          <Button className="btn-save px-4" onClick={CreateAcc}>
+          <Button className="btn-save px-4 d-flex align-items-center gap-2" onClick={CreateAcc}>
+            <UserPlus size={18} />
             Shto Përdoruesin
           </Button>
         </Modal.Footer>

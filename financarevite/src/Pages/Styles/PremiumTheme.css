@@ -178,6 +178,45 @@ body {
   outline: none;
 }
 
+.sp-input::placeholder,
+.sp-modal .form-control::placeholder {
+  color: var(--sp-text-soft) !important;
+  opacity: 0.7 !important;
+}
+
+/* ── SP-MODAL ─────────────────────────────────────────────────── */
+.sp-modal .modal-content {
+  background: var(--sp-surface-2) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text) !important;
+}
+
+.sp-modal .modal-header {
+  border-bottom: 1px solid var(--sp-border) !important;
+}
+
+.sp-modal .modal-title { color: var(--sp-text) !important; }
+
+.sp-modal .btn-close { filter: invert(1) !important; opacity: 0.5 !important; }
+
+.sp-modal .modal-footer { border-top: 1px solid var(--sp-border) !important; }
+
+.sp-modal .form-label {
+  color: var(--sp-text-soft) !important;
+  font-weight: 700 !important;
+}
+
+.sp-modal .form-control {
+  background: var(--sp-surface) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text) !important;
+}
+
+.sp-modal .form-control:focus {
+  border-color: var(--sp-emerald) !important;
+  box-shadow: 0 0 0 3px var(--sp-emerald-glow) !important;
+}
+
 /* ── SP-TABLE – Premium Dark Table ────────────────────────────── */
 .sp-table {
   border-collapse: separate !important;

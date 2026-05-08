@@ -1,5 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
-import "../../../../Pages/Styles/DizajniPergjithshem.css";
+import { useEffect, useMemo, useState } from "react";
+﻿import "../../../../Pages/Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
@@ -41,9 +41,12 @@ function RegjistroFaturen(props) {
   const [loadingProdukteve, setLoadingProdukteve] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
-  const handleInputChange = (val) => {
-    setInputValue(val);
-    return val;
+  const handleInputChange = (val, { action }) => {
+    if (action === "input-change") {
+      setInputValue(val);
+    } else if (action === "set-value" || action === "menu-close") {
+      setInputValue("");
+    }
   };
 
   const filteredOptions = useMemo(() => {
@@ -68,11 +71,11 @@ function RegjistroFaturen(props) {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     const vendosTeDhenatBiznesit = async () => {

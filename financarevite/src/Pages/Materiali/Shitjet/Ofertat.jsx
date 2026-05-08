@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from "react";
-import "../../Styles/DizajniPergjithshem.css";
+import { useEffect, useState } from "react";
+﻿import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";

@@ -1,5 +1,5 @@
-﻿import { useState, useEffect, useMemo } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+﻿import axios from "axios";
 import { Modal, Button, Row, Col, Form, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faPenToSquare, faSearch, faFileInvoice } from "@fortawesome/free-solid-svg-icons";
@@ -110,9 +110,12 @@ function PerditesoStatusinKalk(props) {
   }, [API_BASE_URL, authentikimi]);
 
   // Filter products locally based on search input
-  const handleInputChange = (val) => {
-    setInputValue(val);
-    return val;
+  const handleInputChange = (val, { action }) => {
+    if (action === "input-change") {
+      setInputValue(val);
+    } else if (action === "set-value" || action === "menu-close") {
+      setInputValue("");
+    }
   };
 
   const filteredOptions = useMemo(() => {

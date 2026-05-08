@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 ﻿import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -9,11 +10,11 @@ function LargoKompanin(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   async function handleSubmit() {
     try {

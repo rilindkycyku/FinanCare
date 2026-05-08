@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import "./Styles/LogIn.css";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { Mail, Lock, LogIn as LoginIcon } from "lucide-react";

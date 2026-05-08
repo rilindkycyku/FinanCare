@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
@@ -60,7 +60,7 @@ const BartjaArtikullit = (props) => {
 
   // State and filtering for Old Product Select
   const [inputValueOld, setInputValueOld] = useState("");
-  const handleInputChangeOld = (val) => { setInputValueOld(val); return val; };
+  const handleInputChangeOld = (val, { action }) => { if (action === "input-change") setInputValueOld(val); else if (action === "set-value" || action === "menu-close") setInputValueOld(""); };
 
   const realFilteredOptionsOld = useMemo(() => {
     if (!inputValueOld || inputValueOld.length < 2) return [];
@@ -77,7 +77,7 @@ const BartjaArtikullit = (props) => {
 
   // State and filtering for New Product Select
   const [inputValueNew, setInputValueNew] = useState("");
-  const handleInputChangeNew = (val) => { setInputValueNew(val); return val; };
+  const handleInputChangeNew = (val, { action }) => { if (action === "input-change") setInputValueNew(val); else if (action === "set-value" || action === "menu-close") setInputValueNew(""); };
 
   const filteredOptionsBarkodiNew = useMemo(() => {
     if (!inputValueNew || inputValueNew.length < 2) return [];

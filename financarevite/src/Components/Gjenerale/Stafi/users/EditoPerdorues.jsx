@@ -1,5 +1,5 @@
-﻿import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+﻿import axios from "axios";
 import {
   Button,
   Form,
@@ -27,11 +27,11 @@ function EditoPerdorues(props) {
   const [key, setKey] = useState("kryesore");
 
   const getToken = localStorage.getItem("token");
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     const fetchPerdoruesi = async () => {

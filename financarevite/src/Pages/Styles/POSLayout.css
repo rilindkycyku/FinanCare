@@ -730,8 +730,9 @@
   cursor: pointer !important;
 }
 
+.pos-input-card [class*="-option"]:hover,
 .pos-input-card [class*="-option--is-focused"] {
-  background: rgba(16,185,129,0.08) !important;
+  background: rgba(16,185,129,0.2) !important;
   color: var(--pos-text-main) !important;
 }
 
@@ -791,6 +792,11 @@
   border: 1px solid var(--pos-border) !important;
   color: var(--pos-text-main) !important;
   border-radius: var(--pos-radius-sm) !important;
+}
+
+.pos-modal .modal-body .form-control::placeholder {
+  color: var(--pos-text-soft) !important;
+  opacity: 0.7 !important;
 }
 
 .pos-modal .modal-body .form-control:focus {

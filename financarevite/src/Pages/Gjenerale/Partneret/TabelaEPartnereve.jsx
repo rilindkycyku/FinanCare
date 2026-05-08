@@ -1,5 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
 ﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
-import { useEffect, useState } from "react";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -25,11 +25,11 @@ function TabelaEKompanive(props) {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     const shfaqPartneret = async () => {

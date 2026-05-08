@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -31,11 +31,11 @@ function ShtoAfatinESkadimit(props) {
 
   const getID = localStorage.getItem("id");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   function isNullOrEmpty(value) {
     return value === null || value === "" || value === undefined;
@@ -139,9 +139,12 @@ function ShtoAfatinESkadimit(props) {
   };
 
   const [inputValue, setInputValue] = useState("");
-  const handleInputChange = (val) => {
-    setInputValue(val);
-    return val;
+  const handleInputChange = (val, { action }) => {
+    if (action === "input-change") {
+      setInputValue(val);
+    } else if (action === "set-value" || action === "menu-close") {
+      setInputValue("");
+    }
   };
 
   const filteredOptions = useMemo(() => {

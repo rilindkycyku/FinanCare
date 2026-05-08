@@ -1,5 +1,5 @@
-﻿import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+﻿import axios from "axios";
 import { Modal, Button, Row, Col, Form, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -34,11 +34,11 @@ function PerditesoStatusinKalk(props) {
   const [loadingAction, setLoadingAction] = useState(false);
 
   const getToken = localStorage.getItem("token");
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   const today = new Date();
   const tomorrow = new Date(today);

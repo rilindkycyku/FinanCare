@@ -1,4 +1,5 @@
-﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import { useEffect, useState } from "react";
+import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import { Table, Card, Form, Row, Col, Button, Modal, Badge } from "react-bootstrap";
 import {
@@ -9,12 +10,12 @@ import {
   StyleSheet,
   PDFDownloadLink,
 } from "@react-pdf/renderer";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import { TailSpin } from "react-loader-spinner";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import "../../Styles/DizajniPergjithshem.css";
 import "../../Styles/SugjerimiPorosise.css";
+import { Printer, Calendar, Search } from "lucide-react";
 
 const pdfStyles = StyleSheet.create({
   page: { padding: 50, fontSize: 10, color: "#1e293b", backgroundColor: "#ffffff" },
@@ -310,7 +311,8 @@ function ListaBarazimeve() {
       <NavBar />
       <Titulli titulli={"Lista e Barazimeve"} />
 
-      <div className="containerDashboardP py-4">
+      <div className="tabelaDiv">
+        <div className="containerDashboardP py-4">
         <div className="text-center mb-5">
           <h1 className="h2 fw-bold text-dark mb-2">Historiku i Barazimeve</h1>
           <p className="text-muted small">Monitoroni mbylljet e arkës dhe performancën e arkëtarëve</p>
@@ -592,14 +594,15 @@ function ListaBarazimeve() {
                   .toLocaleDateString("sq-AL")
                   .replace(/\//g, "-")}.pdf`}>
                 {({ loading }) => (
-                  <Button className="btn-save px-4" disabled={loading}>
-                    {loading ? "Duke gjeneruar..." : "ðŸ–¨ï¸ Shkarko PDF"}
+                  <Button className="btn-save px-4 d-flex align-items-center gap-2" disabled={loading}>
+                    {loading ? "Duke gjeneruar..." : <><Printer size={16} /> Shkarko PDF</>}
                   </Button>
                 )}
               </PDFDownloadLink>
             )}
           </Modal.Footer>
         </Modal>
+        </div>
       </div>
     </>
   );

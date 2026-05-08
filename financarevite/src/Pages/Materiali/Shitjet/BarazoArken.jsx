@@ -1,11 +1,11 @@
-﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import { useEffect, useRef, useState } from "react";
+import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
 import "../../Styles/PremiumTheme.css";
 
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -19,6 +19,7 @@ import {
 import Select from "react-select";
 import CalculatorModal from "../../../Components/TeTjera/CalculatorModal";
 import Titulli from "../../../Components/TeTjera/Titulli";
+import { Calculator } from "lucide-react";
 
 function BarazimiArkes() {
   const navigate = useNavigate();
@@ -284,7 +285,8 @@ function BarazimiArkes() {
       <NavBar />
       <Titulli titulli={"Barazo Arken"} />
 
-      <div className="containerDashboardP py-2">
+      <div className="tabelaDiv">
+        <div className="containerDashboardP py-4" style={{ minHeight: "100vh" }}>
         {shfaqMesazhin && (
           <Mesazhi
             setShfaqMesazhin={setShfaqMesazhin}
@@ -297,8 +299,8 @@ function BarazimiArkes() {
             {error}
           </Alert>
         )}
-        <div className="text-center mb-3">
-          <h1 className="h2 fw-bold text-dark mb-2">Barazimi i Arkës</h1>
+        <div className="text-center mb-4">
+          <h1 className="h2 fw-bold text-white mb-2">Barazimi i Arkës</h1>
           <p className="text-muted small">
             {(() => {
               const days = ["E diel", "E hënë", "E martë", "E mërkurë", "E enjte", "E premte", "E shtunë"];
@@ -339,7 +341,28 @@ function BarazimiArkes() {
                     menuPortalTarget={document.body}
                     menuPosition="fixed"
                     styles={{
+                      control: (base) => ({
+                        ...base,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        color: 'white'
+                      }),
                       menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      menu: (base) => ({
+                        ...base,
+                        background: '#1a1d21',
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                        color: 'white'
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: 'white'
+                      })
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -375,7 +398,7 @@ function BarazimiArkes() {
                             variant="link"
                             className="text-success p-0 ms-1"
                             onClick={() => openCalculator("fillimiArkes")}>
-                            <span style={{ fontSize: '1rem' }}>ðŸ§®</span>
+                            <Calculator size={18} />
                           </Button>
                         </InputGroup>
                       </Form.Group>
@@ -399,7 +422,7 @@ function BarazimiArkes() {
                             variant="link"
                             className="text-success p-0 ms-1"
                             onClick={() => openCalculator("teShtuaraNeArke")}>
-                            <span style={{ fontSize: '1rem' }}>ðŸ§®</span>
+                            <Calculator size={18} />
                           </Button>
                         </InputGroup>
                       </Form.Group>
@@ -442,7 +465,7 @@ function BarazimiArkes() {
                                 variant="link"
                                 className="text-info p-0 ms-1"
                                 onClick={() => openCalculator(item.field)}>
-                                <span style={{ fontSize: '1rem' }}>ðŸ§®</span>
+                                <Calculator size={18} />
                               </Button>
                             </InputGroup>
                           </Form.Group>
@@ -494,6 +517,7 @@ function BarazimiArkes() {
           onInputChange={handleCalculatorInputChange}
           onKeyDown={handleCalculatorKeyDown}
         />
+        </div>
       </div>
     </>
   );

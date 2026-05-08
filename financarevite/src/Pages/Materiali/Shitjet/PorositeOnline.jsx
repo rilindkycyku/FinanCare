@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -402,8 +402,9 @@ function PorositeOnline() {
           show={showModal}
           onHide={() => setShowModal(false)}
           size="xl"
-          centered>
-          <Modal.Header closeButton className="bg-primary text-white">
+          centered
+          className="sp-modal">
+          <Modal.Header closeButton>
             <Modal.Title>
               Fatura: <strong>{regjistrimet?.nrFatures}</strong>
               <small className="ms-3 text-light">
@@ -416,7 +417,7 @@ function PorositeOnline() {
             </Modal.Title>
           </Modal.Header>
 
-          <Modal.Body className="p-4 bg-dark text-white">
+          <Modal.Body className="p-4">
             <div className="p-3 rounded mb-4 border border-secondary" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
               <div className="row mb-2">
                 <div className="col-md-6">
@@ -628,7 +629,7 @@ function PorositeOnline() {
             </div>
           </Modal.Body>
 
-          <Modal.Footer className="bg-dark border-top border-secondary">
+          <Modal.Footer>
             <Button
               variant="info"
               size="lg"
@@ -654,11 +655,12 @@ function PorositeOnline() {
           backdrop="static"
           keyboard={false}
           centered
+          className="sp-modal"
         >
-          <Modal.Header closeButton className="bg-warning text-dark">
-            <Modal.Title>Fatura Ekziston!</Modal.Title>
+          <Modal.Header closeButton>
+            <Modal.Title className="text-warning">Fatura Ekziston!</Modal.Title>
           </Modal.Header>
-          <Modal.Body className="p-4 bg-dark text-white border-top border-warning">
+          <Modal.Body className="p-4 border-top border-warning">
             <p>
               Fatura me numër <strong>"{existingInvoiceDetails?.nrFaturesToImport}"</strong> ekziston tashmë në sistem!
             </p>
@@ -669,7 +671,7 @@ function PorositeOnline() {
             </div>
             <p className="mb-0">A dëshironi ta anashkaloni?</p>
           </Modal.Body>
-          <Modal.Footer className="bg-dark border-top border-warning">
+          <Modal.Footer>
             <Button variant="secondary" onClick={handleNdalImportin}>
               Ndal Importin
             </Button>

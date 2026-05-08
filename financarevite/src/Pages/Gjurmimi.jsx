@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from "react";
-import { AlertCircle, Home, LogOut } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+﻿import { AlertCircle, Home, LogOut } from "lucide-react";
 import {
   Button,
   Container,
@@ -37,11 +37,11 @@ export default function Gjurmimet() {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   const { items, requestSort, sortConfig, currentPage, pageCount, goToPage } =
     useSortableData(

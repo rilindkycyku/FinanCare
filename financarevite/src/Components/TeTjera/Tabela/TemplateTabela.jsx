@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+﻿import axios from "axios";
 import EditoProduktin from "./EditoProduktin";
 import ShtoProduktin from "./ShtoProduktin";
 import Mesazhi from "../../../../components/Mesazhi";
@@ -25,11 +25,11 @@ function TemplateTabela() {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   useEffect(() => {
     const fetchProduktet = async () => {

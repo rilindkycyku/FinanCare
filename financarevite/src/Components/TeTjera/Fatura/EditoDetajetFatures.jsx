@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Modal, Button, Form, Row, Col, Spinner } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
@@ -14,11 +14,11 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -1,9 +1,8 @@
-﻿import { useState } from "react";
-import { Button, Modal, Row, Col, Form } from "react-bootstrap";
+import { useEffect, useMemo, useState } from "react";
+﻿import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useEffect } from "react";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
@@ -22,11 +21,11 @@ const ShtoProduktin = (props) => {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   const [produkti, setProdukti] = useState({
     emriProduktit: "",

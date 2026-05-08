@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 // useKeyboardNavigation.js
 
-import { useEffect, useState } from 'react';
 
 export default function useKeyboardNavigation(listItems) {
   const [selectedIndex, setSelectedIndex] = useState(-1);

@@ -1,7 +1,7 @@
-﻿import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faXmark, faSearch, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   Modal,
   Button,
@@ -28,6 +28,10 @@ function ShtoPartnerin(props) {
 
   const [key, setKey] = useState("klientPrivat");
 
+  const [showArbkModal, setShowArbkModal] = useState(false);
+  const [arbkJson, setArbkJson] = useState("");
+  const [arbkResults, setArbkResults] = useState([]);
+
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState([]);
 
   const [perditeso, setPerditeso] = useState(Date.now());
@@ -37,11 +41,75 @@ function ShtoPartnerin(props) {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
+  }), [getToken]);
+
+  const handleAutoParse = (payloadStr) => {
+    console.log("Filloi parsingu automatik. Gjatësia e payload:", payloadStr?.length);
+    try {
+      const parsed = JSON.parse(payloadStr);
+      const list = parsed?.tableSearch?.tableList || [];
+      const realList = list.filter(item => item.teDhenatBiznesit);
+      
+      console.log("U gjetën rekorde:", realList.length);
+      
+      if (realList.length === 1) {
+        console.log("Po plotësoj formën për 1 rekord...");
+        const biz = realList[0].teDhenatBiznesit;
+        setEmriPartnerit(biz.EmriBiznesit || "");
+        setShkurtesaEmrit(biz.EmriTregtar || biz.EmriBiznesit?.substring(0, 3)?.toUpperCase() || "");
+        setNUI(biz.NUI || "");
+        setNF(biz.NumriFiskal || "");
+        setAdresa(`${biz.Adresa || ""}, ${biz.Komuna || ""}`.trim().replace(/^,|,$/g, ""));
+        setNrKontaktit(biz.Telefoni || "");
+        setEmail(biz.Email || "");
+        setKey("klientBiznesi");
+        
+        props.setTipiMesazhit("success");
+        props.setPershkrimiMesazhit("Të dhënat u importuan automatikisht nga ARBK!");
+        props.shfaqmesazhin(true);
+        
+        setShowArbkModal(false);
+        setArbkJson("");
+        setArbkResults([]);
+      } else if (realList.length > 1) {
+        console.log("Po shfaq listën me shumë rekorde...");
+        setArbkResults(realList.map(item => item.teDhenatBiznesit));
+      } else {
+         console.warn("Nuk u gjet asnjë rekord në JSON!");
+      }
+    } catch (e) {
+      console.error("Gabim në leximin automatik", e);
+    }
   };
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === "ARBK_BRIDGE_DATA") {
+        if (event.data.payload) {
+          setArbkJson(event.data.payload);
+          setShowArbkModal(true);
+          handleAutoParse(event.data.payload);
+        }
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  useEffect(() => {
+    if (showArbkModal) {
+      const savedData = localStorage.getItem("arbk_bridge_data");
+      if (savedData) {
+        setArbkJson(savedData);
+        handleAutoParse(savedData);
+        localStorage.removeItem("arbk_bridge_data");
+      }
+    }
+  }, [showArbkModal]);
 
   useEffect(() => {
     const vendosTeDhenat = async () => {
@@ -240,6 +308,47 @@ function ShtoPartnerin(props) {
     }
   };
 
+  const handleParseJSON = () => {
+    try {
+      if (!arbkJson) return;
+      const parsed = JSON.parse(arbkJson);
+      const list = parsed?.tableSearch?.tableList || [];
+      const realList = list.filter(item => item.teDhenatBiznesit);
+      
+      if (realList.length === 0) {
+        throw new Error("Nuk u gjet asnjë biznes në këtë JSON.");
+      } else if (realList.length === 1) {
+        applyArbkData(realList[0].teDhenatBiznesit);
+      } else {
+        setArbkResults(realList.map(item => item.teDhenatBiznesit));
+      }
+    } catch (err) {
+      props.setTipiMesazhit("danger");
+      props.setPershkrimiMesazhit("Gabim gjatë leximit: " + err.message);
+      props.shfaqmesazhin(true);
+    }
+  };
+
+  const applyArbkData = (biz) => {
+    if (!biz) return;
+    setEmriPartnerit(biz.EmriBiznesit || "");
+    setShkurtesaEmrit(biz.EmriTregtar || biz.EmriBiznesit?.substring(0, 3)?.toUpperCase() || "");
+    setNUI(biz.NUI || "");
+    setNF(biz.NumriFiskal || "");
+    setAdresa(`${biz.Adresa || ""}, ${biz.Komuna || ""}`.trim().replace(/^,|,$/g, ""));
+    setNrKontaktit(biz.Telefoni || "");
+    setEmail(biz.Email || "");
+    
+    setKey("klientBiznesi");
+    props.setTipiMesazhit("success");
+    props.setPershkrimiMesazhit("Të dhënat u importuan me sukses nga ARBK!");
+    props.shfaqmesazhin(true);
+    
+    setShowArbkModal(false);
+    setArbkJson("");
+    setArbkResults([]);
+  };
+
   return (
     <>
       <KontrolloAksesinNeFunksione
@@ -252,7 +361,13 @@ function ShtoPartnerin(props) {
       />
       <Modal size="lg" show={true} onHide={() => props.largo()} className="sp-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Shto Partnerin e Ri</Modal.Title>
+          <div className="d-flex align-items-center w-100 justify-content-between">
+            <Modal.Title>Shto Partnerin e Ri</Modal.Title>
+            <Button variant="outline-info" size="sm" onClick={() => setShowArbkModal(true)} className="rounded-pill px-3 me-3 fw-bold d-flex align-items-center">
+              <FontAwesomeIcon icon={faSearch} className="me-2" />
+              Importo nga ARBK (JSON)
+            </Button>
+          </div>
         </Modal.Header>
         <Modal.Body>
           <Tabs
@@ -272,6 +387,7 @@ function ShtoPartnerin(props) {
                           placeholder="Shënoni emrin..."
                           id="emriKP"
                           className="sp-input"
+                          value={emri || ""}
                           onChange={(e) => setEmri(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "mbiemriKP")}
                           autoFocus
@@ -286,6 +402,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           placeholder="Shënoni mbiemrin..."
                           className="sp-input"
+                          value={mbiemri || ""}
                           onChange={(e) => setMbiemri(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "adresaKP")}
                         />
@@ -301,6 +418,7 @@ function ShtoPartnerin(props) {
                           id="adresaKP"
                           className="sp-input"
                           placeholder="Rr. B, Lagjja Kalabria, Nr. 56..."
+                          value={adresa || ""}
                           onChange={(e) => setAdresa(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "nrKontaktitKP")}
                         />
@@ -316,6 +434,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="+383 4X XXX XXX"
+                          value={nrKontaktit || ""}
                           onChange={(e) => setNrKontaktit(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "emailKP")}
                         />
@@ -329,6 +448,7 @@ function ShtoPartnerin(props) {
                           type="email"
                           className="sp-input"
                           placeholder="example@email.com"
+                          value={email || ""}
                           onChange={(e) => setEmail(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "rabatiKP")}
                         />
@@ -341,6 +461,7 @@ function ShtoPartnerin(props) {
                           type="number"
                           className="sp-input"
                           placeholder="0"
+                          value={rabati || ""}
                           onChange={(e) => setRabati(e.target.value)}
                           onKeyDown={handleMenaxhoTastet}
                           id="rabatiKP"
@@ -364,6 +485,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="Shënoni emrin zyrtar..."
+                          value={emriPartnerit || ""}
                           onChange={(e) => setEmriPartnerit(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "shkurtesaPartneritKB")}
                         />
@@ -377,6 +499,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="Psh: FC"
+                          value={shkurtesaEmrit || ""}
                           onChange={(e) => setShkurtesaEmrit(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "NUIKB")}
                         />
@@ -386,12 +509,18 @@ function ShtoPartnerin(props) {
                   <Row className="g-4 mb-3">
                     <Col md="4">
                       <div className="sp-input-group">
-                        <label className="sp-label">NUI <span className="text-danger">*</span></label>
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <label className="sp-label mb-0">NUI <span className="text-danger">*</span></label>
+                          <a href="https://arbk.rks-gov.net/" target="_blank" rel="noreferrer" className="text-emerald small text-decoration-none fw-bold" title="Kërko në ARBK">
+                            <FontAwesomeIcon icon={faSearch} className="me-1" /> ARBK
+                          </a>
+                        </div>
                         <Form.Control
                           id="NUIKB"
                           type="number"
                           className="sp-input"
                           placeholder="81XXXXXXXX"
+                          value={NUI || ""}
                           onChange={(e) => setNUI(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "NFKB")}
                         />
@@ -405,6 +534,7 @@ function ShtoPartnerin(props) {
                           type="number"
                           className="sp-input"
                           placeholder="NF"
+                          value={NF || ""}
                           onChange={(e) => setNF(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "TVSHKB")}
                         />
@@ -418,6 +548,7 @@ function ShtoPartnerin(props) {
                           type="number"
                           className="sp-input"
                           placeholder="Nr. TVSH"
+                          value={NRTVSH || ""}
                           onChange={(e) => setNRTVSH(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "adresaKB")}
                         />
@@ -433,6 +564,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="Qyteti, Rruga, Nr..."
+                          value={adresa || ""}
                           onChange={(e) => setAdresa(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "nrKontaktitKB")}
                         />
@@ -448,6 +580,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="+383 4X XXX XXX"
+                          value={nrKontaktit || ""}
                           onChange={(e) => setNrKontaktit(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "emailKB")}
                         />
@@ -461,6 +594,7 @@ function ShtoPartnerin(props) {
                           type="email"
                           className="sp-input"
                           placeholder="example@email.com"
+                          value={email || ""}
                           onChange={(e) => setEmail(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "rabatiKB")}
                         />
@@ -474,6 +608,7 @@ function ShtoPartnerin(props) {
                           type="number"
                           className="sp-input"
                           placeholder="0"
+                          value={rabati || ""}
                           onChange={(e) => setRabati(e.target.value)}
                           onKeyDown={handleMenaxhoTastet}
                         />
@@ -496,6 +631,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="Emri i Biznesit Furnitor..."
+                          value={emriPartnerit || ""}
                           onChange={(e) => setEmriPartnerit(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "shkurtesaPartneritF")}
                         />
@@ -509,6 +645,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="Psh: ABC"
+                          value={shkurtesaEmrit || ""}
                           onChange={(e) => setShkurtesaEmrit(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "NUIF")}
                         />
@@ -518,12 +655,18 @@ function ShtoPartnerin(props) {
                   <Row className="g-4 mb-3">
                     <Col md="4">
                       <div className="sp-input-group">
-                        <label className="sp-label">NUI <span className="text-danger">*</span></label>
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <label className="sp-label mb-0">NUI <span className="text-danger">*</span></label>
+                          <a href="https://arbk.rks-gov.net/" target="_blank" rel="noreferrer" className="text-emerald small text-decoration-none fw-bold" title="Kërko në ARBK">
+                            <FontAwesomeIcon icon={faSearch} className="me-1" /> ARBK
+                          </a>
+                        </div>
                         <Form.Control
                           id="NUIF"
                           type="number"
                           className="sp-input"
                           placeholder="81XXXXXXXX"
+                          value={NUI || ""}
                           onChange={(e) => setNUI(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "NFF")}
                         />
@@ -537,6 +680,7 @@ function ShtoPartnerin(props) {
                           type="number"
                           className="sp-input"
                           placeholder="NF"
+                          value={NF || ""}
                           onChange={(e) => setNF(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "TVSHF")}
                         />
@@ -550,6 +694,7 @@ function ShtoPartnerin(props) {
                           type="number"
                           className="sp-input"
                           placeholder="Nr. TVSH"
+                          value={NRTVSH || ""}
                           onChange={(e) => setNRTVSH(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "adresaF")}
                         />
@@ -565,6 +710,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="Adresa e plotë..."
+                          value={adresa || ""}
                           onChange={(e) => setAdresa(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "nrKontaktitF")}
                         />
@@ -580,6 +726,7 @@ function ShtoPartnerin(props) {
                           type="text"
                           className="sp-input"
                           placeholder="+383 4X XXX XXX"
+                          value={nrKontaktit || ""}
                           onChange={(e) => setNrKontaktit(e.target.value)}
                           onKeyDown={(e) => ndrroField(e, "emailF")}
                         />
@@ -593,6 +740,7 @@ function ShtoPartnerin(props) {
                           type="email"
                           className="sp-input"
                           placeholder="example@email.com"
+                          value={email || ""}
                           onChange={(e) => setEmail(e.target.value)}
                           onKeyDown={handleMenaxhoTastet}
                         />
@@ -617,6 +765,59 @@ function ShtoPartnerin(props) {
             }>
             Shto Partnerin
           </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* ARBK Import Modal */}
+      <Modal show={showArbkModal} onHide={() => {setShowArbkModal(false); setArbkResults([]); setArbkJson("");}} centered className="sp-modal">
+        <Modal.Header closeButton>
+          <Modal.Title as="h6">Importo nga ARBK</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {arbkResults.length === 0 ? (
+            <>
+              <div className="alert alert-info py-2 small mb-3">
+                <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
+                <strong>Këshillë:</strong> Për rezultate më të pakta e të sakta, kërkoni në ARBK përmes <strong>NUI</strong> në vend të emrit.
+              </div>
+              <p className="text-white-50 small mb-2">Ngjisni këtu objektin JSON që keni kopjuar nga <code>localStorage.getItem("state")</code> në faqen e ARBK-së.</p>
+              <Form.Control
+                as="textarea"
+                rows={6}
+                className="sp-input"
+                placeholder='{"version":2,"locale":"sq",...}'
+                value={arbkJson}
+                onChange={(e) => setArbkJson(e.target.value)}
+              />
+            </>
+          ) : (
+            <>
+              <p className="text-white small mb-3">U gjetën <strong>{arbkResults.length}</strong> biznese. Zgjidhni njërin prej tyre:</p>
+              <div className="list-group" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                {arbkResults.map((biz, idx) => (
+                  <button key={idx} type="button" className="list-group-item list-group-item-action bg-dark text-white border-secondary mb-2 rounded" onClick={() => applyArbkData(biz)}>
+                    <div className="d-flex w-100 justify-content-between align-items-center mb-1">
+                      <h6 className="mb-0 text-info" style={{ fontSize: '0.95rem' }}>{biz.EmriBiznesit}</h6>
+                      <span className="badge bg-secondary ms-2">{biz.StatusiARBK}</span>
+                    </div>
+                    <div className="small text-muted mb-1">
+                      <strong className="text-light">NUI:</strong> {biz.NUI || "-"} &nbsp;|&nbsp; <strong className="text-light">Lloji:</strong> {biz.LlojiBiznesit}
+                    </div>
+                    <div className="small text-muted">
+                      <strong className="text-light">Adresa:</strong> {biz.Adresa}, {biz.Komuna}
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <Button variant="outline-secondary" size="sm" className="mt-3 w-100" onClick={() => {setArbkResults([]); setArbkJson("");}}>
+                Pastro dhe kthehu mbrapa
+              </Button>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => {setShowArbkModal(false); setArbkResults([]); setArbkJson("");}}>Anulo</Button>
+          {arbkResults.length === 0 && <Button variant="success" onClick={handleParseJSON} disabled={!arbkJson}>Analizo JSON</Button>}
         </Modal.Footer>
       </Modal>
     </>

@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useEffect, useState } from "react";
+﻿import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
 const NukEshteEOptimizuarPerMobile = ({ title, message, onClose }) => {

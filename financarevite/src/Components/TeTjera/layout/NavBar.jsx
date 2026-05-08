@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   MDBContainer,
   MDBNavbar,
@@ -174,7 +174,7 @@ function NavBar() {
             )}
           </MDBNavbarNav>
 
-          <MDBNavbarNav className="ms-auto d-flex align-items-center gap-3">
+          <MDBNavbarNav right className="ms-auto d-flex flex-row justify-content-end align-items-center gap-3" style={{ width: 'auto' }}>
             {token ? (
               <>
                 <Link to="/Dashboard" className="user-profile-nav ms-2">

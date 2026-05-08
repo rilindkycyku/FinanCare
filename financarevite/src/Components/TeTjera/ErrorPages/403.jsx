@@ -1,7 +1,7 @@
+import { useEffect, useMemo, useState } from "react";
 ﻿import { Col, Image, Row, Container, Button } from "react-bootstrap";
 import NavBar from "../layout/NavBar";
 import Titulli from "../Titulli";
-import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ShieldAlert, ArrowLeft, Home } from "lucide-react";

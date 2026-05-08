@@ -1,5 +1,5 @@
-﻿import { useState} from "react";
-import axios from "axios";
+import { useMemo, useState } from "react";
+﻿import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
@@ -13,11 +13,11 @@ function ShtoRolin(props) {
 
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+    const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
-  };
+  }), [getToken]);
 
   const handleEmriChange = (value) => {
     setEmri(value);
