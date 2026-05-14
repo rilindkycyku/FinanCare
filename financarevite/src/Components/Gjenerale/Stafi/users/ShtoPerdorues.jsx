@@ -4,22 +4,14 @@ import {
   UserPlus, User, Calendar, CreditCard, DollarSign,
   Briefcase, MapPin, Phone, Mail, Award, Building, Building2
 } from "lucide-react";
-import {
-  Modal,
-  Button,
-  Tab,
-  Tabs,
-  Form,
-  InputGroup,
-  Row,
-  Col
+import {
+  Modal, Button, Tab, Tabs, Form, Row, Col
 } from "react-bootstrap";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Styles/costumStyles.css";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
-import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function ShtoPerdorues(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -40,18 +32,13 @@ function ShtoPerdorues(props) {
   const [nrLlogarisBankare, setNrLlogarisBankare] = useState("1290012345678900");
   const [eshtePuntorAktiv, setEshtePuntorAktiv] = useState(true);
   const [roli, setRoli] = useState();
-
   const [key, setKey] = useState("kryesore");
-
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState([]);
   const [perditeso, setPerditeso] = useState("");
 
   const getToken = localStorage.getItem("token");
-
-    const authentikimi = useMemo(() => ({
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
+  const authentikimi = useMemo(() => ({
+    headers: { Authorization: `Bearer ${getToken}` },
   }), [getToken]);
 
   useEffect(() => {
@@ -62,12 +49,10 @@ function ShtoPerdorues(props) {
           authentikimi
         );
         setTeDhenatBiznesit(teDhenat.data);
-        console.log(teDhenat.data);
       } catch (err) {
         console.log(err);
       }
     };
-
     ShfaqTeDhenat();
   }, [perditeso]);
 
@@ -75,12 +60,10 @@ function ShtoPerdorues(props) {
   const [optionsSelected, setOptionsSelected] = useState(null);
   const [optionsRolet, setOptionsRolet] = useState([]);
   const [optionsSelectedRolet, setOptionsSelectedRolet] = useState(null);
-    useEffect(() => {
+
+  useEffect(() => {
     axios
-      .get(
-        `${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`,
-        authentikimi
-      )
+      .get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data.map((item) => ({
           value: item.bankaID,
@@ -88,32 +71,25 @@ function ShtoPerdorues(props) {
         }));
         setOptions(fetchedoptions);
       })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+      .catch((error) => console.error("Error fetching data:", error));
 
     axios
       .get(`${API_BASE_URL}/api/Authenticate/shfaqRolet`, authentikimi)
       .then((response) => {
         const fetchedoptions = response.data
-          .filter((item) => item.name != "User")
-          .map((item) => ({
-            value: item.name,
-            label: item.name,
-          }));
+          .filter((item) => item.name !== "User")
+          .map((item) => ({ value: item.name, label: item.name }));
         setOptionsRolet(fetchedoptions);
       })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const handleChangeBanka = async (partneri) => {
+  const handleChangeBanka = (partneri) => {
     setBankaID(partneri.value);
     setOptionsSelected(partneri);
   };
 
-  const handleChangeRolet = async (partneri) => {
+  const handleChangeRolet = (partneri) => {
     setRoli(partneri.value);
     setOptionsSelectedRolet(partneri);
   };
@@ -123,147 +99,109 @@ function ShtoPerdorues(props) {
   }
 
   function PastroTeDhenat() {
-    setEmri(null);
-    setMbiemri(null);
-    setDataFillimitKontrates(null);
-    setDataMbarimitKontrates(null);
-    setNrLeternjoftimit(null);
-    setPagaBruto(null);
-    setAdresa(null);
-    setDataLindjes(null);
-    setNrKontaktit(null);
-    setEmailPrivat(null);
-    setProfesioni(null);
-    setSpecializimi(null);
-    setKualifikimi(null);
-    setBankaID(0);
-    setNrLlogarisBankare(null);
-    setEshtePuntorAktiv(false);
-    setRoli(null);
+    setEmri(null); setMbiemri(null);
+    setDataFillimitKontrates(null); setDataMbarimitKontrates(null);
+    setNrLeternjoftimit(null); setPagaBruto(null); setAdresa(null);
+    setDataLindjes(null); setNrKontaktit(null); setEmailPrivat(null);
+    setProfesioni(null); setSpecializimi(null); setKualifikimi(null);
+    setBankaID(0); setNrLlogarisBankare(null);
+    setEshtePuntorAktiv(false); setRoli(null);
   }
 
   async function CreateAcc(e) {
     e.preventDefault();
 
     if (isNullOrEmpty(emri) || isNullOrEmpty(mbiemri)) {
+      props.setPershkrimiMesazhit("<strong>Ju lutemi plotesoni te gjitha fushat me *</strong>");
+      props.setTipiMesazhit("danger");
+      props.shfaqmesazhin();
+      return;
+    }
+
+    // Omit domain param when null so backend falls back to "staff.local"
+    const domain = teDhenatBiznesit?.emailDomain;
+    const domainParam = domain ? `&domain=${encodeURIComponent(domain)}` : "";
+
+    const gjeneroRes = await axios.get(
+      `${API_BASE_URL}/api/Perdoruesi/GjeneroTeDhenatPerHyrje?e=${encodeURIComponent(emri)}&m=${encodeURIComponent(mbiemri)}${domainParam}`,
+      authentikimi
+    );
+
+    const telefoniREGEX = /^(?:\+\d{11}|\d{9})$/;
+    if (!isNullOrEmpty(nrKontaktit) && !telefoniREGEX.test(nrKontaktit)) {
       props.setPershkrimiMesazhit(
-        "<strong>Ju lutemi plotesoni te gjitha fushat me *</strong>"
+        "Numri telefonit duhet te jete ne formatin: <strong>045123123 ose +38343123132</strong>"
       );
       props.setTipiMesazhit("danger");
       props.shfaqmesazhin();
-    } else {
-      const gjeneroTeDhenatPerHyrje = await axios.get(
-        `${API_BASE_URL}/api/Perdoruesi/GjeneroTeDhenatPerHyrje?e=${emri}&m=${mbiemri}&domain=${teDhenatBiznesit && teDhenatBiznesit.emailDomain
-        }`,
-        authentikimi
-      );
-      const telefoniREGEX = /^(?:\+\d{11}|\d{9})$/;
+      return;
+    }
 
-      console.log(teDhenatBiznesit);
-      console.log(gjeneroTeDhenatPerHyrje);
-      if (!isNullOrEmpty(nrKontaktit) && !telefoniREGEX.test(nrKontaktit)) {
+    const emailGjeneruar = gjeneroRes?.data?.emailGjeneruar;
+    const usernameGjeneruar = gjeneroRes?.data?.usernameGjeneruar;
+    const passwordiGjeneruar = gjeneroRes?.data?.passwordiGjeneruar;
+
+    axios
+      .post(
+        `${API_BASE_URL}/api/Authenticate/register`,
+        {
+          name: emri, lastName: mbiemri,
+          email: emailGjeneruar, username: usernameGjeneruar, password: passwordiGjeneruar,
+          nrTelefonit: nrKontaktit, adresa, emailPrivat,
+          datelindja: dataLindjes?.toISOString(),
+          dataFillimitKontrates: dataFillimitKontrates?.toISOString(),
+          dataMbarimitKontrates: dataMbarimitKontrates?.toISOString(),
+          paga: pagaBruto, profesioni, specializimi, kualifikimi,
+          bankaID, numriLlogarisBankare: nrLlogarisBankare,
+          nrPersonal: nrLeternjoftimit,
+          eshtePuntorAktive: eshtePuntorAktiv.toString(),
+          roli,
+        },
+        authentikimi
+      )
+      .then(() => {
+        PastroTeDhenat();
+        props.largo();
         props.setPershkrimiMesazhit(
-          "Numri telefonit duhet te jete ne formatin: <strong>045123123 ose +38343123132</strong>"
+          "<strong>Llogaria u krijua me sukses</strong><br/>" +
+          `<p><strong>Email:</strong> ${emailGjeneruar}</p>` +
+          `<p><strong>Username:</strong> ${usernameGjeneruar}</p>` +
+          `<p><strong>Password:</strong> ${passwordiGjeneruar}</p>`
+        );
+        props.setTipiMesazhit("success");
+        props.shfaqmesazhin();
+        props.perditesoTeDhenat();
+      })
+      .catch((error) => {
+        console.error(error);
+        props.setPershkrimiMesazhit(
+          "<strong>Ju lutemi kontaktoni me stafin pasi ndodhi nje gabim ne server!</strong>"
         );
         props.setTipiMesazhit("danger");
         props.shfaqmesazhin();
-      } else {
-        console.log({
-          name: emri,
-          lastName: mbiemri,
-          email:
-            gjeneroTeDhenatPerHyrje &&
-            gjeneroTeDhenatPerHyrje.data.emailGjeneruar,
-          username:
-            gjeneroTeDhenatPerHyrje &&
-            gjeneroTeDhenatPerHyrje.data.usernameGjeneruar,
-          password:
-            gjeneroTeDhenatPerHyrje &&
-            gjeneroTeDhenatPerHyrje.data.passwordiGjeneruar,
-          nrTelefonit: nrKontaktit,
-          adresa: adresa,
-          emailPrivat: emailPrivat,
-          datelindja: dataLindjes.toISOString(),
-          dataFillimitKontrates: dataFillimitKontrates.toISOString(),
-          dataMbarimitKontrates: dataMbarimitKontrates.toISOString(),
-          paga: pagaBruto,
-          profesioni: profesioni,
-          specializimi: specializimi,
-          kualifikimi: kualifikimi,
-          bankaID: bankaID,
-          numriLlogarisBankare: nrLlogarisBankare,
-          nrPersonal: nrLeternjoftimit,
-          eshtePuntorAktive: eshtePuntorAktiv.toString(),
-          roli: roli,
-        });
-        axios
-          .post(
-            `${API_BASE_URL}/api/Authenticate/register`,
-            {
-              name: emri,
-              lastName: mbiemri,
-              email:
-                gjeneroTeDhenatPerHyrje &&
-                gjeneroTeDhenatPerHyrje.data.emailGjeneruar,
-              username:
-                gjeneroTeDhenatPerHyrje &&
-                gjeneroTeDhenatPerHyrje.data.usernameGjeneruar,
-              password:
-                gjeneroTeDhenatPerHyrje &&
-                gjeneroTeDhenatPerHyrje.data.passwordiGjeneruar,
-              nrTelefonit: nrKontaktit,
-              adresa: adresa,
-              emailPrivat: emailPrivat,
-              datelindja: dataLindjes.toISOString(),
-              dataFillimitKontrates: dataFillimitKontrates.toISOString(),
-              dataMbarimitKontrates: dataMbarimitKontrates.toISOString(),
-              paga: pagaBruto,
-              profesioni: profesioni,
-              specializimi: specializimi,
-              kualifikimi: kualifikimi,
-              bankaID: bankaID,
-              numriLlogarisBankare: nrLlogarisBankare,
-              nrPersonal: nrLeternjoftimit,
-              eshtePuntorAktive: eshtePuntorAktiv.toString(),
-              roli: roli,
-            },
-            authentikimi
-          )
-          .then(() => {
-            PastroTeDhenat();
-            props.largo();
-            props.setPershkrimiMesazhit(
-              "<strong>Llogaria u krijua me sukses</strong>" +
-              "<br> </br>" +
-              `<p><strong>Email:</strong> ${gjeneroTeDhenatPerHyrje &&
-              gjeneroTeDhenatPerHyrje.data.emailGjeneruar
-              }</p>` +
-              `<p><strong>Username:</strong> ${gjeneroTeDhenatPerHyrje &&
-              gjeneroTeDhenatPerHyrje.data.usernameGjeneruar
-              }</p>` +
-              `<p><strong>Password:</strong> ${gjeneroTeDhenatPerHyrje &&
-              gjeneroTeDhenatPerHyrje.data.passwordiGjeneruar
-              }</p>`
-            );
-            props.setTipiMesazhit("success");
-            props.shfaqmesazhin();
-            props.perditesoTeDhenat();
-          })
-          .catch((error) => {
-            console.error(error);
-            props.setPershkrimiMesazhit(
-              "<strong>Ju lutemi kontaktoni me stafin pasi ndodhi nje gabim ne server!</strong>"
-            );
-            props.setTipiMesazhit("danger");
-            props.shfaqmesazhin();
-          });
-      }
-    }
+      });
   }
 
-  useEffect(() => {
-    console.log(dataFillimitKontrates)
-  }, [dataFillimitKontrates]);
+  const selectStyles = {
+    control: (base) => ({
+      ...base,
+      background: "rgba(255, 255, 255, 0.05)",
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      borderRadius: "8px",
+      color: "white",
+    }),
+    menu: (base) => ({
+      ...base,
+      background: "#1a1d21",
+      border: "1px solid rgba(255, 255, 255, 0.1)",
+    }),
+    option: (base, state) => ({
+      ...base,
+      background: state.isFocused ? "rgba(255, 255, 255, 0.1)" : "transparent",
+      color: "white",
+    }),
+    singleValue: (base) => ({ ...base, color: "white" }),
+  };
 
   return (
     <>
@@ -408,29 +346,7 @@ function ShtoPerdorues(props) {
                             value={optionsSelectedRolet}
                             onChange={handleChangeRolet}
                             options={optionsRolet}
-                            styles={{
-                              control: (base) => ({
-                                ...base,
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                borderColor: 'rgba(255, 255, 255, 0.1)',
-                                borderRadius: '8px',
-                                color: 'white'
-                              }),
-                              menu: (base) => ({
-                                ...base,
-                                background: '#1a1d21',
-                                border: '1px solid rgba(255, 255, 255, 0.1)'
-                              }),
-                              option: (base, state) => ({
-                                ...base,
-                                background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                                color: 'white'
-                              }),
-                              singleValue: (base) => ({
-                                ...base,
-                                color: 'white'
-                              })
-                            }}
+                            styles={selectStyles}
                           />
                         </div>
                       </div>
@@ -575,29 +491,7 @@ function ShtoPerdorues(props) {
                             value={optionsSelected}
                             onChange={handleChangeBanka}
                             options={options}
-                            styles={{
-                              control: (base) => ({
-                                ...base,
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                borderColor: 'rgba(255, 255, 255, 0.1)',
-                                borderRadius: '8px',
-                                color: 'white'
-                              }),
-                              menu: (base) => ({
-                                ...base,
-                                background: '#1a1d21',
-                                border: '1px solid rgba(255, 255, 255, 0.1)'
-                              }),
-                              option: (base, state) => ({
-                                ...base,
-                                background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                                color: 'white'
-                              }),
-                              singleValue: (base) => ({
-                                ...base,
-                                color: 'white'
-                              })
-                            }}
+                            styles={selectStyles}
                           />
                         </div>
                       </div>

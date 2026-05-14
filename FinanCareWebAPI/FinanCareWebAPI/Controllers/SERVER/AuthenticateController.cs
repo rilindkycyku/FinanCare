@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -92,9 +92,22 @@ namespace FinanCareWebAPI.Controllers.SERVER
 
                 var shtuarMeSukses = await _userManager.CreateAsync(perdoruesiIRI, registerModel.Password);
 
+                if (!shtuarMeSukses.Succeeded)
+                {
+                    return BadRequest(new AuthResults()
+                    {
+                        Result = false,
+                        Errors = shtuarMeSukses.Errors.Select(e => e.Description).ToList()
+                    });
+                }
+
                 if (shtuarMeSukses.Succeeded)
                 {
-                    var rolesToAdd = new[] { "User", registerModel.Roli };
+                    // Filter out null so AddToRolesAsync doesn't throw when Roli is not provided
+                    var rolesToAdd = new[] { "User", registerModel.Roli }
+                        .Where(r => !string.IsNullOrEmpty(r))
+                        .Distinct()
+                        .ToArray();
                     await _userManager.AddToRolesAsync(perdoruesiIRI, rolesToAdd);
 
                     Perdoruesi perdoruesi = new Perdoruesi
@@ -113,7 +126,7 @@ namespace FinanCareWebAPI.Controllers.SERVER
                         UserID = perdoruesi.UserID,
                         Adresa = !registerModel.Adresa.IsNullOrEmpty() ? registerModel.Adresa : null,
                         NrKontaktit = !registerModel.NrTelefonit.IsNullOrEmpty() ? registerModel.NrTelefonit : null,
-                        BankaID = int.TryParse(registerModel.BankaID.ToString(), out int bankaIdValue)
+                        BankaID = int.TryParse(registerModel.BankaID.ToString(), out int bankaIdValue) && bankaIdValue > 0
                             ? bankaIdValue : (int?)null,
                         DataFillimitKontrates = DateTime.TryParse(registerModel.DataFillimitKontrates.ToString(), out DateTime dataFillimit)
                             ? dataFillimit : (DateTime?)null,

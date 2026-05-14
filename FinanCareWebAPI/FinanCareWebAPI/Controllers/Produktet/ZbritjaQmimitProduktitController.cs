@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -43,6 +43,7 @@ namespace FinanCareWebAPI.Controllers.Produktet
                 .Select(x => new
                 {
                     x.EmriProduktit,
+                    x.Barkodi,
                     x.ZbritjaQmimitProduktit.ProduktiID,
                     x.ZbritjaQmimitProduktit.Rabati,
                     x.ZbritjaQmimitProduktit.DataZbritjes,
@@ -58,6 +59,13 @@ namespace FinanCareWebAPI.Controllers.Produktet
         [Route("shtoZbritjenProduktit")]
         public async Task<IActionResult> post(ZbritjaQmimitProduktit zbritja)
         {
+            // Load the product name before inserting so the navigation property
+            // is available for the admin log (EF Core does not populate it after AddAsync).
+            var emriProduktit = await _context.Produkti
+                .Where(p => p.ProduktiID == zbritja.ProduktiID)
+                .Select(p => p.EmriProduktit)
+                .FirstOrDefaultAsync() ?? zbritja.ProduktiID.ToString();
+
             await _context.ZbritjaQmimitProduktit.AddAsync(zbritja);
             HistoriaZbritjeveProduktit historiaZbritjeveProduktit = new()
             {
@@ -69,7 +77,7 @@ namespace FinanCareWebAPI.Controllers.Produktet
             await _context.HistoriaZbritjeveProduktit.AddAsync(historiaZbritjeveProduktit);
             await _context.SaveChangesAsync();
 
-            await LogAdminActionAsync("Shto", zbritja.ProduktiID.ToString(), $"Zbritja vlen per: {zbritja.Produkti.EmriProduktit} - nga {zbritja.DataZbritjes} deri {zbritja.DataSkadimit}");
+            await LogAdminActionAsync("Shto", zbritja.ProduktiID.ToString(), $"Zbritja vlen per: {emriProduktit} - nga {zbritja.DataZbritjes} deri {zbritja.DataSkadimit}");
 
             return CreatedAtAction("get", zbritja.ProduktiID, zbritja);
         }

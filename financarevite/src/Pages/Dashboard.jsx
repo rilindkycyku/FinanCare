@@ -1,26 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import axios from "axios";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
 import { Tab, Tabs, Form, Row, Col, Container, Card, Badge } from "react-bootstrap";
 import {
-  User,
-  Mail,
-  UserCircle,
-  Calendar,
-  IdCard,
-  Wallet,
-  MapPin,
-  Phone,
-  Briefcase,
-  GraduationCap,
-  Building2,
-  CreditCard,
-  LayoutDashboard,
-  ExternalLink,
-  ChevronRight,
-  Clock,
-  ShoppingCart
+  User, Mail, UserCircle, Calendar, IdCard, Wallet,
+  MapPin, Phone, Briefcase, GraduationCap, Building2,
+  CreditCard, LayoutDashboard, ExternalLink, ChevronRight,
+  Clock, ShoppingCart
 } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -64,7 +51,6 @@ const Dashboard = () => {
     AOS.init({ duration: 800, once: true });
 
     if (getID && token) {
-      // Check token expiry
       try {
         const decodedToken = jwtDecode(token);
         const kohaAktive = new Date(decodedToken.exp * 1000);
@@ -99,7 +85,6 @@ const Dashboard = () => {
     }
   }, [getID, token, navigate, API_BASE_URL, authentikimi]);
 
-  // Derived list of quick actions based on roles
   const quickActions = useMemo(() => {
     const actions = [];
     roleBasedDropdowns.forEach(cat => {
@@ -227,6 +212,40 @@ const Dashboard = () => {
           </Card>
         </section>
       </Container>
+
+      {/* ── Branding footer ── */}
+      <footer style={{
+        marginTop: "2rem",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        padding: "0.9rem 2rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "0.5rem",
+      }}>
+        {/* Left — logo */}
+        <img
+          src="/img/web/Logo.svg"
+          alt="FinanCare Logo"
+          style={{ height: "32px", width: "auto", opacity: 0.85 }}
+        />
+
+        {/* Center — matching invoice footer text */}
+        <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "rgba(255,255,255,0.45)", textAlign: "center" }}>
+          &copy; FinanCare - POS, eOrder &amp; More by Rilind Kyçyku
+        </span>
+
+        {/* Right — version badge */}
+        <span style={{
+          fontSize: "0.65rem", color: "rgba(255,255,255,0.3)",
+          background: "rgba(255,255,255,0.06)", borderRadius: "6px",
+          padding: "0.18rem 0.55rem", fontFamily: "monospace",
+        }}>
+          v2.0.0
+        </span>
+      </footer>
+
     </div>
   );
 };

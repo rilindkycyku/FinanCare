@@ -198,11 +198,12 @@ export const roleBasedDropdowns = [
             path: "/Stafi",
             label: "Perdoruesit",
           },
-          {
-            roles: ["Menaxher"],
-            path: "/Rolet",
-            label: "Rolet",
-          },
+          // Mund te editohen mbas host:port/Rolet
+          // {
+          //   roles: ["Menaxher"],
+          //   path: "/Rolet",
+          //   label: "Rolet",
+          // },
         ],
       },
       {

@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -129,13 +129,16 @@ namespace FinanCareWebAPI.Controllers.Stafi
         [Authorize]
         [HttpGet]
         [Route("GjeneroTeDhenatPerHyrje")]
-        public async Task<IActionResult> GjeneroTeDhenatPerHyrje(string e, string m, string domain)
+        public async Task<IActionResult> GjeneroTeDhenatPerHyrje(string e, string m, string? domain)
         {
             var emri = e.ToLower();
             var mbiemri = m.ToLower();
 
+            // Use a default domain when none is configured in business settings
+            var domainEfektiv = string.IsNullOrWhiteSpace(domain) ? "staff.local" : domain.ToLower();
+
             var UsernameGjeneruar = $"{emri}.{mbiemri}";
-            var EmailGjeneruar = $"{UsernameGjeneruar}@{domain.ToLower()}";
+            var EmailGjeneruar = $"{UsernameGjeneruar}@{domainEfektiv}";
 
             var ekziston = await _context.Perdoruesi.Where(x => x.Email == EmailGjeneruar).ToListAsync();
 
@@ -143,7 +146,7 @@ namespace FinanCareWebAPI.Controllers.Stafi
             while (ekziston.Count > 0)
             {
                 UsernameGjeneruar = $"{emri}.{mbiemri}.{counter}";
-                EmailGjeneruar = $"{UsernameGjeneruar}@{domain.ToLower()}";
+                EmailGjeneruar = $"{UsernameGjeneruar}@{domainEfektiv}";
 
                 ekziston = await _context.Perdoruesi.Where(x => x.Email == EmailGjeneruar).ToListAsync();
 
