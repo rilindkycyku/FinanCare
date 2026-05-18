@@ -344,7 +344,7 @@ function RegjistroFaturen(props) {
         console.log(p.data);
 
         setOptionsSelected(
-          options.filter((item) => item.value == p.data[0].idProduktit)
+          options.find((item) => item.value == p.data[0].idProduktit) || { value: p.data[0].idProduktit, label: p.data[0].emriProduktit, item: p.data[0] }
         );
 
         setEdito(true);
@@ -353,8 +353,12 @@ function RegjistroFaturen(props) {
         setQmimiBleres(-p.data[0].qmimiBleres);
         setRabati(p.data[0].rabati3);
         console.log(
-          options.filter((item) => item.value == p.data[0].idProduktit)
+          options.find((item) => item.value == p.data[0].idProduktit) || { value: p.data[0].idProduktit, label: p.data[0].emriProduktit, item: p.data[0] }
         );
+      
+        setTimeout(() => {
+          document.getElementById("sasia")?.select();
+        }, 150);
       });
   }
 
@@ -773,6 +777,8 @@ function RegjistroFaturen(props) {
                       setIdTeDhenatKalk(e);
                     }}
                     mosShfaqKerkimin
+                      mosShfaqTitullin={true}
+                      mosShfaqPaginimin={true}
                     mosShfaqID={true}
                   />
                 </Card.Body>

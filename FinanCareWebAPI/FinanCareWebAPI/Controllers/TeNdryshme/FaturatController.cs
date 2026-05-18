@@ -34,65 +34,65 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         }
 
         [Authorize]
-[HttpGet]
-[Route("shfaqRegjistrimet")]
-public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? dataMbarim = null)
-{
-    // If no dates provided, show today only
-    if (dataFillim == null && dataMbarim == null)
-    {
-        dataFillim = DateTime.Today;
-        dataMbarim = DateTime.Today.AddDays(1);
-    }
-    // If only dataFillim provided, set dataMbarim to next day
-    else if (dataMbarim == null)
-    {
-        dataMbarim = dataFillim?.AddDays(1);
-    }
-
-    // Convert to nullable DateTime for comparison
-    DateTime startDate = dataFillim.Value.Date;
-    DateTime endDate = dataMbarim.Value.Date.AddDays(1); // Include entire end date
-
-    var regjistrimet = await _context.Faturat
-        .Include(x => x.BonusKartela)
-        .ThenInclude(x => x.Partneri)
-        .Where(x => x.DataRegjistrimit.HasValue && 
-                    x.DataRegjistrimit.Value.Date >= startDate && 
-                    x.DataRegjistrimit.Value.Date < endDate)
-        .OrderByDescending(x => x.IDRegjistrimit)
-        .Select(x => new
+        [HttpGet]
+        [Route("shfaqRegjistrimet")]
+        public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? dataMbarim = null)
         {
-            x.IDRegjistrimit,
-            x.TotaliPaTVSH,
-            x.TVSH,
-            x.DataRegjistrimit,
-            x.StafiID,
-            x.Stafi.Username,
-            x.NrFatures,
-            x.Partneri.EmriBiznesit,
-            x.Partneri.IDPartneri,
-            x.LlojiKalkulimit,
-            x.LlojiPageses,
-            x.StatusiPageses,
-            x.StatusiKalkulimit,
-            x.PershkrimShtese,
-            x.Rabati,
-            x.NrRendorFatures,
-            x.EshteFaturuarOferta,
-            x.IDBonusKartela,
-            x.BonusKartela,
-            x.Transporti
-        }).ToListAsync();
+            // If no dates provided, show today only
+            if (dataFillim == null && dataMbarim == null)
+            {
+                dataFillim = DateTime.Today;
+                dataMbarim = DateTime.Today.AddDays(1);
+            }
+            // If only dataFillim provided, set dataMbarim to next day
+            else if (dataMbarim == null)
+            {
+                dataMbarim = dataFillim?.AddDays(1);
+            }
 
-    return Ok(regjistrimet);
-}
+            // Convert to nullable DateTime for comparison
+            DateTime startDate = dataFillim.Value.Date;
+            DateTime endDate = dataMbarim.Value.Date.AddDays(1); // Include entire end date
+
+            var regjistrimet = await _context.Faturat
+                .Include(x => x.BonusKartela)
+                .ThenInclude(x => x.Partneri)
+                .Where(x => x.DataRegjistrimit.HasValue &&
+                            x.DataRegjistrimit.Value.Date >= startDate &&
+                            x.DataRegjistrimit.Value.Date < endDate)
+                .OrderByDescending(x => x.IDRegjistrimit)
+                .Select(x => new
+                {
+                    x.IDRegjistrimit,
+                    x.TotaliPaTVSH,
+                    x.TVSH,
+                    x.DataRegjistrimit,
+                    x.StafiID,
+                    x.Stafi.Username,
+                    x.NrFatures,
+                    x.Partneri.EmriBiznesit,
+                    x.Partneri.IDPartneri,
+                    x.LlojiKalkulimit,
+                    x.LlojiPageses,
+                    x.StatusiPageses,
+                    x.StatusiKalkulimit,
+                    x.PershkrimShtese,
+                    x.Rabati,
+                    x.NrRendorFatures,
+                    x.EshteFaturuarOferta,
+                    x.IDBonusKartela,
+                    x.BonusKartela,
+                    x.Transporti
+                }).ToListAsync();
+
+            return Ok(regjistrimet);
+        }
 
 
         [Authorize]
         [HttpGet]
         [Route("shfaqRegjistrimetSipasStatusit")]
-        public async Task<IActionResult> GetByStatusi(string statusi,DateTime? dataFillim = null, DateTime? dataMbarim = null)
+        public async Task<IActionResult> GetByStatusi(string statusi, DateTime? dataFillim = null, DateTime? dataMbarim = null)
         {
             // If no dates provided, show today only
             if (dataFillim == null && dataMbarim == null)
@@ -114,7 +114,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 .ThenInclude(x => x.Partneri)
                 .Where(x => x.StatusiKalkulimit == statusi && (x.DataRegjistrimit.HasValue &&
                     x.DataRegjistrimit.Value.Date >= startDate &&
-                    x.DataRegjistrimit.Value.Date < endDate) )
+                    x.DataRegjistrimit.Value.Date < endDate))
                 .OrderByDescending(x => x.IDRegjistrimit)
                 .Select(x => new
                 {
@@ -183,11 +183,14 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
 
             var totTVSH18 = await _context.TeDhenatFaturat.Include(x => x.Produkti).Where(x => x.Produkti.LlojiTVSH == 18 && x.IDRegjistrimit == id).ToListAsync();
             var totTVSH8 = await _context.TeDhenatFaturat.Include(x => x.Produkti).Where(x => x.Produkti.LlojiTVSH == 8 && x.IDRegjistrimit == id).ToListAsync();
+            var totTVSH0 = await _context.TeDhenatFaturat.Include(x => x.Produkti).Where(x => (x.Produkti.LlojiTVSH == 0 || x.Produkti.LlojiTVSH == null) && x.IDRegjistrimit == id).ToListAsync();
 
             decimal TotaliMeTVSH18 = 0;
             decimal TotaliMeTVSH8 = 0;
             decimal TotaliPaTVSH18 = 0;
             decimal TotaliPaTVSH8 = 0;
+            decimal TotaliMeTVSH0 = 0;
+            decimal TotaliPaTVSH0 = 0;
             decimal Rabati = 0;
             decimal QmimiTotalShites = 0;
 
@@ -212,12 +215,12 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                               (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
                                 (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
                                 (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT ;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
                 else
                 {
                     totalBeforeVAT = Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut - (teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100));
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
 
                 TotaliMeTVSH18 += totalBeforeVAT;
@@ -233,7 +236,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 else
                 {
 
-                    Rabati += Convert.ToDecimal((teDhenat.QmimiBleres * teDhenat.SasiaStokut) * rabati / 100);
+                    Rabati += Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100);
                 }
             }
 
@@ -253,12 +256,12 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                               (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
                                 (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
                                 (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
                 else
                 {
                     totalBeforeVAT = Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut - (teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100));
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
 
                 TotaliMeTVSH8 += totalBeforeVAT;
@@ -274,13 +277,49 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 else
                 {
 
-                    Rabati += Convert.ToDecimal((teDhenat.QmimiBleres * teDhenat.SasiaStokut) * rabati / 100);
+                    Rabati += Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100);
                 }
             }
 
 
 
-            decimal TotaliPaTVSH = TotaliPaTVSH18 + TotaliPaTVSH8;
+            // 0% TVSH products
+            foreach (var teDhenat in totTVSH0)
+            {
+                decimal rabati1 = teDhenat.Rabati1 ?? 0;
+                decimal rabati2 = teDhenat.Rabati2 ?? 0;
+                decimal rabati3 = teDhenat.Rabati3 ?? 0;
+                decimal rabati = rabati1 + rabati2 + rabati3;
+                decimal totalBeforeVAT = 0.00m;
+
+                if (regjistrimet.LlojiKalkulimit.Equals("KLFV"))
+                {
+                    QmimiTotalShites += Convert.ToDecimal(teDhenat.QmimiShites * teDhenat.SasiaStokut);
+                }
+
+                if (regjistrimet.LlojiKalkulimit.Equals("ONLINE") || regjistrimet.LlojiKalkulimit.Equals("OFERTE") || regjistrimet.LlojiKalkulimit.Equals("FAT") || regjistrimet.LlojiKalkulimit.Equals("FL") || regjistrimet.LlojiKalkulimit.Equals("PARAGON"))
+                {
+                    totalBeforeVAT = Convert.ToDecimal((teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
+                              (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
+                                (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
+                                (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
+                    Rabati += Convert.ToDecimal((teDhenat.QmimiShites * (rabati1 / 100) +
+                              (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) +
+                                (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
+                                (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
+                }
+                else
+                {
+                    totalBeforeVAT = Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut - (teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100));
+                    Rabati += Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100);
+                }
+
+                // vatAmount = 0 for 0% products — totalPaTVSH == totalMeTVSH
+                TotaliMeTVSH0 += totalBeforeVAT;
+                TotaliPaTVSH0 += totalBeforeVAT;
+            }
+
+            decimal TotaliPaTVSH = TotaliPaTVSH18 + TotaliPaTVSH8 + TotaliPaTVSH0;
             decimal TotaliMeTVSH = TotaliPaTVSH + (TotaliMeTVSH18 - TotaliPaTVSH18) + (TotaliMeTVSH8 - TotaliPaTVSH8);
 
             return Ok(new
@@ -288,8 +327,10 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 regjistrimet,
                 TotaliMeTVSH18,
                 TotaliMeTVSH8,
+                TotaliMeTVSH0,
                 TotaliPaTVSH18,
                 TotaliPaTVSH8,
+                TotaliPaTVSH0,
                 TotaliPaTVSH,
                 TotaliMeTVSH,
                 Rabati,
@@ -297,6 +338,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 TVSH8 = TotaliMeTVSH8 - TotaliPaTVSH8,
                 totTVSH18,
                 totTVSH8,
+                totTVSH0,
                 QmimiTotalShites
             });
         }
@@ -404,13 +446,13 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                         (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
                         (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
                         (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
                 else
                 {
                     totalBeforeVAT = Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut -
                         (teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100));
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
                 TotaliMeTVSH18 += totalBeforeVAT;
                 TotaliPaTVSH18 += totalBeforeVAT - vatAmount;
@@ -425,7 +467,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 }
                 else
                 {
-                    Rabati += Convert.ToDecimal((teDhenat.QmimiBleres * teDhenat.SasiaStokut) * rabati / 100);
+                    Rabati += Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100);
                 }
             }
 
@@ -448,13 +490,13 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                         (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100) -
                         (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100) -
                         (teDhenat.QmimiShites - teDhenat.QmimiShites * (rabati1 / 100)) * (rabati2 / 100)) * (rabati3 / 100)) * teDhenat.SasiaStokut);
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
                 else
                 {
                     totalBeforeVAT = Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut -
                         (teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100));
-                    vatAmount = (vatRate / (1 + vatRate)) * totalBeforeVAT;
+                    vatAmount = vatRate / (1 + vatRate) * totalBeforeVAT;
                 }
                 TotaliMeTVSH8 += totalBeforeVAT;
                 TotaliPaTVSH8 += totalBeforeVAT - vatAmount;
@@ -469,7 +511,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 }
                 else
                 {
-                    Rabati += Convert.ToDecimal((teDhenat.QmimiBleres * teDhenat.SasiaStokut) * rabati / 100);
+                    Rabati += Convert.ToDecimal(teDhenat.QmimiBleres * teDhenat.SasiaStokut * rabati / 100);
                 }
             }
 
@@ -526,27 +568,27 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
             string datePart = DateTime.Today.ToString("ddMMyy");
             string nrFatures = $"{datePart}-{stafiID}-{nrFat + 1}";
 
-                Faturat f = new Faturat()
-                {
-                    IDPartneri = 1,
-                    StafiID = stafiID,
-                    LlojiKalkulimit = "PARAGON",
-                    NrFatures = nrFatures,
-                    NrRendorFatures = nrFat + 1,
-                    IDBonusKartela = null
-                };
+            Faturat f = new Faturat()
+            {
+                IDPartneri = 1,
+                StafiID = stafiID,
+                LlojiKalkulimit = "PARAGON",
+                NrFatures = nrFatures,
+                NrRendorFatures = nrFat + 1,
+                IDBonusKartela = null
+            };
 
-                await _context.Faturat.AddAsync(f);
-                await _context.SaveChangesAsync();
+            await _context.Faturat.AddAsync(f);
+            await _context.SaveChangesAsync();
 
-                var obj = new
-                {
-                    NrFat = nrFat + 1,
-                    f.IDRegjistrimit,
-                };
+            var obj = new
+            {
+                NrFat = nrFat + 1,
+                f.IDRegjistrimit,
+            };
 
-                return Ok(obj);
-            }
+            return Ok(obj);
+        }
 
         [Authorize]
         [HttpGet]
@@ -626,7 +668,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 .ToListAsync();
 
             if (nrFatures.Count == 0)
-            {   
+            {
                 return Ok(0);
             }
 
@@ -750,7 +792,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
 
         }
 
-        
+
         [Authorize]
         [HttpPost]
         [Route("ruajKalkulimin")]
@@ -775,7 +817,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
             return Ok(teDhenat);
         }
 
-        
+
 
         [Authorize]
         [HttpPut]
@@ -887,13 +929,13 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 return NotFound();
             }
 
-            if(lloji == "FAT")
+            if (lloji == "FAT")
             {
                 produkti.SasiaNeStok -= (decimal)stoku;
                 produkti.DataPerditsimit = DateTime.Now;
             }
-            
-            if(lloji == "FL")
+
+            if (lloji == "FL")
             {
                 produkti.SasiaNeStok += (decimal)stoku;
                 produkti.DataPerditsimit = DateTime.Now;
@@ -998,7 +1040,7 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
             return Ok(oferta);
         }
 
-        
+
 
         [Authorize]
         [HttpPut]
@@ -1187,7 +1229,8 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
         [Route("shtoFaturen")]
         public async Task<ActionResult<object>> ShtoFaturen([FromBody] ImportFaturaDto dto)
         {
-            try { 
+            try
+            {
 
                 // Check if partner exists
                 var partner = await _context.Partneri.FindAsync(dto.IDKlienti);
@@ -1199,25 +1242,25 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
                 var staffId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var staff = await _context.Perdoruesi.FirstOrDefaultAsync(x => x.AspNetUserID == staffId);
                 int currentUserId = 0;
-                if(staff != null)
+                if (staff != null)
                 {
                     currentUserId = staff.UserID;
                 }
                 else { currentUserId = 9; }
 
                 var fatura = new Faturat
-                    {
-                        NrFatures = dto.NrFatures,
-                        DataRegjistrimit = dto.Data ?? DateTime.Now,
-                        StafiID = currentUserId,
-                        IDPartneri = dto.IDKlienti,
-                        LlojiPageses = dto.LlojiPageses ?? "Cash",
-                        TotaliPaTVSH = dto.TotaliPaTVSH ?? 0,
-                        TVSH = dto.TVSH ?? 0,
-                        Rabati = dto.Rabati ?? 0,
-                        LlojiKalkulimit = dto.LlojiKalkulimit ?? "HYRJE",
-                        StatusiPageses = dto.StatusiPageses ?? "Pa Paguar",
-                        StatusiKalkulimit = "true",
+                {
+                    NrFatures = dto.NrFatures,
+                    DataRegjistrimit = dto.Data ?? DateTime.Now,
+                    StafiID = currentUserId,
+                    IDPartneri = dto.IDKlienti,
+                    LlojiPageses = dto.LlojiPageses ?? "Cash",
+                    TotaliPaTVSH = dto.TotaliPaTVSH ?? 0,
+                    TVSH = dto.TVSH ?? 0,
+                    Rabati = dto.Rabati ?? 0,
+                    LlojiKalkulimit = dto.LlojiKalkulimit ?? "HYRJE",
+                    StatusiPageses = dto.StatusiPageses ?? "Pa Paguar",
+                    StatusiKalkulimit = "true",
 
                     Transporti = dto.Transporti ?? 0
                 };

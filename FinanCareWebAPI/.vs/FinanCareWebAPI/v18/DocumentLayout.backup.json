@@ -238,7 +238,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -253,10 +253,6 @@
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
-            },
-            {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
@@ -266,8 +262,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAgwBEAAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T17:14:05.198Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T17:14:05.198Z"
             },
             {
               "$type": "Document",
@@ -277,7 +272,7 @@
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\SERVER\\AuthenticateController.cs",
               "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\SERVER\\AuthenticateController.cs",
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\SERVER\\AuthenticateController.cs",
-              "ViewState": "AgIAAGoBAAAAAAAAAAAAwHkBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACwBAAAAAAAAAAAmwEQBAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-22T17:58:30.693Z",
               "EditorCaption": ""

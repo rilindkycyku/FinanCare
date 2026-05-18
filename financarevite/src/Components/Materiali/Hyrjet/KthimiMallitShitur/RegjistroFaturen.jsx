@@ -296,6 +296,16 @@ function RegjistroFaturen(props) {
         setQmimiB(p.data[0].qmimiBleres);
         setQmimiSH(p.data[0].qmimiShites);
         setQmimiSH2(p.data[0].qmimiShitesMeShumic);
+      const selectedOption = options.find((opt) => opt.value === p.data[0].idProduktit);
+      setOptionsSelected(selectedOption || {
+        value: p.data[0].idProduktit,
+        label: p.data[0].emriProduktit,
+        item: { produktiID: p.data[0].idProduktit, emriProduktit: p.data[0].emriProduktit }
+      });
+      
+        setTimeout(() => {
+          document.getElementById("sasia")?.select();
+        }, 150);
       });
   }
 
@@ -327,6 +337,7 @@ function RegjistroFaturen(props) {
       setQmimiB(0);
       setQmimiSH(0);
       setQmimiSH2(0);
+      setOptionsSelected(null);
       setEdito(false);
     }
   }
@@ -866,6 +877,8 @@ function RegjistroFaturen(props) {
                       }}
                       mosShfaqKerkimin
                       mosShfaqID={true}
+                      mosShfaqTitullin={true}
+                      mosShfaqPaginimin={true}
                       shfaqEksporto
                     />
                   )}

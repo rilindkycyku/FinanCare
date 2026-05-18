@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faFileExcel } from "@fortawesome/free-solid-svg-icons";
-import * as XLSX from "xlsx";
+import { exportListExcel } from "@/utils/exportInvoiceExcel";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -327,23 +327,37 @@ function KalkulimiIMallit(props) {
     document.getElementById("nrFatures").focus();
   };
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
+    const headers = [
+      "Nr. Kalkulimit",
+      "Nr. Fatures",
+      "Partneri",
+      "Totali Pa TVSH (€)",
+      "TVSH (€)",
+      "Totali (€)",
+      "Data e Fatures",
+      "Statusi Pageses",
+      "Lloji Pageses",
+      "Statusi Kalkulimit"
+    ];
     const exportData = kalkulimet.map((k) => ({
       "Nr. Kalkulimit": k["Nr. Kalkulimit"],
       "Nr. Fatures": k["Nr. Fatures"],
       "Partneri": k["Partneri"],
-      "Totali Pa TVSH (€)": k["Totali Pa TVSH €"],
-      "TVSH (€)": k["TVSH €"],
-      "Totali (€)": k["Totali €"],
+      "Totali Pa TVSH (€)": `${parseFloat(k["Totali Pa TVSH €"] || 0).toFixed(2)} €`,
+      "TVSH (€)": `${parseFloat(k["TVSH €"] || 0).toFixed(2)} €`,
+      "Totali (€)": `${parseFloat(k["Totali €"] || 0).toFixed(2)} €`,
       "Data e Fatures": k["Data e Fatures"] ? new Date(k["Data e Fatures"]).toLocaleDateString("sq-AL") : "",
       "Statusi Pageses": k["Statusi Pageses"],
       "Lloji Pageses": k["Lloji Pageses"],
       "Statusi Kalkulimit": k["Statusi Kalkulimit"],
     }));
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Kalkulimet");
-    XLSX.writeFile(wb, `Kalkulimet_${dataFillim}_${dataMbarim}.xlsx`);
+    await exportListExcel(
+      "Lista e Kalkulimeve",
+      headers,
+      exportData,
+      `Kalkulimet_${dataFillim}_${dataMbarim}.xlsx`
+    );
   };
 
   const handleMenaxhoTastetPagesa = (event) => {

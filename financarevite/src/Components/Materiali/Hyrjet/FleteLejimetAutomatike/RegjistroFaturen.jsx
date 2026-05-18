@@ -294,6 +294,10 @@ function RegjistroFaturen(props) {
         setRabati1(p.data[0].rabati1);
         setRabati2(p.data[0].rabati2);
         setRabati3(p.data[0].rabati3);
+      
+        setTimeout(() => {
+          document.getElementById("sasia")?.select();
+        }, 150);
       });
   }
 
@@ -328,6 +332,7 @@ function RegjistroFaturen(props) {
       setQmimiSH2(0);
       setQmimiShites("");
       setRabati3(0);
+      setOptionsSelected(null);
       setEdito(false);
       setEmriProduktit("Emri Produktit");
     }
@@ -649,6 +654,8 @@ function RegjistroFaturen(props) {
                       }}
                       mosShfaqKerkimin
                       mosShfaqID={true}
+                      mosShfaqTitullin={true}
+                      mosShfaqPaginimin={true}
                     />
                   )}
                 </Card.Body>

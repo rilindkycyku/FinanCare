@@ -16,6 +16,7 @@ import Titulli from "../../../Components/TeTjera/Titulli";
 import "../../Styles/DizajniPergjithshem.css";
 import "../../Styles/SugjerimiPorosise.css";
 import { Printer, Calendar, Search } from "lucide-react";
+import EksportoTeDhenat from "../../../Components/TeTjera/Tabela/EksportoTeDhenat";
 
 const pdfStyles = StyleSheet.create({
   page: { padding: 50, fontSize: 10, color: "#1e293b", backgroundColor: "#ffffff" },
@@ -297,6 +298,37 @@ function ListaBarazimeve() {
     );
   };
 
+    const exportData = filtered.map((b) => {
+    const hyrje =
+      parseAmount(b.totaliShitjeve) +
+      parseAmount(b.fillimiArkes) +
+      parseAmount(b.teShtuaraNeArke);
+    const dalje =
+      parseAmount(b.cash) +
+      parseAmount(b.monedha) +
+      parseAmount(b.borxhe) +
+      parseAmount(b.banka) +
+      parseAmount(b.pagesFatura) +
+      parseAmount(b.tjera);
+    const diff = dalje - hyrje;
+    return {
+      "Data": new Date(b.kohaBarazimit).toLocaleDateString("sq-AL") + " " + new Date(b.kohaBarazimit).toLocaleTimeString("sq-AL", { hour: '2-digit', minute: '2-digit' }),
+      "Arkëtari": `${b.arkatari?.emri} ${b.arkatari?.mbiemri}`,
+      "Total Shitje (€)": parseAmount(b.totaliShitjeve),
+      "Fillimi Arkës (€)": parseAmount(b.fillimiArkes),
+      "Të Shtuara (€)": parseAmount(b.teShtuaraNeArke),
+      "Hyrjet Qarkullimi (€)": hyrje,
+      "Cash (karta) (€)": parseAmount(b.cash),
+      "Monedha (€)": parseAmount(b.monedha),
+      "Borxhe (€)": parseAmount(b.borxhe),
+      "Banka POS (€)": parseAmount(b.banka),
+      "Paguar Fatura (€)": parseAmount(b.pagesFatura),
+      "Daljet Pagesat (€)": dalje,
+      "Dallimi Final (€)": diff,
+      "Përgjegjësi": `${b.personiPergjejes?.emri} ${b.personiPergjejes?.mbiemri}`
+    };
+  });
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
@@ -326,7 +358,7 @@ function ListaBarazimeve() {
               </div>
               <Card.Body className="p-4">
                 <Row className="g-3 align-items-end">
-                  <Col md={5}>
+                  <Col md={4}>
                     <Form.Label className="sp-label">Data Fillimit</Form.Label>
                     <Form.Control
                       className="sp-input"
@@ -335,7 +367,7 @@ function ListaBarazimeve() {
                       onChange={(e) => setFromDate(e.target.value)}
                     />
                   </Col>
-                  <Col md={5}>
+                  <Col md={4}>
                     <Form.Label className="sp-label">Data Mbarimit</Form.Label>
                     <Form.Control
                       className="sp-input"
@@ -353,6 +385,14 @@ function ListaBarazimeve() {
                       }}>
                       Pastro
                     </Button>
+                  </Col>
+                  <Col md={2}>
+                    {filtered.length > 0 && (
+                      <EksportoTeDhenat
+                        teDhenatJSON={exportData}
+                        emriDokumentit="Historiku_i_Barazimeve"
+                      />
+                    )}
                   </Col>
                 </Row>
               </Card.Body>

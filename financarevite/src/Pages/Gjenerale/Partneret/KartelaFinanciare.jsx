@@ -6,7 +6,7 @@ import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
-import exportFromJSON from "export-from-json";
+import { exportKartelaExcel } from "@/utils/exportInvoiceExcel";
 import { downloadKartelaPDF } from "../../../Components/Gjenerale/Partneret/KartelaFinanciarePDF";
 import {
   Printer,
@@ -145,20 +145,9 @@ function KartelaFinanciare() {
   };
 
   // Excel export
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     if (!tableRows.length) return;
-    const sanitize = (name = "") => name
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[çÇ]/g, "C").replace(/[ëË]/g, "E")
-      .replace(/\./g, "")
-      .replace(/[^a-zA-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-    const data = tableRows.map(({ _faturim, _pagese, _saldo, ...r }) => r);
-    const date = new Date().toLocaleDateString("sq-AL").replace(/\./g, "-");
-    exportFromJSON({
-      data,
-      fileName: `Kartela_${sanitize(optionsSelected?.label)}_${date}`,
-      exportType: exportFromJSON.types.xls,
-    });
+    await exportKartelaExcel(partner, tableRows, { totHyrje, totDalje, saldo }, optionsSelected?.label, biznesit);
   };
 
   // Derived

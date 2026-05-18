@@ -187,8 +187,8 @@ function RegjistroFaturen(props) {
               {
                 dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
                 stafiID: r.data.regjistrimet.stafiID,
-                totaliPaTVSH: r.data.regjistrimet.totaliPaTVSH,
-                tvsh: r.data.regjistrimet.tvsh,
+                totaliPaTVSH: parseFloat(r.data.totaliPaTVSH),
+                tvsh: parseFloat(r.data.totaliMeTVSH - r.data.totaliPaTVSH),
                 idPartneri: r.data.regjistrimet.idPartneri,
                 statusiPageses: r.data.regjistrimet.statusiPageses,
                 llojiPageses: r.data.regjistrimet.llojiPageses,
@@ -199,11 +199,9 @@ function RegjistroFaturen(props) {
                   "Tot - TVSH: " +
                   parseFloat(r.data.totaliPaTVSH).toFixed(2) +
                   "€, TVSH: " +
-                  parseFloat(r.data.tvsH18 + r.data.tvsH8).toFixed(2) +
+                  parseFloat(r.data.totaliMeTVSH - r.data.totaliPaTVSH).toFixed(2) +
                   "€, Tot Fat: " +
-                  parseFloat(
-                    r.data.totaliPaTVSH + r.data.tvsH18 + r.data.tvsH8
-                  ).toFixed(2) +
+                  parseFloat(r.data.totaliMeTVSH).toFixed(2) +
                   "€",
                 rabati: r.data.regjistrimet.rabati,
                 nrRendorFatures: r.data.regjistrimet.nrRendorFatures,
@@ -332,6 +330,7 @@ function RegjistroFaturen(props) {
                 (e) => e.value == p.data[0].idProduktit
               );
               handleChange(produkti[0]);
+              setTimeout(() => { document.getElementById("sasia")?.select(); }, 150);
             });
         } else if (pendingAction === "closeInvoice") {
           try {
@@ -603,7 +602,8 @@ function RegjistroFaturen(props) {
           setQmimiSH(0);
           setQmimiSH2(0);
           setNumriPerditesimeve("");
-          setEdito(false);
+          setOptionsSelected(null);
+      setEdito(false);
         });
     }
   }
@@ -1116,6 +1116,8 @@ function RegjistroFaturen(props) {
                     }}
                     mosShfaqKerkimin
                     mosShfaqID={true}
+                      mosShfaqTitullin={true}
+                      mosShfaqPaginimin={true}
                     shfaqEksporto
                   />
                 </Card.Body>

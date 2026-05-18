@@ -157,8 +157,8 @@ function RegjistroFaturen(props) {
               {
                 dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
                 stafiID: r.data.regjistrimet.stafiID,
-                totaliPaTVSH: r.data.regjistrimet.totaliPaTVSH,
-                tvsh: r.data.regjistrimet.tvsh,
+                totaliPaTVSH: parseFloat(r.data.totaliPaTVSH),
+                tvsh: parseFloat(r.data.totaliMeTVSH - r.data.totaliPaTVSH),
                 idPartneri: r.data.regjistrimet.idPartneri,
                 statusiPageses: r.data.regjistrimet.statusiPageses,
                 llojiPageses: r.data.regjistrimet.llojiPageses,
@@ -169,11 +169,9 @@ function RegjistroFaturen(props) {
                   "Tot - TVSH: " +
                   parseFloat(r.data.totaliPaTVSH).toFixed(2) +
                   "€, TVSH: " +
-                  parseFloat(r.data.tvsH18 + r.data.tvsH8).toFixed(2) +
+                  parseFloat(r.data.totaliMeTVSH - r.data.totaliPaTVSH).toFixed(2) +
                   "€, Tot Fat: " +
-                  parseFloat(
-                    r.data.totaliPaTVSH + r.data.tvsH18 + r.data.tvsH8
-                  ).toFixed(2) +
+                  parseFloat(r.data.totaliMeTVSH).toFixed(2) +
                   "€",
                 rabati: r.data.regjistrimet.rabati,
                 nrRendorFatures: r.data.regjistrimet.nrRendorFatures,
@@ -357,6 +355,16 @@ function RegjistroFaturen(props) {
         setQmimiBleres(p.data[0].qmimiBleres);
         setQmimiShites(p.data[0].qmimiShites);
         setQmimiShitesMeShumic(p.data[0].qmimiShitesMeShumic);
+        const selectedOption = options.find((opt) => opt.value === p.data[0].idProduktit);
+        setOptionsSelected(selectedOption || {
+          value: p.data[0].idProduktit,
+          label: p.data[0].emriProduktit,
+          item: { produktiID: p.data[0].idProduktit, emriProduktit: p.data[0].emriProduktit }
+        });
+      
+        setTimeout(() => {
+          document.getElementById("sasia")?.select();
+        }, 150);
       });
   }
 
@@ -834,6 +842,8 @@ function RegjistroFaturen(props) {
                       }}
                       mosShfaqKerkimin
                       mosShfaqID={true}
+                      mosShfaqTitullin={true}
+                      mosShfaqPaginimin={true}
                     />
                   )}
                 </Card.Body>

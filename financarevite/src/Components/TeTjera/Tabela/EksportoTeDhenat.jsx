@@ -1,50 +1,25 @@
 import { useState } from "react";
-import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import {
   Download,
-  FileText,
-  Table as TableIcon,
-  Code,
-  FileJson,
-  Globe,
-  X,
-  CheckCircle2,
-  FileSpreadsheet
+  CheckCircle2
 } from 'lucide-react';
-import exportFromJSON from 'export-from-json';
+import { exportListExcel } from '../../../utils/exportInvoiceExcel';
 
 function EksportoTeDhenat(props) {
   const [showConfig, setShowConfig] = useState(false);
-  const [showFormats, setShowFormats] = useState(false);
   const [selectedHeaders, setSelectedHeaders] = useState([]);
 
-  const exportOptions = [
-    { id: 'csv', label: 'CSV', icon: <FileText size={20} />, color: '#10b981' },
-    { id: 'xls', label: 'Excel', icon: <FileSpreadsheet size={20} />, color: '#22c55e' },
-    { id: 'json', label: 'JSON', icon: <FileJson size={20} />, color: '#6366f1' },
-    { id: 'html', label: 'HTML', icon: <Globe size={20} />, color: '#f59e0b' },
-    { id: 'xml', label: 'XML', icon: <Code size={20} />, color: '#8b5cf6' },
-    { id: 'txt', label: 'Text', icon: <FileText size={20} />, color: '#64748b' },
-  ];
-
-  const handleExport = (formatId) => {
-    let format;
-    switch (formatId) {
-      case 'csv': format = exportFromJSON.types.csv; break;
-      case 'json': format = exportFromJSON.types.json; break;
-      case 'xls': format = exportFromJSON.types.xls; break;
-      case 'txt': format = exportFromJSON.types.txt; break;
-      case 'html': format = exportFromJSON.types.html; break;
-      case 'xml': format = exportFromJSON.types.xml; break;
-      default: return;
-    }
-
-    exportFromJSON({
-      data: handleExportSelection(),
-      fileName: props.emriDokumentit || 'FinanCare_Export',
-      exportType: format
-    });
-    setShowFormats(false);
+  const handleExportExcelDirect = async () => {
+    const exportData = handleExportSelection();
+    const headers = selectedHeaders.length > 0 ? selectedHeaders : Object.keys(props.teDhenatJSON[0] || {});
+    await exportListExcel(
+      props.emriDokumentit || 'Eksporti i të Dhënave',
+      headers,
+      exportData,
+      `${props.emriDokumentit || 'FinanCare_Export'}.xlsx`
+    );
+    setShowConfig(false);
   };
 
   const handleCheckboxChange = (header) => {
@@ -83,16 +58,16 @@ function EksportoTeDhenat(props) {
         onClick={() => setShowConfig(true)}
       >
         <Download size={18} />
-        <span>Eksporto</span>
+        <span>Eksporto Excel</span>
       </Button>
 
       {/* Step 1: Select Columns */}
       <Modal show={showConfig} onHide={() => setShowConfig(false)} centered>
         <Modal.Header closeButton className="border-0 pb-0">
-          <Modal.Title className="fw-800">Konfigurimi i Eksportit</Modal.Title>
+          <Modal.Title className="fw-800">Konfigurimi i Eksportit Excel</Modal.Title>
         </Modal.Header>
         <Modal.Body className="pt-3">
-          <p className="text-muted small mb-3">Zgjidhni kolonat që dëshironi të përfshini në dokumentin tuaj.</p>
+          <p className="text-muted small mb-3">Zgjidhni kolonat që dëshironi të përfshini në skedarin tuaj Excel.</p>
 
           <div className="d-flex gap-2 mb-3">
             <button className="btn-small-link" onClick={selectAll}>Zgjidh të gjitha</button>
@@ -119,33 +94,11 @@ function EksportoTeDhenat(props) {
             variant="primary"
             className="btn-premium-shto"
             disabled={selectedHeaders.length === 0}
-            onClick={() => {
-              setShowFormats(true);
-              setShowConfig(false);
-            }}
+            onClick={handleExportExcelDirect}
           >
-            Vazhdo
+            Eksporto Excel
           </Button>
         </Modal.Footer>
-      </Modal>
-
-      {/* Step 2: Select Format */}
-      <Modal show={showFormats} onHide={() => setShowFormats(false)} centered size="sm">
-        <Modal.Header closeButton className="border-0 pb-0">
-          <Modal.Title className="fw-800 fs-5 text-center w-100">Zgjidhni Formatin</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-4">
-          <div className="format-grid">
-            {exportOptions.map((opt) => (
-              <button key={opt.id} className="format-option" onClick={() => handleExport(opt.id)}>
-                <div className="format-icon" style={{ backgroundColor: opt.color + '20', color: opt.color }}>
-                  {opt.icon}
-                </div>
-                <span className="format-label">{opt.label}</span>
-              </button>
-            ))}
-          </div>
-        </Modal.Body>
       </Modal>
 
       <style>{`
@@ -200,39 +153,6 @@ function EksportoTeDhenat(props) {
           background: #10b981;
           border-color: #10b981;
           color: white;
-        }
-        .format-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.25rem;
-        }
-        .format-option {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-          background: transparent;
-          border: none;
-          padding: 0.5rem;
-          transition: transform 0.2s ease;
-          cursor: pointer;
-        }
-        .format-option:hover {
-          transform: translateY(-4px);
-        }
-        .format-icon {
-          width: 50px;
-          height: 50px;
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .format-label {
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #94a3b8;
         }
         .btn-small-link {
           background: none;

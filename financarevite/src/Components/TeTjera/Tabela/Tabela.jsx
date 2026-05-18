@@ -54,6 +54,8 @@ function Tabela({
   endDateField,
   mosShfaqID,
   mosShfaqKerkimin,
+  mosShfaqTitullin,
+  mosShfaqPaginimin,
   butoniShtypZbritjet,
   storeName,
   products,
@@ -63,9 +65,15 @@ function Tabela({
 }) {
   const [perditeso, setPerditeso] = useState(Date.now());
   const [searchQuery, setSearchQuery] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage, setItemsPerPage] = useState(mosShfaqPaginimin ? (data.length > 0 ? data.length : 20) : 20);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+
+  useEffect(() => {
+    if (mosShfaqPaginimin) {
+      setItemsPerPage(data.length > 0 ? data.length : 20);
+    }
+  }, [data.length, mosShfaqPaginimin]);
 
   const { items, requestSort, sortConfig, currentPage, pageCount, goToPage } =
     useSortableData(
@@ -136,12 +144,14 @@ function Tabela({
         <Card.Body className="p-4">
           {/* Header Section */}
           <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <div>
-              <h4 className="premium-table-title mb-1">{tableName}</h4>
-              <p className="text-muted small mb-0">Menaxhoni të dhënat tuaja me saktësi dhe shpejtësi.</p>
-            </div>
+            {!mosShfaqTitullin && (
+              <div>
+                <h4 className="premium-table-title mb-1">{tableName}</h4>
+                <p className="text-muted small mb-0">Menaxhoni të dhënat tuaja me saktësi dhe shpejtësi.</p>
+              </div>
+            )}
 
-            <div className="d-flex align-items-center gap-2 flex-wrap">
+            <div className="d-flex align-items-center gap-2 flex-wrap ms-auto">
               {funksionButonShto && (
                 <Button
                   variant="primary"
@@ -152,7 +162,7 @@ function Tabela({
                 </Button>
               )}
 
-              {shfaqEksporto && data.length > 0 && (
+              {shfaqEksporto !== false && data.length > 0 && (
                 <EksportoTeDhenat
                   teDhenatJSON={data}
                   emriDokumentit={tableName}
@@ -400,7 +410,7 @@ function Tabela({
           )}
 
           {/* Pagination */}
-          {data.length > 0 && (
+          {data.length > 0 && !mosShfaqPaginimin && (
             <div className="premium-pagination-wrapper mt-4">
               <div className="pagination-info">
                 Duke shfaqur <strong>{currentPage * itemsPerPage + 1}</strong> deri <strong>{Math.min((currentPage + 1) * itemsPerPage, filteredItems.length)}</strong> nga {items.length} rezultate
