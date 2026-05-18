@@ -99,7 +99,7 @@ function ShtoBanken(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Financa", "Burime Njerzore"]}
+        roletELejuara={["Menaxher", "Financa", "Burime Njerzore", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

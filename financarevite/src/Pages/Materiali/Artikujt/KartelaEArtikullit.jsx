@@ -175,9 +175,7 @@ function KartelaEArtikullit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe
-        roletELejuara={["Menaxher", "Kalkulant", "Burime Njerzore"]}
-      />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Faturist", "1 Euro Menaxher"]} />
       <NavBar />
 
       <div className="containerDashboardP">

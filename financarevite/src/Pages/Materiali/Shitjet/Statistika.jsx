@@ -187,7 +187,7 @@ function Statistika() {
   if (loading) {
     return (
       <div className="stat-dashboard-container">
-        <KontrolloAksesinNeFaqe roletELejuara={["Menaxher"]} />
+        <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "1 Euro Menaxher"]} />
         <Titulli titulli={"Statistika | Dashboard"} />
         <NavBar />
         <Container className="py-4 d-flex justify-content-center align-items-center" style={{ minHeight: "75vh" }}>
@@ -209,7 +209,7 @@ function Statistika() {
 
   return (
     <div className="stat-dashboard-container">
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "1 Euro Menaxher"]} />
       <Titulli titulli={"Statistika | Dashboard"} />
       <NavBar />
 

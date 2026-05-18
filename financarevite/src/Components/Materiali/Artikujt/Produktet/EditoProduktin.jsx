@@ -18,6 +18,7 @@ function EditoProduktin(props) {
 
   const [kontrolloProduktin, setKontrolloProduktin] = useState(false);
   const [fushatEZbrazura, setFushatEZbrazura] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Select states
   const [optionsGrupiProduktit, setOptionsGrupiProduktit] = useState([]);
@@ -323,7 +324,7 @@ function EditoProduktin(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant"]}
+        roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]}
         largo={props.largo}
         shfaqmesazhin={props.shfaqmesazhin}
         perditesoTeDhenat={props.perditesoTeDhenat}
@@ -394,6 +395,14 @@ function EditoProduktin(props) {
         </Modal.Header>
 
         <Modal.Body>
+          {isLoading || optionsGrupiProduktit.length === 0 ? (
+            <div className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '350px' }}>
+              <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
+                <span className="visually-hidden">Duke ngarkuar...</span>
+              </div>
+              <h5 className="text-muted fw-bold">Duke ngarkuar të dhënat...</h5>
+            </div>
+          ) : (
           <Tabs defaultActiveKey="gjenerale" className="sp-tabs mb-4">
             {/* General Tab */}
             <Tab eventKey="gjenerale" title="Të Dhënat Gjenerale">
@@ -631,6 +640,7 @@ function EditoProduktin(props) {
               </div>
             </Tab>
           </Tabs>
+          )}
         </Modal.Body>
 
         <Modal.Footer>

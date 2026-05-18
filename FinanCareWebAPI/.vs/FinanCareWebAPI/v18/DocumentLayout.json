@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|solutionrelative:financarewebapi\\controllers\\server\\authenticatecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|c:\\rilindi\\programim\\githubprojekte\\financare\\financarewebapi\\financarewebapi\\migrations\\20250530171405_krijimirolitpersonpergjegjesporosive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|solutionrelative:financarewebapi\\migrations\\20250530171405_krijimirolitpersonpergjegjesporosive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|c:\\rilindi\\programim\\githubprojekte\\financare\\financarewebapi\\financarewebapi\\models\\perdoruesi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|solutionrelative:financarewebapi\\models\\perdoruesi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -203,10 +207,6 @@
       "RelativeMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|solutionrelative:financarewebapi\\migrations\\20250530180010_krijimiafateteskadimit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|c:\\rilindi\\programim\\githubprojekte\\financare\\financarewebapi\\financarewebapi\\migrations\\20250530171405_krijimirolitpersonpergjegjesporosive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|solutionrelative:financarewebapi\\migrations\\20250530171405_krijimirolitpersonpergjegjesporosive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|c:\\rilindi\\programim\\githubprojekte\\financare\\financarewebapi\\financarewebapi\\migrations\\20251217203616_perditesimipartnerit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{959F7509-79EC-4E53-B92C-B8F77DB5B898}|FinanCareWebAPI\\FinanCareWebAPI.csproj|solutionrelative:financarewebapi\\migrations\\20251217203616_perditesimipartnerit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -253,29 +253,20 @@
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "PerdoruesiController.cs",
-              "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
-              "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
-              "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
-              "RelativeToolTip": "FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
-              "ViewState": "AgIAAGkAAAAAAAAAAAAowLEAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T17:35:54.95Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Perdoruesi.cs",
-              "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Perdoruesi.cs",
-              "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\Perdoruesi.cs",
-              "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Perdoruesi.cs",
-              "RelativeToolTip": "FinanCareWebAPI\\Models\\Perdoruesi.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Title": "20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
+              "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
+              "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
+              "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
+              "RelativeToolTip": "FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAgwBEAAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T17:12:49.124Z",
+              "WhenOpened": "2025-05-30T17:14:05.198Z",
               "EditorCaption": ""
             },
             {
@@ -286,14 +277,14 @@
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\SERVER\\AuthenticateController.cs",
               "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\SERVER\\AuthenticateController.cs",
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\SERVER\\AuthenticateController.cs",
-              "ViewState": "AgIAAEcAAAAAAAAAAAAwwHkAAAA2AAAAAAAAAA==",
+              "ViewState": "AgIAACwBAAAAAAAAAAAmwHkBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-22T17:58:30.693Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "ZbritjaQmimitProduktitController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Produktet\\ZbritjaQmimitProduktitController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Produktet\\ZbritjaQmimitProduktitController.cs",
@@ -301,12 +292,35 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\Produktet\\ZbritjaQmimitProduktitController.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAAC0AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-22T18:48:53.659Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-22T18:48:53.659Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
+              "Title": "Perdoruesi.cs",
+              "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Perdoruesi.cs",
+              "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\Perdoruesi.cs",
+              "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Perdoruesi.cs",
+              "RelativeToolTip": "FinanCareWebAPI\\Models\\Perdoruesi.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-12T17:12:49.124Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PerdoruesiController.cs",
+              "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
+              "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
+              "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
+              "RelativeToolTip": "FinanCareWebAPI\\Controllers\\Stafi\\PerdoruesiController.cs",
+              "ViewState": "AgIAAGkAAAAAAAAAAAAowLEAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-12T17:35:54.95Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "DitaFurnizimitController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\TeNdryshme\\DitaFurnizimitController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\TeNdryshme\\DitaFurnizimitController.cs",
@@ -314,12 +328,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeNdryshme\\DitaFurnizimitController.cs",
               "ViewState": "AgIAADkAAAAAAAAAAAAAAGIAAABmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-11T19:59:44.218Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-11T19:59:44.218Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "PartneriController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\TeDhenatPartneri\\PartneriController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\TeDhenatPartneri\\PartneriController.cs",
@@ -327,12 +340,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeDhenatPartneri\\PartneriController.cs",
               "ViewState": "AgIAAIUAAAAAAAAAAADwv7QAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-22T18:56:41.568Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-22T18:56:41.568Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "NjoftimetController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\TeNdryshme\\NjoftimetController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\TeNdryshme\\NjoftimetController.cs",
@@ -340,8 +352,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeNdryshme\\NjoftimetController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAF0AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T18:01:45.279Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T18:01:45.279Z"
             },
             {
               "$type": "Document",
@@ -357,7 +368,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Faturat.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Faturat.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\Faturat.cs",
@@ -369,7 +380,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "FaturatController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\TeNdryshme\\FaturatController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\TeNdryshme\\FaturatController.cs",
@@ -377,12 +388,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeNdryshme\\FaturatController.cs",
               "ViewState": "AgIAAN4DAAAAAAAAAAAIwAwEAABdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-06T09:15:32.709Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-06T09:15:32.709Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "AfatetESkadimit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\AfatetESkadimit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\AfatetESkadimit.cs",
@@ -394,7 +404,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Dockerfile",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Dockerfile",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Dockerfile",
@@ -402,12 +412,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Dockerfile",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-05-04T23:39:01.175Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-04T23:39:01.175Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "FinanCareWebAPI.csproj",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\FinanCareWebAPI.csproj",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\FinanCareWebAPI.csproj",
@@ -419,7 +428,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "BarazoArkenController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Stafi\\BarazoArkenController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Stafi\\BarazoArkenController.cs",
@@ -427,12 +436,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\Stafi\\BarazoArkenController.cs",
               "ViewState": "AgIAAHMAAAAAAAAAAAAwwIIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T17:11:33.426Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-12T17:11:33.426Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Program.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Program.cs",
@@ -440,12 +448,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Program.cs",
               "ViewState": "AgIAAE0AAAAAAAAAAAAAAFAAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T19:30:00.705Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-15T19:30:00.705Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\appsettings.json",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\appsettings.json",
@@ -457,7 +464,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "ProduktiController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Produktet\\ProduktiController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Produktet\\ProduktiController.cs",
@@ -465,12 +472,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\Produktet\\ProduktiController.cs",
               "ViewState": "AgIAAI8AAAAAAAAAAADgv5cAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-27T18:38:15.913Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-27T18:38:15.913Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Properties\\launchSettings.json",
@@ -482,7 +488,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "StatistikatController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\TeNdryshme\\StatistikatController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\TeNdryshme\\StatistikatController.cs",
@@ -490,12 +496,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeNdryshme\\StatistikatController.cs",
               "ViewState": "AgIAAIUAAAAAAAAAAAAcwJgAAABYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T11:51:42.142Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-03T11:51:42.142Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "KartelatController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\TeDhenatPartneri\\KartelatController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\TeDhenatPartneri\\KartelatController.cs",
@@ -503,12 +508,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeDhenatPartneri\\KartelatController.cs",
               "ViewState": "AgIAAFAAAAAAAAAAAAAowEMAAADLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T19:01:22.077Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-15T19:01:22.077Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "_ValidationScriptsPartial.cshtml",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
@@ -516,12 +520,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-23T23:06:49.65Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-23T23:06:49.65Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "IAdminLogService.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Services\\IAdminLogService.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Services\\IAdminLogService.cs",
@@ -533,7 +536,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "AdminLogService.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Services\\AdminLogService.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Services\\AdminLogService.cs",
@@ -545,7 +548,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "VendosFototController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\TeNdryshme\\VendosFototController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\TeNdryshme\\VendosFototController.cs",
@@ -553,12 +556,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\TeNdryshme\\VendosFototController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T11:51:44.337Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-03T11:51:44.337Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 24,
               "Title": "TeDhenatBiznesitController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Stafi\\TeDhenatBiznesitController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Stafi\\TeDhenatBiznesitController.cs",
@@ -570,7 +572,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 25,
               "Title": "ExportoTeDhenatTekKlientiController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\SERVER\\ExportoTeDhenatTekKlientiController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\SERVER\\ExportoTeDhenatTekKlientiController.cs",
@@ -578,12 +580,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\SERVER\\ExportoTeDhenatTekKlientiController.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAIBJwGQAAAB3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T20:24:09.759Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T20:24:09.759Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 26,
               "Title": "DatabaseController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\SERVER\\DatabaseController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\SERVER\\DatabaseController.cs",
@@ -591,12 +592,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\SERVER\\DatabaseController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-22T19:28:00.202Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-22T19:28:00.202Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "AdminLogsController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\SERVER\\AdminLogsController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\SERVER\\AdminLogsController.cs",
@@ -604,12 +604,11 @@
               "RelativeToolTip": "FinanCareWebAPI\\Controllers\\SERVER\\AdminLogsController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAK4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-22T17:58:03.716Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-22T17:58:03.716Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "NjesiaMateseController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Produktet\\NjesiaMateseController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Produktet\\NjesiaMateseController.cs",
@@ -621,7 +620,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "GrupiProduktitController.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Controllers\\Produktet\\GrupiProduktitController.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Controllers\\Produktet\\GrupiProduktitController.cs",
@@ -645,7 +644,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 30,
               "Title": "KartelaService.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Services\\KartelaService.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Services\\KartelaService.cs",
@@ -657,7 +656,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 31,
               "Title": "FinanCareDbContext.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\FinanCareDbContext.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\FinanCareDbContext.cs",
@@ -669,7 +668,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 32,
               "Title": "AdminLogs.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\AdminLogs.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\AdminLogs.cs",
@@ -693,7 +692,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 34,
               "Title": "TeDhenatFaturat.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\TeDhenatFaturat.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\TeDhenatFaturat.cs",
@@ -705,7 +704,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 33,
               "Title": "Produkti.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Produkti.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\Produkti.cs",
@@ -717,7 +716,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 35,
               "Title": "ZbritjaQmimitProduktit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\ZbritjaQmimitProduktit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\ZbritjaQmimitProduktit.cs",
@@ -729,7 +728,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 36,
               "Title": "Kartelat.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Kartelat.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\Kartelat.cs",
@@ -753,7 +752,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 37,
               "Title": "StokuQmimiProduktit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\StokuQmimiProduktit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\StokuQmimiProduktit.cs",
@@ -765,7 +764,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 38,
               "Title": "Partneri.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Partneri.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\Partneri.cs",
@@ -801,7 +800,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 40,
               "Title": "20251212182729_EshteEditiarBarazimiArkes.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20251212182729_EshteEditiarBarazimiArkes.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20251212182729_EshteEditiarBarazimiArkes.cs",
@@ -813,7 +812,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 39,
               "Title": "BarazoArken.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\BarazoArken.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\BarazoArken.cs",
@@ -825,7 +824,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 41,
               "Title": "20251212173014_EshteShtuarBarazimiArkes.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20251212173014_EshteShtuarBarazimiArkes.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20251212173014_EshteShtuarBarazimiArkes.cs",
@@ -837,7 +836,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 42,
               "Title": "DitaFurnizimit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\DitaFurnizimit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\DitaFurnizimit.cs",
@@ -849,7 +848,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 43,
               "Title": "20251211195919_EshteSHtuarDitaFurnizimit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20251211195919_EshteSHtuarDitaFurnizimit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20251211195919_EshteSHtuarDitaFurnizimit.cs",
@@ -861,7 +860,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 44,
               "Title": "TeDhenatBiznesit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\TeDhenatBiznesit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\TeDhenatBiznesit.cs",
@@ -873,7 +872,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 50,
               "Title": "20250530180010_KrijimiAfatetESkadimit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20250530180010_KrijimiAfatetESkadimit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20250530180010_KrijimiAfatetESkadimit.cs",
@@ -885,7 +884,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 46,
               "Title": "TeDhenatPerdoruesit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\TeDhenatPerdoruesit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\TeDhenatPerdoruesit.cs",
@@ -897,7 +896,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 47,
               "Title": "Bankat.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\Bankat.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\Bankat.cs",
@@ -909,7 +908,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 45,
               "Title": "HistoriaZbritjeveProduktit.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Models\\HistoriaZbritjeveProduktit.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Models\\HistoriaZbritjeveProduktit.cs",
@@ -921,7 +920,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 49,
               "Title": "20241001220018_PerditesimeTekKartelat.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20241001220018_PerditesimeTekKartelat.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20241001220018_PerditesimeTekKartelat.cs",
@@ -933,20 +932,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
-              "Title": "20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
-              "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
-              "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
-              "ToolTip": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
-              "RelativeToolTip": "FinanCareWebAPI\\Migrations\\20250530171405_KrijimiRolitPersonPergjegjesPorosive.cs",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAQwDEAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T17:14:05.198Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 48,
               "Title": "20241001220230_Vendosja e te dhenave kryesore per sistemin.cs",
               "DocumentMoniker": "C:\\Rilindi\\Programim\\GitHubProjekte\\FinanCare\\FinanCareWebAPI\\FinanCareWebAPI\\Migrations\\20241001220230_Vendosja e te dhenave kryesore per sistemin.cs",
               "RelativeDocumentMoniker": "FinanCareWebAPI\\Migrations\\20241001220230_Vendosja e te dhenave kryesore per sistemin.cs",
@@ -954,8 +940,7 @@
               "RelativeToolTip": "FinanCareWebAPI\\Migrations\\20241001220230_Vendosja e te dhenave kryesore per sistemin.cs",
               "ViewState": "AgIAAKkAAAAAAAAAAAAQwHMAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T17:11:29.946Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T17:11:29.946Z"
             }
           ]
         }

@@ -91,7 +91,7 @@ function Fatura({ nrFatures, mbyllFaturen }) {
         setTeDhenatBiznesit(biznesiRes.data || {});
         setBankat(bankatRes.data || []);
 
-        const roles = ["Faturist", "Menaxher", "Kalkulant", "Arkatar", "Komercialist"];
+        const roles = ["Faturist", "Menaxher", "Kalkulant", "Arkatar", "Komercialist", "1 Euro Menaxher", "1 Euro Staff"];
         const userHasAccess = userRes.data?.rolet?.some((role) => roles.includes(role)) || false;
         setKaAkses(userHasAccess);
 

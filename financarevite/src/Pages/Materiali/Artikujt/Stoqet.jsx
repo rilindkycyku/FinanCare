@@ -5,6 +5,7 @@ import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { TailSpin } from "react-loader-spinner";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 const Stoqet = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -97,6 +98,7 @@ const Stoqet = () => {
 
   return (
     <>
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]} />
       <NavBar />
 
       <div className="containerDashboardP">

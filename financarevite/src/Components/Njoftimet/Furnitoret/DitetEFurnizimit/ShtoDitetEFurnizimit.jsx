@@ -147,7 +147,7 @@ function ShtoDitenEFurnizimit(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive"]}
+        roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

@@ -2,17 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
-import { Tab, Tabs, Form, Row, Col, Container, Card, Badge } from "react-bootstrap";
+import { Tab, Tabs, Row, Col, Container, Card, Badge } from "react-bootstrap";
 import {
   User, Mail, UserCircle, Calendar, IdCard, Wallet,
   MapPin, Phone, Briefcase, GraduationCap, Building2,
-  CreditCard, LayoutDashboard, ExternalLink, ChevronRight,
+  CreditCard, LayoutDashboard,
   Clock, ShoppingCart
 } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import jwtDecode from "jwt-decode";
-
 import NavBar from "../Components/TeTjera/layout/NavBar";
 import Titulli from "../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
@@ -114,7 +113,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <KontrolloAksesinNeFaqe roletELejuara={["Financa", "Mbeshtetje e Klientit", "Faturist", "Puntor i Thjeshte", "Burime Njerzore", "Komercialist", "Kalkulant", "Menaxher", "Arkatar", "Pergjegjes i Porosive"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Financa", "Mbeshtetje e Klientit", "Faturist", "Puntor i Thjeshte", "Burime Njerzore", "Komercialist", "Kalkulant", "Menaxher", "Arkatar", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"]} />
       <Titulli titulli={"Dashboard"} />
       <NavBar />
 
@@ -242,7 +241,7 @@ const Dashboard = () => {
           background: "rgba(255,255,255,0.06)", borderRadius: "6px",
           padding: "0.18rem 0.55rem", fontFamily: "monospace",
         }}>
-          v2.0.0
+          v2.0.1
         </span>
       </footer>
 

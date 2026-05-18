@@ -22,7 +22,16 @@ function KontrolloAksesinNeFunksione(props) {
             // The user doesn't have access
             props.largo();
             props.setTipiMesazhit("danger");
-            props.setPershkrimiMesazhit("<h2>403 - Nuk keni akses!</h2>");
+            props.setPershkrimiMesazhit(`
+              <div style="text-align:center; padding: 8px 0;">
+                <div style="font-size: 3rem; margin-bottom: 8px;">🚫</div>
+                <div style="font-size: 2rem; font-weight: 800; color: #f87171; letter-spacing: 2px;">403</div>
+                <div style="font-size: 1.1rem; font-weight: 600; margin: 4px 0 8px;">Nuk keni akses!</div>
+                <div style="font-size: 0.85rem; color: #9ca3af; line-height: 1.5;">
+                  Roli juaj nuk ka leje për të kryer këtë veprim.<br/>Kontaktoni administratorin nëse mendoni se kjo është gabim.
+                </div>
+              </div>
+            `);
             props.perditesoTeDhenat();
             props.shfaqmesazhin();
           }
@@ -37,7 +46,7 @@ function KontrolloAksesinNeFunksione(props) {
     kontrolloAksesin();
   }, [props.roletELejuara, navigate]); // Add roletELejuara and navigate to dependency array
 
-  return <div></div>;
+  return null;
 }
 
 export default KontrolloAksesinNeFunksione;

@@ -76,7 +76,7 @@ function DitetEFurnizimit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Pergjegjes i Porosive", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"]} />
 
       <NavBar />
 

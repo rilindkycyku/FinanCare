@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -1108,7 +1108,10 @@ public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? data
             {
                 await _context.SaveChangesAsync();
 
-                await LogAdminActionAsync("Perditeso", idKalulimit.ToString() ?? 0.ToString(), $"Eshte bere perditesimi i kalkulimit: {idKalulimit} - {fat?.Partneri?.EmriBiznesit}");
+                if (fatura.LlojiKalkulimit != "PARAGON")
+                {
+                    await LogAdminActionAsync("Perditeso", idKalulimit.ToString() ?? 0.ToString(), $"Eshte bere perditesimi i kalkulimit: {idKalulimit} - {fat?.Partneri?.EmriBiznesit}");
+                }
             }
             catch (DbUpdateConcurrencyException)
             {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import "../../Styles/DizajniPergjithshem.css";
+import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -61,7 +61,7 @@ function KalkulimiIMallit(props) {
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -165,12 +165,16 @@ function KalkulimiIMallit(props) {
     };
 
     vendosNrFaturesMeRradhe();
-  }, [perditeso]);
+  }, []); // Run once on mount — invoice number doesn't need to re-fetch on every perditeso change
 
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) {
+        el.focus();
+        setTimeout(() => el.select(), 0);
+      }
     }
   };
 
@@ -243,7 +247,7 @@ function KalkulimiIMallit(props) {
 
   // Edit invoice header modal
   const [shfaqEditoFaturen, setShfaqEditoFaturen] = useState(false);
-  const [idKalkulimitPerEdito, setIdKalkulimitPerEdito] = useState(null);  useEffect(() => {
+  const [idKalkulimitPerEdito, setIdKalkulimitPerEdito] = useState(null); useEffect(() => {
     if (llojiIPageses === "Borxh") {
       setStatusiIPagesesValue("Borxh");
     } else {
@@ -251,7 +255,7 @@ function KalkulimiIMallit(props) {
     }
   }, [llojiIPageses, statusiIPageses]);
 
-  
+
   const handleMenaxhoTastetPagesa = (event) => {
     if (event.key === "Enter") {
       handleRegjistroKalkulimin();
@@ -260,7 +264,7 @@ function KalkulimiIMallit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Arkatar"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Arkatar", "1 Euro Menaxher", "1 Euro Staff"]} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -368,7 +372,7 @@ function KalkulimiIMallit(props) {
                   </Col>
                 </Row>
                 <div className="mt-2">
-                   <Row className="mb-3">
+                  <Row className="mb-3">
                     <Col md={3}>
                       <Form.Group>
                         <Form.Label>Data Fillim</Form.Label>
@@ -377,7 +381,6 @@ function KalkulimiIMallit(props) {
                           value={dataFillim}
                           onChange={(e) => {
                             setDataFillim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>
@@ -390,7 +393,6 @@ function KalkulimiIMallit(props) {
                           value={dataMbarim}
                           onChange={(e) => {
                             setDataMbarim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>

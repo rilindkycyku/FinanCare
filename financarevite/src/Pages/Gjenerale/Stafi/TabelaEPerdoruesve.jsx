@@ -74,7 +74,7 @@ function TabelaEPerdoruesve() {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Burime Njerzore"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Burime Njerzore", "1 Euro Menaxher"]} />
       <NavBar />
       <div className="containerDashboardP">
         {mbyllRolet == false && (

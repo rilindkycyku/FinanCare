@@ -143,7 +143,7 @@ function ZbritjetEProduktit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]} />
       <NavBar />
       <div className="containerDashboardP">
         {shfaqMesazhin && (

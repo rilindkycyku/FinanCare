@@ -76,7 +76,7 @@ function Bankat(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Financa", "Burime Njerzore"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Financa", "Burime Njerzore", "1 Euro Menaxher"]} />
       <NavBar />
 
       <div className="containerDashboardP">

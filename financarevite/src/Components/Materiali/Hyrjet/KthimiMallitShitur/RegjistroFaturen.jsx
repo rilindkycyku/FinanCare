@@ -233,7 +233,8 @@ function RegjistroFaturen(props) {
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
     }
   };
 
@@ -438,7 +439,7 @@ function RegjistroFaturen(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant", "Arkatar"]}
+        roletELejuara={["Menaxher", "Kalkulant", "Arkatar", "1 Euro Menaxher", "1 Euro Staff"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

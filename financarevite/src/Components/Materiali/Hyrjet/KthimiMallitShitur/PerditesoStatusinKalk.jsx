@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import axios from "axios";
+import axios from "axios";
 import { Modal, Button, Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -30,7 +30,7 @@ function PerditesoStatusinKalk(props) {
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -193,7 +193,7 @@ function PerditesoStatusinKalk(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant"]}
+        roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

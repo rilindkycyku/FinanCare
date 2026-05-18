@@ -307,7 +307,7 @@ function ListaBarazimeve() {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "1 Euro Menaxher"]} />
       <NavBar />
       <Titulli titulli={"Lista e Barazimeve"} />
 

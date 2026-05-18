@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-﻿import axios from "axios";
+import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,7 +10,7 @@ function LargoAfatinESkadimit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -40,7 +40,7 @@ function LargoAfatinESkadimit(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Puntor i Thjeshte", "Pergjegjes i Porosive"]}
+        roletELejuara={["Menaxher", "Puntor i Thjeshte", "Pergjegjes i Porosive", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

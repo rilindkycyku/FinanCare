@@ -14,22 +14,22 @@ export const roleBasedDropdowns = [
             shfaqNeDashboard: true,
           },
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/NjesiaMatese",
             label: "Njesia Matese",
           },
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/GrupetEProduktit",
             label: "Grupet e Produktit",
           },
           {
-            roles: ["Menaxher", "Kalkulant", "Faturist"],
+            roles: ["Menaxher", "Kalkulant", "Faturist", "1 Euro Menaxher"],
             path: "/KartelaEArtikullit",
             label: "Kartela e Artikullit",
           },
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher"],
             path: "/Stoqet",
             label: "Stoqet",
           },
@@ -41,29 +41,29 @@ export const roleBasedDropdowns = [
           },
           { isDivider: true },
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher"],
             path: "/ZbritjetEProduktit",
             label: "Zbritjet e Produkteve",
           },
         ],
       },
       {
-        roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist", "Arkatar", "Pergjegjes i Porosive"],
+        roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist", "Arkatar", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"],
         label: "Hyrjet",
         subItems: [
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher"],
             path: "/KalkulimiIMallit",
             label: "Kalkulimi i Mallit",
             shfaqNeDashboard: true,
           },
           {
-            roles: ["Menaxher", "Kalkulant", "Arkatar"],
+            roles: ["Menaxher", "Kalkulant", "Arkatar", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/KthimiMallitTeShitur",
             label: "Kthim i Mallit te Shitur",
           },
           {
-            roles: ["Menaxher", "Kalkulant", "Pergjegjes i Porosive"],
+            roles: ["Menaxher", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/PranimiIMallit",
             label: "Pranimi i Mallit",
             shfaqNeDashboard: true,
@@ -80,14 +80,14 @@ export const roleBasedDropdowns = [
           },
           { isDivider: true },
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher"],
             path: "/KalkulimiFillestarVjetor",
             label: "Kalkulimi Fillestar Vjetor",
           },
         ],
       },
       {
-        roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist", "Arkatar"],
+        roles: ["Menaxher", "Kalkulant", "Komercialist", "Faturist", "Arkatar", "1 Euro Menaxher", "1 Euro Staff"],
         label: "Shitjet",
         subItems: [
           {
@@ -103,12 +103,12 @@ export const roleBasedDropdowns = [
             shfaqNeDashboard: true,
           },
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher"],
             path: "/AsgjesimiIStokut",
             label: "Asgjesimi i Stokut",
           },
           {
-            roles: ["Menaxher", "Kalkulant"],
+            roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher"],
             path: "/KthimIMallitTeBlere",
             label: "Kthimi i Mallit te Blere",
           },
@@ -120,30 +120,30 @@ export const roleBasedDropdowns = [
           },
           { isDivider: true },
           {
-            roles: ["Menaxher"],
+            roles: ["Menaxher", "1 Euro Menaxher"],
             path: "/Statistika",
             label: "Statistikat e Dyqanit",
             shfaqNeDashboard: true,
           },
           {
-            roles: ["Menaxher"],
+            roles: ["Menaxher", "1 Euro Menaxher"],
             path: "/ListaShitjeveMeParagon",
             label: "Lista e Shitjeve me Paragon",
             shfaqNeDashboard: true,
           },
           {
-            roles: ["Arkatar", "Menaxher"],
+            roles: ["Arkatar", "Menaxher", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/POS",
             label: "POS",
             shfaqNeDashboard: true,
           },
           { isDivider: true }, {
-            roles: ["Menaxher"],
+            roles: ["Menaxher", "1 Euro Menaxher"],
             path: "/ListaBarazimeve",
             label: "Lista e Barazimeve",
             shfaqNeDashboard: true,
           }, {
-            roles: ["Arkatar", "Menaxher"],
+            roles: ["Arkatar", "Menaxher", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/BarazoArken",
             label: "Barazo Arken",
             shfaqNeDashboard: true,
@@ -171,7 +171,7 @@ export const roleBasedDropdowns = [
           },
           { isDivider: true },
           {
-            roles: ["Menaxher", "Financa", "Burime Njerzore"],
+            roles: ["Menaxher", "Financa", "Burime Njerzore", "1 Euro Menaxher"],
             path: "/Bankat",
             label: "Bankat",
           },
@@ -190,11 +190,11 @@ export const roleBasedDropdowns = [
         ],
       },
       {
-        roles: ["Menaxher", "Burime Njerzore"],
+        roles: ["Menaxher", "Burime Njerzore", "1 Euro Menaxher"],
         label: "Stafi",
         subItems: [
           {
-            roles: ["Menaxher", "Burime Njerzore"],
+            roles: ["Menaxher", "Burime Njerzore", "1 Euro Menaxher"],
             path: "/Stafi",
             label: "Perdoruesit",
           },
@@ -207,22 +207,22 @@ export const roleBasedDropdowns = [
         ],
       },
       {
-        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "Pergjegjes i Porosive"],
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"],
         label: "Partneret",
         subItems: [
           {
-            roles: ["Menaxher", "Kalkulant", "Komercialist", "Pergjegjes i Porosive"],
+            roles: ["Menaxher", "Kalkulant", "Komercialist", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/TabelaEPartnereve",
             label: "Lista e Partnereve",
           },
           {
-            roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit"],
+            roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "1 Euro Menaxher"],
             path: "/KartelaFinanciare",
             label: "Kartela Financiare",
           },
           { isDivider: true },
           {
-            roles: ["Menaxher", "Financa"],
+            roles: ["Menaxher", "Financa", "1 Euro Menaxher"],
             path: "/ShtoPagesat",
             label: "Shto Pagesat / Faturimet",
             shfaqNeDashboard: true,
@@ -230,11 +230,11 @@ export const roleBasedDropdowns = [
         ],
       },
       {
-        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "Pergjegjes i Porosive"],
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher"],
         label: "Gjurmimi",
         subItems: [
           {
-            roles: ["Menaxher"],
+            roles: ["Menaxher", "1 Euro Menaxher"],
             path: "/Gjurmimi",
             label: "Gjurmimi",
             shfaqNeDashboard: true,
@@ -251,11 +251,11 @@ export const roleBasedDropdowns = [
         label: "Artikujt",
         subItems: [
           {
-            roles: ["Menaxher", "Pergjegjes i Porosive"],
+            roles: ["Menaxher", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/ArtikujtPaStok",
             label: "Artikujt Pa Stok",
           }, {
-            roles: ["Menaxher", "Pergjegjes i Porosive", "Puntor i Thjeshte", "Komercialist", "Kalkulant"],
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Puntor i Thjeshte", "Komercialist", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/AfatetESkadmit",
             label: "Afatet e Skadimit",
           },
@@ -269,11 +269,11 @@ export const roleBasedDropdowns = [
         ],
       },
       {
-        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant"],
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
         label: "Furnitoret",
         subItems: [
           {
-            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/DitetEFurnizimit",
             label: "Ditet e Furnizimit",
             shfaqNeDashboard: true,
@@ -282,15 +282,15 @@ export const roleBasedDropdowns = [
         ],
       },
       {
-        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant"],
+        roles: ["Menaxher", "Financa", "Mbeshtetje e Klientit", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
         label: "Porosite",
         subItems: [
           {
-            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/SugjerimiPorosiseSipasFurnitorit",
             label: "Sugjerimi Porosise sipas Furnitorit",
           }, {
-            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant"],
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"],
             path: "/SugjerimiPorosis",
             label: "Sugjerimi Porosis",
           },

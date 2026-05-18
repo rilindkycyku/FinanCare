@@ -304,7 +304,8 @@ function ShtoPartnerin(props) {
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
     }
   };
 

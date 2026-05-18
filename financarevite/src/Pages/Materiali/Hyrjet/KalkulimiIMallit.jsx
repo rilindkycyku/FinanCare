@@ -4,7 +4,8 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faFileExcel } from "@fortawesome/free-solid-svg-icons";
+import * as XLSX from "xlsx";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -176,12 +177,17 @@ function KalkulimiIMallit(props) {
     };
 
     vendosNrFaturesMeRradhe();
-  }, [perditeso]);
+  }, []); // Run once on mount - invoice number doesn't need to re-fetch on every perditeso
 
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) {
+        el.focus();
+        // Select all text so numeric fields (e.g. 0.00) are cleared on type
+        setTimeout(() => el.select(), 0);
+      }
     }
   };
 
@@ -321,6 +327,25 @@ function KalkulimiIMallit(props) {
     document.getElementById("nrFatures").focus();
   };
 
+  const exportExcel = () => {
+    const exportData = kalkulimet.map((k) => ({
+      "Nr. Kalkulimit": k["Nr. Kalkulimit"],
+      "Nr. Fatures": k["Nr. Fatures"],
+      "Partneri": k["Partneri"],
+      "Totali Pa TVSH (€)": k["Totali Pa TVSH €"],
+      "TVSH (€)": k["TVSH €"],
+      "Totali (€)": k["Totali €"],
+      "Data e Fatures": k["Data e Fatures"] ? new Date(k["Data e Fatures"]).toLocaleDateString("sq-AL") : "",
+      "Statusi Pageses": k["Statusi Pageses"],
+      "Lloji Pageses": k["Lloji Pageses"],
+      "Statusi Kalkulimit": k["Statusi Kalkulimit"],
+    }));
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Kalkulimet");
+    XLSX.writeFile(wb, `Kalkulimet_${dataFillim}_${dataMbarim}.xlsx`);
+  };
+
   const handleMenaxhoTastetPagesa = (event) => {
     if (event.key === "Enter") {
       handleRegjistroKalkulimin();
@@ -329,7 +354,7 @@ function KalkulimiIMallit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -548,7 +573,7 @@ function KalkulimiIMallit(props) {
                 </Row>
                 <div className="mt-2">
                   <Row className="mb-4 g-3 align-items-end">
-                    <Col md={4}>
+                    <Col md={3}>
                       <Form.Group controlId="dataFillimFilter">
                         <Form.Label className="sp-label small">Data Fillim</Form.Label>
                         <Form.Control
@@ -557,12 +582,11 @@ function KalkulimiIMallit(props) {
                           value={dataFillim}
                           onChange={(e) => {
                             setDataFillim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
                       <Form.Group controlId="dataMbarimFilter">
                         <Form.Label className="sp-label small">Data Mbarim</Form.Label>
                         <Form.Control
@@ -571,12 +595,11 @@ function KalkulimiIMallit(props) {
                           value={dataMbarim}
                           onChange={(e) => {
                             setDataMbarim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
                       <Button
                         className="btn-premium-outline w-100"
                         onClick={() => {
@@ -584,6 +607,16 @@ function KalkulimiIMallit(props) {
                           setDataMbarim(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]);
                         }}>
                         Sot
+                      </Button>
+                    </Col>
+                    <Col md={3}>
+                      <Button
+                        variant="success"
+                        className="w-100"
+                        onClick={exportExcel}
+                        disabled={kalkulimet.length === 0}>
+                        <FontAwesomeIcon icon={faFileExcel} className="me-2" />
+                        Eksporto Excel
                       </Button>
                     </Col>
                   </Row>

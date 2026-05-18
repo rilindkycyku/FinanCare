@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -70,7 +70,7 @@ namespace FinanCareWebAPI.Controllers.SERVER
         /// <summary>
         /// Clears all admin logs (only for Menaxher role)
         /// </summary>
-        [Authorize(Roles = "Menaxher")]
+        [Authorize(Roles = "1 Euro Menaxher,Menaxher")]
         [HttpDelete("FshijGjurmimetEGjitha")]
         public async Task<IActionResult> FshijGjurmimetEGjitha()
         {
@@ -103,7 +103,7 @@ namespace FinanCareWebAPI.Controllers.SERVER
         /// <summary>
         /// Clears logs older than specified days (only for Menaxher role)
         /// </summary>
-        [Authorize(Roles = "Menaxher")]
+        [Authorize(Roles = "1 Euro Menaxher,Menaxher")]
         [HttpDelete("FshijGjurmimetEVjetra/{dite:int}")]
         public async Task<IActionResult> FshijGjurmimetEVjetra(int dite)
         {

@@ -39,7 +39,7 @@ function LargoDitenEFurnizimit(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive"]} // shto rolet që lejohet të fshijë
+        roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

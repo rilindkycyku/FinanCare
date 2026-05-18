@@ -164,11 +164,7 @@ function ShtoAfatinESkadimit(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={[
-          "Menaxher",
-          "Puntor i Thjeshte",
-          "Pergjegjes i Porosive",
-        ]}
+        roletELejuara={["Menaxher", "Puntor i Thjeshte", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

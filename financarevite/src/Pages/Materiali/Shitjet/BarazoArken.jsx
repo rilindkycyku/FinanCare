@@ -281,7 +281,7 @@ function BarazimiArkes() {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Arkatar"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Arkatar", "Menaxher", "1 Euro Menaxher", "1 Euro Staff"]} />
       <NavBar />
       <Titulli titulli={"Barazo Arken"} />
 

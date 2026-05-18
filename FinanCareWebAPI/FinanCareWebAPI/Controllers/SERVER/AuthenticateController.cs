@@ -148,7 +148,7 @@ namespace FinanCareWebAPI.Controllers.SERVER
                     await _context.SaveChangesAsync();
 
                     // Check if the user is a "Menaxher" and create the bonus card directly here
-                    if (registerModel.Roli == "Menaxher")
+                    if (registerModel.Roli == "Menaxher" || registerModel.Roli == "1 Euro Menaxher")
                     {
                         var kartelaCount = await _context.Kartelat.CountAsync();
                         var kodiKartela = $"M{perdoruesi.UserID.ToString().PadLeft(6, '0')}{(kartelaCount + 1).ToString().PadLeft(6, '0')}";
@@ -376,7 +376,7 @@ namespace FinanCareWebAPI.Controllers.SERVER
 
             var perdoruesi = await _context.Perdoruesi.Where(x => x.AspNetUserID == UserID).FirstOrDefaultAsync();
 
-            if (!userRoles.Contains("Menaxher") && roli == "Menaxher")
+            if ((!userRoles.Contains("Menaxher") && roli == "Menaxher" ) || (!userRoles.Contains("1 Euro Menaxher") && roli == "1 Euro Menaxher"))
             {
                 // Create and add a new Kartela for this user
                 var kartelaCount = await _context.Kartelat.CountAsync();
@@ -397,7 +397,7 @@ namespace FinanCareWebAPI.Controllers.SERVER
             }
 
             // Check if the user is being removed from the "Menaxher" role
-            if (userRoles.Contains("Menaxher") && roli != "Menaxher")
+            if ((userRoles.Contains("Menaxher") && roli != "Menaxher") || (userRoles.Contains("1 Euro Menaxher") && roli != "1 Euro Menaxher"))
             {
                 // Find and remove the Kartela for this user
                 var kartelaToRemove = await _context.Kartelat.Include(x => x.Stafi).FirstOrDefaultAsync(k => k.StafiID == perdoruesi.UserID); // Adjust based on your ID reference

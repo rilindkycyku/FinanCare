@@ -162,12 +162,13 @@ function KalkulimiIMallit(props) {
     };
 
     vendosNrFaturesMeRradhe();
-  }, [perditeso]);
+  }, []);
 
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
     }
   };
 
@@ -259,7 +260,7 @@ function KalkulimiIMallit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (

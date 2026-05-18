@@ -670,17 +670,33 @@
   grid-column: 1 / -1;
 }
 
+/* bg-white is on the SAME element as grid-span-all → compound selector */
+.grid-span-all.bg-white {
+  background: var(--pos-surface) !important;
+  border: 1px solid var(--pos-border) !important;
+}
+
+/* text-dark / text-muted are on CHILDREN → descendant selector */
 .grid-span-all .text-dark {
   color: var(--pos-text-main) !important;
 }
 
 .grid-span-all .text-muted {
-  color: var(--pos-text-muted) !important;
+  color: var(--pos-text-soft) !important;
 }
 
-.grid-span-all .bg-white {
-  background: var(--pos-surface) !important;
-  border: 1px solid var(--pos-border) !important;
+/* Empty state — make heading and subtitle clearly visible */
+.empty-pos-state h2 {
+  color: var(--pos-text-main) !important;
+  -webkit-text-fill-color: var(--pos-text-main) !important;
+  font-size: 1.5rem !important;
+  letter-spacing: -0.02em;
+}
+
+.empty-pos-state p {
+  color: var(--pos-text-soft) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.6;
 }
 
 /* ── REACT-SELECT DARK OVERRIDE ───────────────────────────────── */
@@ -711,7 +727,8 @@
 
 .pos-input-card [class*="-placeholder"] { color: var(--pos-text-muted) !important; }
 .pos-input-card [class*="-singleValue"]  { color: var(--pos-text-main) !important; }
-.pos-input-card [class*="-input"]        { color: var(--pos-text-main) !important; }
+.pos-input-card [class*="-input"],
+#barkodiSelect-input { color: var(--pos-text-main) !important; }
 
 .pos-input-card [class*="-menu"] {
   background: var(--pos-surface-3) !important;
@@ -910,4 +927,284 @@
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--pos-text-soft);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT MODE — scoped entirely inside .pos-page-wrapper.pos-light
+   ══════════════════════════════════════════════════════════════ */
+.pos-page-wrapper.pos-light {
+  --pos-bg:           #f1f5f9;
+  --pos-surface:      #ffffff;
+  --pos-surface-2:    #f8fafc;
+  --pos-surface-3:    #e2e8f0;
+
+  --pos-border:       rgba(0, 0, 0, 0.08);
+  --pos-border-glow:  rgba(16, 185, 129, 0.35);
+
+  --pos-text-main:    #0f172a;
+  --pos-text-soft:    #475569;
+  --pos-text-muted:   #94a3b8;
+
+  --pos-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Remove ambient green glow in light mode */
+.pos-page-wrapper.pos-light::before {
+  display: none;
+}
+
+/* Header accent bar stays emerald */
+.pos-page-wrapper.pos-light .pos-header {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* Title gradient: swap white → dark slate in light mode */
+.pos-page-wrapper.pos-light .pos-main-title {
+  background: linear-gradient(135deg, #0f172a 40%, var(--pos-emerald));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Header meta info text */
+.pos-page-wrapper.pos-light .pos-header-info {
+  color: #64748b;
+}
+
+/* Total display light override */
+.pos-page-wrapper.pos-light .pos-total-display {
+  background: linear-gradient(145deg, #e8fff6, #f0fdf9);
+  border-color: rgba(16,185,129,0.25);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.pos-page-wrapper.pos-light .pos-total-display::before {
+  opacity: 0.08;
+}
+
+/* Table header in light mode */
+.pos-page-wrapper.pos-light .pos-table-scroll table thead th {
+  background: #f8fafc !important;
+  color: #64748b !important;
+  border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.pos-page-wrapper.pos-light .pos-table-scroll tbody tr {
+  border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+.pos-page-wrapper.pos-light .pos-table-scroll tbody tr:hover {
+  background: rgba(16, 185, 129, 0.05) !important;
+}
+
+.pos-page-wrapper.pos-light .pos-table-scroll tbody td {
+  color: #0f172a !important;
+}
+
+/* React-select light overrides */
+.pos-page-wrapper.pos-light .pos-input-card [class*="-control"] {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+
+.pos-page-wrapper.pos-light .pos-input-card [class*="-menu"] {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12) !important;
+}
+
+.pos-page-wrapper.pos-light .pos-input-card [class*="-option"] {
+  color: #334155 !important;
+}
+
+.pos-page-wrapper.pos-light .pos-input-card [class*="-singleValue"],
+.pos-page-wrapper.pos-light .pos-input-card [class*="-input"],
+.pos-page-wrapper.pos-light #barkodiSelect-input {
+  color: #0f172a !important;
+}
+
+.pos-page-wrapper.pos-light .pos-input-card [class*="-placeholder"] {
+  color: #94a3b8 !important;
+}
+
+/* Modal overrides */
+.pos-page-wrapper.pos-light ~ .modal .pos-modal .modal-content,
+.pos-light-modal .modal-content {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #0f172a !important;
+}
+
+/* Form controls in light mode */
+.pos-page-wrapper.pos-light .form-control,
+.pos-page-wrapper.pos-light .form-select {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #0f172a !important;
+}
+
+.pos-page-wrapper.pos-light .form-control:disabled {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+}
+
+/* Scrollbar in light mode */
+.pos-page-wrapper.pos-light * {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* ── THEME TOGGLE SWITCH ────────────────────────────────────────── */
+.pos-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.pos-theme-toggle .toggle-sun,
+.pos-theme-toggle .toggle-moon {
+  transition: color 0.25s, opacity 0.25s;
+  opacity: 0.35;
+  flex-shrink: 0;
+}
+
+.pos-theme-toggle .toggle-sun.toggle-icon-active {
+  color: #fbbf24;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(251,191,36,0.6));
+}
+
+.pos-theme-toggle .toggle-moon.toggle-icon-active {
+  color: #818cf8;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(129,140,248,0.6));
+}
+
+/* The track */
+.toggle-track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: rgba(129, 140, 248, 0.25);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  transition: background 0.3s, border-color 0.3s;
+  flex-shrink: 0;
+}
+
+.toggle-track.toggle-track-light {
+  background: rgba(251, 191, 36, 0.25);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+/* The sliding thumb */
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #818cf8;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.toggle-track.toggle-track-light .toggle-thumb {
+  transform: translateX(16px);
+  background: #fbbf24;
+  box-shadow: 0 1px 6px rgba(251,191,36,0.4);
+}
+
+.pos-theme-toggle .toggle-track svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ── POS Modal Dark Theme ─────────────────────────────────────── */
+.pos-page-wrapper .modal-content,
+.pos-page-wrapper .pos-modal .modal-content {
+  background: var(--pos-surface-2);
+  border: 1px solid var(--pos-border-glow);
+  color: var(--pos-text-main);
+  border-radius: var(--pos-radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.pos-page-wrapper .modal-header {
+  background: var(--pos-surface-3);
+  border-bottom: 1px solid var(--pos-border);
+  border-radius: var(--pos-radius-lg) var(--pos-radius-lg) 0 0;
+  color: var(--pos-text-main);
+}
+
+.pos-page-wrapper .modal-header .btn-close {
+  filter: invert(1) brightness(0.7);
+}
+
+.pos-page-wrapper .modal-footer {
+  background: var(--pos-surface);
+  border-top: 1px solid var(--pos-border);
+  border-radius: 0 0 var(--pos-radius-lg) var(--pos-radius-lg);
+}
+
+.pos-page-wrapper .modal-body {
+  background: var(--pos-surface-2);
+}
+
+/* List items inside modal */
+.pos-page-wrapper .list-group-item {
+  background: transparent;
+  border-color: var(--pos-border);
+  color: var(--pos-text-main);
+}
+
+.pos-page-wrapper .list-group-item:hover {
+  background: var(--pos-surface-3);
+}
+
+.pos-page-wrapper .list-group-item .fw-bold {
+  color: var(--pos-text-main) !important;
+}
+
+.pos-page-wrapper .list-group-item .text-muted {
+  color: var(--pos-text-soft) !important;
+}
+
+/* Light mode modal overrides */
+.pos-page-wrapper.pos-light .modal-content {
+  background: #ffffff;
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #1e293b;
+}
+
+.pos-page-wrapper.pos-light .modal-header {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.pos-page-wrapper.pos-light .modal-header .btn-close {
+  filter: none;
+}
+
+.pos-page-wrapper.pos-light .modal-footer {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.pos-page-wrapper.pos-light .modal-body {
+  background: #ffffff;
+}
+
+.pos-page-wrapper.pos-light .list-group-item {
+  background: transparent;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.pos-page-wrapper.pos-light .list-group-item .text-muted {
+  color: #64748b !important;
 }

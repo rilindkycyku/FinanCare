@@ -1,20 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import axios from "axios";
-import {
+import axios from "axios";
+import {
   Button,
   Form,
   Modal,
   Row,
   Col,
-  InputGroup,
   Tabs,
-  Tab,
+  Tab
 } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
-import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoPerdorues(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -27,7 +25,7 @@ function EditoPerdorues(props) {
   const [key, setKey] = useState("kryesore");
 
   const getToken = localStorage.getItem("token");
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -114,7 +112,7 @@ function EditoPerdorues(props) {
     fetchRolet();
   }, []); // Fetch rolet only once
 
-    const handleChange = (field, value) => {
+  const handleChange = (field, value) => {
     if (field in perdoruesi.perdoruesi) {
       setPerdoruesi((prev) => ({
         ...prev,
@@ -205,7 +203,7 @@ function EditoPerdorues(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Burime Njerzore"]}
+        roletELejuara={["Menaxher", "Burime Njerzore", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

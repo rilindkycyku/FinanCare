@@ -76,7 +76,7 @@ function GrupetEProduktit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"]} />
 
       <NavBar />
 

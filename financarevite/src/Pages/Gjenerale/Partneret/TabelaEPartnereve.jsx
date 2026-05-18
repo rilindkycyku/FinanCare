@@ -88,7 +88,7 @@ function TabelaEKompanive(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Pergjegjes i Porosive"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"]} />
       <NavBar />
 
       <div className="containerDashboardP">

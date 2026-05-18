@@ -291,8 +291,21 @@ function Tabela({
                 </tr>
               </MDBTableHead>
               <MDBTableBody>
-                {filteredItems.map((item) => (
-                  <tr key={item.ID} className="premium-tr">
+                {filteredItems.map((item) => {
+                  const isClosed = item["Statusi Kalkulimit"] === "I Mbyllur";
+                  const canEdit = !isClosed && (funksionButonEdit || funksionEditoFaturen);
+                  
+                  return (
+                  <tr 
+                    key={item.ID} 
+                    className={`premium-tr ${canEdit ? 'clickable-row' : ''}`}
+                    onClick={(e) => {
+                      if (e.target.closest('.btn-action')) return;
+                      if (!canEdit) return;
+                      if (funksionButonEdit) funksionButonEdit(item.ID);
+                      else if (funksionEditoFaturen) funksionEditoFaturen(item.ID);
+                    }}
+                  >
                     {filteredHeaders.map((header) => (
                       <td key={`${item.ID}-${header}`} className="premium-td">
                         {header === dateField ||
@@ -365,7 +378,8 @@ function Tabela({
                       </td>
                     )}
                   </tr>
-                ))}
+                  );
+                })}
               </MDBTableBody>
             </MDBTable>
             </div>{/* end premium-table-container */}
@@ -603,6 +617,9 @@ function Tabela({
         }
         .premium-tr:hover .premium-td {
           background: var(--sp-surface-2) !important;
+        }
+        .clickable-row {
+          cursor: pointer !important;
         }
         .date-badge {
           background: var(--sp-surface-3);

@@ -24,7 +24,14 @@ import {
   Calendar as CalendarIcon,
   Trash2 as Trash,
   Edit2 as Edit,
-  MonitorSpeaker
+  MonitorSpeaker,
+  Sun,
+  Moon,
+  AlertCircle,
+  CheckCircle2,
+  Printer,
+  Clock,
+  Coins
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../Styles/POSLayout.css";
@@ -49,6 +56,7 @@ function POS(props) {
   const [produktiID, setproduktiID] = useState(0);
   const [sasia, setSasia] = useState("1");
   const [njesiaMatese, setNjesiaMatese] = useState("Cope");
+  const [ruajKartenDefault, setRuajKartenDefault] = useState(false);
   const [sasiaAktualeNeStok, setSasiaAktualeNeStok] = useState(0);
 
   const [vendosKartelenBleresit, setVendosKartelenBleresit] = useState(false);
@@ -91,7 +99,36 @@ function POS(props) {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [invoicesData, setInvoicesData] = useState({});
 
+  const [faturatModal, setFaturatModal] = useState(false);
+  const [apiInvoices, setApiInvoices] = useState([]);
+  const [isLoadingFaturat, setIsLoadingFaturat] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
   const navigate = useNavigate();
+
+  const [posTheme, setPosTheme] = useState(
+    () => localStorage.getItem("pos-theme") || "dark"
+  );
+  const toggleTheme = () => {
+    const next = posTheme === "dark" ? "light" : "dark";
+    setPosTheme(next);
+    localStorage.setItem("pos-theme", next);
+  };
+
+  const forceFocusBarkodi = () => {
+    let attempts = 0;
+    const focusInterval = setInterval(() => {
+      const input = document.getElementById("barkodiSelect-input");
+      if (input && document.activeElement !== input) {
+        selectRef.current?.focus();
+        input.focus();
+      }
+      attempts++;
+      if (attempts >= 10) { // Try aggressively for 2.5 seconds (250ms * 10)
+        clearInterval(focusInterval);
+      }
+    }, 250);
+  };
 
   const getID = localStorage.getItem("id");
   const getToken = localStorage.getItem("token");
@@ -143,7 +180,7 @@ function POS(props) {
       );
       setShfaqMesazhin(true);
     } finally {
-      document.getElementById("barkodiSelect-input")?.focus();
+      forceFocusBarkodi();
     }
   };
 
@@ -228,6 +265,84 @@ function POS(props) {
       navigate("/login");
     }
   }, [getID]);
+
+  // Fetch Today's Invoices for Modal
+  useEffect(() => {
+    if (faturatModal) {
+      const fetchTodayInvoices = async () => {
+        try {
+          setIsLoadingFaturat(true);
+          const localISODate = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+          const res = await axios.get(
+            `${API_BASE_URL}/api/Faturat/shfaqRegjistrimet?dataFillim=${localISODate}&dataMbarim=${localISODate}`,
+            authentikimi
+          );
+          
+          const paragonInvoices = res.data
+            .filter(inv => inv.llojiKalkulimit === "PARAGON")
+            .map(inv => ({
+              idRegjistrimit: inv.idRegjistrimit,
+              nrFatures: inv.nrFatures,
+              time: new Date(inv.dataRegjistrimit).toLocaleTimeString('sq-AL', { hour: '2-digit', minute: '2-digit' }),
+              total: (parseFloat(inv.totaliPaTVSH) + parseFloat(inv.tvsh)).toFixed(2),
+              stafiID: inv.stafiID,
+              username: inv.username
+            }))
+            .reverse();
+            
+          setApiInvoices(paragonInvoices);
+        } catch (error) {
+          console.error("Gabim gjatë marrjes së faturave të sotme:", error);
+        } finally {
+          setIsLoadingFaturat(false);
+        }
+      };
+      fetchTodayInvoices();
+    }
+  }, [faturatModal, perditeso]);
+
+  const shkarkoFatureNgaAPI = async (idRegjistrimit) => {
+    try {
+      setIsDownloadingPdf(true);
+      const r = await axios.get(`${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${idRegjistrimit}`, authentikimi);
+      const itemsRes = await axios.get(`${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${idRegjistrimit}`, authentikimi);
+      
+      const regjistrimet = r.data.regjistrimet;
+      const produktet = itemsRes.data;
+      
+      const pdfData = {
+        invoiceNumber: regjistrimet.nrFatures,
+        date: new Date(regjistrimet.dataRegjistrimit).toLocaleString('sq-AL', { dateStyle: 'short', timeStyle: 'short' }),
+        salesUsername: regjistrimet.stafiID + " - " + regjistrimet.username,
+        items: produktet.map((p) => {
+          const finalPrice = parseFloat(
+            p.qmimiShites -
+            p.qmimiShites * (p.rabati1 / 100) -
+            (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) * (p.rabati2 / 100) -
+            (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100) - (p.qmimiShites - p.qmimiShites * (p.rabati1 / 100)) * (p.rabati2 / 100)) * (p.rabati3 / 100)
+          );
+          return {
+            idProduktit: p.idProduktit || 0,
+            name: p.emriProduktit || "Produkti",
+            vatPercentage: parseInt(p.llojiTvsh) || 18,
+            quantity: p.sasiaStokut || 1,
+            price: finalPrice.toFixed(2) || "0.00",
+            rabatiStok: p.rabati1 || 0,
+            total: (finalPrice * (p.sasiaStokut || 1)).toFixed(2) || "0.00",
+          };
+        }),
+        totalWithoutVAT: parseFloat(regjistrimet.totaliPaTVSH).toFixed(2),
+        vat: parseFloat(regjistrimet.tvsh).toFixed(2),
+        rabati: parseFloat(r.data.rabati ?? 0).toFixed(2),
+      };
+      
+      await generateInvoice(pdfData, "print");
+    } catch (err) {
+      console.error("Error generating PDF from API data", err);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   // Fetch invoice data for selected invoice
   useEffect(() => {
@@ -539,16 +654,18 @@ function POS(props) {
       return;
     }
 
-    // For Enter â†’ we give react-select ~50-100ms to set the value
     if (event.key === "Enter") {
-      // Do NOT preventDefault() here
-      setTimeout(() => {
-        if (optionsBarkodiSelected?.value) {
-          handleChange(optionsBarkodiSelected);
-          setInputValue(""); // clear for next scan
-          selectRef.current?.focus(); // keep focus
-        }
-      }, 60); // 60ms is usually perfect for scanners
+      const currentInput = document.getElementById("barkodiSelect-input")?.value || "";
+      
+      // If there are NO options matching the typed barcode, show error.
+      // Otherwise, do nothing and let react-select's native onChange handle the selection!
+      if (filteredOptions.length === 0 && currentInput.trim().length > 0) {
+        setTipiMesazhit("danger");
+        setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
+        setShfaqMesazhin(true);
+        setInputValue(""); 
+        setTimeout(() => selectRef.current?.focus(), 10);
+      }
     }
   };
 
@@ -586,7 +703,7 @@ function POS(props) {
     });
   }
 
-  async function generateInvoice(data) {
+  async function generateInvoice(data, action = "none") {
     const logoUrl = `${BASE_URL}/img/web/${teDhenatBiznesit?.logo}`;
     let logoImage = null;
     try {
@@ -679,17 +796,35 @@ function POS(props) {
       doc.setFontSize(8.5);
       if (data.items && Array.isArray(data.items)) {
         data.items.forEach((item) => {
+          const salePercent = parseFloat(item?.rabatiStok || 0);
+          const finalPrice = parseFloat(item?.price || 0);
+          const originalPrice = salePercent > 0
+            ? (finalPrice / (1 - salePercent / 100))
+            : finalPrice;
+
           if (!isMeasuring) {
             let itemName = String(item?.name || "Produkti");
             let name = itemName.length > 20 ? itemName.substring(0, 18) + '..' : itemName;
             doc.setFont('Helvetica', 'normal');
             doc.text(name, 5, y);
             doc.text(String(item?.quantity || 1), 43, y, { align: 'right' });
-            doc.text(`${parseFloat(item?.price || 0).toFixed(2)}`, 56, y, { align: 'right' });
+            doc.text(`${finalPrice.toFixed(2)}`, 56, y, { align: 'right' });
             doc.setFont('Helvetica', 'bold');
             doc.text(`${parseFloat(item?.total || 0).toFixed(2)}`, 70, y, { align: 'right' });
           }
           y += 4.5;
+
+          // Show original price and discount badge when item is on sale
+          if (salePercent > 0 && !isMeasuring) {
+            doc.setFont('Helvetica', 'italic');
+            doc.setFontSize(7);
+            doc.setTextColor(150, 150, 150);
+            doc.text(`  Çmimi: ${originalPrice.toFixed(2)} | -${salePercent}% Zbritje`, 5, y);
+            doc.setTextColor(0, 0, 0);
+            y += 3.5;
+          } else if (salePercent > 0) {
+            y += 3.5;
+          }
         });
       }
 
@@ -710,8 +845,8 @@ function POS(props) {
       rowTotal('Totali pa TVSH:', `${parseFloat(data.totalWithoutVAT).toFixed(2)} €`);
       rowTotal('TVSH totale:', `${parseFloat(data.vat).toFixed(2)} €`);
       if (parseFloat(data.rabati) > 0) {
-        if (!isMeasuring) doc.setTextColor(200, 50, 50);
-        rowTotal('Rabati (-):', `${parseFloat(data.rabati).toFixed(2)} €`, true);
+        if (!isMeasuring) doc.setTextColor(34, 197, 94);
+        rowTotal('Kursyet (e përfsh.):', `${parseFloat(data.rabati).toFixed(2)} €`, true);
         if (!isMeasuring) doc.setTextColor(0, 0, 0);
       }
 
@@ -751,11 +886,12 @@ function POS(props) {
     const doc = new jsPDF({ unit: 'mm', format: [75, finalHeight] });
     drawReceipt(doc, false);
 
-    // Create Blob for Telegram
-    const pdfBlob = doc.output("blob");
-
-    // Save locally
-    doc.save(`Paragon #${data.invoiceNumber}.pdf`);
+    if (action === "download") {
+      doc.save(`Paragon #${data.invoiceNumber}.pdf`);
+    } else if (action === "print") {
+      doc.autoPrint();
+      window.open(doc.output('bloburl'), '_blank');
+    }
 
     setPerditeso(Date.now());
     setShumaPageses(0);
@@ -767,6 +903,8 @@ function POS(props) {
     setKartelaBleresit(null);
     setRabati2(0);
     setRabati1(0);
+
+    forceFocusBarkodi();
   }
 
   const mbyllFature = async () => {
@@ -849,7 +987,7 @@ function POS(props) {
               setSelectedInvoice(updatedInvoices[0] || null);
               setPerditeso(Date.now());
 
-              document.getElementById("barkodiSelect-input")?.focus();
+              forceFocusBarkodi();
             });
           const data = {
             invoiceNumber: r?.data?.regjistrimet?.nrFatures,
@@ -884,7 +1022,7 @@ function POS(props) {
           generateInvoice(data);
         }
       });
-    document.getElementById("barkodiSelect-input").focus();
+    forceFocusBarkodi();
   };
 
   async function VendosKartelenBleresit() {
@@ -949,26 +1087,38 @@ function POS(props) {
     }
   }
 
-  async function VendosKartelenFshirjesProduktit() {
+  async function VendosKartelenFshirjesProduktit(karta = null, idProd = null) {
+    const isAutomated = typeof karta === 'string' && karta.trim() !== '';
+    const kodi = isAutomated ? karta : kartelaFshirjes;
+    const id = (typeof idProd === 'number' || typeof idProd === 'string') ? idProd : fshijProdKalkID;
+
+    if (!kodi) return;
+
     try {
       const kaKartele = await axios.get(
-        `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kartelaFshirjes}`,
+        `${API_BASE_URL}/api/Kartelat/shfaqKartelenSipasKodit?kodiKarteles=${kodi}&_=${Date.now()}`,
         authentikimi,
       );
       if (kaKartele != null) {
         if (kaKartele.data.llojiKarteles == "Fshirje") {
           await axios.delete(
-            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${fshijProdKalkID}`,
+            `${API_BASE_URL}/api/Faturat/ruajKalkulimin/FshijTeDhenat?idTeDhenat=${id}`,
             authentikimi,
           );
-          document.getElementById("barkodiSelect-input").focus();
+          
+          if (ruajKartenDefault && !isAutomated) {
+            localStorage.setItem("defaultManagerCard", kodi);
+          }
+
+          document.getElementById("barkodiSelect-input")?.focus();
           setVendosKartelenFshirjeProduktit(false);
-          setKartelaFshirjes(null);
+          setKartelaFshirjes("");
           setPerditesoFat(Date.now());
         } else {
-          document.getElementById("barkodiSelect-input").focus();
+          document.getElementById("barkodiSelect-input")?.focus();
           setVendosKartelenFshirjeProduktit(false);
-          setKartelaFshirjes(null);
+          setKartelaFshirjes("");
+          if (isAutomated) localStorage.removeItem("defaultManagerCard");
           setTipiMesazhit("danger");
           setPershkrimiMesazhit("Kartela nuk eshte valide per kete funksion!");
           setShfaqMesazhin(true);
@@ -976,8 +1126,10 @@ function POS(props) {
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        document.getElementById("barkodiSelect-input").focus();
-        setVendosKartelenBleresit(false);
+        document.getElementById("barkodiSelect-input")?.focus();
+        setVendosKartelenFshirjeProduktit(false);
+        setKartelaFshirjes("");
+        if (isAutomated) localStorage.removeItem("defaultManagerCard");
         setTipiMesazhit("danger");
         setPershkrimiMesazhit("Kartela nuk egziston!");
         setShfaqMesazhin(true);
@@ -1019,8 +1171,8 @@ function POS(props) {
   }, [inputValue, optionsBarkodi]);
 
   return (
-    <div className="pos-page-wrapper">
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Arkatar"]} />
+    <div className={`pos-page-wrapper${posTheme === "light" ? " pos-light" : ""}`}>
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Arkatar", "1 Euro Menaxher", "1 Euro Staff"]} />
       <Titulli titulli={"POS"} />
 
       <div className="pos-main-container">
@@ -1032,13 +1184,26 @@ function POS(props) {
           />
         )}
 
-        {shfaqMesazhin && (
-          <Mesazhi
-            setShfaqMesazhin={setShfaqMesazhin}
-            pershkrimi={pershkrimiMesazhit}
-            tipi={tipiMesazhit}
-          />
-        )}
+        <Modal show={shfaqMesazhin} onHide={() => setShfaqMesazhin(false)} centered className="pos-modal border-0">
+          <Modal.Body className="p-4">
+            <div className="d-flex flex-column align-items-center text-center">
+              <div className={`mb-3 rounded-circle d-flex align-items-center justify-content-center ${tipiMesazhit === "success" ? "bg-success bg-opacity-10 text-success" : "bg-danger bg-opacity-10 text-danger"}`} style={{ width: '72px', height: '72px' }}>
+                {tipiMesazhit === "success" ? <CheckCircle2 size={36} /> : <AlertCircle size={36} />}
+              </div>
+              <h5 className={`fw-bold mb-2 ${tipiMesazhit === "success" ? "text-success" : "text-danger"}`}>
+                {tipiMesazhit === "success" ? "Me Sukses!" : "Ndodhi një gabim!"}
+              </h5>
+              <p className="text-muted mb-4 lh-base" style={{ fontSize: '0.95rem' }} dangerouslySetInnerHTML={{ __html: pershkrimiMesazhit }}></p>
+              <Button 
+                variant={tipiMesazhit === "success" ? "success" : "danger"} 
+                className="w-100 rounded-pill fw-bold py-2" 
+                onClick={() => setShfaqMesazhin(false)}
+              >
+                Kuptova
+              </Button>
+            </div>
+          </Modal.Body>
+        </Modal>
 
         {/* Modal for Client Card (Logic preserved) */}
         {vendosKartelenBleresit && (
@@ -1088,18 +1253,46 @@ function POS(props) {
               <Modal.Title as="h6">Konfirmo Fshirjen</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form.Group>
-                <Form.Label>Nr. Karteles Menaxheriale</Form.Label>
-                <Form.Control
-                  id="nrKarteles"
-                  type="text"
-                  value={kartelaFshirjes}
-                  onChange={(e) => setKartelaFshirjes(e.target.value)}
-                  placeholder="Shkruani kartelen per fshirjen e produktit"
-                  autoFocus
-                  onKeyDown={handleMenaxhoTastetKartelaFshirjes}
-                />
-              </Form.Group>
+              {localStorage.getItem("defaultManagerCard") ? (
+                <div className="text-center py-3">
+                  <h6 className="mb-3">A jeni i sigurt?</h6>
+                  <p className="text-muted small">Jeni duke fshirë këtë produkt nga fatura. Kjo veprimtari do të regjistrohet.</p>
+                  <p className="text-muted small mt-4 mb-0">
+                    Duke përdorur kartën e parazgjedhur.{' '}
+                    <span 
+                      className="text-info cursor-pointer fw-bold" 
+                      onClick={() => {
+                        localStorage.removeItem("defaultManagerCard");
+                        setPerditesoFat(Date.now()); // force re-render
+                      }}>
+                      Ndrysho kartën
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <Form.Group>
+                    <Form.Label>Nr. Karteles Menaxheriale</Form.Label>
+                    <Form.Control
+                      id="nrKarteles"
+                      type="password"
+                      value={kartelaFshirjes || ""}
+                      onChange={(e) => setKartelaFshirjes(e.target.value)}
+                      placeholder="Shkruani kartelen per fshirjen e produktit"
+                      autoFocus
+                      onKeyDown={handleMenaxhoTastetKartelaFshirjes}
+                    />
+                  </Form.Group>
+                  <Form.Check
+                    type="checkbox"
+                    id="ruaj-karten"
+                    label="Ruaj kartën në këtë shfletues (nuk kërkohet përsëri)"
+                    checked={ruajKartenDefault}
+                    onChange={(e) => setRuajKartenDefault(e.target.checked)}
+                    className="mt-3 text-muted small user-select-none cursor-pointer"
+                  />
+                </>
+              )}
             </Modal.Body>
             <Modal.Footer>
               <Button
@@ -1109,12 +1302,72 @@ function POS(props) {
               </Button>
               <Button
                 variant="warning"
-                onClick={VendosKartelenFshirjesProduktit}>
+                onClick={() => {
+                  const defaultCard = localStorage.getItem("defaultManagerCard");
+                  if (defaultCard) {
+                    VendosKartelenFshirjesProduktit(defaultCard, fshijProdKalkID);
+                  } else {
+                    VendosKartelenFshirjesProduktit();
+                  }
+                }}>
                 Konfirmo
               </Button>
             </Modal.Footer>
           </Modal>
         )}
+
+        {/* Historiku i Faturave Modal (API based) */}
+        <Modal show={faturatModal} onHide={() => setFaturatModal(false)} centered className="pos-modal">
+          <Modal.Header closeButton>
+            <Modal.Title as="h6" className="fw-bold d-flex align-items-center gap-2">
+              <Receipt size={18} className="text-info" /> Faturat e Sotme
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+            {isLoadingFaturat ? (
+              <div className="d-flex justify-content-center p-5">
+                <TailSpin height="40" width="40" color="#6366f1" radius="1" visible={true} />
+              </div>
+            ) : apiInvoices.length === 0 ? (
+              <div className="text-center p-5">
+                <Receipt size={40} className="text-muted opacity-25 mb-3" />
+                <p className="text-muted mb-0">Nuk keni gjeneruar asnjë faturë sot.</p>
+              </div>
+            ) : (
+              <div className="d-flex flex-column gap-2 p-3">
+                {apiInvoices.map((inv, idx) => (
+                  <div key={idx} className="p-3 rounded-4 d-flex justify-content-between align-items-center bg-body border shadow-sm">
+                    <div>
+                      <div className="fw-bold mb-2 text-body" style={{ fontSize: "1.05rem" }}>Paragon #{inv.nrFatures}</div>
+                      <div className="text-muted small d-flex gap-4">
+                        <span className="d-flex align-items-center gap-1"><Clock size={14} className="opacity-75" /> {inv.time}</span>
+                        <span className="d-flex align-items-center gap-1 text-success fw-bold"><Coins size={14} className="opacity-75" /> {inv.total} €</span>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="info" 
+                      size="md" 
+                      className="fw-bold px-4 py-2 rounded-pill d-flex align-items-center gap-2 text-white shadow-sm"
+                      disabled={isDownloadingPdf}
+                      onClick={() => shkarkoFatureNgaAPI(inv.idRegjistrimit)}
+                    >
+                      {isDownloadingPdf ? (
+                        <><TailSpin height="16" width="16" color="#ffffff" radius="1" visible={true} /> Gjenerimi...</>
+                      ) : (
+                        <><Printer size={16} /> Printo</>
+                      )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setFaturatModal(false)} className="rounded-pill px-4">
+              Mbyll
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
         {loading ? (
           <div className="Loader d-flex align-items-center justify-content-center h-100">
@@ -1133,6 +1386,20 @@ function POS(props) {
                     className="rounded-pill px-3 py-1 fw-600 d-flex align-items-center gap-1 border-0 bg-primary-subtle text-primary">
                     <History size={14} /> Dashboard
                   </Button>
+                  <Button
+                    variant="outline-info"
+                    size="sm"
+                    onClick={() => setFaturatModal(true)}
+                    className="rounded-pill px-3 py-1 fw-600 d-flex align-items-center gap-1 border-0 bg-info-subtle text-info mx-1">
+                    <Receipt size={14} /> Historiku
+                  </Button>
+                  <div className="pos-theme-toggle" onClick={toggleTheme} role="button" tabIndex={0} title={posTheme === "dark" ? "Kalo në Light Mode" : "Kalo në Dark Mode"}>
+                    <Sun size={13} className={`toggle-sun${posTheme === "light" ? " toggle-icon-active" : ""}`} />
+                    <div className={`toggle-track${posTheme === "light" ? " toggle-track-light" : ""}`}>
+                      <div className="toggle-thumb" />
+                    </div>
+                    <Moon size={13} className={`toggle-moon${posTheme === "dark" ? " toggle-icon-active" : ""}`} />
+                  </div>
                 </div>
 
                 <div className="invoice-tabs-custom ms-4">
@@ -1155,6 +1422,7 @@ function POS(props) {
                   variant="primary"
                   size="sm"
                   onClick={addNewCustomer}
+                  disabled={activeInvoices.length >= 4}
                   className="rounded-circle d-flex align-items-center justify-content-center p-0"
                   style={{ width: '28px', height: '28px' }}>
                   <PlusCircle size={18} color="white" />

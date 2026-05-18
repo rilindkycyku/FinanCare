@@ -161,12 +161,13 @@ function KalkulimiFillestarVjetor(props) {
     };
 
     vendosNrFaturesMeRradhe();
-  }, [perditeso]);
+  }, []);
 
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
     }
   };
 
@@ -334,7 +335,7 @@ function KalkulimiFillestarVjetor(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -442,7 +443,6 @@ function KalkulimiFillestarVjetor(props) {
                           value={dataFillim}
                           onChange={(e) => {
                             setDataFillim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>
@@ -455,7 +455,6 @@ function KalkulimiFillestarVjetor(props) {
                           value={dataMbarim}
                           onChange={(e) => {
                             setDataMbarim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>

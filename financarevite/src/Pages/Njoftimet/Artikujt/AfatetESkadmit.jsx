@@ -76,7 +76,7 @@ function TabelaEKategorive(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Pergjegjes i Porosive", "Puntor i Thjeshte", "Komercialist", "Kalkulant"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Pergjegjes i Porosive", "Puntor i Thjeshte", "Komercialist", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"]} />
       <NavBar />
 
       <div className="containerDashboardP">

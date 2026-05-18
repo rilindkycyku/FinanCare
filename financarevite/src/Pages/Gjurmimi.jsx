@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import { AlertCircle, Home, LogOut } from "lucide-react";
+import { AlertCircle, Home, LogOut, AlertTriangle, Trash2 } from "lucide-react";
 import {
   Button,
   Container,
@@ -8,7 +8,8 @@ import {
   Form,
   Pagination,
   Table,
-  Card
+  Card,
+  Modal
 } from "react-bootstrap";
 import axios from "axios";
 import useSortableData from "../Context/useSortableData";
@@ -34,10 +35,11 @@ export default function Gjurmimet() {
   const [showClearModal, setShowClearModal] = useState(false);
   const [clearDays, setClearDays] = useState("");
   const [isClearing, setIsClearing] = useState(false);
+  const [confirmStep, setConfirmStep] = useState(null);
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -142,7 +144,8 @@ export default function Gjurmimet() {
   };
 
   const handleClearAllLogs = async () => {
-    if (!window.confirm("Jeni i sigurt? Kjo veprim nuk mund të rikthehet!")) {
+    if (confirmStep !== 'all') {
+      setConfirmStep('all');
       return;
     }
 
@@ -161,6 +164,7 @@ export default function Gjurmimet() {
       console.error("Error clearing logs:", err);
     } finally {
       setIsClearing(false);
+      setConfirmStep(null);
     }
   };
 
@@ -170,7 +174,8 @@ export default function Gjurmimet() {
       return;
     }
 
-    if (!window.confirm(`Jeni i sigurt që doni të fshirni gjurmimet më të vjetra se ${clearDays} ditë?`)) {
+    if (confirmStep !== 'days') {
+      setConfirmStep('days');
       return;
     }
 
@@ -190,14 +195,13 @@ export default function Gjurmimet() {
       console.error("Error clearing old logs:", err);
     } finally {
       setIsClearing(false);
+      setConfirmStep(null);
     }
   };
 
   return (
     <>
-      <KontrolloAksesinNeFaqe
-        roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Faturist"]}
-      />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "1 Euro Menaxher"]} />
       <NavBar />
 
       {/* Sidebar - Mobile */}
@@ -493,80 +497,92 @@ export default function Gjurmimet() {
         )}
 
         {/* Clear Logs Modal */}
-        {showClearModal && (
-          <div
-            className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center"
-            style={{ zIndex: 2000 }}>
-            <div className="bg-dark border border-secondary rounded-3 p-4" style={{ maxWidth: "450px", width: "95%", color: "white" }}>
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h4 className="mb-0 text-white">Fshi Gjurmimet</h4>
-                <Button variant="link" className="text-white p-0" onClick={() => setShowClearModal(false)}>âœ•</Button>
-              </div>
-
-              <div className="mb-4">
-                <p className="text-white-50 small mb-2">OPSIONET E FSHIRJES:</p>
-                <div className="d-grid gap-2">
-                  <Button
-                    variant="danger"
-                    className="py-3 fw-bold"
-                    onClick={handleClearAllLogs}
-                    disabled={isClearing}>
-                    FSHI TË GJITHA LOG-ET
-                  </Button>
-                  <p className="text-danger small text-center mt-1">
-                    âš  Kjo veprim është i pakthyeshëm.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mb-4 pt-3 border-top border-secondary">
-                <p className="text-white-50 small mb-2">FSHI SIPAS KOHËS:</p>
-                <div className="d-flex gap-2">
-                  <Form.Control
-                    className="sp-input"
-                    type="number"
-                    min="1"
-                    placeholder="Ditët (p.sh. 30)"
-                    value={clearDays}
-                    onChange={(e) => setClearDays(e.target.value)}
-                    disabled={isClearing}
-                  />
-                  <Button
-                    variant="warning"
-                    className="px-4"
-                    onClick={handleClearOldLogs}
-                    disabled={isClearing || !clearDays}>
-                    Fshi
-                  </Button>
-                </div>
-                <p className="text-muted small mt-2">
-                  Fshin log-et më të vjetra se numri i ditëve të caktuar.
+        <Modal
+          show={showClearModal}
+          onHide={() => {
+            setShowClearModal(false);
+            setConfirmStep(null);
+            setClearDays("");
+          }}
+          centered
+          className="pos-modal"
+          backdrop="static"
+        >
+          <Modal.Header closeButton className="border-secondary">
+            <Modal.Title as="h5" className="fw-bold d-flex align-items-center gap-2">
+              <Trash2 size={20} className="text-danger" /> Menaxho Gjurmimet
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-4" style={{ backgroundColor: "var(--bs-body-bg)" }}>
+            <div className="mb-4">
+              <p className="text-muted small mb-2 fw-bold">OPSIONET E FSHIRJES:</p>
+              <div className="d-grid gap-2">
+                <Button
+                  variant={confirmStep === 'all' ? "danger" : "outline-danger"}
+                  className="py-3 fw-bold rounded-4 shadow-sm transition-all"
+                  onClick={handleClearAllLogs}
+                  disabled={isClearing}
+                >
+                  {confirmStep === 'all' ? (
+                    isClearing ? "DUKE FSHIRË..." : "KLIKO PËRSËRI PËR TË KONFIRMUAR FSHIRJEN"
+                  ) : "FSHI TË GJITHA LOG-ET"}
+                </Button>
+                <p className="text-danger small text-center mt-1">
+                  <AlertTriangle size={16} className="me-1 mb-1" /> Kjo veprim është i pakthyeshëm.
                 </p>
               </div>
+            </div>
 
-              <div className="d-grid">
+            <div className="mb-2 pt-4 border-top border-secondary">
+              <p className="text-muted small mb-2 fw-bold">FSHI SIPAS KOHËS:</p>
+              <div className="d-flex gap-2 mb-2">
+                <Form.Control
+                  className="sp-input rounded-3 bg-body"
+                  type="number"
+                  min="1"
+                  placeholder="Ditët (p.sh. 30)"
+                  value={clearDays}
+                  onChange={(e) => { setClearDays(e.target.value); setConfirmStep(null); }}
+                  disabled={isClearing}
+                  style={{ border: "1px solid var(--bs-border-color)", color: "var(--bs-body-color)" }}
+                />
                 <Button
-                  variant="outline-light"
-                  onClick={() => {
-                    setShowClearModal(false);
-                    setClearDays("");
-                  }}
-                  disabled={isClearing}>
-                  Anulo
+                  variant={confirmStep === 'days' ? "warning" : "outline-warning"}
+                  className="px-4 fw-bold rounded-3"
+                  onClick={handleClearOldLogs}
+                  disabled={isClearing || !clearDays}
+                >
+                  {confirmStep === 'days' ? "Konfirmo" : "Fshi"}
                 </Button>
               </div>
-
-              {isClearing && (
-                <div className="mt-3 text-center">
-                  <div className="spinner-border spinner-border-sm text-primary" role="status">
-                    <span className="visually-hidden">Duke fshirë...</span>
-                  </div>
-                  <p className="text-muted mt-2 mb-0">Duke fshirë...</p>
-                </div>
-              )}
+              <p className="text-muted small opacity-75 mt-2">
+                Fshin log-et më të vjetra se numri i ditëve të caktuar.
+              </p>
             </div>
-          </div>
-        )}
+          </Modal.Body>
+          <Modal.Footer className="border-secondary d-flex justify-content-between align-items-center bg-body-tertiary">
+            {isClearing ? (
+              <div className="d-flex align-items-center gap-2 text-primary small fw-bold">
+                <div className="spinner-border spinner-border-sm" role="status" />
+                Duke fshirë...
+              </div>
+            ) : (
+              <span />
+            )}
+            <Button
+              variant="secondary"
+              className="rounded-pill px-4"
+              onClick={() => {
+                setShowClearModal(false);
+                setConfirmStep(null);
+                setClearDays("");
+              }}
+              disabled={isClearing}
+            >
+              Mbyll
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </>
   );

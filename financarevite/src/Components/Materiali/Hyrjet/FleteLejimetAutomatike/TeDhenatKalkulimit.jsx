@@ -1,3 +1,4 @@
+import { exportInvoiceExcel } from "@/utils/exportInvoiceExcel";
 import { useEffect, useMemo, useState } from "react";
 ﻿import classes from "./Styles/TabelaEKompanive.module.css";
 import axios from "axios";
@@ -5,7 +6,8 @@ import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileInvoice,
-  faXmark
+  faXmark, faFileExcel
+
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Table, Container, Row, Col } from "react-bootstrap";
@@ -72,11 +74,15 @@ function TeDhenatKalkulimit(props) {
   const handleSave = () => {
     props.setMbyllTeDhenat();
   };
+  const exportExcel = async () => {
+    await exportInvoiceExcel(teDhenatFat, produktet);
+  };
 
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
     }
   };
 
@@ -120,6 +126,7 @@ function TeDhenatKalkulimit(props) {
                     Te Dhenat e Fatures
                   </h1>
                   <div className="d-flex gap-2 align-items-center">
+                    <Button variant="success" className="me-2" onClick={exportExcel} disabled={produktet.length === 0}><FontAwesomeIcon icon={faFileExcel} className="me-2" />Eksporto Excel</Button>
                     <Button className="mb-3 Butoni" onClick={handleSave}>
                       Mbyll Te Dhenat <FontAwesomeIcon icon={faXmark} />
                     </Button>

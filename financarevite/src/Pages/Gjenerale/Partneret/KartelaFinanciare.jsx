@@ -170,7 +170,7 @@ function KartelaFinanciare() {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Financa", "Mbeshtetje e Klientit"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Financa", "Mbeshtetje e Klientit", "1 Euro Menaxher"]} />
       <NavBar />
 
       {/* PDF generation overlay */}

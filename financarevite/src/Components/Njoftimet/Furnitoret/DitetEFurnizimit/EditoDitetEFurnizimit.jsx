@@ -79,9 +79,8 @@ function EditoDitetEFurnizimit(props) {
 
         const formatted = filtruar.map((f) => ({
           value: f.idPartneri,
-          label: `${f.emriBiznesit} ${
-            f.shkurtesaPartnerit ? `(${f.shkurtesaPartnerit})` : ""
-          }`.trim(),
+          label: `${f.emriBiznesit} ${f.shkurtesaPartnerit ? `(${f.shkurtesaPartnerit})` : ""
+            }`.trim(),
         }));
 
         setFurnitoret(formatted);
@@ -157,7 +156,7 @@ function EditoDitetEFurnizimit(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive"]}
+        roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

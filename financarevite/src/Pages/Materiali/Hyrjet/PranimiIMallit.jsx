@@ -170,12 +170,13 @@ function KalkulimiIMallit(props) {
     };
 
     vendosNrFaturesMeRradhe();
-  }, [perditeso]);
+  }, []);
 
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
     }
   };
 
@@ -317,7 +318,7 @@ function KalkulimiIMallit(props) {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"]} />
       <NavBar />
       <div className="containerDashboardP" style={{ width: "90%" }}>
         {shfaqMesazhin && (
@@ -517,7 +518,6 @@ function KalkulimiIMallit(props) {
                           value={dataFillim}
                           onChange={(e) => {
                             setDataFillim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>
@@ -531,7 +531,6 @@ function KalkulimiIMallit(props) {
                           value={dataMbarim}
                           onChange={(e) => {
                             setDataMbarim(e.target.value);
-                            setPageNumber(1);
                           }}
                         />
                       </Form.Group>

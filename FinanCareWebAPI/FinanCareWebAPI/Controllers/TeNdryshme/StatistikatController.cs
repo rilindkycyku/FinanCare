@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FinanCareWebAPI.Migrations;
@@ -93,6 +93,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             var totShitjeveSotmeVetemTVSHFat = todaySotme.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
             var totShitjeveSotmePaTVSHFl = todaySotme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
             var totShitjeveSotmeVetemTVSHFl = todaySotme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
+            var totShitjeveSotmeParagon = todaySotme.Where(x => x.LlojiKalkulimit == "PARAGON").Sum(p => (p.TotaliPaTVSH ?? 0) + (p.TVSH ?? 0));
 
             // Monthly data
             var dataKeteMuaj = allData.Where(x => x.IsKeteMuaj).ToList();
@@ -101,6 +102,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             var totShitjeveMujoreVetemTVSHFat = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
             var totShitjeveMujorePaTVSHFl = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
             var totShitjeveMujoreVetemTVSHFl = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
+            var totShitjeveMujoreParagon = dataKeteMuaj.Where(x => x.LlojiKalkulimit == "PARAGON").Sum(p => (p.TotaliPaTVSH ?? 0) + (p.TVSH ?? 0));
 
             // Yesterday's data
             var dataDjeshme = allData.Where(x => x.IsDjeshme).ToList();
@@ -109,6 +111,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             var totShitjeveDjeshmeVetemTVSHFat = dataDjeshme.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
             var totShitjeveDjeshmePaTVSHFl = dataDjeshme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
             var totShitjeveDjeshmeVetemTVSHFl = dataDjeshme.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
+            var totShitjeveDjeshmeParagon = dataDjeshme.Where(x => x.LlojiKalkulimit == "PARAGON").Sum(p => (p.TotaliPaTVSH ?? 0) + (p.TVSH ?? 0));
 
             // Last month's data
             var dataMuajinKaluar = allData.Where(x => x.IsMuajinKaluar).ToList();
@@ -117,6 +120,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             var totShitjeveMujoreKaluarVetemTVSHFat = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FAT").Sum(p => p.TVSH ?? 0);
             var totShitjeveMujoreKaluarPaTVSHFl = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TotaliPaTVSH ?? 0);
             var totShitjeveMujoreKaluarVetemTVSHFl = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
+            var totShitjeveMujoreKaluarParagon = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "PARAGON").Sum(p => (p.TotaliPaTVSH ?? 0) + (p.TVSH ?? 0));
 
             var totalet = new
             {
@@ -128,13 +132,13 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                 TotaliShitjeveParagonEuro = totShitjeveParagonPaTVSH + totShitjeveParagonetemTVSH,
                 TotaliShitjeveParagon = totPorosiveParagon,
                 TotaliPorosiveSotme = totPorosiveSotme,
-                TotaliShitjeveSotme = totShitjeveSotmePaTVSHFat + totShitjeveSotmeVetemTVSHFat - totShitjeveSotmePaTVSHFl - totShitjeveSotmeVetemTVSHFl,
+                TotaliShitjeveSotme = totShitjeveSotmePaTVSHFat + totShitjeveSotmeVetemTVSHFat - totShitjeveSotmePaTVSHFl - totShitjeveSotmeVetemTVSHFl + totShitjeveSotmeParagon,
                 TotaliPorosiveKeteMuaj = totPorosiveMujore,
-                TotaliShitjeveKeteMuaj = totShitjeveMujorePaTVSHFat + totShitjeveMujoreVetemTVSHFat - totShitjeveMujorePaTVSHFl - totShitjeveMujoreVetemTVSHFl,
+                TotaliShitjeveKeteMuaj = totShitjeveMujorePaTVSHFat + totShitjeveMujoreVetemTVSHFat - totShitjeveMujorePaTVSHFl - totShitjeveMujoreVetemTVSHFl + totShitjeveMujoreParagon,
                 TotaliPorosiveDjeshme = totPorosiveDjeshme,
-                TotaliShitjeveDjeshme = totShitjeveDjeshmePaTVSHFat + totShitjeveDjeshmeVetemTVSHFat - totShitjeveDjeshmePaTVSHFl - totShitjeveDjeshmeVetemTVSHFl,
+                TotaliShitjeveDjeshme = totShitjeveDjeshmePaTVSHFat + totShitjeveDjeshmeVetemTVSHFat - totShitjeveDjeshmePaTVSHFl - totShitjeveDjeshmeVetemTVSHFl + totShitjeveDjeshmeParagon,
                 TotaliPorosiveMuajinKaluar = totPorosiveMujoreKaluar,
-                TotaliShitjeveMuajinKaluar = totShitjeveMujoreKaluarPaTVSHFat + totShitjeveMujoreKaluarVetemTVSHFat - totShitjeveMujoreKaluarPaTVSHFl - totShitjeveMujoreKaluarVetemTVSHFl,
+                TotaliShitjeveMuajinKaluar = totShitjeveMujoreKaluarPaTVSHFat + totShitjeveMujoreKaluarVetemTVSHFat - totShitjeveMujoreKaluarPaTVSHFl - totShitjeveMujoreKaluarVetemTVSHFl + totShitjeveMujoreKaluarParagon,
             };
 
             return Ok(totalet);

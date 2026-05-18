@@ -60,9 +60,7 @@ const ProductTables = () => {
 
   return (
     <>
-     <KontrolloAksesinNeFaqe
-        roletELejuara={["Menaxher", "Puntor i Thjeshte", "Pergjegjes i Porosive"]}
-      />
+     <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"]} />
       <NavBar />
 
       <div className="containerDashboardP">

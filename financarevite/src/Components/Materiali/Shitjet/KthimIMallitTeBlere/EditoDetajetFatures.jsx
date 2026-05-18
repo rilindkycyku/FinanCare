@@ -6,6 +6,7 @@ import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -57,7 +58,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
         const pZgjedhur = options.find((o) => o.value === fatura.idPartneri);
         setPartneriZgjedhur(pZgjedhur || null);
         if (fatura.dataRegjistrimit) {
-          setDataEFatures(new Date(fatura.dataRegjistrimit).toISOString().split("T")[0]);
+          setDataEFatures(fatura.dataRegjistrimit.split("T")[0]);
         }
         // Preserved fields
         setLlojiKalkulimit(fatura.llojiKalkulimit || "");
@@ -93,7 +94,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
         {
           // Editable
           idPartneri: partneriZgjedhur?.value ?? null,
-          dataRegjistrimit: dataEFatures ? new Date(dataEFatures).toISOString() : null,
+          dataRegjistrimit: dataEFatures ? dataEFatures + "T12:00:00" : null,
           pershkrimShtese: pershkrimShtese,
           // Preserved — always re-sent
           llojiKalkulimit,
@@ -122,9 +123,26 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
       setSaving(false);
     }
   };
+  const ndrroField = (e, nextId) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextId === "__save__") { handleRuaj(); return; }
+      const el = document.getElementById(nextId);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
+    }
+  };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg" centered className="sp-modal">
+    <>
+      <KontrolloAksesinNeFunksione
+        roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]}
+        largo={onHide}
+        shfaqmesazhin={() => setShfaqMesazhin(true)}
+        perditesoTeDhenat={perditesoTeDhenat || (() => {})}
+        setTipiMesazhit={setTipiMesazhit}
+        setPershkrimiMesazhit={setPershkrimiMesazhit}
+      />
+      <Modal show={show} onHide={onHide} size="lg" centered className="sp-modal">
       <Modal.Header closeButton>
         <Modal.Title>Edito Detajet e Faturës</Modal.Title>
       </Modal.Header>
@@ -189,6 +207,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
         </Button>
       </Modal.Footer>
     </Modal>
+    </>
   );
 }
 

@@ -206,7 +206,7 @@ function ShtoPerdorues(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Burime Njerzore"]}
+        roletELejuara={["Menaxher", "Burime Njerzore", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

@@ -26,6 +26,7 @@
     "bootstrap": "^5.3.2",
     "chart.js": "^4.4.3",
     "dayjs": "^1.11.10",
+    "exceljs": "^4.4.0",
     "export-from-json": "^1.7.4",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.35.1",
@@ -50,7 +51,8 @@
     "react-router-dom": "^6.9.0",
     "react-select": "^5.8.0",
     "react-to-print": "^3.2.0",
-    "react-window": "^2.2.5"
+    "react-window": "^2.2.5",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.23.2",

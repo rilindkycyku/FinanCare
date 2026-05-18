@@ -178,7 +178,7 @@ function ShtoPagesat() {
 
   return (
     <>
-      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Financa"]} />
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Financa", "1 Euro Menaxher"]} />
       <NavBar />
 
       {/* Success toast */}

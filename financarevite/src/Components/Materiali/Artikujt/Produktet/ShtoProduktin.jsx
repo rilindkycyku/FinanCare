@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import { Button, Modal, Row, Col, Form } from "react-bootstrap";
+import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
-import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 const ShtoProduktin = (props) => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -21,7 +20,7 @@ const ShtoProduktin = (props) => {
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -115,7 +114,8 @@ const ShtoProduktin = (props) => {
   const ndrroField = (e, tjetra) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      document.getElementById(tjetra).focus();
+      const el = document.getElementById(tjetra);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
     }
   };
 
@@ -130,7 +130,7 @@ const ShtoProduktin = (props) => {
   const [optionsLlojiTVSH, setOptionsLlojiTVSH] = useState([]);
   const [optionsSelectedLlojiTVSH, setOptionsSelectedLlojiTVSH] =
     useState(null);
-    useEffect(() => {
+  useEffect(() => {
     axios
       .get(
         `${API_BASE_URL}/api/GrupiProduktit/shfaqGrupetEProduktit`,
@@ -229,7 +229,7 @@ const ShtoProduktin = (props) => {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant"]}
+        roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col, Spinner } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
@@ -6,6 +6,7 @@ import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -36,11 +37,11 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
   const [rabati, setRabati] = useState(null);
   const [eshteFaturuarOferta, setEshteFaturuarOferta] = useState(null);
   const [idBonusKartela, setIdBonusKartela] = useState(null);
-  
-  
-  
-  
-  
+
+
+
+
+
 
   useEffect(() => {
     if (!show || !idKalkulimit) return;
@@ -63,7 +64,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
         setPartneriZgjedhur(pZgjedhur || null);
         setNrFatures(fatura.nrFatures || "");
         if (fatura.dataRegjistrimit) {
-          setDataEFatures(new Date(fatura.dataRegjistrimit).toISOString().split("T")[0]);
+          setDataEFatures(fatura.dataRegjistrimit.split("T")[0]);
         }
         setLlojiIPageses(fatura.llojiPageses || "");
         setStatusiIPageses(fatura.statusiPageses || "");
@@ -78,11 +79,11 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
         setRabati(fatura.rabati ?? null);
         setEshteFaturuarOferta(fatura.eshteFaturuarOferta ?? null);
         setIdBonusKartela(fatura.idBonusKartela ?? null);
-        
-        
-        
-        
-        
+
+
+
+
+
       } catch (err) {
         console.error(err);
         setTipiMesazhit("danger");
@@ -104,7 +105,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
           // Editable
           idPartneri: partneriZgjedhur?.value ?? null,
           nrFatures: nrFatures,
-          dataRegjistrimit: dataEFatures ? new Date(dataEFatures).toISOString() : null,
+          dataRegjistrimit: dataEFatures ? dataEFatures + "T12:00:00" : null,
           llojiPageses: llojiIPageses,
           statusiPageses: statusiIPageses,
           totaliPaTVSH: totPaTVSH !== "" ? parseFloat(totPaTVSH) : 0,
@@ -132,131 +133,149 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
       setSaving(false);
     }
   };
+  const ndrroField = (e, nextId) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextId === "__save__") { handleRuaj(); return; }
+      const el = document.getElementById(nextId);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
+    }
+  };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg" centered className="sp-modal">
-      <Modal.Header closeButton>
-        <Modal.Title>Edito Detajet e Faturës</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {shfaqMesazhin && (
-          <Mesazhi setShfaqMesazhin={setShfaqMesazhin} pershkrimi={pershkrimiMesazhit} tipi={tipiMesazhit} />
-        )}
-        {loading ? (
-          <div className="text-center py-5"><Spinner animation="border" variant="light" /></div>
-        ) : (
-          <Form>
-            <Row className="g-3">
+    <>
+      <KontrolloAksesinNeFunksione
+        roletELejuara={["Menaxher", "Kalkulant", "Pergjegjes i Porosive", "1 Euro Menaxher"]}
+        largo={onHide}
+        shfaqmesazhin={() => setShfaqMesazhin(true)}
+        perditesoTeDhenat={perditesoTeDhenat || (() => { })}
+        setTipiMesazhit={setTipiMesazhit}
+        setPershkrimiMesazhit={setPershkrimiMesazhit}
+      />
+      <Modal show={show} onHide={onHide} size="lg" centered className="sp-modal">
+        <Modal.Header closeButton>
+          <Modal.Title>Edito Detajet e Faturës</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {shfaqMesazhin && (
+            <Mesazhi setShfaqMesazhin={setShfaqMesazhin} pershkrimi={pershkrimiMesazhit} tipi={tipiMesazhit} />
+          )}
+          {loading ? (
+            <div className="text-center py-5"><Spinner animation="border" variant="light" /></div>
+          ) : (
+            <Form>
+              <Row className="g-3">
 
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="sp-label">Partneri</Form.Label>
-                  <Select
-                    className="sp-select-container"
-                    classNamePrefix="sp-select"
-                    value={partneriZgjedhur}
-                    onChange={(val) => setPartneriZgjedhur(val)}
-                    options={partneretOptions}
-                    styles={darkSelectStyles}
-                    placeholder="Zgjidh partnerin..."
-                    menuPosition="fixed"
-                    isClearable
-                  />
-                </Form.Group>
-              </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="sp-label">Partneri</Form.Label>
+                    <Select
+                      className="sp-select-container"
+                      classNamePrefix="sp-select"
+                      value={partneriZgjedhur}
+                      onChange={(val) => setPartneriZgjedhur(val)}
+                      options={partneretOptions}
+                      styles={darkSelectStyles}
+                      placeholder="Zgjidh partnerin..."
+                      menuPosition="fixed"
+                      isClearable
+                    />
+                  </Form.Group>
+                </Col>
 
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="sp-label">Nr. Faturës</Form.Label>
-                  <Form.Control
-                    className="sp-input"
-                    type="text"
-                    value={nrFatures}
-                    onChange={(e) => setNrFatures(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="sp-label">Nr. Faturës</Form.Label>
+                    <Form.Control
+                      className="sp-input"
+                      type="text"
+                      value={nrFatures}
+                      onChange={(e) => setNrFatures(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
 
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="sp-label">Data e Faturës</Form.Label>
-                  <Form.Control
-                    className="sp-input"
-                    type="date"
-                    value={dataEFatures}
-                    onChange={(e) => setDataEFatures(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="sp-label">Data e Faturës</Form.Label>
+                    <Form.Control
+                      className="sp-input"
+                      type="date"
+                      value={dataEFatures}
+                      onChange={(e) => setDataEFatures(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
 
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="sp-label">Lloji i Pagesës</Form.Label>
-                  <Form.Select
-                    className="sp-input"
-                    value={llojiIPageses}
-                    onChange={(e) => {
-                      setLlojiIPageses(e.target.value);
-                      if (e.target.value === "Borxh") setStatusiIPageses("Pa Paguar");
-                    }}
-                  >
-                    <option value="" disabled>Zgjidh...</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Banke">Banke</option>
-                    <option value="Borxh">Borxh</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="sp-label">Lloji i Pagesës</Form.Label>
+                    <Form.Select
+                      className="sp-input"
+                      value={llojiIPageses}
+                      onChange={(e) => {
+                        setLlojiIPageses(e.target.value);
+                        if (e.target.value === "Borxh") setStatusiIPageses("Pa Paguar");
+                      }}
+                    >
+                      <option value="" disabled>Zgjidh...</option>
+                      <option value="Cash">Cash</option>
+                      <option value="Banke">Banke</option>
+                      <option value="Borxh">Borxh</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
 
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="sp-label">Statusi i Pagesës</Form.Label>
-                  <Form.Select
-                    className="sp-input"
-                    value={statusiIPageses}
-                    onChange={(e) => setStatusiIPageses(e.target.value)}
-                    disabled={llojiIPageses === "Borxh"}
-                  >
-                    <option value="" disabled>Zgjidh...</option>
-                    <option value="Pa Paguar">Pa Paguar</option>
-                    <option value="E Paguar">E Paguar</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="sp-label">Statusi i Pagesës</Form.Label>
+                    <Form.Select
+                      className="sp-input"
+                      value={statusiIPageses}
+                      onChange={(e) => setStatusiIPageses(e.target.value)}
+                      disabled={llojiIPageses === "Borxh"}
+                    >
+                      <option value="" disabled>Zgjidh...</option>
+                      <option value="Pa Paguar">Pa Paguar</option>
+                      <option value="E Paguar">E Paguar</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
 
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="sp-label">Totali Pa TVSH</Form.Label>
-                  <Form.Control
-                    className="sp-input"
-                    type="number"
-                    value={totPaTVSH}
-                    onChange={(e) => setTotPaTVSH(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label className="sp-label">TVSH</Form.Label>
-                  <Form.Control
-                    className="sp-input"
-                    type="number"
-                    value={tvsh}
-                    onChange={(e) => setTvsh(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-          </Form>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide} disabled={saving}>Mbyll</Button>
-        <Button className="btn-premium-shto" onClick={handleRuaj} disabled={loading || saving}>
-          {saving ? <Spinner size="sm" /> : <><FontAwesomeIcon icon={faSave} className="me-2" /> Ruaj Ndryshimet</>}
-        </Button>
-      </Modal.Footer>
-    </Modal>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="sp-label">Totali Pa TVSH</Form.Label>
+                    <Form.Control
+                      className="sp-input"
+                      type="number"
+                      value={totPaTVSH}
+                      onChange={(e) => setTotPaTVSH(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label className="sp-label">TVSH</Form.Label>
+                    <Form.Control
+                      className="sp-input"
+                      type="number"
+                      value={tvsh}
+                      onChange={(e) => setTvsh(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Form>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onHide} disabled={saving}>Mbyll</Button>
+          <Button className="btn-premium-shto" onClick={handleRuaj} disabled={loading || saving}>
+            {saving ? <Spinner size="sm" /> : <><FontAwesomeIcon icon={faSave} className="me-2" /> Ruaj Ndryshimet</>}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 }
 

@@ -6,6 +6,7 @@ import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 
 function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -63,7 +64,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
         setPartneriZgjedhur(pZgjedhur || null);
         setNrFatures(fatura.nrFatures || "");
         if (fatura.dataRegjistrimit) {
-          setDataEFatures(new Date(fatura.dataRegjistrimit).toISOString().split("T")[0]);
+          setDataEFatures(fatura.dataRegjistrimit.split("T")[0]);
         }
         setLlojiIPageses(fatura.llojiPageses || "");
         setStatusiIPageses(fatura.statusiPageses || "");
@@ -104,7 +105,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
           // Editable
           idPartneri: partneriZgjedhur?.value ?? null,
           nrFatures: nrFatures,
-          dataRegjistrimit: dataEFatures ? new Date(dataEFatures).toISOString() : null,
+          dataRegjistrimit: dataEFatures ? dataEFatures + "T12:00:00" : null,
           llojiPageses: llojiIPageses,
           statusiPageses: statusiIPageses,
           totaliPaTVSH: totPaTVSH !== "" ? parseFloat(totPaTVSH) : 0,
@@ -132,9 +133,26 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
       setSaving(false);
     }
   };
+  const ndrroField = (e, nextId) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextId === "__save__") { handleRuaj(); return; }
+      const el = document.getElementById(nextId);
+      if (el) { el.focus(); setTimeout(() => el.select(), 0); }
+    }
+  };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg" centered className="sp-modal">
+    <>
+      <KontrolloAksesinNeFunksione
+        roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]}
+        largo={onHide}
+        shfaqmesazhin={() => setShfaqMesazhin(true)}
+        perditesoTeDhenat={perditesoTeDhenat || (() => {})}
+        setTipiMesazhit={setTipiMesazhit}
+        setPershkrimiMesazhit={setPershkrimiMesazhit}
+      />
+      <Modal show={show} onHide={onHide} size="lg" centered className="sp-modal">
       <Modal.Header closeButton>
         <Modal.Title>Edito Detajet e Faturës</Modal.Title>
       </Modal.Header>
@@ -170,9 +188,11 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
                   <Form.Label className="sp-label">Nr. Faturës</Form.Label>
                   <Form.Control
                     className="sp-input"
+                    id="edit-nrFatures"
                     type="text"
                     value={nrFatures}
                     onChange={(e) => setNrFatures(e.target.value)}
+                    onKeyDown={(e) => ndrroField(e, "edit-dataEFatures")}
                   />
                 </Form.Group>
               </Col>
@@ -182,9 +202,11 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
                   <Form.Label className="sp-label">Data e Faturës</Form.Label>
                   <Form.Control
                     className="sp-input"
+                    id="edit-dataEFatures"
                     type="date"
                     value={dataEFatures}
                     onChange={(e) => setDataEFatures(e.target.value)}
+                    onKeyDown={(e) => ndrroField(e, "edit-llojiPageses")}
                   />
                 </Form.Group>
               </Col>
@@ -229,9 +251,11 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
                   <Form.Label className="sp-label">Totali Pa TVSH</Form.Label>
                   <Form.Control
                     className="sp-input"
+                    id="edit-totPaTVSH"
                     type="number"
                     value={totPaTVSH}
                     onChange={(e) => setTotPaTVSH(e.target.value)}
+                    onKeyDown={(e) => ndrroField(e, "edit-tvsh")}
                   />
                 </Form.Group>
               </Col>
@@ -240,9 +264,11 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
                   <Form.Label className="sp-label">TVSH</Form.Label>
                   <Form.Control
                     className="sp-input"
+                    id="edit-tvsh"
                     type="number"
                     value={tvsh}
                     onChange={(e) => setTvsh(e.target.value)}
+                    onKeyDown={(e) => ndrroField(e, "__save__")}
                   />
                 </Form.Group>
               </Col>
@@ -257,6 +283,7 @@ function EditoDetajetFatures({ show, onHide, idKalkulimit, perditesoTeDhenat }) 
         </Button>
       </Modal.Footer>
     </Modal>
+    </>
   );
 }
 
