@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import axios from "axios";
+import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
-import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function ShtoLlogarin(props) {
@@ -24,7 +25,7 @@ function ShtoLlogarin(props) {
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -103,7 +104,7 @@ function ShtoLlogarin(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
-    useEffect(() => {
+  useEffect(() => {
     axios
       .get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqBankat`, authentikimi)
       .then((response) => {
@@ -127,7 +128,7 @@ function ShtoLlogarin(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Financa"]}
+        roletELejuara={["Menaxher", "Financa", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

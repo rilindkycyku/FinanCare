@@ -30,7 +30,7 @@ function EditoKompanin(props) {
   const getID = localStorage.getItem("id");
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -41,10 +41,10 @@ function EditoKompanin(props) {
     try {
       const parsed = JSON.parse(payloadStr);
       const list = parsed?.tableSearch?.tableList || [];
-      const realList = list.filter(item => item.teDhenatBiznesit);
-      
-      console.log("U gjetën rekorde:", realList.length);
-      
+      const realList = list.filter(item => item.teDhenatBiznesit && item.teDhenatBiznesit.StatusiARBK === "Regjistruar");
+
+      console.log("U gjetën rekorde aktive:", realList.length);
+
       if (realList.length === 1) {
         const biz = realList[0].teDhenatBiznesit;
         setPartneri(prev => ({
@@ -57,18 +57,18 @@ function EditoKompanin(props) {
           nrKontaktit: biz.Telefoni || prev.nrKontaktit,
           email: biz.Email || prev.email,
         }));
-        
+
         props.setTipiMesazhit("success");
         props.setPershkrimiMesazhit("Të dhënat u importuan automatikisht nga ARBK!");
         props.shfaqmesazhin(true);
-        
+
         setShowArbkModal(false);
         setArbkJson("");
         setArbkResults([]);
       } else if (realList.length > 1) {
         setArbkResults(realList.map(item => item.teDhenatBiznesit));
       } else {
-         console.warn("Nuk u gjet asnjë rekord në JSON!");
+        console.warn("Nuk u gjet asnjë rekord në JSON!");
       }
     } catch (e) {
       console.error("Gabim në leximin automatik", e);
@@ -87,6 +87,16 @@ function EditoKompanin(props) {
     };
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("arbk_bridge_data");
+    if (savedData) {
+      setArbkJson(savedData);
+      setShowArbkModal(true);
+      handleAutoParse(savedData);
+      localStorage.removeItem("arbk_bridge_data");
+    }
   }, []);
 
   useEffect(() => {
@@ -245,10 +255,10 @@ function EditoKompanin(props) {
       if (!arbkJson) return;
       const parsed = JSON.parse(arbkJson);
       const list = parsed?.tableSearch?.tableList || [];
-      const realList = list.filter(item => item.teDhenatBiznesit);
-      
+      const realList = list.filter(item => item.teDhenatBiznesit && item.teDhenatBiznesit.StatusiARBK === "Regjistruar");
+
       if (realList.length === 0) {
-        throw new Error("Nuk u gjet asnjë biznes në këtë JSON.");
+        throw new Error("Nuk u gjet asnjë biznes aktiv i regjistruar në këtë JSON.");
       } else if (realList.length === 1) {
         applyArbkData(realList[0].teDhenatBiznesit);
       } else {
@@ -273,11 +283,11 @@ function EditoKompanin(props) {
       nrKontaktit: biz.Telefoni || prev.nrKontaktit,
       email: biz.Email || prev.email,
     }));
-    
+
     props.setTipiMesazhit("success");
     props.setPershkrimiMesazhit("Të dhënat u importuan me sukses nga ARBK!");
     props.shfaqmesazhin(true);
-    
+
     setShowArbkModal(false);
     setArbkJson("");
     setArbkResults([]);
@@ -286,7 +296,7 @@ function EditoKompanin(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Kalkulant"]}
+        roletELejuara={["Menaxher", "Kalkulant", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}
@@ -531,7 +541,7 @@ function EditoKompanin(props) {
       </Modal>
 
       {/* ARBK Import Modal */}
-      <Modal show={showArbkModal} onHide={() => {setShowArbkModal(false); setArbkResults([]); setArbkJson("");}} centered className="sp-modal">
+      <Modal show={showArbkModal} onHide={() => { setShowArbkModal(false); setArbkResults([]); setArbkJson(""); }} centered className="sp-modal">
         <Modal.Header closeButton>
           <Modal.Title as="h6">Importo nga ARBK</Modal.Title>
         </Modal.Header>
@@ -571,14 +581,14 @@ function EditoKompanin(props) {
                   </button>
                 ))}
               </div>
-              <Button variant="outline-secondary" size="sm" className="mt-3 w-100" onClick={() => {setArbkResults([]); setArbkJson("");}}>
+              <Button variant="outline-secondary" size="sm" className="mt-3 w-100" onClick={() => { setArbkResults([]); setArbkJson(""); }}>
                 Pastro dhe kthehu mbrapa
               </Button>
             </>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => {setShowArbkModal(false); setArbkResults([]); setArbkJson("");}}>Anulo</Button>
+          <Button variant="secondary" onClick={() => { setShowArbkModal(false); setArbkResults([]); setArbkJson(""); }}>Anulo</Button>
           {arbkResults.length === 0 && <Button variant="success" onClick={handleParseJSON} disabled={!arbkJson}>Analizo JSON</Button>}
         </Modal.Footer>
       </Modal>

@@ -69,6 +69,24 @@ function TabelaEKompanive(props) {
     shfaqPartneret();
   }, [perditeso]);
 
+  useEffect(() => {
+    const checkBridgeData = () => {
+      const savedData = localStorage.getItem("arbk_bridge_data");
+      if (savedData) {
+        setShto(true);
+      }
+    };
+    checkBridgeData();
+
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === "ARBK_BRIDGE_DATA") {
+        setShto(true);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   const handleEdito = (id) => {
     setId(id);
     setEdito(true);

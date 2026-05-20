@@ -1433,6 +1433,70 @@
         }
       }
     },
+    "/api/Faturat/qmimore/getOrCreateActive": {
+      "get": {
+        "tags": [
+          "Faturat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/qmimore/shtoProdukt": {
+      "post": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idRegjistrimit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "idProduktit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Faturat/qmimore/pastroTabelen": {
+      "post": {
+        "tags": [
+          "Faturat"
+        ],
+        "parameters": [
+          {
+            "name": "idRegjistrimit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/GrupiProduktit/shfaqGrupinEProduktitSipasIDs": {
       "get": {
         "tags": [

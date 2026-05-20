@@ -1,20 +1,61 @@
 {
   "manifest_version": 3,
   "name": "FinanCare ARBK Bridge",
-  "version": "1.1",
+  "version": "1.3",
   "description": "Automatically sends ARBK business data directly to FinanCare.",
-  "permissions": ["storage", "tabs"],
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "https://arbk.rks-gov.net/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://arbk.rks-gov.net/*"],
-      "js": ["arbkContent.js"]
+      "matches": [
+        "https://arbk.rks-gov.net/*"
+      ],
+      "js": [
+        "arbkContent.js"
+      ],
+      "world": "ISOLATED"
     },
     {
-      "matches": ["<all_urls>"],
-      "js": ["finanCareContent.js"]
+      "matches": [
+        "https://arbk.rks-gov.net/*"
+      ],
+      "js": [
+        "arbkMainContent.js"
+      ],
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "<all_urls>",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "finanCareContent.js"
+      ],
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "<all_urls>",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "finanCareMainContent.js"
+      ],
+      "world": "MAIN"
     }
   ],
   "action": {

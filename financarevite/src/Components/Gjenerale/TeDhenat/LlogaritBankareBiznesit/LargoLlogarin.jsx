@@ -10,7 +10,7 @@ function LargoLlogarin(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -38,7 +38,7 @@ function LargoLlogarin(props) {
   return (
     <>
       <KontrolloAksesinNeFunksione
-        roletELejuara={["Menaxher", "Financa"]}
+        roletELejuara={["Menaxher", "Financa", "1 Euro Menaxher"]}
         largo={() => props.largo()}
         shfaqmesazhin={() => props.shfaqmesazhin()}
         perditesoTeDhenat={() => props.perditesoTeDhenat()}

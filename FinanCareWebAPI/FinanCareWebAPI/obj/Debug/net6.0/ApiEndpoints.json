@@ -586,6 +586,53 @@
   },
   {
     "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
+    "Method": "GetOrCreateActiveQmimore",
+    "RelativePath": "api/Faturat/qmimore/getOrCreateActive",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
+    "Method": "PastroTabelenQmimore",
+    "RelativePath": "api/Faturat/qmimore/pastroTabelen",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idRegjistrimit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
+    "Method": "ShtoProduktQmimore",
+    "RelativePath": "api/Faturat/qmimore/shtoProdukt",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idRegjistrimit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "idProduktit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.TeNdryshme.FaturatController",
     "Method": "Post",
     "RelativePath": "api/Faturat/ruajKalkulimin",
     "HttpMethod": "POST",
