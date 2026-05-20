@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import { Container, Row, Col, Badge } from "react-bootstrap";
 import ReactSelect from "react-select";
 import { Package, Tag, Search, TrendingUp, Info } from "lucide-react";
 import Titulli from "../Components/TeTjera/Titulli";
 import NavBar from "../Components/TeTjera/layout/NavBar";
+import Mesazhi from "../Components/TeTjera/layout/Mesazhi";
 
 function ShikimiQmimeve() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -15,6 +16,11 @@ function ShikimiQmimeve() {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isFetchingDetail, setIsFetchingDetail] = useState(false);
+
+  const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
+  const [tipiMesazhit, setTipiMesazhit] = useState("");
+  const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
+  const selectRef = useRef(null);
 
   const getToken = localStorage.getItem("token");
   const authentikimi = useMemo(() => ({
@@ -109,6 +115,34 @@ function ShikimiQmimeve() {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      const currentInput = document.getElementById("barkodiSelect-input")?.value || "";
+      if (currentInput.trim().length > 0) {
+        let lookupBarcode = currentInput.trim();
+        if (lookupBarcode.startsWith("2") && lookupBarcode.length === 13) {
+          const pluCode = lookupBarcode.substring(0, 7);
+          const matched = options.find(opt => opt.label.includes(pluCode));
+          if (matched) {
+            lookupBarcode = pluCode;
+          }
+        }
+
+        const matches = options.filter(opt => opt.label.toLowerCase().includes(lookupBarcode.toLowerCase()));
+        if (matches.length === 0) {
+          setTipiMesazhit("danger");
+          setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
+          setShfaqMesazhin(true);
+          setInputValue("");
+          setTimeout(() => selectRef.current?.focus(), 10);
+        } else {
+          event.preventDefault();
+          handleChange(matches[0]);
+        }
+      }
+    }
+  };
+
   const product = kartelaEProduktit?.produkti;
   const qmimiPakic = parseFloat(product?.qmimiProduktit || 0).toFixed(2);
   const qmimiShitesMeShumic = parseFloat(product?.qmimiMeShumic || 0).toFixed(2);
@@ -159,6 +193,13 @@ function ShikimiQmimeve() {
 
   return (
     <div className="price-checker-wrapper">
+      {shfaqMesazhin && (
+        <Mesazhi
+          setShfaqMesazhin={setShfaqMesazhin}
+          pershkrimi={pershkrimiMesazhit}
+          tipi={tipiMesazhit}
+        />
+      )}
       <Titulli titulli={"Shikimi i Çmimeve"} />
       <NavBar />
 
@@ -181,6 +222,7 @@ function ShikimiQmimeve() {
                   <span className="section-tag">Zgjidhni Produktin</span>
                 </div>
                 <ReactSelect
+                  ref={selectRef}
                   value={optionsSelected}
                   onChange={handleChange}
                   onInputChange={(val) => setInputValue(val)}
@@ -189,6 +231,8 @@ function ShikimiQmimeve() {
                   placeholder={isLoading ? "Duke u ngarkuar..." : "Kërko emrin ose barkodin..."}
                   isClearable
                   isLoading={isLoading}
+                  inputId="barkodiSelect-input"
+                  onKeyDown={handleKeyDown}
                   noOptionsMessage={() =>
                     inputValue.length < 2
                       ? "Shkruani të paktën 2 karaktere..."

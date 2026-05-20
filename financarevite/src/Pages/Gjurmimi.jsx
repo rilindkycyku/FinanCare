@@ -20,6 +20,46 @@ import { format, parseISO } from "date-fns";
 import NavBar from "../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import "./Styles/PremiumTheme.css";
+const getVeprimiBadgeStyle = (veprimi) => {
+  switch (veprimi) {
+    case "Shto":
+      return {
+        backgroundColor: "rgba(16, 185, 129, 0.2)", // Emerald/Green
+        color: "#34d399",
+        border: "1px solid rgba(16, 185, 129, 0.3)",
+      };
+    case "Fshij":
+      return {
+        backgroundColor: "rgba(239, 68, 68, 0.2)", // Rose/Red
+        color: "#f87171",
+        border: "1px solid rgba(239, 68, 68, 0.3)",
+      };
+    case "Perditeso":
+      return {
+        backgroundColor: "rgba(245, 158, 11, 0.2)", // Amber/Orange
+        color: "#fbbf24",
+        border: "1px solid rgba(245, 158, 11, 0.3)",
+      };
+    case "NdryshoQmimiPOS":
+      return {
+        backgroundColor: "rgba(139, 92, 246, 0.2)", // Violet/Purple
+        color: "#c084fc",
+        border: "1px solid rgba(139, 92, 246, 0.3)",
+      };
+    case "KerkesPerTeDhenaKartela":
+      return {
+        backgroundColor: "rgba(236, 72, 153, 0.2)", // Fuchsia/Pink
+        color: "#f472b6",
+        border: "1px solid rgba(236, 72, 153, 0.3)",
+      };
+    default:
+      return {
+        backgroundColor: "rgba(59, 130, 246, 0.2)", // Blue/Cyan default
+        color: "#60a5fa",
+        border: "1px solid rgba(59, 130, 246, 0.3)",
+      };
+  }
+};
 
 export default function Gjurmimet() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -393,10 +433,10 @@ export default function Gjurmimet() {
                               {header === "Koha" ? (
                                 <div className="fw-bold">{formatDate(item[header])}</div>
                               ) : header === "Veprimi" ? (
-                                <span className={`badge ${item[header] === "Shto" ? "bg-success-subtle text-success" :
-                                  item[header] === "Fshij" ? "bg-danger-subtle text-danger" :
-                                    "bg-info-subtle text-info"
-                                  } px-2 py-1`}>
+                                <span 
+                                  className="badge px-2 py-1 rounded"
+                                  style={getVeprimiBadgeStyle(item[header])}
+                                >
                                   {item[header]}
                                 </span>
                               ) : header === "Detajet" ? (

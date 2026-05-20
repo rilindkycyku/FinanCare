@@ -74,6 +74,8 @@ function POS(props) {
 
   const [qmimiSH, setQmimiSH] = useState(0);
   const [qmimiSH2, setQmimiSH2] = useState(0);
+  const [originalQmimi, setOriginalQmimi] = useState(0);
+  const [originalRabati1, setOriginalRabati1] = useState(0);
   const [sasiaShumices, setSasiaShumices] = useState(0);
   const [idPartneri, setIDPartneri] = useState(1);
 
@@ -504,8 +506,10 @@ function POS(props) {
         setSasia(p.data[0].sasiaStokut);
         setSasiaShumices(p.data[0].sasiaShumices);
         setQmimiSH(p.data[0].qmimiProduktit);
+        setOriginalQmimi(p.data[0].qmimiProduktit);
         setQmimiSH2(p.data[0].qmimiShitesMeShumic);
         setRabati1(p.data[0].rabati1);
+        setOriginalRabati1(p.data[0].rabati1);
         setRabati2(p.data[0].rabati2);
         setKalkEditID(p.data[0].id);
         setNjesiaMatese(p.data[0].emriNjesiaMatese);
@@ -547,11 +551,22 @@ function POS(props) {
   }
 
   function kontrolloQmimin(e) {
-    setSasia(e?.target?.value || e);
-    if (e?.target?.value >= sasiaShumices) {
-      setQmimiSH(e?.target?.value?.qmimiShitesMeShumic || qmimiSH2);
-    } else {
-      setQmimiSH(e?.target?.value?.qmimiProduktit || qmimiSH);
+    let val = e?.target?.value;
+    if (val === undefined) {
+      val = e;
+    }
+    if (typeof val === "string") {
+      val = val.replace(",", ".");
+    }
+
+    if (val === "" || val === undefined || /^[0-9]*\.?[0-9]*$/.test(val)) {
+      setSasia(val);
+      const numVal = parseFloat(val) || 0;
+      if (numVal >= sasiaShumices) {
+        setQmimiSH(qmimiSH2);
+      } else {
+        setQmimiSH(qmimiSH);
+      }
     }
   }
 
@@ -599,7 +614,7 @@ function POS(props) {
 
   const selectRef = useRef(null);
 
-  const handleChange = async (selectedOption) => {
+  const handleChange = async (selectedOption, currentSearchValue = "") => {
     if (!selectedOption || !selectedOption.value) {
       console.warn("No valid product selected on scan/add");
       return;
@@ -608,12 +623,24 @@ function POS(props) {
     try {
       setOptionsBarkodiSelected(selectedOption);
 
+      let sasiaShtuar = 1;
+      const scanInput = currentSearchValue || inputValue;
+      if (scanInput && scanInput.length === 13 && scanInput.startsWith("2")) {
+        const exactMatchExists = optionsBarkodi.some(
+          (opt) => opt.label && opt.label.toLowerCase().includes(scanInput.toLowerCase())
+        );
+        if (!exactMatchExists) {
+          const weightString = scanInput.substring(7, 12);
+          sasiaShtuar = parseFloat(weightString) / 1000;
+        }
+      }
+
       await axios.post(
         `${API_BASE_URL}/api/Faturat/ruajKalkulimin/teDhenat`,
         {
           idRegjistrimit: selectedInvoice,
           idProduktit: selectedOption.value,
-          sasiaStokut: 1,
+          sasiaStokut: sasiaShtuar,
           qmimiShites: selectedOption.qmimiProduktit,
           qmimiShitesMeShumic: selectedOption.qmimiMeShumic || 0,
           rabati1: selectedOption.rabati || 0,
@@ -657,9 +684,10 @@ function POS(props) {
     if (event.key === "Enter") {
       const currentInput = document.getElementById("barkodiSelect-input")?.value || "";
       
-      // If there are NO options matching the typed barcode, show error.
-      // Otherwise, do nothing and let react-select's native onChange handle the selection!
-      if (filteredOptions.length === 0 && currentInput.trim().length > 0) {
+      if (filteredOptions.length > 0) {
+        event.preventDefault();
+        handleChange(filteredOptions[0], currentInput);
+      } else if (currentInput.trim().length > 0) {
         setTipiMesazhit("danger");
         setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
         setShfaqMesazhin(true);
@@ -1158,7 +1186,19 @@ function POS(props) {
   const filteredOptions = useMemo(() => {
     if (!inputValue || inputValue.length < 2) return [];
 
-    const lower = inputValue.toLowerCase();
+    let lower = inputValue.toLowerCase();
+
+    // Check if it's a PLU barcode (13 digits starting with '2') and no exact match exists
+    if (lower.length === 13 && lower.startsWith("2")) {
+      const exactMatchExists = optionsBarkodi.some(
+        (opt) => opt.label && opt.label.toLowerCase().includes(lower)
+      );
+      if (!exactMatchExists) {
+        // Extract the 7-digit product barcode prefix
+        lower = lower.substring(0, 7);
+      }
+    }
+
     const results = [];
     for (let i = 0; i < optionsBarkodi.length; i++) {
       const option = optionsBarkodi[i];
@@ -1474,7 +1514,7 @@ function POS(props) {
                               value={optionsBarkodiSelected}
                               onChange={(selected) => {
                                 if (selected) {
-                                  handleChange(selected);
+                                  handleChange(selected, inputValue);
                                 }
                               }}
                               onInputChange={handleInputChange}
@@ -1494,7 +1534,8 @@ function POS(props) {
                             <Form.Label className="small fw-bold text-muted mb-1">Sasia - {njesiaMatese === "COPE" ? "Copë" : njesiaMatese}</Form.Label>
                             <Form.Control
                               id="sasia"
-                              type="number"
+                              type="text"
+                              inputMode="decimal"
                               placeholder="0.00"
                               value={sasia}
                               onChange={(e) => kontrolloQmimin(e)}
@@ -1508,10 +1549,26 @@ function POS(props) {
                           <Form.Group className="flex-grow-1">
                             <Form.Label className="small fw-bold text-muted mb-1">Çmimi €</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0.00"
                               value={qmimiSH}
-                              disabled
-                              className="bg-light fw-bold text-primary"
+                              disabled={!edito}
+                              onChange={(e) => {
+                                let val = e.target.value.replace(",", ".");
+                                if (val === "" || /^[0-9]*\.?[0-9]*$/.test(val)) {
+                                  setQmimiSH(val);
+                                  const parsedVal = parseFloat(val);
+                                  const parsedOriginal = parseFloat(originalQmimi);
+                                  if (!isNaN(parsedVal) && parsedVal !== parsedOriginal) {
+                                    setRabati1(0);
+                                  } else if (isNaN(parsedVal) || parsedVal === parsedOriginal) {
+                                    setRabati1(originalRabati1);
+                                  }
+                                }
+                              }}
+                              onKeyDown={(e) => handleEdito(e)}
+                              className={edito ? "border-warning bg-warning-subtle fw-bold text-primary" : "fw-bold"}
                             />
                           </Form.Group>
                           <Button
@@ -1582,6 +1639,13 @@ function POS(props) {
                                       animate={{ opacity: 1, x: 0, backgroundColor: 'rgba(0, 0, 0, 0)' }}
                                       exit={{ opacity: 0, scale: 0.95, backgroundColor: 'rgba(248, 113, 113, 0.1)' }}
                                       transition={{ duration: 0.2 }}
+                                      onClick={() => {
+                                        if (!edito) {
+                                          setOptionsBarkodiSelected(p.idProduktit);
+                                          handleEdit(p.id, index);
+                                        }
+                                      }}
+                                      style={{ cursor: edito ? 'default' : 'pointer' }}
                                     >
                                       <td className="text-muted small align-middle">#{originalIndex + 1}</td>
                                       <td className="font-monospace small align-middle">{p.barkodi}</td>
@@ -1596,7 +1660,8 @@ function POS(props) {
                                             variant="light"
                                             className="btn-icon-round border text-danger shadow-sm bg-white"
                                             disabled={edito}
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                              e.stopPropagation();
                                               setVendosKartelenFshirjeProduktit(true);
                                               setFshijProduktKalkID(p.id);
                                             }}>
@@ -1607,7 +1672,8 @@ function POS(props) {
                                             variant="light"
                                             className="btn-icon-round border text-warning shadow-sm bg-white"
                                             disabled={edito}
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                              e.stopPropagation();
                                               setOptionsBarkodiSelected(p.idProduktit);
                                               handleEdit(p.id, index);
                                             }}>
@@ -1672,6 +1738,7 @@ function POS(props) {
                             <Form.Control
                               id="shumaPageses"
                               type="number"
+                              step="any"
                               value={shumaPageses || ""}
                               placeholder="0.00"
                               disabled={edito}

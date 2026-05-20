@@ -11,6 +11,7 @@ import ListaEProdukteve from "./Pages/Materiali/Artikujt/ListaEProdukteve";
 import NjesiaMatese from "./Pages/Materiali/Artikujt/NjesiaMatese";
 import TabelaEPartnereve from "./Pages/Gjenerale/Partneret/TabelaEPartnereve";
 import ZbritjetEProduktit from "./Pages/Materiali/Artikujt/ZbritjetEProduktit";
+import Qmimore from "./Pages/Materiali/Artikujt/Qmimore";
 import TabelaEPerdoruesve from "./Pages/Gjenerale/Stafi/TabelaEPerdoruesve";
 import Rolet from "./Pages/Gjenerale/Stafi/Rolet";
 import KalkulimiIMallit from "./Pages/Materiali/Hyrjet/KalkulimiIMallit";
@@ -71,6 +72,7 @@ function App() {
         <Route path="/NjesiaMatese" element={<NjesiaMatese />} />
         <Route path="/TabelaEPartnereve" element={<TabelaEPartnereve />} />
         <Route path="/ZbritjetEProduktit" element={<ZbritjetEProduktit />} />
+        <Route path="/Qmimore" element={<Qmimore />} />
         <Route path="/Stafi" element={<TabelaEPerdoruesve />} />
         <Route path="/Rolet" element={<Rolet />} />
         <Route path="/KalkulimiIMallit" element={<KalkulimiIMallit />} />

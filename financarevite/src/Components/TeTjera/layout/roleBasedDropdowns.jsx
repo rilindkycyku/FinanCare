@@ -1,4 +1,4 @@
-﻿// src/roleBasedDropdowns.js
+// src/roleBasedDropdowns.js
 export const roleBasedDropdowns = [
   {
     label: "Materiali",
@@ -44,6 +44,12 @@ export const roleBasedDropdowns = [
             roles: ["Menaxher", "Kalkulant", "1 Euro Menaxher"],
             path: "/ZbritjetEProduktit",
             label: "Zbritjet e Produkteve",
+          },
+          {
+            roles: ["Menaxher", "Pergjegjes i Porosive", "Puntor i Thjeshte", "Kalkulant", "1 Euro Menaxher", "1 Euro Staff", "Arkatar", "Faturist"],
+            path: "/Qmimore",
+            label: "Qmimore (Shtyp Etiketat)",
+            shfaqNeDashboard: true,
           },
         ],
       },

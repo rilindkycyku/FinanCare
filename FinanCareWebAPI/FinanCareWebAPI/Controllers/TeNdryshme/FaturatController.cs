@@ -824,17 +824,43 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [Route("ruajKalkulimin/PerditesoTeDhenat")]
         public async Task<IActionResult> Put(int id, [FromBody] TeDhenatFaturat teDhenat)
         {
-            var produkti = await _context.TeDhenatFaturat.FindAsync(id);
+            var produkti = await _context.TeDhenatFaturat
+                .Include(x => x.Produkti)
+                .Include(x => x.Faturat)
+                .FirstOrDefaultAsync(x => x.ID == id);
             if (produkti == null)
             {
                 return NotFound();
+            }
+
+            var isParagon = false;
+            string nrFatures = null;
+            if (produkti.Faturat != null)
+            {
+                isParagon = produkti.Faturat.LlojiKalkulimit == "PARAGON";
+                nrFatures = produkti.Faturat.NrFatures;
+            }
+            else
+            {
+                var fature = await _context.Faturat.FirstOrDefaultAsync(f => f.IDRegjistrimit == produkti.IDRegjistrimit);
+                isParagon = fature?.LlojiKalkulimit == "PARAGON";
+                nrFatures = fature?.NrFatures;
+            }
+
+            if (isParagon && produkti.QmimiShites != teDhenat.QmimiShites)
+            {
+                produkti.Rabati1 = 0;
+                await LogAdminActionAsync("NdryshoQmimiPOS", produkti.IDProduktit?.ToString() ?? "0", $"U ndryshua cmimi i produktit: {produkti.Produkti?.EmriProduktit ?? "E panjohur"} ne POS nga {produkti.QmimiShites} € ne {teDhenat.QmimiShites} € (Sasia: {teDhenat.SasiaStokut}) - Fatura Nr: {nrFatures}");
+            }
+            else
+            {
+                produkti.Rabati1 = teDhenat.Rabati1;
             }
 
             produkti.SasiaStokut = teDhenat.SasiaStokut;
             produkti.QmimiBleres = teDhenat.QmimiBleres;
             produkti.QmimiShites = teDhenat.QmimiShites;
             produkti.QmimiShitesMeShumic = teDhenat.QmimiShitesMeShumic;
-            produkti.Rabati1 = teDhenat.Rabati1;
             produkti.Rabati2 = teDhenat.Rabati2;
             produkti.Rabati3 = teDhenat.Rabati3;
 
@@ -1371,6 +1397,118 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Gabim në kërkimin e faturës", error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("qmimore/getOrCreateActive")]
+        public async Task<IActionResult> GetOrCreateActiveQmimore()
+        {
+            try
+            {
+                var active = await _context.Faturat
+                    .Where(x => x.LlojiKalkulimit == "ETIKETA" && x.NrFatures == "QMIMORE-LISTA-KRYESORE")
+                    .FirstOrDefaultAsync();
+
+                if (active == null)
+                {
+                    active = new Faturat
+                    {
+                        DataRegjistrimit = DateTime.Now,
+                        LlojiKalkulimit = "ETIKETA",
+                        StatusiKalkulimit = "false",
+                        NrFatures = "QMIMORE-LISTA-KRYESORE",
+                        StatusiPageses = "E Paguar",
+                        LlojiPageses = "Cash",
+                        PershkrimShtese = "Qmimore Permanent Print Queue",
+                        NrRendorFatures = 999999
+                    };
+                    await _context.Faturat.AddAsync(active);
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok(active);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Gabim gjate krijimit te qmimores", error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("qmimore/shtoProdukt")]
+        public async Task<IActionResult> ShtoProduktQmimore(int idRegjistrimit, int idProduktit)
+        {
+            try
+            {
+                var produkti = await _context.Produkti
+                    .Include(p => p.StokuQmimiProduktit)
+                    .FirstOrDefaultAsync(p => p.ProduktiID == idProduktit);
+
+                if (produkti == null)
+                {
+                    return NotFound(new { message = "Produkti nuk u gjet." });
+                }
+
+                var ekziston = await _context.TeDhenatFaturat
+                    .Where(x => x.IDRegjistrimit == idRegjistrimit && x.IDProduktit == idProduktit)
+                    .FirstOrDefaultAsync();
+
+                if (ekziston != null)
+                {
+                    ekziston.SasiaStokut += 1;
+                    _context.TeDhenatFaturat.Update(ekziston);
+                }
+                else
+                {
+                    decimal qmimiShites = produkti.StokuQmimiProduktit?.QmimiProduktit ?? 0;
+                    decimal qmimiShitesMeShumic = produkti.StokuQmimiProduktit?.QmimiMeShumic ?? 0;
+                    decimal qmimiBleres = produkti.StokuQmimiProduktit?.QmimiBleres ?? 0;
+
+                    var eRe = new TeDhenatFaturat
+                    {
+                        IDRegjistrimit = idRegjistrimit,
+                        IDProduktit = idProduktit,
+                        SasiaStokut = 1,
+                        QmimiBleres = qmimiBleres,
+                        QmimiShites = qmimiShites,
+                        QmimiShitesMeShumic = qmimiShitesMeShumic,
+                        Rabati1 = 0,
+                        Rabati2 = 0,
+                        Rabati3 = 0
+                    };
+                    await _context.TeDhenatFaturat.AddAsync(eRe);
+                }
+
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Gabim gjate shtimit te produktit", error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("qmimore/pastroTabelen")]
+        public async Task<IActionResult> PastroTabelenQmimore(int idRegjistrimit)
+        {
+            try
+            {
+                var teDhenat = await _context.TeDhenatFaturat
+                    .Where(x => x.IDRegjistrimit == idRegjistrimit)
+                    .ToListAsync();
+
+                _context.TeDhenatFaturat.RemoveRange(teDhenat);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Gabim gjate pastrimit te qmimores", error = ex.Message });
             }
         }
     }

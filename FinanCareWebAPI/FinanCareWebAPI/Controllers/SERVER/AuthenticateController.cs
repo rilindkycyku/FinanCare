@@ -511,7 +511,7 @@ namespace FinanCareWebAPI.Controllers.SERVER
                     new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
                 }),
 
-                Expires = DateTime.Now.AddDays(1).AddHours(12),
+                Expires = DateTime.Now.AddHours(18),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
 

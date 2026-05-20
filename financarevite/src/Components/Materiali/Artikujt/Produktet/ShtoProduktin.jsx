@@ -17,6 +17,8 @@ const ShtoProduktin = (props) => {
   const [kontrolloProduktin, setKontrolloProduktin] = useState(false);
   const [konfirmoProduktin, setKonfirmoProduktin] = useState(false);
   const [fushatEZbrazura, setFushatEZbrazura] = useState(false);
+  const [shfaqGabimin, setShfaqGabimin] = useState(false);
+  const [mesazhiGabimit, setMesazhiGabimit] = useState("");
 
   const getToken = localStorage.getItem("token");
 
@@ -84,9 +86,32 @@ const ShtoProduktin = (props) => {
         })
         .catch((error) => {
           console.error(error);
+          let errorMsg = "Ndodhi një gabim gjatë shtimit të produktit.";
+          if (error.response) {
+            if (typeof error.response.data === "string") {
+              errorMsg = error.response.data;
+            } else if (error.response.data && typeof error.response.data === "object") {
+              if (error.response.data.message) {
+                errorMsg = error.response.data.message;
+              } else if (error.response.data.errors) {
+                const errors = error.response.data.errors;
+                errorMsg = Object.keys(errors)
+                  .map((key) => `${key}: ${errors[key].join(", ")}`)
+                  .join("\n");
+              } else if (error.response.data.title) {
+                errorMsg = error.response.data.title;
+              }
+            }
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+          setMesazhiGabimit(errorMsg);
+          setShfaqGabimin(true);
         });
     } catch (err) {
       console.error(err);
+      setMesazhiGabimit("Ndodhi një gabim i papritur.");
+      setShfaqGabimin(true);
     }
   }
 
@@ -95,7 +120,15 @@ const ShtoProduktin = (props) => {
   }
 
   const handleKontrolli = () => {
-    if (isNullOrEmpty(produkti.emriProduktit)) {
+    if (
+      isNullOrEmpty(produkti.emriProduktit) ||
+      isNullOrEmpty(produkti.barkodi) ||
+      isNullOrEmpty(produkti.llojiTVSH) ||
+      isNullOrEmpty(produkti.sasiaShumices) ||
+      produkti.idGrupiProduktit === 0 ||
+      produkti.idPartneri === 0 ||
+      produkti.idNjesiaMatese === 0
+    ) {
       setFushatEZbrazura(true);
     } else {
       if (
@@ -284,6 +317,33 @@ const ShtoProduktin = (props) => {
               className="px-4"
               onClick={() => handleSubmit()}>
               Vazhdo
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+      {shfaqGabimin && (
+        <Modal
+          size="md"
+          show={shfaqGabimin}
+          onHide={() => setShfaqGabimin(false)}
+          className="sp-modal">
+          <Modal.Header closeButton>
+            <Modal.Title className="text-danger">Ndodhi një gabim</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-center py-4">
+            <div className="mb-3 text-danger">
+              <FontAwesomeIcon icon={faXmark} size="3x" />
+            </div>
+            <h5 className="text-white mb-2">Gabim nga Serveri</h5>
+            <p className="text-muted" style={{ whiteSpace: 'pre-line' }}>
+              {mesazhiGabimit}
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              className="btn-cancel w-100"
+              onClick={() => setShfaqGabimin(false)}>
+              Mbylle
             </Button>
           </Modal.Footer>
         </Modal>

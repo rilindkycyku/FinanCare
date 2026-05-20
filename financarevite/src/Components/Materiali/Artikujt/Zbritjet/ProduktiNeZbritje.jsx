@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -11,6 +11,35 @@ import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/Kontr
 
 function ProduktiNeZbritje(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const selectRef = useRef(null);
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      const currentInput = document.getElementById("produktiSelect-input")?.value || "";
+      if (currentInput.trim().length > 0) {
+        let lookupBarcode = currentInput.trim();
+        if (lookupBarcode.startsWith("2") && lookupBarcode.length === 13) {
+          const pluCode = lookupBarcode.substring(0, 7);
+          const matched = allOptions.find(opt => opt.label.includes(pluCode));
+          if (matched) {
+            lookupBarcode = pluCode;
+          }
+        }
+
+        const matches = allOptions.filter(opt => opt.label.toLowerCase().includes(lookupBarcode.toLowerCase()));
+        if (matches.length === 0) {
+          setTipiMesazhit("danger");
+          setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
+          setShfaqMesazhin(true);
+          setInputValue("");
+          setTimeout(() => selectRef.current?.focus(), 10);
+        } else {
+          event.preventDefault();
+          handleChange(matches[0]);
+        }
+      }
+    }
+  };
   const [qmimiBleresProduktit, setQmimiBleresProduktit] = useState(0.0);
   const [qmimiShitesProduktit, setQmimiShitesProduktit] = useState(0.0);
   const [rabati, setRabati] = useState(0.0);
@@ -264,9 +293,11 @@ function ProduktiNeZbritje(props) {
             <Form.Group controlId="idDheEmri">
               <Form.Label>Vlen per</Form.Label>
               <Select
+                ref={selectRef}
                 value={optionsSelected}
                 onChange={handleChange}
                 onInputChange={(val) => setInputValue(val)}
+                onKeyDown={handleKeyDown}
                 options={filteredOptions}
                 isLoading={isLoading}
                 id="produktiSelect"

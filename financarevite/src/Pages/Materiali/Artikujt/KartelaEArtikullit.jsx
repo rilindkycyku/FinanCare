@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 ﻿import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -8,11 +8,13 @@ import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Select from "react-select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function KartelaEArtikullit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const selectRef = useRef(null);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -144,7 +146,7 @@ function KartelaEArtikullit(props) {
       .then((response) => {
         const fetchedoptions = response.data.map((item) => ({
           value: item.produktiID,
-          label: item.emriProduktit,
+          label: `${item.barkodi || "—"} · ${item.emriProduktit}`,
         }));
         setOptions(fetchedoptions);
       })
@@ -155,6 +157,34 @@ function KartelaEArtikullit(props) {
   const handleChange = async (partneri) => {
     setOptionsSelected(partneri);
     setproduktiID(partneri.value);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      const currentInput = document.getElementById("produktiSelect-input")?.value || "";
+      if (currentInput.trim().length > 0) {
+        let lookupBarcode = currentInput.trim();
+        if (lookupBarcode.startsWith("2") && lookupBarcode.length === 13) {
+          const pluCode = lookupBarcode.substring(0, 7);
+          const matched = options.find(opt => opt.label.includes(pluCode));
+          if (matched) {
+            lookupBarcode = pluCode;
+          }
+        }
+
+        const matches = options.filter(opt => opt.label.toLowerCase().includes(lookupBarcode.toLowerCase()));
+        if (matches.length === 0) {
+          setTipiMesazhit("danger");
+          setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
+          setShfaqMesazhin(true);
+          setInputValue("");
+          setTimeout(() => selectRef.current?.focus(), 10);
+        } else {
+          event.preventDefault();
+          handleChange(matches[0]);
+        }
+      }
+    }
   };
 
   const [inputValue, setInputValue] = useState("");
@@ -210,9 +240,11 @@ function KartelaEArtikullit(props) {
                     <Form.Group controlId="idDheEmri">
                       <Form.Label>Produkti</Form.Label>
                       <Select
+                        ref={selectRef}
                         value={optionsSelected}
                         onChange={handleChange}
                         onInputChange={(val) => setInputValue(val)}
+                        onKeyDown={handleKeyDown}
                         options={filteredOptions}
                         id="produktiSelect" // Setting the id attribute
                         inputId="produktiSelect-input" // Setting the input id attribute

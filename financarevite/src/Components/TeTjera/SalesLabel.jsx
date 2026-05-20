@@ -95,6 +95,52 @@ const generatePDF = (storeName, products) => {
   let yPos = margin;
   let count = 0;
 
+  // Helper to get optimal font size for a single line
+  const getOptimalFontSize = (text, maxWidth, maxFontSize, minFontSize) => {
+    const scaleFactor = doc.internal.scaleFactor;
+    let fontSize = maxFontSize;
+    while (fontSize >= minFontSize) {
+      const textWidth = (doc.getStringUnitWidth(text) * fontSize) / scaleFactor;
+      if (textWidth <= maxWidth) {
+        return fontSize;
+      }
+      fontSize -= 0.5;
+    }
+    return minFontSize;
+  };
+
+  // Helper to get optimal font size for multi-line product name
+  const getOptimalFontSizeForName = (text, maxWidth, maxHeight, maxFontSize = 16, minFontSize = 8) => {
+    const scaleFactor = doc.internal.scaleFactor;
+    let fontSize = maxFontSize;
+    while (fontSize >= minFontSize) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(fontSize);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      
+      const totalHeight = lines.length * (fontSize / scaleFactor) * 1.25;
+      if (lines.length <= 2 && totalHeight <= maxHeight) {
+        let fits = true;
+        for (const line of lines) {
+          const lineWidth = (doc.getStringUnitWidth(line) * fontSize) / scaleFactor;
+          if (lineWidth > maxWidth) {
+            fits = false;
+            break;
+          }
+        }
+        if (fits) {
+          return { fontSize, lines };
+        }
+      }
+      fontSize -= 0.5;
+    }
+    
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(minFontSize);
+    const lines = doc.splitTextToSize(text, maxWidth).slice(0, 2);
+    return { fontSize: minFontSize, lines };
+  };
+
   products.forEach((product) => {
     if (count !== 0 && count % (columns * rows) === 0) {
       doc.addPage();
@@ -130,46 +176,52 @@ const generatePDF = (storeName, products) => {
 
     /* ════ LEFT SECTION (75%) ════ */
 
-    /* Store name */
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6);
-    doc.setTextColor(150, 150, 150);
-    doc.text(storeName.toUpperCase(), cx + p, cy + 13);
+    /* Product name — wrapped and scaled dynamically (no store name to save vertical space) */
+    const nameMaxWidth = leftW - p * 2;
+    const nameMaxHeight = 15;
+    const { fontSize: nameFontSize, lines: nameLines } = getOptimalFontSizeForName(
+      product.name,
+      nameMaxWidth,
+      nameMaxHeight,
+      15, // maxFontSize
+      8   // minFontSize
+    );
 
-    /* Product name — up to 2 lines */
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
+    doc.setFontSize(nameFontSize);
     doc.setTextColor(15, 15, 15);
-    const nameLines = doc.splitTextToSize(product.name, leftW - p * 2).slice(0, 2);
-    doc.text(nameLines, cx + p, cy + 19);
+    doc.text(nameLines, cx + p, cy + 15.5);
 
-    /* Separator */
-    const sepY = cy + 19 + (nameLines.length - 1) * 5 + 3.5;
+    /* Separator under name */
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.18);
-    doc.line(cx + p, sepY, cx + leftW - p, sepY);
+    doc.line(cx + p, cy + 30, cx + leftW - p, cy + 30);
 
     /* Old price (strikethrough, red) */
     const oldStr = `${parseFloat(product.normalPrice).toFixed(2)} €`;
+    const oldPriceMaxWidth = leftW - p * 2;
+    const oldFontSize = getOptimalFontSize(oldStr, oldPriceMaxWidth, 32, 16);
+
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(30);
+    doc.setFontSize(oldFontSize);
     doc.setTextColor(180, 20, 20);
-    const oldY = sepY + 9;
-    doc.text(oldStr, cx + p, oldY);
+    doc.text(oldStr, cx + p, cy + 42);
+
+    // Draw strikethrough line dynamically over the text
     const oldW = doc.getTextWidth(oldStr);
     doc.setDrawColor(180, 20, 20);
     doc.setLineWidth(0.9);
-    doc.line(cx + p, oldY, cx + p + oldW, oldY - 6);
+    doc.line(cx + p, cy + 42, cx + p + oldW, cy + 36);
 
-    /* New price — HUGE green, anchored to bottom */
+    /* New price — HUGE green, scaled dynamically */
+    const newStr = `${parseFloat(product.salePrice).toFixed(2)} €`;
+    const newPriceMaxWidth = leftW - p * 2;
+    const newFontSize = getOptimalFontSize(newStr, newPriceMaxWidth, 62, 28);
+
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(60);
+    doc.setFontSize(newFontSize);
     doc.setTextColor(5, 130, 55);
-    doc.text(
-      `${parseFloat(product.salePrice).toFixed(2)} €`,
-      cx + p,
-      cy + lh - p - 3
-    );
+    doc.text(newStr, cx + p, cy + lh - p - 3);
 
     /* ════ RIGHT SECTION (25%) ════ */
     const rx = cx + leftW;
@@ -181,12 +233,16 @@ const generatePDF = (storeName, products) => {
     doc.setTextColor(140, 140, 140);
     doc.text("ZBRITJE", rcx, cy + 15, { align: "center" });
 
-    /* Discount % — large red */
+    /* Discount % — large red, scaled dynamically */
     const discount = pct(product.normalPrice, product.salePrice);
+    const discountStr = `-${discount}%`;
+    const discountMaxWidth = rightW - 4;
+    const discountFontSize = getOptimalFontSize(discountStr, discountMaxWidth, 20, 11);
+
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
+    doc.setFontSize(discountFontSize);
     doc.setTextColor(200, 15, 15);
-    doc.text(`-${discount}%`, rcx, cy + 26, { align: "center" });
+    doc.text(discountStr, rcx, cy + 26, { align: "center" });
 
     /* Separator */
     doc.setDrawColor(220, 220, 220);
@@ -208,16 +264,16 @@ const generatePDF = (storeName, products) => {
         });
         const imgData = canvas.toDataURL("image/png");
         const bcW = rightW - 4;  // fill available width
-        const bcH = 14;
+        const bcH = 23;
         const bcX = rx + 2;
-        const bcY = cy + 31;
+        const bcY = cy + 33;
         doc.addImage(imgData, "PNG", bcX, bcY, bcW, bcH);
 
         // Barcode digits
-        doc.setFont("courier", "normal");
-        doc.setFontSize(5);
+        doc.setFont("courier", "bold");
+        doc.setFontSize(6);
         doc.setTextColor(50, 50, 50);
-        doc.text(barcodeVal, rcx, cy + 31 + bcH + 2.5, { align: "center" });
+        doc.text(barcodeVal, rcx, cy + lh - p - 3, { align: "center" });
       } catch { /* skip */ }
     }
 

@@ -1,16 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import "../../../../Pages/Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
+
   faPlus,
   faPenToSquare,
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
-import {
+import {
+
   Form,
   Container,
   Row,
@@ -23,7 +25,8 @@ import {
 import Select from "react-select";
 import Tabela from "../../../TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 
 function RegjistroFaturen(props) {
@@ -482,6 +485,24 @@ function RegjistroFaturen(props) {
     return () => { active = false; };
   }, [API_BASE_URL, authentikimi]);
 
+  const selectRef = useRef(null);
+
+  const handleKaloTekSasia = (event) => {
+    if (event.key === "Enter") {
+      const currentInput = document.getElementById("produktiSelect-input")?.value || "";
+      if (filteredOptions.length === 0 && currentInput.trim().length > 0) {
+        setTipiMesazhit("danger");
+        setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
+        setShfaqMesazhin(true);
+        setInputValue(""); 
+        setTimeout(() => selectRef.current?.focus(), 10);
+      } else if (filteredOptions.length > 0) {
+        event.preventDefault();
+        handleChange(filteredOptions[0]);
+      }
+    }
+  };
+
   const handleChange = async (partneri) => {
     setOptionsSelected(partneri);
     document.getElementById("sasia").focus();
@@ -579,6 +600,8 @@ function RegjistroFaturen(props) {
                             Produkti
                           </Form.Label>
                           <Select
+                            ref={selectRef}
+                            onKeyDown={handleKaloTekSasia}
                             value={optionsSelected}
                             onChange={handleChange}
                             options={filteredOptions}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 ﻿import "../../../../Pages/Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -658,6 +658,24 @@ function RegjistroFaturen(props) {
       });
   }, []);
 
+  const selectRef = useRef(null);
+
+  const handleKaloTekSasia = (event) => {
+    if (event.key === "Enter") {
+      const currentInput = document.getElementById("produktiSelect-input")?.value || "";
+      if (filteredOptions.length === 0 && currentInput.trim().length > 0) {
+        setTipiMesazhit("danger");
+        setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
+        setShfaqMesazhin(true);
+        setInputValue(""); 
+        setTimeout(() => selectRef.current?.focus(), 10);
+      } else if (filteredOptions.length > 0) {
+        event.preventDefault();
+        handleChange(filteredOptions[0]);
+      }
+    }
+  };
+
   const handleChange = async (partneri) => {
     if (partneri.item.qmimiProduktit <= 0) {
       setPershkrimiMesazhit(
@@ -850,6 +868,8 @@ function RegjistroFaturen(props) {
                             Produkti
                           </Form.Label>
                           <Select
+                            ref={selectRef}
+                            onKeyDown={handleKaloTekSasia}
                             value={optionsSelected}
                             onChange={handleChange}
                             options={filteredOptions}
