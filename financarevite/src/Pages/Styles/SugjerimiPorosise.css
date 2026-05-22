@@ -94,7 +94,7 @@
   margin-bottom: 1.5rem;
 }
 
-.sp-controls > * { flex: 1 1 260px; }
+.sp-controls > * { flex: 1 1 200px; }
 
 /* React-Select dark override */
 .sp-select__control {
@@ -319,7 +319,8 @@
 }
 
 .sp-vtable-wrap {
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Shared cell base */

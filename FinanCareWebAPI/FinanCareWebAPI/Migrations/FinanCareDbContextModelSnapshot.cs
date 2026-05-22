@@ -52,7 +52,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("StafiId");
 
-                    b.ToTable("AdminLogs");
+                    b.ToTable("AdminLogs", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.AfatetESkadimit", b =>
@@ -81,7 +81,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("StafiID");
 
-                    b.ToTable("AfatetESkadimit");
+                    b.ToTable("AfatetESkadimit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Bankat", b =>
@@ -103,7 +103,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasKey("BankaID");
 
-                    b.ToTable("Bankat");
+                    b.ToTable("Bankat", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.BarazoArken", b =>
@@ -159,7 +159,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("IDPersoniPergjegjes");
 
-                    b.ToTable("BarazoArken");
+                    b.ToTable("BarazoArken", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.DitaFurnizimit", b =>
@@ -180,7 +180,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("IDPartneri");
 
-                    b.ToTable("DitaFurnizimit");
+                    b.ToTable("DitaFurnizimit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Faturat", b =>
@@ -247,7 +247,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("StafiID");
 
-                    b.ToTable("Faturat");
+                    b.ToTable("Faturat", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.GrupiProduktit", b =>
@@ -267,7 +267,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasKey("IDGrupiProduktit");
 
-                    b.ToTable("GrupiProduktit");
+                    b.ToTable("GrupiProduktit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.HistoriaZbritjeveProduktit", b =>
@@ -294,7 +294,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("ProduktiID");
 
-                    b.ToTable("HistoriaZbritjeveProduktit");
+                    b.ToTable("HistoriaZbritjeveProduktit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Kartelat", b =>
@@ -333,7 +333,7 @@ namespace FinanCareWebAPI.Migrations
                         .IsUnique()
                         .HasFilter("[StafiID] IS NOT NULL");
 
-                    b.ToTable("Kartelat");
+                    b.ToTable("Kartelat", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.LlogaritEBiznesit", b =>
@@ -360,7 +360,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("BankaID");
 
-                    b.ToTable("LlogaritEBiznesit");
+                    b.ToTable("LlogaritEBiznesit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.NjesiaMatese", b =>
@@ -379,7 +379,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasKey("IDNjesiaMatese");
 
-                    b.ToTable("NjesiaMatese");
+                    b.ToTable("NjesiaMatese", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Partneri", b =>
@@ -428,7 +428,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasKey("IDPartneri");
 
-                    b.ToTable("Partneri");
+                    b.ToTable("Partneri", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Perdoruesi", b =>
@@ -449,6 +449,9 @@ namespace FinanCareWebAPI.Migrations
                     b.Property<string>("Emri")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsSuperAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Mbiemri")
                         .HasColumnType("nvarchar(max)");
 
@@ -459,7 +462,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("AspNetUserID");
 
-                    b.ToTable("Perdoruesi");
+                    b.ToTable("Perdoruesi", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.Produkti", b =>
@@ -511,7 +514,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("IDPartneri");
 
-                    b.ToTable("Produkti");
+                    b.ToTable("Produkti", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.StokuQmimiProduktit", b =>
@@ -539,7 +542,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasKey("ProduktiID");
 
-                    b.ToTable("StokuQmimiProduktit");
+                    b.ToTable("StokuQmimiProduktit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.TeDhenatBiznesit", b =>
@@ -582,7 +585,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasKey("IDTeDhenatBiznesit");
 
-                    b.ToTable("TeDhenatBiznesit");
+                    b.ToTable("TeDhenatBiznesit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.TeDhenatFaturat", b =>
@@ -626,7 +629,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("IDRegjistrimit");
 
-                    b.ToTable("TeDhenatFaturat");
+                    b.ToTable("TeDhenatFaturat", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.TeDhenatPerdoruesit", b =>
@@ -680,7 +683,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasIndex("BankaID");
 
-                    b.ToTable("TeDhenatPerdoruesit");
+                    b.ToTable("TeDhenatPerdoruesit", (string)null);
                 });
 
             modelBuilder.Entity("FinanCareWebAPI.Models.ZbritjaQmimitProduktit", b =>
@@ -699,7 +702,7 @@ namespace FinanCareWebAPI.Migrations
 
                     b.HasKey("ProduktiID");
 
-                    b.ToTable("ZbritjaQmimitProduktit");
+                    b.ToTable("ZbritjaQmimitProduktit", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

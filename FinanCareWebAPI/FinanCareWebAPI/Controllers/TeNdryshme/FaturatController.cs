@@ -36,30 +36,61 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [Authorize]
         [HttpGet]
         [Route("shfaqRegjistrimet")]
-        public async Task<IActionResult> Get(DateTime? dataFillim = null, DateTime? dataMbarim = null)
+        public async Task<IActionResult> Get(string? dataFillim = null, string? dataMbarim = null)
         {
-            // If no dates provided, show today only
-            if (dataFillim == null && dataMbarim == null)
+            DateTime? parsedFillim = null;
+            DateTime? parsedMbarim = null;
+
+            if (!string.IsNullOrEmpty(dataFillim))
             {
-                dataFillim = DateTime.Today;
-                dataMbarim = DateTime.Today.AddDays(1);
-            }
-            // If only dataFillim provided, set dataMbarim to next day
-            else if (dataMbarim == null)
-            {
-                dataMbarim = dataFillim?.AddDays(1);
+                if (DateTime.TryParse(dataFillim, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var f))
+                {
+                    parsedFillim = f;
+                }
+                else if (DateTime.TryParse(dataFillim, out var fLocal))
+                {
+                    parsedFillim = fLocal;
+                }
             }
 
-            // Convert to nullable DateTime for comparison
-            DateTime startDate = dataFillim.Value.Date;
-            DateTime endDate = dataMbarim.Value.Date.AddDays(1); // Include entire end date
+            if (!string.IsNullOrEmpty(dataMbarim))
+            {
+                if (DateTime.TryParse(dataMbarim, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var m))
+                {
+                    parsedMbarim = m;
+                }
+                else if (DateTime.TryParse(dataMbarim, out var mLocal))
+                {
+                    parsedMbarim = mLocal;
+                }
+            }
+
+            // If no dates provided, show today only
+            if (parsedFillim == null && parsedMbarim == null)
+            {
+                parsedFillim = DateTime.Today;
+                parsedMbarim = DateTime.Today.AddDays(1);
+            }
+            // If only dataFillim provided, set dataMbarim to next day
+            else if (parsedMbarim == null)
+            {
+                parsedMbarim = parsedFillim?.AddDays(1);
+            }
+            // If only dataMbarim provided, set dataFillim to previous day
+            else if (parsedFillim == null)
+            {
+                parsedFillim = parsedMbarim?.AddDays(-1);
+            }
+
+            // Convert to non-nullable DateTime for comparison
+            DateTime startDate = parsedFillim.Value.Date;
+            DateTime endDate = parsedMbarim.Value.Date.AddDays(1); // Include entire end date
 
             var regjistrimet = await _context.Faturat
                 .Include(x => x.BonusKartela)
                 .ThenInclude(x => x.Partneri)
-                .Where(x => x.DataRegjistrimit.HasValue &&
-                            x.DataRegjistrimit.Value.Date >= startDate &&
-                            x.DataRegjistrimit.Value.Date < endDate)
+                .Where(x => x.DataRegjistrimit >= startDate &&
+                            x.DataRegjistrimit < endDate)
                 .OrderByDescending(x => x.IDRegjistrimit)
                 .Select(x => new
                 {
@@ -68,10 +99,10 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                     x.TVSH,
                     x.DataRegjistrimit,
                     x.StafiID,
-                    x.Stafi.Username,
+                    Username = x.Stafi != null ? x.Stafi.Username : null,
                     x.NrFatures,
-                    x.Partneri.EmriBiznesit,
-                    x.Partneri.IDPartneri,
+                    EmriBiznesit = x.Partneri != null ? x.Partneri.EmriBiznesit : null,
+                    IDPartneri = x.IDPartneri,
                     x.LlojiKalkulimit,
                     x.LlojiPageses,
                     x.StatusiPageses,
@@ -92,29 +123,61 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [Authorize]
         [HttpGet]
         [Route("shfaqRegjistrimetSipasStatusit")]
-        public async Task<IActionResult> GetByStatusi(string statusi, DateTime? dataFillim = null, DateTime? dataMbarim = null)
+        public async Task<IActionResult> GetByStatusi(string statusi, string? dataFillim = null, string? dataMbarim = null)
         {
-            // If no dates provided, show today only
-            if (dataFillim == null && dataMbarim == null)
+            DateTime? parsedFillim = null;
+            DateTime? parsedMbarim = null;
+
+            if (!string.IsNullOrEmpty(dataFillim))
             {
-                dataFillim = DateTime.Today;
-                dataMbarim = DateTime.Today.AddDays(1);
-            }
-            // If only dataFillim provided, set dataMbarim to next day
-            else if (dataMbarim == null)
-            {
-                dataMbarim = dataFillim?.AddDays(1);
+                if (DateTime.TryParse(dataFillim, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var f))
+                {
+                    parsedFillim = f;
+                }
+                else if (DateTime.TryParse(dataFillim, out var fLocal))
+                {
+                    parsedFillim = fLocal;
+                }
             }
 
-            // Convert to nullable DateTime for comparison
-            DateTime startDate = dataFillim.Value.Date;
-            DateTime endDate = dataMbarim.Value.Date.AddDays(1); // Include entire end date
+            if (!string.IsNullOrEmpty(dataMbarim))
+            {
+                if (DateTime.TryParse(dataMbarim, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var m))
+                {
+                    parsedMbarim = m;
+                }
+                else if (DateTime.TryParse(dataMbarim, out var mLocal))
+                {
+                    parsedMbarim = mLocal;
+                }
+            }
+
+            // If no dates provided, show today only
+            if (parsedFillim == null && parsedMbarim == null)
+            {
+                parsedFillim = DateTime.Today;
+                parsedMbarim = DateTime.Today.AddDays(1);
+            }
+            // If only dataFillim provided, set dataMbarim to next day
+            else if (parsedMbarim == null)
+            {
+                parsedMbarim = parsedFillim?.AddDays(1);
+            }
+            // If only dataMbarim provided, set dataFillim to previous day
+            else if (parsedFillim == null)
+            {
+                parsedFillim = parsedMbarim?.AddDays(-1);
+            }
+
+            // Convert to non-nullable DateTime for comparison
+            DateTime startDate = parsedFillim.Value.Date;
+            DateTime endDate = parsedMbarim.Value.Date.AddDays(1); // Include entire end date
             var regjistrimet = await _context.Faturat
                 .Include(x => x.BonusKartela)
                 .ThenInclude(x => x.Partneri)
-                .Where(x => x.StatusiKalkulimit == statusi && (x.DataRegjistrimit.HasValue &&
-                    x.DataRegjistrimit.Value.Date >= startDate &&
-                    x.DataRegjistrimit.Value.Date < endDate))
+                .Where(x => x.StatusiKalkulimit == statusi && 
+                            x.DataRegjistrimit >= startDate && 
+                            x.DataRegjistrimit < endDate)
                 .OrderByDescending(x => x.IDRegjistrimit)
                 .Select(x => new
                 {
@@ -123,10 +186,10 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                     x.TVSH,
                     x.DataRegjistrimit,
                     x.StafiID,
-                    x.Stafi.Username,
+                    Username = x.Stafi != null ? x.Stafi.Username : null,
                     x.NrFatures,
-                    x.Partneri.IDPartneri,
-                    x.Partneri.EmriBiznesit,
+                    IDPartneri = x.IDPartneri,
+                    EmriBiznesit = x.Partneri != null ? x.Partneri.EmriBiznesit : null,
                     x.LlojiKalkulimit,
                     x.LlojiPageses,
                     x.StatusiPageses,
@@ -346,29 +409,65 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [AllowAnonymous]
         [HttpGet]
         [Route("shfaqRegjistrimetNgaProdukti")]
-        public async Task<IActionResult> ShfaqRegjistrimetNgaProdukti(int id, int partneriID, DateTime? dataFillim = null, DateTime? dataMbarim = null)
+        public async Task<IActionResult> ShfaqRegjistrimetNgaProdukti(int id, int partneriID, string? dataFillim = null, string? dataMbarim = null)
         {
-            // If no dates provided, show today only
-            if (dataFillim == null && dataMbarim == null)
+            DateTime? parsedFillim = null;
+            DateTime? parsedMbarim = null;
+
+            if (!string.IsNullOrEmpty(dataFillim))
             {
-                dataFillim = DateTime.Today;
-                dataMbarim = DateTime.Today.AddDays(1);
-            }
-            // If only dataFillim provided, set dataMbarim to next day
-            else if (dataMbarim == null)
-            {
-                dataMbarim = dataFillim?.AddDays(1);
+                if (DateTime.TryParse(dataFillim, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var f))
+                {
+                    parsedFillim = f;
+                }
+                else if (DateTime.TryParse(dataFillim, out var fLocal))
+                {
+                    parsedFillim = fLocal;
+                }
             }
 
+            if (!string.IsNullOrEmpty(dataMbarim))
+            {
+                if (DateTime.TryParse(dataMbarim, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var m))
+                {
+                    parsedMbarim = m;
+                }
+                else if (DateTime.TryParse(dataMbarim, out var mLocal))
+                {
+                    parsedMbarim = mLocal;
+                }
+            }
+
+            // If no dates provided, show today only
+            if (parsedFillim == null && parsedMbarim == null)
+            {
+                parsedFillim = DateTime.Today;
+                parsedMbarim = DateTime.Today.AddDays(1);
+            }
+            // If only dataFillim provided, set dataMbarim to next day
+            else if (parsedMbarim == null)
+            {
+                parsedMbarim = parsedFillim?.AddDays(1);
+            }
+            // If only dataMbarim provided, set dataFillim to previous day
+            else if (parsedFillim == null)
+            {
+                parsedFillim = parsedMbarim?.AddDays(-1);
+            }
+
+
+            // Convert to non-nullable DateTime for comparison
+            DateTime startDate = parsedFillim.Value.Date;
+            DateTime endDate = parsedMbarim.Value.Date.AddDays(1); // Include entire end date
 
             // Fetch invoice data based on IDProduktit
             var regjistrimet = await _context.TeDhenatFaturat
                 .Include(x => x.Faturat)
                 .ThenInclude(x => x.BonusKartela)
                 .ThenInclude(x => x.Partneri)
-                .Where(x => x.IDProduktit == id && x.Faturat.IDPartneri == partneriID && (x.Faturat.DataRegjistrimit.HasValue &&
-                    x.Faturat.DataRegjistrimit.Value.Date >= dataFillim &&
-                    x.Faturat.DataRegjistrimit.Value.Date < dataMbarim))
+                .Where(x => x.IDProduktit == id && x.Faturat.IDPartneri == partneriID && 
+                            x.Faturat.DataRegjistrimit >= startDate &&
+                            x.Faturat.DataRegjistrimit < endDate)
                 .Select(x => new
                 {
                     IDRegjistrimit = x.Faturat.IDRegjistrimit,
@@ -562,8 +661,11 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [Route("ShfaqNumrinRendorFatures")]
         public async Task<IActionResult> ShfaqNumrinRendorFatures(int stafiID)
         {
-            var kaFatTeHapura = await _context.Faturat.Where(x => x.DataRegjistrimit.Value.Date == DateTime.Today && x.StafiID == stafiID && x.LlojiKalkulimit == "PARAGON" && x.StatusiKalkulimit == "false").FirstOrDefaultAsync();
-            var nrFat = await _context.Faturat.Where(x => x.DataRegjistrimit.Value.Date == DateTime.Today && x.StafiID == stafiID && x.LlojiKalkulimit == "PARAGON").CountAsync();
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+
+            var kaFatTeHapura = await _context.Faturat.Where(x => x.DataRegjistrimit >= today && x.DataRegjistrimit < tomorrow && x.StafiID == stafiID && x.LlojiKalkulimit == "PARAGON" && x.StatusiKalkulimit == "false").FirstOrDefaultAsync();
+            var nrFat = await _context.Faturat.Where(x => x.DataRegjistrimit >= today && x.DataRegjistrimit < tomorrow && x.StafiID == stafiID && x.LlojiKalkulimit == "PARAGON").CountAsync();
 
             string datePart = DateTime.Today.ToString("ddMMyy");
             string nrFatures = $"{datePart}-{stafiID}-{nrFat + 1}";
@@ -595,8 +697,12 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [Route("ShfaqFaturatEHapura")]
         public async Task<IActionResult> ShfaqFaturatEHapura(int stafiID)
         {
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+
             var openInvoices = await _context.Faturat
-                .Where(x => x.DataRegjistrimit.Value.Date == DateTime.Today
+                .Where(x => x.DataRegjistrimit >= today
+                            && x.DataRegjistrimit < tomorrow
                             && x.StafiID == stafiID
                             && x.LlojiKalkulimit == "PARAGON"
                             && x.StatusiKalkulimit == "false")
@@ -811,6 +917,15 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
         [Route("ruajKalkulimin/teDhenat")]
         public async Task<IActionResult> Post(TeDhenatFaturat teDhenat)
         {
+            if (teDhenat.IDProduktit.HasValue && (teDhenat.QmimiBleres == null || teDhenat.QmimiBleres == 0))
+            {
+                var stoku = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(s => s.ProduktiID == teDhenat.IDProduktit);
+                if (stoku != null)
+                {
+                    teDhenat.QmimiBleres = stoku.QmimiBleres ?? 0;
+                }
+            }
+
             await _context.TeDhenatFaturat.AddAsync(teDhenat);
             await _context.SaveChangesAsync();
 
@@ -858,7 +973,20 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             }
 
             produkti.SasiaStokut = teDhenat.SasiaStokut;
-            produkti.QmimiBleres = teDhenat.QmimiBleres;
+            
+            if (teDhenat.QmimiBleres.HasValue && teDhenat.QmimiBleres.Value != 0)
+            {
+                produkti.QmimiBleres = teDhenat.QmimiBleres;
+            }
+            else if (produkti.QmimiBleres == null || produkti.QmimiBleres == 0)
+            {
+                var stoku = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(s => s.ProduktiID == produkti.IDProduktit);
+                if (stoku != null)
+                {
+                    produkti.QmimiBleres = stoku.QmimiBleres ?? 0;
+                }
+            }
+
             produkti.QmimiShites = teDhenat.QmimiShites;
             produkti.QmimiShitesMeShumic = teDhenat.QmimiShitesMeShumic;
             produkti.Rabati2 = teDhenat.Rabati2;
@@ -1212,6 +1340,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             return Ok();
         }
 
+
         [Authorize]
         [HttpDelete]
         [Route("ruajKalkulimin/FshijTeDhenat")]
@@ -1332,6 +1461,8 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                     return NotFound(new { message = "Produkti nuk u gjet" });
                 }
 
+                var stokuProduktit = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(sp => sp.ProduktiID == dto.IDProdukti);
+
                 var teDhenat = new TeDhenatFaturat
                 {
                     IDRegjistrimit = dto.IDFatura,
@@ -1339,9 +1470,8 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                     SasiaStokut = dto.Sasia ?? 0,
                     QmimiShites = dto.Qmimi ?? 0,
                     Rabati1 = dto.Rabati ?? 0,
+                    QmimiBleres = stokuProduktit?.QmimiBleres ?? 0,
                 };
-
-                var stokuProduktit = await _context.StokuQmimiProduktit.FirstOrDefaultAsync(sp => sp.ProduktiID == dto.IDProdukti);
 
                 if (stokuProduktit != null)
                 {

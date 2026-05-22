@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,6 +20,9 @@ public partial class Perdoruesi
     public string? Username { get; set; }
 
     public string AspNetUserID { get; set; }
+
+    /// <summary>Superadmin i fshehur i sistemit - nuk shfaqet ne listen e perdoruesve</summary>
+    public bool IsSuperAdmin { get; set; } = false;
 
     [ForeignKey("AspNetUserID")]
     public IdentityUser? AspNetUser { get; set; }

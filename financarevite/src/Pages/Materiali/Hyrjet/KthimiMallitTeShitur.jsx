@@ -20,6 +20,7 @@ import EditoDetajetFatures from "../../../Components/Materiali/Hyrjet/KthimiMall
 
 function KalkulimiIMallit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -179,6 +180,9 @@ function KalkulimiIMallit(props) {
   };
 
   async function handleRegjistroKalkulimin() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
     try {
       await axios
         .post(
@@ -209,6 +213,10 @@ function KalkulimiIMallit(props) {
         });
     } catch (error) {
       console.error(error);
+    }
+  
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -366,7 +374,7 @@ function KalkulimiIMallit(props) {
                     <br />
                     <Button
                       className="mb-3 Butoni"
-                      onClick={() => handleRegjistroKalkulimin()}>
+                      disabled={isSubmitting} onClick={() => handleRegjistroKalkulimin()}>
                       Regjistro <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Col>

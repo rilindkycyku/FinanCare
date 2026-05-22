@@ -12,8 +12,22 @@ const BartTeDhenat = () => {
   const [logs, setLogs] = useState([]);
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [hoveredBtn, setHoveredBtn] = useState(null);
 
   const logRef = useRef(null);
+
+  const handleDownload = (filename, payload) => {
+    if (!payload) return;
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const addLog = (msg, delay = 300) => {
     return new Promise((resolve) => {
@@ -59,21 +73,72 @@ const BartTeDhenat = () => {
     fetchData();
   }, [API_BASE_URL]);
 
-  const renderCard = (title, info) => (
-    <Card className="sp-card mb-3 text-center h-100 border-0">
-      <Card.Body className="d-flex flex-column align-items-center justify-content-center p-4">
-        <Card.Title className="text-emerald fw-bold mb-3">{title}</Card.Title>
-        <Card.Text className="text-soft small">
-          <span className="h4 d-block text-white fw-900 mb-2">{info?.total ?? "0"}</span>
-          <span className="opacity-75">Items Transferred</span>
-        </Card.Text>
-        <hr className="w-50 opacity-10 my-3" />
-        <div className="text-muted extra-small">
-          {info?.generatedAt ? new Date(info.generatedAt).toLocaleDateString() : "-"}
-        </div>
-      </Card.Body>
-    </Card>
-  );
+  const renderCard = (title, info, filename) => {
+    const hasData = !!info?.data;
+
+    return (
+      <Card className="sp-card mb-3 text-center h-100 border-0" style={{ transition: "all 0.3s ease" }}>
+        <Card.Body className="d-flex flex-column align-items-center justify-content-center p-4">
+          <Card.Title className="text-emerald fw-bold mb-3">{title}</Card.Title>
+          <Card.Text className="text-soft small">
+            <span className="h4 d-block text-white fw-900 mb-2">
+              {filename === "business.json" && info?.success ? "1" : (info?.total ?? "0")}
+            </span>
+            <span className="opacity-75">
+              {filename === "business.json" ? "Biznes i sinkronizuar" : "Items Transferred"}
+            </span>
+          </Card.Text>
+          <hr className="w-50 opacity-10 my-3" />
+          <div className="text-muted extra-small mb-3">
+            {info?.generatedAt ? new Date(info.generatedAt).toLocaleDateString() : "-"}
+          </div>
+          <button
+            onClick={() => handleDownload(filename, info?.data)}
+            disabled={!hasData}
+            onMouseEnter={() => hasData && setHoveredBtn(filename)}
+            onMouseLeave={() => setHoveredBtn(null)}
+            style={{
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              fontSize: "0.85rem",
+              fontWeight: "600",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              background: hasData 
+                ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" 
+                : "rgba(255,255,255,0.05)",
+              color: hasData ? "#fff" : "rgba(255,255,255,0.3)",
+              border: hasData ? "1px solid rgba(16,185,129,0.3)" : "1px solid rgba(255,255,255,0.05)",
+              boxShadow: hoveredBtn === filename && hasData 
+                ? "0 8px 20px rgba(16,185,129,0.4)" 
+                : hasData 
+                ? "0 4px 10px rgba(16,185,129,0.15)" 
+                : "none",
+              transform: hoveredBtn === filename && hasData ? "scale(1.03) translateY(-1px)" : "scale(1)",
+              cursor: hasData ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              width: "100%"
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-download"
+              viewBox="0 0 16 16"
+            >
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            {hasData ? "Shkarko JSON" : "S'ka të dhëna"}
+          </button>
+        </Card.Body>
+      </Card>
+    );
+  };
 
   return (
     <>
@@ -119,10 +184,10 @@ const BartTeDhenat = () => {
 
         {/* CARDS */}
         <Row className="g-4">
-          <Col md={3}>{renderCard("Produktet", data.products)}</Col>
-          <Col md={3}>{renderCard("Përdoruesit", data.users)}</Col>
-          <Col md={3}>{renderCard("Kategoritë", data.categories)}</Col>
-          <Col md={3}>{renderCard("Biznesi", data.business)}</Col>
+          <Col md={3}>{renderCard("Produktet", data.products, "products.json")}</Col>
+          <Col md={3}>{renderCard("Përdoruesit", data.users, "users.json")}</Col>
+          <Col md={3}>{renderCard("Kategoritë", data.categories, "categories.json")}</Col>
+          <Col md={3}>{renderCard("Biznesi", data.business, "business.json")}</Col>
         </Row>
       </div>
     </>

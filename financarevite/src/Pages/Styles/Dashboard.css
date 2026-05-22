@@ -74,58 +74,59 @@
 /* Quick Actions Grid */
 .quick-actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 3.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.15rem;
+  margin-bottom: 2.5rem;
 }
 
 .quick-action-card {
   background: var(--sp-surface-2);
-  border-radius: 18px;
-  padding: 1.5rem 1rem;
-  text-align: center;
+  border-radius: 14px;
+  padding: 0.95rem 1.35rem;
+  text-align: left;
   transition: all 0.2s ease;
   cursor: pointer;
   text-decoration: none !important;
   color: var(--sp-text-soft);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   border: 1px solid var(--sp-border);
   height: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: flex-start;
+  gap: 1.15rem;
 }
 
 .quick-action-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   border-color: var(--sp-emerald);
   color: var(--sp-emerald);
   background: var(--sp-surface-3);
-  box-shadow: 0 10px 20px var(--sp-emerald-glow);
+  box-shadow: 0 6px 18px var(--sp-emerald-glow);
 }
 
 .quick-action-card .icon-wrapper {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   background: var(--sp-surface-3);
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--sp-emerald);
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .quick-action-card:hover .icon-wrapper {
   background: var(--sp-emerald);
   color: white;
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .quick-action-card span {
-  font-size: 0.8rem !important;
+  font-size: 1.08rem !important;
   font-weight: 800;
   line-height: 1.2;
 }
@@ -236,6 +237,48 @@
   }
 
   .quick-actions-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 }
+
+@media (max-width: 480px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-action-card {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Categorized Shortcuts Title & Bullets */
+.category-subtitle {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--sp-text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 1.75rem;
+  margin-bottom: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sp-emerald);
+  box-shadow: 0 0 10px var(--sp-emerald);
+  display: inline-block;
+}
+
+/* Expand Dashboard Container on Desktop Viewports to 90% width */
+@media (min-width: 1200px) {
+  .dashboard-wrapper .container {
+    max-width: 90% !important;
+  }
+}
+
+

@@ -144,6 +144,20 @@
   .kpi-value {
     font-size: 1.5rem;
   }
+
+  .chart-container-modern {
+    padding: 1rem;
+  }
+
+  .subtab-pill {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+  }
+
+  .custom-tabs .nav-tabs {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
 }
 
 /* ── Sub-tab Pills ───────────────────────────────────────────────────── */
@@ -154,6 +168,7 @@
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   padding: 4px;
+  flex-wrap: wrap;
 }
 
 .subtab-pill {

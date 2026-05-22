@@ -590,16 +590,14 @@
             "name": "dataFillim",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           },
           {
             "name": "dataMbarim",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           }
         ],
@@ -627,16 +625,14 @@
             "name": "dataFillim",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           },
           {
             "name": "dataMbarim",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           }
         ],
@@ -695,16 +691,14 @@
             "name": "dataFillim",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           },
           {
             "name": "dataMbarim",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           }
         ],
@@ -3914,6 +3908,9 @@
           "aspNetUserID": {
             "type": "string",
             "nullable": true
+          },
+          "isSuperAdmin": {
+            "type": "boolean"
           },
           "aspNetUser": {
             "$ref": "#/components/schemas/IdentityUser"

@@ -47,6 +47,7 @@ import BartTeDhenat from "./Pages/BartTeDhenat";
 import PranimiIMallit from "./Pages/Materiali/Hyrjet/PranimiIMallit";
 import PorositeOnline from "./Pages/Materiali/Shitjet/PorositeOnline";
 import Gjurmimet from "./Pages/Gjurmimi";
+import ListaFaturave from "./Pages/Gjenerale/ListaFaturave";
 
 function App() {
   useEffect(() => {
@@ -115,6 +116,7 @@ function App() {
         <Route path="/PranimiIMallit" element={<PranimiIMallit/>} />
         <Route path="/PorositeOnline" element={<PorositeOnline/>} />
         <Route path="/Gjurmimi" element={<Gjurmimet />} />
+        <Route path="/ListaFaturave" element={<ListaFaturave />} />
 
         <Route path="/403" element={<NukKeniAkses />} />
         <Route path="/404" element={<NukUGjet />} />

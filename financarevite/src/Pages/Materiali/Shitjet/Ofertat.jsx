@@ -22,6 +22,7 @@ import EditoDetajetFatures from "../../../Components/Materiali/Shitjet/Ofertat/E
 
 function Ofertat(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -160,6 +161,9 @@ function Ofertat(props) {
   };
 
   async function handleRegjistroKalkulimin() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
     try {
       await axios
         .post(
@@ -191,6 +195,10 @@ function Ofertat(props) {
         });
     } catch (error) {
       console.error(error);
+    }
+  
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -443,7 +451,7 @@ function Ofertat(props) {
                     className="mb-3 d-flex align-items-end">
                     <Button
                       className="Butoni w-100 mb-3"
-                      onClick={() => handleRegjistroKalkulimin()}
+                      disabled={isSubmitting} onClick={() => handleRegjistroKalkulimin()}
                       style={{ padding: "12px", fontSize: "18px" }}>
                       Regjistro <FontAwesomeIcon icon={faPlus} />
                     </Button>

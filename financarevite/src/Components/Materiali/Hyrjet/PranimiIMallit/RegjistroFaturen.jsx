@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-﻿import "../../../../Pages/Styles/DizajniPergjithshem.css"; // Fixed import for plain CSS
+import "../../../../Pages/Styles/DizajniPergjithshem.css"; // Fixed import for plain CSS
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
@@ -157,8 +157,8 @@ function RegjistroFaturen(props) {
               {
                 dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
                 stafiID: r.data.regjistrimet.stafiID,
-                totaliPaTVSH: parseFloat(r.data.totaliPaTVSH),
-                tvsh: parseFloat(r.data.totaliMeTVSH - r.data.totaliPaTVSH),
+                totaliPaTVSH: parseFloat(r.data.regjistrimet.totaliPaTVSH),
+                tvsh: parseFloat(r.data.regjistrimet.tvsh),
                 idPartneri: r.data.regjistrimet.idPartneri,
                 statusiPageses: r.data.regjistrimet.statusiPageses,
                 llojiPageses: r.data.regjistrimet.llojiPageses,
@@ -247,7 +247,7 @@ function RegjistroFaturen(props) {
         setTipiMesazhit("danger");
         setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
         setShfaqMesazhin(true);
-        setInputValue(""); 
+        setInputValue("");
         setTimeout(() => selectRef.current?.focus(), 10);
       } else if (filteredOptions.length > 0) {
         event.preventDefault();
@@ -339,7 +339,7 @@ function RegjistroFaturen(props) {
         // }
 
         props.setPerditeso();
-        props.mbyllKalkulimin();
+        props.mbyllPerkohesisht();
       }
     } catch (error) {
       console.error(error);
@@ -379,7 +379,7 @@ function RegjistroFaturen(props) {
           label: p.data[0].emriProduktit,
           item: { produktiID: p.data[0].idProduktit, emriProduktit: p.data[0].emriProduktit }
         });
-      
+
         setTimeout(() => {
           document.getElementById("sasia")?.select();
         }, 150);

@@ -188,8 +188,8 @@ function RegjistroFaturen(props) {
               {
                 dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
                 stafiID: r.data.regjistrimet.stafiID,
-                totaliPaTVSH: parseFloat(r.data.totaliPaTVSH),
-                tvsh: parseFloat(r.data.totaliMeTVSH - r.data.totaliPaTVSH),
+                totaliPaTVSH: r.data.regjistrimet.totaliPaTVSH,
+                tvsh: r.data.regjistrimet.tvsh,
                 idPartneri: r.data.regjistrimet.idPartneri,
                 statusiPageses: r.data.regjistrimet.statusiPageses,
                 llojiPageses: r.data.regjistrimet.llojiPageses,

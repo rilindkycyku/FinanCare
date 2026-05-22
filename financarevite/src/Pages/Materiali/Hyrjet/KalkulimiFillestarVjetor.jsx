@@ -17,6 +17,7 @@ import EditoDetajetFatures from "../../../Components/Materiali/Hyrjet/KalkulimiF
 
 function KalkulimiFillestarVjetor(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -172,6 +173,9 @@ function KalkulimiFillestarVjetor(props) {
   };
 
   async function handleRegjistroKalkulimin() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
     try {
       if (!dataEFatures) {
         console.error("Data e faturës është e zbrazët!");
@@ -228,6 +232,10 @@ function KalkulimiFillestarVjetor(props) {
       }
     } catch (error) {
       console.error("Gabim:", error);
+    }
+  
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -428,7 +436,7 @@ function KalkulimiFillestarVjetor(props) {
                     <br />
                     <Button
                       className="mb-3 Butoni"
-                      onClick={() => handleRegjistroKalkulimin()}>
+                      disabled={isSubmitting} onClick={() => handleRegjistroKalkulimin()}>
                       Regjistro <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Col>

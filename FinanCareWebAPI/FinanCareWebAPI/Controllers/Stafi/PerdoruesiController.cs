@@ -49,7 +49,8 @@ namespace FinanCareWebAPI.Controllers.Stafi
                 .Include(p => p.TeDhenatPerdoruesit)
                 .ThenInclude(x => x.Banka)
                 .Include(x => x.Kartelat)
-                .Where(x => x.Kartelat.LlojiKarteles == "Fshirje" || x.Kartelat == null)
+                .Where(x => (x.Kartelat.LlojiKarteles == "Fshirje" || x.Kartelat == null)
+                         && !x.IsSuperAdmin)   // Fsheh superadmin-in e sistemit
                 .ToListAsync();
 
             var perdoruesiList = new List<RoletEPerdoruesit>();

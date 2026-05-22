@@ -858,12 +858,12 @@
     "Parameters": [
       {
         "Name": "dataFillim",
-        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
         "Name": "dataMbarim",
-        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],
@@ -905,12 +905,12 @@
       },
       {
         "Name": "dataFillim",
-        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
         "Name": "dataMbarim",
-        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],
@@ -931,12 +931,12 @@
       },
       {
         "Name": "dataFillim",
-        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
         "Name": "dataMbarim",
-        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],

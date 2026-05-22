@@ -14,12 +14,14 @@ import TeDhenatKalkulimit from "../../../Components/Materiali/Hyrjet/FleteLejime
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import EditoDetajetFatures from "../../../Components/Materiali/Hyrjet/FleteLejimetAutomatike/EditoDetajetFatures";
 
 function FleteLejimetAutomatike(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -191,6 +193,9 @@ function FleteLejimetAutomatike(props) {
   };
 
   async function handleRegjistroKalkulimin() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
     try {
       await axios
         .post(
@@ -222,6 +227,10 @@ function FleteLejimetAutomatike(props) {
         });
     } catch (error) {
       console.error(error);
+    }
+  
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -405,7 +414,7 @@ function FleteLejimetAutomatike(props) {
                     <br />
                     <Button
                       className="mb-3 Butoni"
-                      onClick={() => handleRegjistroKalkulimin()}>
+                      disabled={isSubmitting} onClick={() => handleRegjistroKalkulimin()}>
                       Regjistro <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Col>

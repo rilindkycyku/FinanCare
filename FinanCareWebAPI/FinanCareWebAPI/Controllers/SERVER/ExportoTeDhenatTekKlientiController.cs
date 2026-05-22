@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -107,7 +107,8 @@ namespace FinanCareWebAPI.Controllers.SERVER
                     message = "products.json u rifreskua me sukses!",
                     total = products.Count,
                     file = "financareonline/src/data/products.json",
-                    generatedAt = DateTime.Now
+                    generatedAt = DateTime.Now,
+                    data = products
                 });
             }
             catch (Exception ex)
@@ -173,7 +174,8 @@ namespace FinanCareWebAPI.Controllers.SERVER
                     message = "users.json u rifreskua me sukses!",
                     total = partneret.Count,
                     file = "financareonline/src/data/users.json",
-                    generatedAt = DateTime.Now
+                    generatedAt = DateTime.Now,
+                    data = partneret
                 });
             }
             catch (Exception ex)
@@ -226,7 +228,8 @@ namespace FinanCareWebAPI.Controllers.SERVER
                     message = "categories.json u gjenerua me ssukses!",
                     total = grupet.Count,
                     file = "financareonline/src/data/categories.json",
-                    generatedAt = DateTime.UtcNow
+                    generatedAt = DateTime.UtcNow,
+                    data = grupet
                 });
             }
             catch (Exception ex)
@@ -315,7 +318,8 @@ namespace FinanCareWebAPI.Controllers.SERVER
                     message = "business.json u gjenerua me sukses (me banka + llogari)!",
                     file = "financareonline/src/data/business.json",
                     totalBankAccounts = llogariteBankare.Count,
-                    generatedAt = DateTime.UtcNow
+                    generatedAt = DateTime.UtcNow,
+                    data = dataPerFrontend
                 });
             }
             catch (Exception ex)

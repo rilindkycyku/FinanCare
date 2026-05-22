@@ -245,6 +245,13 @@ export const roleBasedDropdowns = [
             label: "Gjurmimi",
             shfaqNeDashboard: true,
           },
+          { isDivider: true },
+          {
+            roles: ["Menaxher", "Kalkulant", "Financa", "1 Euro Menaxher"],
+            path: "/ListaFaturave",
+            label: "Lista e Gjitha Faturave",
+            shfaqNeDashboard: true,
+          },
         ],
       },
     ],

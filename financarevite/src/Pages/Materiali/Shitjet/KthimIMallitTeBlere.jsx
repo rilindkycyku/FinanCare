@@ -14,12 +14,14 @@ import TeDhenatKalkulimit from "../../../Components/Materiali/Shitjet/KthimIMall
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import EditoDetajetFatures from "../../../Components/Materiali/Shitjet/KthimIMallitTeBlere/EditoDetajetFatures";
 
 function KthimIMallitTeBlere(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -173,6 +175,9 @@ function KthimIMallitTeBlere(props) {
   };
 
   async function handleRegjistroKalkulimin() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
     try {
       await axios
         .post(
@@ -205,6 +210,10 @@ function KthimIMallitTeBlere(props) {
         });
     } catch (error) {
       console.error(error);
+    }
+  
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -402,7 +411,7 @@ function KthimIMallitTeBlere(props) {
                     <br />
                     <Button
                       className="mb-3 Butoni"
-                      onClick={() => handleRegjistroKalkulimin()}>
+                      disabled={isSubmitting} onClick={() => handleRegjistroKalkulimin()}>
                       Regjistro <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Col>

@@ -10,17 +10,9 @@
     "NrKontaktit": "38344111222",
     "Email": "info@financare.com",
     "Logo": "2d1702b39c2742ff979d2d27253f87c9.png",
-    "EmailDomain": "financare.com"
+    "EmailDomain": ""
   },
   "bankAccounts": [
-    {
-      "IDLlogariaBankare": 1,
-      "NumriLlogaris": "1290012345678900",
-      "AdresaBankes": "P.A.",
-      "Valuta": "Euro",
-      "EmriBankes": "Banka Ekonomike",
-      "LokacioniBankes": "Kombetare"
-    },
     {
       "IDLlogariaBankare": 2,
       "NumriLlogaris": "1290012345678900",
@@ -38,5 +30,5 @@
       "LokacioniBankes": "Kombetare"
     }
   ],
-  "generatedAt": "2026-05-07T00:25:38.9120421Z"
+  "generatedAt": "2026-05-22T20:20:37.5842032Z"
 }

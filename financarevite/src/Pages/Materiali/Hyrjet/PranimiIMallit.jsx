@@ -4,7 +4,8 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
+
   faPlus
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
@@ -21,6 +22,7 @@ import EditoDetajetFatures from "../../../Components/Materiali/Hyrjet/PranimiIMa
 
 function KalkulimiIMallit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -181,6 +183,9 @@ function KalkulimiIMallit(props) {
   };
 
   async function handleRegjistroKalkulimin() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
     try {
       await axios
         .post(
@@ -218,6 +223,10 @@ function KalkulimiIMallit(props) {
         });
     } catch (error) {
       console.error(error);
+    }
+  
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -502,7 +511,7 @@ function KalkulimiIMallit(props) {
                   <Col md={4} className="d-flex align-items-end mb-3">
                     <Button
                       className="btn-premium-shto w-100"
-                      onClick={() => handleRegjistroKalkulimin()}>
+                      disabled={isSubmitting} onClick={() => handleRegjistroKalkulimin()}>
                       Regjistro <FontAwesomeIcon icon={faPlus} className="ms-2" />
                     </Button>
                   </Col>

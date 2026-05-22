@@ -122,23 +122,106 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             var totShitjeveMujoreKaluarVetemTVSHFl = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "FL").Sum(p => p.TVSH ?? 0);
             var totShitjeveMujoreKaluarParagon = dataMuajinKaluar.Where(x => x.LlojiKalkulimit == "PARAGON").Sum(p => (p.TotaliPaTVSH ?? 0) + (p.TVSH ?? 0));
 
+            // P&L Calculations for Today
+            // Llojet e dokumenteve që ndikojnë cash flow (sipas menysë së navigimit):
+            // HYRJET: HYRJE=blerje+, KMSH=blerje+ (kthim malli shitur, mall vjen si hyrje), FL=blerje- (kreditnotë)
+            // SHITJET: FAT=shitje+, PARAGON=shitje+, KMB=shitje- (kthen tek furnitori), AS=COGS humbje
+            // PRM: përjashtuar
+            var todayInvoicesWithItems = await _context.Faturat
+                .AsNoTracking()
+                .Include(x => x.TeDhenatFaturat)
+                .Where(x => x.DataRegjistrimit.HasValue && x.DataRegjistrimit >= today && x.DataRegjistrimit < tomorrow)
+                .ToListAsync();
+
+            // SHITJET: FAT + PARAGON  minus  KMB (kthim malli tek furnitori)
+            var rawShitjetSotmePaTVSH = todayInvoicesWithItems
+                .Where(x => x.LlojiKalkulimit == "FAT" || x.LlojiKalkulimit == "PARAGON")
+                .Sum(x => x.TotaliPaTVSH ?? 0)
+                - todayInvoicesWithItems.Where(x => x.LlojiKalkulimit == "KMB")
+                    .Sum(x => x.TotaliPaTVSH ?? 0);
+
+            var rawShitjetSotmeVetemTVSH = todayInvoicesWithItems
+                .Where(x => x.LlojiKalkulimit == "FAT" || x.LlojiKalkulimit == "PARAGON")
+                .Sum(x => x.TVSH ?? 0)
+                - todayInvoicesWithItems.Where(x => x.LlojiKalkulimit == "KMB")
+                    .Sum(x => x.TVSH ?? 0);
+
+            // BLERJET: HYRJE + KMSH (kthim malli i shitur = mall vjen si hyrje)  minus  FL (kreditnotë)
+            var rawBlerjetSotmePaTVSH = todayInvoicesWithItems
+                .Where(x => x.LlojiKalkulimit == "HYRJE" || x.LlojiKalkulimit == "KMSH")
+                .Sum(x => x.TotaliPaTVSH ?? 0)
+                - todayInvoicesWithItems.Where(x => x.LlojiKalkulimit == "FL")
+                    .Sum(x => x.TotaliPaTVSH ?? 0);
+
+            var rawBlerjetSotmeVetemTVSH = todayInvoicesWithItems
+                .Where(x => x.LlojiKalkulimit == "HYRJE" || x.LlojiKalkulimit == "KMSH")
+                .Sum(x => x.TVSH ?? 0)
+                - todayInvoicesWithItems.Where(x => x.LlojiKalkulimit == "FL")
+                    .Sum(x => x.TVSH ?? 0);
+
+            // COGS: Kosto e mallit të shitur (FAT+PARAGON) minus kthimet via KMB (mall del tek furnitori)
+            // plus asgjësimi (AS = humbje direkte e mallit nga inventar)
+            var cogsSales = todayInvoicesWithItems
+                .Where(x => x.LlojiKalkulimit == "FAT" || x.LlojiKalkulimit == "PARAGON")
+                .SelectMany(x => x.TeDhenatFaturat)
+                .Sum(item => (item.SasiaStokut ?? 0) * (item.QmimiBleres ?? 0));
+
+            var cogsReturnsKMB = todayInvoicesWithItems
+                .Where(x => x.LlojiKalkulimit == "KMB")
+                .SelectMany(x => x.TeDhenatFaturat)
+                .Sum(item => (item.SasiaStokut ?? 0) * (item.QmimiBleres ?? 0));
+
+            // Asgjësimi i stokut = humbje direkte e vlerës së mallit (shtohet te COGS)
+            var cogsAsgjesimi = todayInvoicesWithItems
+                .Where(x => x.LlojiKalkulimit == "AS")
+                .SelectMany(x => x.TeDhenatFaturat)
+                .Sum(item => (item.SasiaStokut ?? 0) * (item.QmimiBleres ?? 0));
+
+            var rawCogsSotme = cogsSales - cogsReturnsKMB + cogsAsgjesimi;
+
+            var shitjetSotmePaTVSH = Math.Max(0, rawShitjetSotmePaTVSH);
+            var shitjetSotmeVetemTVSH = Math.Max(0, rawShitjetSotmeVetemTVSH);
+            var shitjetSotmeGjithsej = shitjetSotmePaTVSH + shitjetSotmeVetemTVSH;
+
+            var blerjetSotmePaTVSH = Math.Max(0, rawBlerjetSotmePaTVSH);
+            var blerjetSotmeVetemTVSH = Math.Max(0, rawBlerjetSotmeVetemTVSH);
+            var blerjetSotmeGjithsej = blerjetSotmePaTVSH + blerjetSotmeVetemTVSH;
+
+            var cogsSotme = Math.Max(0, rawCogsSotme);
+
+            var profitiBrutoSotme = rawShitjetSotmePaTVSH - rawCogsSotme;
+            var margjinaSotme = shitjetSotmePaTVSH > 0 ? (profitiBrutoSotme / shitjetSotmePaTVSH) * 100 : 0;
+            var cashFlowSotme = shitjetSotmeGjithsej - blerjetSotmeGjithsej;
+
             var totalet = new
             {
-                TotaliShitjeve = totShitjevePaTVSHFat + totShitjeveVetemTVSHFat - totShitjevePaTVSHFl - totShitjeveVetemTVSHFl,
+                TotaliShitjeve = Math.Abs(totShitjevePaTVSHFat + totShitjeveVetemTVSHFat - totShitjevePaTVSHFl - totShitjeveVetemTVSHFl),
                 TotaliKlient = totKlient,
                 TotaliKlientBiznesi = totKlientBiznesi,
                 TotaliProdukteve = totProdukteve,
                 TotaliPorosive = totPorosive,
-                TotaliShitjeveParagonEuro = totShitjeveParagonPaTVSH + totShitjeveParagonetemTVSH,
+                TotaliShitjeveParagonEuro = Math.Abs(totShitjeveParagonPaTVSH + totShitjeveParagonetemTVSH),
                 TotaliShitjeveParagon = totPorosiveParagon,
                 TotaliPorosiveSotme = totPorosiveSotme,
-                TotaliShitjeveSotme = totShitjeveSotmePaTVSHFat + totShitjeveSotmeVetemTVSHFat - totShitjeveSotmePaTVSHFl - totShitjeveSotmeVetemTVSHFl + totShitjeveSotmeParagon,
+                TotaliShitjeveSotme = Math.Abs(totShitjeveSotmePaTVSHFat + totShitjeveSotmeVetemTVSHFat - totShitjeveSotmePaTVSHFl - totShitjeveSotmeVetemTVSHFl + totShitjeveSotmeParagon),
                 TotaliPorosiveKeteMuaj = totPorosiveMujore,
-                TotaliShitjeveKeteMuaj = totShitjeveMujorePaTVSHFat + totShitjeveMujoreVetemTVSHFat - totShitjeveMujorePaTVSHFl - totShitjeveMujoreVetemTVSHFl + totShitjeveMujoreParagon,
+                TotaliShitjeveKeteMuaj = Math.Abs(totShitjeveMujorePaTVSHFat + totShitjeveMujoreVetemTVSHFat - totShitjeveMujorePaTVSHFl - totShitjeveMujoreVetemTVSHFl + totShitjeveMujoreParagon),
                 TotaliPorosiveDjeshme = totPorosiveDjeshme,
-                TotaliShitjeveDjeshme = totShitjeveDjeshmePaTVSHFat + totShitjeveDjeshmeVetemTVSHFat - totShitjeveDjeshmePaTVSHFl - totShitjeveDjeshmeVetemTVSHFl + totShitjeveDjeshmeParagon,
+                TotaliShitjeveDjeshme = Math.Abs(totShitjeveDjeshmePaTVSHFat + totShitjeveDjeshmeVetemTVSHFat - totShitjeveDjeshmePaTVSHFl - totShitjeveDjeshmeVetemTVSHFl + totShitjeveDjeshmeParagon),
                 TotaliPorosiveMuajinKaluar = totPorosiveMujoreKaluar,
-                TotaliShitjeveMuajinKaluar = totShitjeveMujoreKaluarPaTVSHFat + totShitjeveMujoreKaluarVetemTVSHFat - totShitjeveMujoreKaluarPaTVSHFl - totShitjeveMujoreKaluarVetemTVSHFl + totShitjeveMujoreKaluarParagon,
+                TotaliShitjeveMuajinKaluar = Math.Abs(totShitjeveMujoreKaluarPaTVSHFat + totShitjeveMujoreKaluarVetemTVSHFat - totShitjeveMujoreKaluarPaTVSHFl - totShitjeveMujoreKaluarVetemTVSHFl + totShitjeveMujoreKaluarParagon),
+
+                // Daily P&L calculations
+                BlerjetSotmePaTVSH = blerjetSotmePaTVSH,
+                BlerjetSotmeVetemTVSH = blerjetSotmeVetemTVSH,
+                BlerjetSotmeGjithsej = blerjetSotmeGjithsej,
+                ShitjetSotmePaTVSH = shitjetSotmePaTVSH,
+                ShitjetSotmeVetemTVSH = shitjetSotmeVetemTVSH,
+                ShitjetSotmeGjithsej = shitjetSotmeGjithsej,
+                CogsSotme = cogsSotme,
+                ProfitiBrutoSotme = profitiBrutoSotme,
+                MargjinaSotme = margjinaSotme,
+                CashFlowSotme = cashFlowSotme,
             };
 
             return Ok(totalet);

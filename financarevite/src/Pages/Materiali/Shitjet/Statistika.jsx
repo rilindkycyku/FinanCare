@@ -4,7 +4,7 @@ import { Col, Row, Card, Badge, Container, Tabs, Tab, Button } from "react-boots
 import {
   TrendingUp, TrendingDown, DollarSign, Package, Users, BarChart3,
   RefreshCw, UserCheck, Store, Receipt, Layers, CalendarClock,
-  ShoppingCart, Banknote, CreditCard, Activity
+  ShoppingCart, Banknote, CreditCard, Activity, PiggyBank, Sparkles
 } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -236,7 +236,12 @@ function Statistika() {
                     <div className="d-flex align-items-center gap-2">
                       <span className="live-dot" />
                       <span className="text-secondary" style={{ fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                        POS / Paragon - {new Date().toLocaleDateString("sq-AL", { weekday: "long", day: "numeric", month: "long" })}
+                        POS / Paragon - {(() => {
+                          const days = ["E Diel", "E Hënë", "E Martë", "E Mërkurë", "E Enjte", "E Premte", "E Shtunë"];
+                          const months = ["Janar", "Shkurt", "Mars", "Prill", "Maj", "Qershor", "Korrik", "Gusht", "Shtator", "Tetor", "Nëntor", "Dhjetor"];
+                          const d = new Date();
+                          return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+                        })().toUpperCase()}
                       </span>
                     </div>
                     <div className="subtab-pills">
@@ -250,6 +255,144 @@ function Statistika() {
                   {sotSubTab === "permbledhja" && (() => {
                     return (
                       <>
+                        {/* WIDGET: Pasqyra e Profitit Ditor */}
+                        <Card className="stat-card-modern border-0 mb-4 overflow-hidden position-relative" style={{ background: "linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(20, 184, 166, 0.05) 100%)", border: "1px solid rgba(16, 185, 129, 0.15) !important" }}>
+                          <div className="position-absolute" style={{ width: "150px", height: "150px", background: "rgba(16, 185, 129, 0.15)", filter: "blur(60px)", top: "-30px", right: "-30px", borderRadius: "50%", zIndex: 0 }} />
+                          <div className="position-absolute" style={{ width: "100px", height: "100px", background: "rgba(20, 184, 166, 0.1)", filter: "blur(40px)", bottom: "-20px", left: "-20px", borderRadius: "50%", zIndex: 0 }} />
+                          
+                          <Card.Body className="p-4 position-relative" style={{ zIndex: 1 }}>
+                            <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                              <div className="d-flex align-items-center gap-3">
+                                <div className="icon-box bg-success-subtle text-success mb-0" style={{ width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <PiggyBank size={22} className="text-success" />
+                                </div>
+                                <div>
+                                  <h5 className="fw-bold text-white mb-0" style={{ letterSpacing: "-0.02em" }}>Pasqyra e Profitit Ditor</h5>
+                                  <p className="text-secondary mb-0" style={{ fontSize: "0.75rem" }}>Përllogaritja e saktë e fitimit, blerjeve, shitjeve dhe marzhit për ditën e sotme.</p>
+                                </div>
+                              </div>
+                              <div className="d-flex align-items-center gap-2">
+                                <Badge bg="success-subtle" text="success" className="rounded-pill px-3 py-2 fw-bold d-flex align-items-center gap-1" style={{ fontSize: "0.75rem" }}>
+                                  <Activity size={14} /> LIVE P&L
+                                </Badge>
+                              </div>
+                            </div>
+
+                            <Row className="g-4 mb-4">
+                              <Col xl={3} lg={6}>
+                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "rgba(16, 185, 129, 0.08)", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                                  <div>
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                      <span className="text-secondary" style={{ fontSize: "0.75rem", fontWeight: 600 }}>FITIMI NETO SOT</span>
+                                      <Badge bg="success" className="rounded-pill" style={{ fontSize: "0.65rem", padding: "3px 8px" }}>PA TVSH</Badge>
+                                    </div>
+                                    <h3 className="fw-bold text-success mb-1" style={{ fontSize: "1.85rem", letterSpacing: "-0.03em" }}>
+                                      {parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0).toFixed(2)} €
+                                    </h3>
+                                  </div>
+                                  <div className="text-secondary mt-2" style={{ fontSize: "0.72rem" }}>
+                                    Pse pa TVSH? TVSH nuk është fitim, i takon shtetit. Ky është fitimi juaj real!
+                                  </div>
+                                </div>
+                              </Col>
+
+                              <Col xl={3} lg={6}>
+                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "rgba(6, 182, 212, 0.06)", border: "1px solid rgba(6, 182, 212, 0.15)" }}>
+                                  <div>
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                      <span className="text-secondary" style={{ fontSize: "0.75rem", fontWeight: 600 }}>MARZHI I PROFITIT</span>
+                                      <Badge bg="info-subtle" text="info" className="rounded-pill" style={{ fontSize: "0.65rem", padding: "3px 8px" }}>PËRQINDJA</Badge>
+                                    </div>
+                                    <div className="d-flex align-items-baseline gap-2">
+                                      <h3 className="fw-bold text-info mb-1" style={{ fontSize: "1.85rem", letterSpacing: "-0.03em" }}>
+                                        {parseFloat(totaleTeNdryshme?.margjinaSotme || 0).toFixed(1)}%
+                                      </h3>
+                                      <span className="text-secondary" style={{ fontSize: "0.75rem" }}>Mesatare</span>
+                                    </div>
+                                  </div>
+                                  <div className="mt-2" style={{ fontSize: "0.72rem" }}>
+                                    <div className="text-secondary mb-1">Kostoja e mallit të shitur (COGS):</div>
+                                    <strong className="text-white">{parseFloat(totaleTeNdryshme?.cogsSotme || 0).toFixed(2)} €</strong> (blerje)
+                                  </div>
+                                </div>
+                              </Col>
+
+                              <Col xl={3} lg={6}>
+                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                                  <div>
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                      <span className="text-secondary" style={{ fontSize: "0.75rem", fontWeight: 600 }}>GJITHSEJ SHITUR SOT</span>
+                                      <Badge bg="secondary-subtle" text="secondary" className="rounded-pill" style={{ fontSize: "0.65rem", padding: "3px 8px" }}>SHITJET</Badge>
+                                    </div>
+                                    <h3 className="fw-bold text-white mb-1" style={{ fontSize: "1.85rem", letterSpacing: "-0.03em" }}>
+                                      {parseFloat(totaleTeNdryshme?.shitjetSotmeGjithsej || 0).toFixed(2)} €
+                                    </h3>
+                                  </div>
+                                  <div className="text-secondary mt-2" style={{ fontSize: "0.72rem" }}>
+                                    <div>Neto (pa TVSH): <strong className="text-white">{parseFloat(totaleTeNdryshme?.shitjetSotmePaTVSH || 0).toFixed(2)} €</strong></div>
+                                    <div>TVSH e grumbulluar: <strong className="text-success">+{Math.abs(parseFloat(totaleTeNdryshme?.shitjetSotmeVetemTVSH || 0)).toFixed(2)} €</strong></div>
+                                  </div>
+                                </div>
+                              </Col>
+
+                              <Col xl={3} lg={6}>
+                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "rgba(239, 68, 68, 0.04)", border: "1px solid rgba(239, 68, 68, 0.12)" }}>
+                                  <div>
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                      <span className="text-secondary" style={{ fontSize: "0.75rem", fontWeight: 600 }}>GJITHSEJ BLERË SOT</span>
+                                      <Badge bg="danger-subtle" text="danger" className="rounded-pill" style={{ fontSize: "0.65rem", padding: "3px 8px" }}>FURNIZIME</Badge>
+                                    </div>
+                                    <h3 className="fw-bold text-danger mb-1" style={{ fontSize: "1.85rem", letterSpacing: "-0.03em" }}>
+                                      {parseFloat(totaleTeNdryshme?.blerjetSotmeGjithsej || 0).toFixed(2)} €
+                                    </h3>
+                                  </div>
+                                  <div className="text-secondary mt-2" style={{ fontSize: "0.72rem" }}>
+                                    <div>Neto (pa TVSH): <strong className="text-white">{parseFloat(totaleTeNdryshme?.blerjetSotmePaTVSH || 0).toFixed(2)} €</strong></div>
+                                    <div>TVSH e paguar: <strong className="text-danger">-{Math.abs(parseFloat(totaleTeNdryshme?.blerjetSotmeVetemTVSH || 0)).toFixed(2)} €</strong></div>
+                                  </div>
+                                </div>
+                              </Col>
+                            </Row>
+
+                            <hr style={{ borderColor: "rgba(255, 255, 255, 0.07)", margin: "1.5rem 0" }} />
+
+                            <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                              <div className="d-flex align-items-center gap-3">
+                                <div className={`p-2 rounded-3 ${parseFloat(totaleTeNdryshme?.cashFlowSotme || 0) >= 0 ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"}`} style={{ fontSize: "0.85rem" }}>
+                                  {parseFloat(totaleTeNdryshme?.cashFlowSotme || 0) >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                                </div>
+                                <div>
+                                  <div className="text-secondary" style={{ fontSize: "0.7rem" }}>NET CASH-FLOW SOT (SHITJET ME TVSH - BLERJET ME TVSH)</div>
+                                  <div className="d-flex align-items-baseline gap-2">
+                                    <h5 className={`fw-bold mb-0 ${parseFloat(totaleTeNdryshme?.cashFlowSotme || 0) >= 0 ? "text-success" : "text-danger"}`}>
+                                      {parseFloat(totaleTeNdryshme?.cashFlowSotme || 0).toFixed(2)} €
+                                    </h5>
+                                    <span className="text-secondary" style={{ fontSize: "0.75rem" }}>
+                                      {parseFloat(totaleTeNdryshme?.cashFlowSotme || 0) >= 0 ? "(Bilanc Pozitiv)" : "(Bilanc Negativ - Keni investuar në stok)"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="p-3 rounded-3 flex-grow-1 flex-md-grow-0" style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.05)", maxWidth: "550px" }}>
+                                <div className="d-flex align-items-start gap-2">
+                                  <div className="text-warning mt-0.5" style={{ minWidth: 16 }}><Sparkles size={16} /></div>
+                                  <div style={{ fontSize: "0.72rem", lineHeight: "1.4", color: "#cbd5e1" }}>
+                                    <span className="text-white fw-bold">Këshillë Financiare:</span>{" "}
+                                    Sot keni fituar të pastër <strong className="text-success">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0).toFixed(2)} €</strong>.
+                                    {parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0) > 0 ? (
+                                      <span>
+                                        {" "}Nga ky fitim, ju sugjerojmë të ndani <strong className="text-info">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme * 0.3).toFixed(2)} € (30%)</strong> për veten apo shpenzime personale, ndërsa pjesën tjetër prej <strong className="text-white">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme * 0.7).toFixed(2)} € (70%)</strong> ta ri-investoni në biznes për furnizime dhe rritje!
+                                      </span>
+                                    ) : (
+                                      <span> Nuk ka fitim të regjistruar sot për t'u shpenzuar. Kryeni shitje të reja me marzh pozitiv për të krijuar fitim!</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Card.Body>
+                        </Card>
+
                         <Card className="stat-card-modern border-0 mb-4">
                           <Card.Body className="p-4">
                             <div className="d-flex align-items-center justify-content-between mb-3">

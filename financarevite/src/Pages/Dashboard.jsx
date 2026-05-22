@@ -6,8 +6,10 @@ import { Tab, Tabs, Row, Col, Container, Card, Badge } from "react-bootstrap";
 import {
   User, Mail, UserCircle, Calendar, IdCard, Wallet,
   MapPin, Phone, Briefcase, GraduationCap, Building2,
-  CreditCard, LayoutDashboard,
-  Clock, ShoppingCart
+  CreditCard, LayoutDashboard, Clock, ShoppingCart,
+  Package, Tag, Printer, Calculator, ClipboardCheck,
+  ClipboardList, Percent, Globe, BarChart3, Receipt,
+  Scale, Coins, RefreshCw, PlusCircle, History, Truck
 } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -84,20 +86,75 @@ const Dashboard = () => {
     }
   }, [getID, token, navigate, API_BASE_URL, authentikimi]);
 
-  const quickActions = useMemo(() => {
-    const actions = [];
+  const getShortcutIcon = (path) => {
+    switch (path) {
+      case "/Produktet":
+        return Package;
+      case "/ShikimiQmimeve":
+        return Tag;
+      case "/Qmimore":
+        return Printer;
+      case "/KalkulimiIMallit":
+        return Calculator;
+      case "/PranimiIMallit":
+        return ClipboardCheck;
+      case "/Porosite":
+        return ClipboardList;
+      case "/Ofertat":
+        return Percent;
+      case "/PorositeOnline":
+        return Globe;
+      case "/Statistika":
+        return BarChart3;
+      case "/ListaShitjeveMeParagon":
+        return Receipt;
+      case "/POS":
+        return ShoppingCart;
+      case "/ListaBarazimeve":
+        return Scale;
+      case "/BarazoArken":
+        return Coins;
+      case "/BartTeDhenat":
+        return RefreshCw;
+      case "/ShtoPagesat":
+        return PlusCircle;
+      case "/Gjurmimi":
+        return History;
+      case "/DitetEFurnizimit":
+        return Truck;
+      default:
+        return ShoppingCart;
+    }
+  };
+
+  const dataAktuale = useMemo(() => {
+    const d = new Date();
+    const days = ["e diel", "e hënë", "e martë", "e mërkurë", "e enjte", "e premte", "e shtunë"];
+    const months = ["janar", "shkurt", "mars", "prill", "maj", "qershor", "korrik", "gusht", "shtator", "tetor", "nëntor", "dhjetor"];
+    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }, []);
+
+  const categorizedQuickActions = useMemo(() => {
+    const categoriesMap = {};
     roleBasedDropdowns.forEach(cat => {
+      const catActions = [];
       cat.items.forEach(item => {
         if (item.roles.some(r => userRoles.includes(r))) {
           item.subItems.forEach(sub => {
             if (sub.shfaqNeDashboard && sub.roles.some(r => userRoles.includes(r))) {
-              actions.push(sub);
+              catActions.push(sub);
             }
           });
         }
       });
+      if (catActions.length > 0) {
+        categoriesMap[cat.label] = catActions;
+      }
     });
-    return actions;
+    return Object.entries(categoriesMap).map(([category, actions]) => ({
+      category,
+      actions
+    }));
   }, [userRoles]);
 
   if (loading) {
@@ -123,12 +180,7 @@ const Dashboard = () => {
             <Col md={8}>
               <h1 className="fw-bold mb-2">Mirësevini, {user?.emri}! 👋</h1>
               <p className="opacity-75 mb-0 text-capitalize">
-                Sot është {(() => {
-                  const d = new Date();
-                  const days = ["e diel", "e hënë", "e martë", "e mërkurë", "e enjte", "e premte", "e shtunë"];
-                  const months = ["janar", "shkurt", "mars", "prill", "maj", "qershor", "korrik", "gusht", "shtator", "tetor", "nëntor", "dhjetor"];
-                  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-                })()}.
+                {dataAktuale}.
               </p>
             </Col>
             <Col md={4} className="text-md-end mt-3 mt-md-0">
@@ -147,19 +199,32 @@ const Dashboard = () => {
             <LayoutDashboard size={24} className="text-primary" />
             Veprimet e Shpejta
           </h4>
-          <div className="quick-actions-grid">
-            {quickActions.map((action, idx) => (
-              <div key={idx} data-aos="zoom-in" data-aos-delay={idx * 30}>
-                <Link to={action.path} className="quick-action-card">
-                  <div className="icon-wrapper">
-                    <ShoppingCart size={18} />
-                  </div>
-                  <span>{action.label}</span>
-                </Link>
+          <div className="categorized-quick-actions">
+            {categorizedQuickActions.map((group, groupIdx) => (
+              <div key={groupIdx} className="mb-4" data-aos="fade-up">
+                <h5 className="category-subtitle">
+                  <span className="category-bullet"></span>
+                  {group.category}
+                </h5>
+                <div className="quick-actions-grid">
+                  {group.actions.map((action, idx) => {
+                    const IconComponent = getShortcutIcon(action.path);
+                    return (
+                      <div key={idx} data-aos="zoom-in" data-aos-delay={idx * 30}>
+                        <Link to={action.path} className="quick-action-card">
+                          <div className="icon-wrapper">
+                            <IconComponent size={22} />
+                          </div>
+                          <span>{action.label}</span>
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </div>
-          {quickActions.length === 0 && (
+          {categorizedQuickActions.length === 0 && (
             <div className="text-center p-5 bg-white rounded-4 shadow-sm text-muted"> Nuk ka veprime të disponueshme për rolin tuaj. </div>
           )}
         </section>

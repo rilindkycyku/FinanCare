@@ -11,16 +11,19 @@ import { useNavigate } from "react-router-dom";
 import RegjistroFaturen from "../../../Components/Materiali/Shitjet/Porosite/RegjistroFaturen";
 import PerditesoStatusinKalk from "../../../Components/Materiali/Shitjet/Porosite/PerditesoStatusinKalk";
 import TeDhenatKalkulimit from "../../../Components/Materiali/Shitjet/Porosite/TeDhenatKalkulimit";
-import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import NavBar from "../../../Components/TeTjera/layout/NavBar";
+
 // import Select from "@mui/material/Select";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import Select from "react-select";
-import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import EditoDetajetFatures from "../../../Components/Materiali/Shitjet/Porosite/EditoDetajetFatures";
 
 function KthimIMallitTeBlere(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [perditeso, setPerditeso] = useState("");
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -183,6 +186,9 @@ function KthimIMallitTeBlere(props) {
   };
 
   async function handleRegjistroKalkulimin() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
     try {
       console.log(nrRendorKalkulimit);
       await axios
@@ -216,6 +222,10 @@ function KthimIMallitTeBlere(props) {
         });
     } catch (error) {
       console.error(error);
+    }
+  
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -436,7 +446,7 @@ function KthimIMallitTeBlere(props) {
                     <br />
                     <Button
                       className="mb-3 Butoni"
-                      onClick={() => handleRegjistroKalkulimin()}>
+                      disabled={isSubmitting} onClick={() => handleRegjistroKalkulimin()}>
                       Regjistro <FontAwesomeIcon icon={faPlus} />
                     </Button>
                   </Col>
