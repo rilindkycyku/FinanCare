@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import "../../Styles/ProductTables.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -9,6 +9,7 @@ import { TailSpin } from "react-loader-spinner";
 import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import LargoProduktin from "../../../Components/Materiali/Artikujt/Produktet/LargoProduktin";
 import BartjaArtikullit from "../../../Components/Materiali/Artikujt/Produktet/BartjaArtikullit";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 const ProductTables = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -25,7 +26,7 @@ const ProductTables = () => {
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -93,6 +94,7 @@ const ProductTables = () => {
 
   return (
     <>
+      <KontrolloAksesinNeFaqe roletELejuara={["User"]} />
       <NavBar />
 
       <div className="containerDashboardP">

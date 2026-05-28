@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,4 +18,8 @@ public partial class TeDhenatBiznesit
     public string? Email { get; set; }
     public string? Logo { get; set; }
     public string? EmailDomain { get; set; }
+    public string? LicenseKey { get; set; }
+    public DateTime? LicenseExpiry { get; set; }
+    public string? LicenseSignature { get; set; }
+    public string? LicenseUsername { get; set; }
 }

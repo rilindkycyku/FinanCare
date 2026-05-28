@@ -3,6 +3,7 @@ import axios from "axios";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import Titulli from "../Components/TeTjera/Titulli";
 import NavBar from "../Components/TeTjera/layout/NavBar";
+import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 const BartTeDhenat = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -62,7 +63,7 @@ const BartTeDhenat = () => {
           await addLog(`✓ ${name} transfer completed. Total: ${res.data.total ?? "-"} items.`, 500);
           setData({ ...results }); // update cards dynamically
         } catch (err) {
-          await addLog(`âŒ Error transferring ${name}: ${err.message}`, 500);
+          await addLog(`❌ Error transferring ${name}: ${err.message}`, 500);
         }
       }
 
@@ -142,6 +143,7 @@ const BartTeDhenat = () => {
 
   return (
     <>
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher"]} />
       <Titulli titulli={"Bart të Dhënat"} />
       <NavBar />
 

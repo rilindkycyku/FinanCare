@@ -6,6 +6,7 @@ import { Package, Tag, Search, TrendingUp, Info } from "lucide-react";
 import Titulli from "../Components/TeTjera/Titulli";
 import NavBar from "../Components/TeTjera/layout/NavBar";
 import Mesazhi from "../Components/TeTjera/layout/Mesazhi";
+import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function ShikimiQmimeve() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -193,6 +194,7 @@ function ShikimiQmimeve() {
 
   return (
     <div className="price-checker-wrapper">
+      <KontrolloAksesinNeFaqe roletELejuara={["User"]} />
       {shfaqMesazhin && (
         <Mesazhi
           setShfaqMesazhin={setShfaqMesazhin}

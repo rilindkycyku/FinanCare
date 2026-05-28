@@ -22,7 +22,8 @@ public partial class TeDhenatPerdoruesit
     public int? BankaID { get; set; }
     public string? NumriLlogarisBankare { get; set; }
     public string? NrPersonal {get; set; }
-    public string? EshtePuntorAktive { get; set; }
+    public string? EshtePuntorAktive { get; set; } = "true";
+    public string? isDeleted { get; set; } = "false";
 
     [ForeignKey(nameof(UserID))]
     public virtual Perdoruesi? User { get; set; }

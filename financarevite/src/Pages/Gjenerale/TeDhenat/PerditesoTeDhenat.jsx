@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import "../../Styles/DizajniPergjithshem.css";
 import "../../Styles/PerditesoTeDhenat.css";
 import axios from "axios";
@@ -13,6 +13,7 @@ import {
   faEyeSlash,
   faPenToSquare
 } from "@fortawesome/free-solid-svg-icons";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function PerditesoTeDhenat(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -42,7 +43,7 @@ function PerditesoTeDhenat(props) {
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -167,7 +168,7 @@ function PerditesoTeDhenat(props) {
 
   return (
     <>
-      <titulli titulli={"Perditesimi i Fjalekalimit"} />
+      <KontrolloAksesinNeFaqe roletELejuara={["User"]} />
       <NavBar />
 
       <div className="containerDashboardP">

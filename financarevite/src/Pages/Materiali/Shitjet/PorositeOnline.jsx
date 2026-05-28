@@ -11,6 +11,7 @@ import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import Fatura from "../../../Components/TeTjera/Fatura/Fatura";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import { Col, Form, Row } from "react-bootstrap";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function PorositeOnline() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -314,6 +315,7 @@ function PorositeOnline() {
 
   return (
     <>
+      <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Komercialist", "Faturist"]} />
       <NavBar />
       {shkarkoFaturen ? (
         <Fatura

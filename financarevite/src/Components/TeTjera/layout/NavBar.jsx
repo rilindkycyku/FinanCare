@@ -17,6 +17,7 @@ import {
   LogIn,
   Menu as MenuIcon,
   ChevronDown,
+  Shield,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
@@ -35,10 +36,25 @@ function NavBar() {
   const [showNav, setShowNav] = useState(false);
   const [userRoles, setUserRoles] = useState([]);
   const [perditeso, setPerditeso] = useState("");
+  const [daysRemaining, setDaysRemaining] = useState(null);
+  const [licenseStatus, setLicenseStatus] = useState(null);
 
   const authentikimi = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  // Fetch License Status
+  useEffect(() => {
+    const fetchLicenseStatus = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/Licenca/status`);
+        setLicenseStatus(res.data);
+      } catch (err) {
+        console.error("Gabim gjatë leximit të statusit të licencës në navbar:", err);
+      }
+    };
+    if (token) fetchLicenseStatus();
+  }, [token, API_BASE_URL]);
 
   // Handle Role Detection from Token
   useEffect(() => {
@@ -70,6 +86,14 @@ function NavBar() {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`, authentikimi);
         setTeDhenatBiznesit(res.data);
+        if (res.data && res.data.licenseExpiry) {
+          const expiryDate = new Date(res.data.licenseExpiry);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const diffTime = expiryDate.getTime() - today.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          setDaysRemaining(diffDays);
+        }
       } catch (err) { console.error("Business data fetch error:", err); }
     };
     if (token) fetchBiznesi();
@@ -177,6 +201,32 @@ function NavBar() {
           <MDBNavbarNav right className="ms-auto d-flex flex-row justify-content-end align-items-center gap-3" style={{ width: 'auto' }}>
             {token ? (
               <>
+                {licenseStatus && (
+                  <button 
+                    onClick={() => navigate("/AktivizoSistemin")}
+                    className={`license-navbar-btn ms-2 ${
+                      licenseStatus.daysRemaining < 0
+                        ? "license-badge-expired"
+                        : (licenseStatus.daysRemaining <= 15 ? "license-badge-warning" : "license-badge-active")
+                    }`}
+                    style={{ border: "none" }}
+                    title={licenseStatus.daysRemaining < 0 
+                      ? "Licenca ka skaduar! Kliko për detajet." 
+                      : `Licenca është aktive edhe ${licenseStatus.daysRemaining} ditë. Kliko për detaje.`
+                    }
+                  >
+                    <Shield size={14} className={licenseStatus.daysRemaining <= 15 ? "animate-pulse" : ""} />
+                    <span className="d-none d-md-inline">
+                      {licenseStatus.daysRemaining < 0 
+                        ? "Licenca: Skaduar" 
+                        : `Licenca: ${licenseStatus.daysRemaining} Ditë`}
+                    </span>
+                    <span className="d-inline d-md-none">
+                      {licenseStatus.daysRemaining < 0 ? "S" : `${licenseStatus.daysRemaining}D`}
+                    </span>
+                  </button>
+                )}
+
                 <Link to="/Dashboard" className="user-profile-nav ms-2">
                   <div className="user-avatar-small">{userInitial}</div>
                   <div className="user-info-text d-none d-xl-flex">
@@ -201,6 +251,7 @@ function NavBar() {
           </MDBNavbarNav>
         </MDBCollapse>
       </MDBContainer>
+
     </MDBNavbar>
   );
 }

@@ -1806,6 +1806,49 @@
         }
       }
     },
+    "/api/Licenca/aktivizo": {
+      "post": {
+        "tags": [
+          "Licenca"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AktivizoRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AktivizoRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AktivizoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Licenca/status": {
+      "get": {
+        "tags": [
+          "Licenca"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/NjesiaMatese/shfaqNjesineMateseSipasIDs": {
       "get": {
         "tags": [
@@ -2268,6 +2311,27 @@
       "get": {
         "tags": [
           "Perdoruesi"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Perdoruesi/fshijPerdoruesin": {
+      "delete": {
+        "tags": [
+          "Perdoruesi"
+        ],
+        "parameters": [
+          {
+            "name": "idUserAspNet",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -3290,6 +3354,24 @@
         },
         "additionalProperties": false
       },
+      "AktivizoRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "licenseKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Bankat": {
         "type": "object",
         "properties": {
@@ -4204,6 +4286,23 @@
           "emailDomain": {
             "type": "string",
             "nullable": true
+          },
+          "licenseKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "licenseExpiry": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "licenseSignature": {
+            "type": "string",
+            "nullable": true
+          },
+          "licenseUsername": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4333,6 +4432,10 @@
             "nullable": true
           },
           "eshtePuntorAktive": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
             "type": "string",
             "nullable": true
           },

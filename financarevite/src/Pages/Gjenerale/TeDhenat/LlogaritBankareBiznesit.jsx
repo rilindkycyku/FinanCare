@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-﻿import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import "../../Styles/DizajniPergjithshem.css";
 import axios from "axios";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -8,6 +8,7 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import ShtoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankareBiznesit/ShtoLlogarin";
 import EditoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankareBiznesit/EditoLlogarin";
 import LargoLlogarin from "../../../Components/Gjenerale/TeDhenat/LlogaritBankareBiznesit/LargoLlogarin";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function LlogaritBankareBiznesit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -24,7 +25,7 @@ function LlogaritBankareBiznesit(props) {
 
   const getToken = localStorage.getItem("token");
 
-    const authentikimi = useMemo(() => ({
+  const authentikimi = useMemo(() => ({
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
@@ -78,6 +79,7 @@ function LlogaritBankareBiznesit(props) {
 
   return (
     <>
+      <KontrolloAksesinNeFaqe roletELejuara={["User"]} />
       <NavBar />
 
       <div className="containerDashboardP">

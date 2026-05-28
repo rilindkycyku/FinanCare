@@ -9,6 +9,8 @@ import { MDBRow, MDBCol, MDBInput} from "mdb-react-ui-kit";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { Shield, Calendar, Key, AlertTriangle, CheckCircle, Copy, Check, Clock } from "lucide-react";
+import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 function TeDhenatEBiznesit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -22,6 +24,51 @@ function TeDhenatEBiznesit(props) {
   const [foto, setFoto] = useState(null);
 
   const navigate = useNavigate();
+
+  const [kopjuar, setKopjuar] = useState(false);
+  const [eshteMenaxher, setEshteMenaxher] = useState(false);
+  const [btnHover, setBtnHover] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const roles = decodedToken.role || [];
+        const matches = Array.isArray(roles)
+          ? (roles.includes("Menaxher") || roles.includes("1 Euro Menaxher"))
+          : (roles === "Menaxher" || roles === "1 Euro Menaxher");
+        setEshteMenaxher(matches);
+      } catch (e) {
+        console.error("Gabim në leximin e roleve:", e);
+      }
+    }
+  }, []);
+
+  const formatoDatën = (dataStr) => {
+    if (!dataStr) return "Nuk ka licencë";
+    const d = new Date(dataStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const llogaritDitët = (dataStr) => {
+    if (!dataStr) return 0;
+    const d = new Date(dataStr);
+    const sot = new Date();
+    sot.setHours(0, 0, 0, 0);
+    const diff = d.getTime() - sot.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
+  const kopjoÇelësin = (text) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setKopjuar(true);
+    setTimeout(() => setKopjuar(false), 2000);
+  };
 
   const [formValue, setFormValue] = useState({
     emriIBiznesit: "",
@@ -185,6 +232,7 @@ function TeDhenatEBiznesit(props) {
 
   return (
     <>
+      <KontrolloAksesinNeFaqe roletELejuara={["User"]} />
       <Titulli titulli={"Te Dhenat e Biznesit"} />
       <NavBar />
 

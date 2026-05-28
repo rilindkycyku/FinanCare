@@ -1191,6 +1191,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.LicencaController",
+    "Method": "Aktivizo",
+    "RelativePath": "api/Licenca/aktivizo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FinanCareWebAPI.Controllers.SERVER.LicencaController\u002BAktivizoRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.SERVER.LicencaController",
+    "Method": "GetStatus",
+    "RelativePath": "api/Licenca/status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "FinanCareWebAPI.Controllers.Produktet.NjesiaMateseController",
     "Method": "Delete",
     "RelativePath": "api/NjesiaMatese/fshijNjesineMatese",
@@ -1484,6 +1510,22 @@
         "Name": "partneri",
         "Type": "FinanCareWebAPI.Models.Partneri",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FinanCareWebAPI.Controllers.Stafi.PerdoruesiController",
+    "Method": "Delete",
+    "RelativePath": "api/Perdoruesi/fshijPerdoruesin",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idUserAspNet",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

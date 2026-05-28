@@ -20,7 +20,7 @@ namespace FinanCareWebAPI.Controllers.Stafi
         private readonly IAdminLogService _adminLogService;
 
         public PerdoruesiController(
-            FinanCareDbContext context, 
+            FinanCareDbContext context,
             UserManager<IdentityUser> userManager,
             IAdminLogService adminLogService)
         {
@@ -50,7 +50,8 @@ namespace FinanCareWebAPI.Controllers.Stafi
                 .ThenInclude(x => x.Banka)
                 .Include(x => x.Kartelat)
                 .Where(x => (x.Kartelat.LlojiKarteles == "Fshirje" || x.Kartelat == null)
-                         && !x.IsSuperAdmin)   // Fsheh superadmin-in e sistemit
+                         && !x.IsSuperAdmin   // Fsheh superadmin-in e sistemit
+                         && (x.TeDhenatPerdoruesit == null || x.TeDhenatPerdoruesit.isDeleted == null || x.TeDhenatPerdoruesit.isDeleted != "true"))
                 .ToListAsync();
 
             var perdoruesiList = new List<RoletEPerdoruesit>();
@@ -63,13 +64,129 @@ namespace FinanCareWebAPI.Controllers.Stafi
                 var roletEPerdoruesit = new RoletEPerdoruesit
                 {
                     Perdoruesi = perdoruesi,
-                    Rolet = roles.ToList()
+                    Rolet = roles.ToList(),
+                    IsLockedOut = user != null && await _userManager.IsLockedOutAsync(user)
                 };
 
                 perdoruesiList.Add(roletEPerdoruesit);
             }
 
             return Ok(perdoruesiList);
+        }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("fshijPerdoruesin")]
+        public async Task<IActionResult> Delete(string idUserAspNet)
+        {
+            var user = await _userManager.FindByIdAsync(idUserAspNet);
+            if (user == null)
+            {
+                return NotFound("Perdoruesi nuk ekziston ne Identity.");
+            }
+
+            var perdoruesi = await _context.Perdoruesi
+                .Include(p => p.TeDhenatPerdoruesit)
+                .FirstOrDefaultAsync(x => x.AspNetUserID.Equals(idUserAspNet));
+
+            if (perdoruesi == null)
+            {
+                return BadRequest("TeDhenatPerdoruesit nuk ekziston");
+            }
+
+            var rolet = await _userManager.GetRolesAsync(user);
+
+            var uniqueSuffix = Guid.NewGuid().ToString().Substring(0, 8);
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var setEmailResult = await _userManager.SetEmailAsync(user, $"{user.UserName}.REMOVED.{uniqueSuffix}@staff.local");
+                    if (!setEmailResult.Succeeded)
+                    {
+                        return BadRequest("Deshtoi perditesimi i emailit gjate fshirjes.");
+                    }
+
+                    var setUsernameResult = await _userManager.SetUserNameAsync(user, $"{user.UserName}.REMOVED.{uniqueSuffix}");
+                    if (!setUsernameResult.Succeeded)
+                    {
+                        return BadRequest("Deshtoi perditesimi i username gjate fshirjes.");
+                    }
+
+                    await _userManager.SetLockoutEnabledAsync(user, true);
+                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+                    await _userManager.UpdateSecurityStampAsync(user);
+
+                    if (rolet.Any())
+                    {
+                        var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, rolet);
+                        if (!removeRolesResult.Succeeded)
+                        {
+                            return BadRequest("Deshtoi heqja e roleve te perdoruesit gjate fshirjes.");
+                        }
+                    }
+
+                    perdoruesi.Email = user.Email;
+                    perdoruesi.Username = user.UserName;
+                    _context.Perdoruesi.Update(perdoruesi);
+
+                    var teDhenatUser = await _context.TeDhenatPerdoruesit
+                        .FirstOrDefaultAsync(x => x.UserID == perdoruesi.UserID);
+
+                    if (teDhenatUser == null)
+                    {
+                        teDhenatUser = new TeDhenatPerdoruesit
+                        {
+                            UserID = perdoruesi.UserID,
+                            isDeleted = "true",
+                            EshtePuntorAktive = "false",
+                            DataMbarimitKontrates = DateTime.Now
+                        };
+                        await _context.TeDhenatPerdoruesit.AddAsync(teDhenatUser);
+                    }
+                    else
+                    {
+                        teDhenatUser.isDeleted = "true";
+                        teDhenatUser.EshtePuntorAktive = "false";
+                        teDhenatUser.DataMbarimitKontrates = DateTime.Now;
+                        _context.TeDhenatPerdoruesit.Update(teDhenatUser);
+                    }
+                        
+                    var kartelatEStafit = await _context.Kartelat
+                        .Where(x => x.StafiID == perdoruesi.UserID)
+                        .ToListAsync();
+
+                    foreach (var kartela in kartelatEStafit)
+                    {
+                        kartela.LlojiKarteles = null;
+                        kartela.KodiKartela = null;
+                        kartela.PartneriID = null;
+                        kartela.Rabati = null;
+
+                        _context.Kartelat.Update(kartela);
+                    }
+
+                    await _context.SaveChangesAsync();
+
+                    await LogAdminActionAsync("Fshij", idUserAspNet, $"Eshte bere fshirja (soft-delete) e perdoruesit: {perdoruesi.Emri} {perdoruesi.Mbiemri}");
+
+                    await transaction.CommitAsync();
+
+                    var result = new
+                    {
+                        perdoruesi,
+                        rolet
+                    };
+
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, $"Gabim gjate fshirjes: {ex.Message}");
+                }
+            }
         }
 
         [Authorize]
@@ -105,7 +222,7 @@ namespace FinanCareWebAPI.Controllers.Stafi
 
             var emailIPerdorur = false;
 
-            if(perdoruesi != null)
+            if (perdoruesi != null)
             {
                 emailIPerdorur = true;
             }
@@ -255,7 +372,13 @@ namespace FinanCareWebAPI.Controllers.Stafi
 
             if (teDhenatUser == null)
             {
-                return BadRequest("TeDhenatPerdoruesit nuk ekziston");
+                teDhenatUser = new TeDhenatPerdoruesit
+                {
+                    UserID = perdouresi.UserID,
+                    EshtePuntorAktive = "true"
+                };
+                await _context.TeDhenatPerdoruesit.AddAsync(teDhenatUser);
+                await _context.SaveChangesAsync();
             }
 
             if (!string.IsNullOrEmpty(p.TeDhenatPerdoruesit.Adresa))
@@ -313,6 +436,22 @@ namespace FinanCareWebAPI.Controllers.Stafi
             if (!string.IsNullOrEmpty(p.TeDhenatPerdoruesit.EshtePuntorAktive))
             {
                 teDhenatUser.EshtePuntorAktive = p.TeDhenatPerdoruesit.EshtePuntorAktive;
+
+                var identityUser = await _userManager.FindByIdAsync(perdouresi.AspNetUserID);
+                if (identityUser != null)
+                {
+                    if (teDhenatUser.EshtePuntorAktive == "false")
+                    {
+                        await _userManager.SetLockoutEnabledAsync(identityUser, true);
+                        await _userManager.SetLockoutEndDateAsync(identityUser, DateTimeOffset.MaxValue);
+                        await _userManager.UpdateSecurityStampAsync(identityUser);
+                    }
+                    else if (teDhenatUser.EshtePuntorAktive == "true")
+                    {
+                        await _userManager.SetLockoutEndDateAsync(identityUser, null);
+                        await _userManager.UpdateSecurityStampAsync(identityUser);
+                    }
+                }
             }
 
             _context.TeDhenatPerdoruesit.Update(teDhenatUser);
@@ -328,5 +467,6 @@ namespace FinanCareWebAPI.Controllers.Stafi
     {
         public Perdoruesi Perdoruesi { get; set; }
         public List<string> Rolet { get; set; }
+        public bool IsLockedOut { get; set; }
     }
 }

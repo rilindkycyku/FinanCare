@@ -9,7 +9,8 @@ import {
   CreditCard, LayoutDashboard, Clock, ShoppingCart,
   Package, Tag, Printer, Calculator, ClipboardCheck,
   ClipboardList, Percent, Globe, BarChart3, Receipt,
-  Scale, Coins, RefreshCw, PlusCircle, History, Truck
+  Scale, Coins, RefreshCw, PlusCircle, History, Truck,
+  Shield, AlertTriangle, Lock
 } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -39,14 +40,11 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [key, setKey] = useState("kryesore");
   const [userRoles, setUserRoles] = useState([]);
+  const [licenseStatus, setLicenseStatus] = useState(null);
   const navigate = useNavigate();
 
   const getID = localStorage.getItem("id");
   const token = localStorage.getItem("token");
-
-  const authentikimi = useMemo(() => ({
-    headers: { Authorization: `Bearer ${token} ` }
-  }), [token]);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
@@ -67,11 +65,21 @@ const Dashboard = () => {
         return;
       }
 
+      const fetchLicenseStatus = async () => {
+        try {
+          const res = await axios.get(`${API_BASE_URL}/api/Licenca/status`);
+          setLicenseStatus(res.data);
+          localStorage.setItem("isLicensed", res.data.isLicensed ? "true" : "false");
+        } catch (err) {
+          console.error("Gabim gjatë leximit të statusit të licencës:", err);
+        }
+      };
+
       const fetchData = async () => {
         try {
           const res = await axios.get(
             `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${getID}`,
-            authentikimi
+            { headers: { Authorization: `Bearer ${token}` } }
           );
           setTeDhenat(res.data);
         } catch (err) {
@@ -80,11 +88,12 @@ const Dashboard = () => {
           setLoading(false);
         }
       };
+      fetchLicenseStatus();
       fetchData();
     } else {
       navigate("/login");
     }
-  }, [getID, token, navigate, API_BASE_URL, authentikimi]);
+  }, [getID, token, navigate, API_BASE_URL]);
 
   const getShortcutIcon = (path) => {
     switch (path) {
@@ -168,6 +177,10 @@ const Dashboard = () => {
   const user = teDhenat?.perdoruesi;
   const extra = user?.teDhenatPerdoruesit;
 
+  const eshteMenaxher = Array.isArray(userRoles) 
+    ? (userRoles.includes("Menaxher") || userRoles.includes("1 Euro Menaxher"))
+    : (userRoles === "Menaxher" || userRoles === "1 Euro Menaxher");
+
   return (
     <div className="dashboard-wrapper">
       <KontrolloAksesinNeFaqe roletELejuara={["Financa", "Mbeshtetje e Klientit", "Faturist", "Puntor i Thjeshte", "Burime Njerzore", "Komercialist", "Kalkulant", "Menaxher", "Arkatar", "Pergjegjes i Porosive", "1 Euro Menaxher", "1 Euro Staff"]} />
@@ -194,87 +207,312 @@ const Dashboard = () => {
       </div>
 
       <Container>
-        <section className="mb-5">
-          <h4 className="section-title">
-            <LayoutDashboard size={24} className="text-primary" />
-            Veprimet e Shpejta
-          </h4>
-          <div className="categorized-quick-actions">
-            {categorizedQuickActions.map((group, groupIdx) => (
-              <div key={groupIdx} className="mb-4" data-aos="fade-up">
-                <h5 className="category-subtitle">
-                  <span className="category-bullet"></span>
-                  {group.category}
-                </h5>
-                <div className="quick-actions-grid">
-                  {group.actions.map((action, idx) => {
-                    const IconComponent = getShortcutIcon(action.path);
-                    return (
-                      <div key={idx} data-aos="zoom-in" data-aos-delay={idx * 30}>
-                        <Link to={action.path} className="quick-action-card">
-                          <div className="icon-wrapper">
-                            <IconComponent size={22} />
-                          </div>
-                          <span>{action.label}</span>
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-          {categorizedQuickActions.length === 0 && (
-            <div className="text-center p-5 bg-white rounded-4 shadow-sm text-muted"> Nuk ka veprime të disponueshme për rolin tuaj. </div>
-          )}
-        </section>
-
-        <section className="mb-5">
-          <h4 className="section-title">
-            <User size={24} className="text-primary" />
-            Profili Personal
-          </h4>
-          <Card className="profile-card border-0 p-4">
-            <Tabs id="profile-tabs" activeKey={key} onSelect={(k) => setKey(k)} className="modern-tabs border-0">
-              <Tab eventKey="kryesore" title="Shënimet Kryesore">
-                <Row className="mt-2">
-                  <DataItem icon={User} label="Emri" value={user?.emri} delay={0} />
-                  <DataItem icon={User} label="Mbiemri" value={user?.mbiemri} delay={100} />
-                  <DataItem icon={Mail} label="Email Zyrtar" value={user?.email} delay={200} />
-                  <DataItem icon={UserCircle} label="Username" value={user?.username} delay={300} />
-                  <DataItem icon={Calendar} label="Fillimi i Kontratës" value={extra?.dataFillimitKontrates && new Date(extra.dataFillimitKontrates).toLocaleDateString("en-GB")} delay={400} />
-                  <DataItem icon={Clock} label="Fundi i Kontratës" value={extra?.dataMbarimitKontrates && new Date(extra.dataMbarimitKontrates).toLocaleDateString("en-GB")} delay={500} />
-                  <DataItem icon={IdCard} label="Nr. Personal" value={extra?.nrPersonal} delay={600} />
-                  <DataItem icon={Wallet} label="Paga Bruto" value={extra?.paga ? `${parseFloat(extra.paga).toFixed(2)} €` : null} delay={700} />
-                </Row>
-              </Tab>
-              <Tab eventKey="ndihmese" title="Informacione Ndihmëse">
-                <Row className="mt-2">
-                  <DataItem icon={MapPin} label="Adresa" value={extra?.adresa} delay={0} />
-                  <DataItem icon={IdCard} label="Datëlindja" value={extra?.datelindja && new Date(extra.datelindja).toLocaleDateString("en-GB")} delay={100} />
-                  <DataItem icon={Phone} label="Nr. Kontaktit" value={extra?.nrKontaktit} delay={200} />
-                  <DataItem icon={Mail} label="Email Privat" value={extra?.emailPrivat} delay={300} />
-                  <DataItem icon={Briefcase} label="Profesioni" value={extra?.profesioni} delay={400} />
-                  <DataItem icon={GraduationCap} label="Specializimi" value={extra?.specializimi} delay={500} />
-                  <DataItem icon={Building2} label="Banka" value={extra?.banka?.emriBankes} delay={600} />
-                  <DataItem icon={CreditCard} label="Nr. Llogarisë Bankare" value={extra?.numriLlogarisBankare} delay={700} />
-                  <Col md={6} lg={4} className="mb-4" data-aos="fade-up" data-aos-delay={800}>
-                    <div className="data-group">
-                      <div className="data-label">Statusi i Punëtorit</div>
-                      <div>
-                        {extra?.eshtePuntorAktive == "true" ? (
-                          <span className="badge-active">Aktiv</span>
-                        ) : (
-                          <span className="badge-inactive">Jo Aktiv</span>
-                        )}
-                      </div>
+        {/* ── License Banner — MANAGER: full management UI ── */}
+        {licenseStatus && eshteMenaxher && (
+          <div className="mb-4" data-aos="fade-up">
+            {licenseStatus.isLicensed ? (
+              licenseStatus.daysRemaining <= 15 ? (
+                <div 
+                  className="p-3 d-flex align-items-center justify-content-between flex-wrap gap-3"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 146, 60, 0.05) 100%)",
+                    border: "1px solid rgba(245, 158, 11, 0.25)",
+                    borderRadius: "16px",
+                    backdropFilter: "blur(12px)",
+                    boxShadow: "0 8px 32px 0 rgba(245, 158, 11, 0.08)"
+                  }}
+                >
+                  <div className="d-flex align-items-center gap-3">
+                    <div 
+                      className="d-flex align-items-center justify-content-center"
+                      style={{
+                        background: "rgba(245, 158, 11, 0.2)",
+                        borderRadius: "12px",
+                        width: "42px",
+                        height: "42px",
+                        color: "#fb923c"
+                      }}
+                    >
+                      <AlertTriangle size={22} className="animate-pulse" />
                     </div>
-                  </Col>
-                </Row>
-              </Tab>
-            </Tabs>
-          </Card>
-        </section>
+                    <div>
+                      <h6 className="m-0 fw-bold text-warning" style={{ fontSize: "0.95rem" }}>
+                        Vëmendje: Licenca e Sistemit po skadon së shpejti!
+                      </h6>
+                      <p className="m-0 text-white-50 small">
+                        Sistemi i licencuar për <strong>{licenseStatus.biznesi}</strong> do të skadojë pas <strong>{licenseStatus.daysRemaining} ditësh</strong> ({licenseStatus.expiryDate}).
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => navigate("/AktivizoSistemin")}
+                    className="btn btn-warning btn-sm fw-bold px-3 py-2 rounded-3 shadow-sm text-dark"
+                    style={{ border: "none", fontSize: "0.85rem" }}
+                  >
+                    Rinovo Licencën
+                  </button>
+                </div>
+              ) : null
+            ) : (
+              <div 
+                className="p-3 d-flex align-items-center justify-content-between flex-wrap gap-3"
+                style={{
+                  background: "linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.05) 100%)",
+                  border: "1px solid rgba(239, 68, 68, 0.25)",
+                  borderRadius: "16px",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 8px 32px 0 rgba(239, 68, 68, 0.08)"
+                }}
+              >
+                <div className="d-flex align-items-center gap-3">
+                  <div 
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                      background: "rgba(239, 68, 68, 0.2)",
+                      borderRadius: "12px",
+                      width: "42px",
+                      height: "42px",
+                      color: "#f87171"
+                    }}
+                  >
+                    <AlertTriangle size={22} className="animate-bounce" />
+                  </div>
+                  <div>
+                    <h6 className="m-0 fw-bold text-danger" style={{ fontSize: "0.95rem" }}>
+                      Sistemi nuk është i licencuar!
+                    </h6>
+                    <p className="m-0 text-white-50 small">
+                      Kontaktoni menaxherin tuaj për të aktivizuar licencën e sistemit.
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => navigate("/AktivizoSistemin")}
+                  className="btn btn-danger btn-sm fw-bold px-3 py-2 rounded-3 shadow-sm text-white"
+                  style={{ border: "none", fontSize: "0.85rem" }}
+                >
+                  Aktivizo Tani
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── License Banner — NON-MANAGER: read-only warning (no button) ── */}
+        {licenseStatus && !eshteMenaxher && !licenseStatus.isLicensed && (
+          <div className="mb-4" data-aos="fade-up">
+            <div
+              className="p-3 d-flex align-items-center gap-3"
+              style={{
+                background: "linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.03) 100%)",
+                border: "1px solid rgba(239, 68, 68, 0.2)",
+                borderRadius: "16px",
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <div
+                className="d-flex align-items-center justify-content-center flex-shrink-0"
+                style={{
+                  background: "rgba(239, 68, 68, 0.15)",
+                  borderRadius: "12px",
+                  width: "42px",
+                  height: "42px",
+                  color: "#f87171"
+                }}
+              >
+                <AlertTriangle size={22} />
+              </div>
+              <div>
+                <h6 className="m-0 fw-bold text-danger" style={{ fontSize: "0.9rem" }}>
+                  Licenca e sistemit nuk është aktive.
+                </h6>
+                <p className="m-0 text-white-50 small">
+                  Disa funksione mund të mos jenë të disponueshme. Kontaktoni menaxherin tuaj.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {licenseStatus && !licenseStatus.isLicensed ? (
+          <div 
+            className="text-center p-5 my-5 shadow-lg rounded-4 position-relative overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, rgba(20, 20, 35, 0.85) 0%, rgba(10, 10, 15, 0.95) 100%)",
+              backdropFilter: "blur(20px)",
+              boxShadow: "0 20px 50px rgba(239, 68, 68, 0.15)",
+              border: "1px solid rgba(239, 68, 68, 0.2)",
+            }}
+            data-aos="zoom-in"
+          >
+            {/* Ambient red glow behind */}
+            <div 
+              style={{
+                position: "absolute",
+                top: "-50px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "250px",
+                height: "250px",
+                borderRadius: "50%",
+                background: "rgba(239, 68, 68, 0.15)",
+                filter: "blur(80px)",
+                pointerEvents: "none",
+                zIndex: 0
+              }}
+            />
+
+            <div className="position-relative" style={{ zIndex: 1 }}>
+              <div 
+                className="d-inline-flex align-items-center justify-content-center mb-4"
+                style={{
+                  background: "linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.05) 100%)",
+                  borderRadius: "24px",
+                  width: "80px",
+                  height: "80px",
+                  color: "#f87171",
+                  border: "1px solid rgba(239, 68, 68, 0.35)",
+                  boxShadow: "0 10px 30px rgba(239, 68, 68, 0.2)",
+                }}
+              >
+                <Lock size={38} className="animate-pulse" />
+              </div>
+
+              <h2 className="fw-black text-white mb-3 tracking-wide" style={{ fontSize: "2.1rem", textShadow: "0 4px 12px rgba(0,0,0,0.5)" }}>
+                Sistemi është i Bllokuar! 🔒
+              </h2>
+
+              <p className="mx-auto text-white-50 mb-4" style={{ maxWidth: "580px", fontSize: "1.05rem", lineHeight: "1.6" }}>
+                Për të vazhuduar përdorimin e platformës <strong>FinanCare</strong>, duhet të aktivizoni një licencë të vlefshme. Të gjitha funksionet dhe veprimet e shpejta janë bllokuar përkohësisht.
+              </p>
+
+              {eshteMenaxher ? (
+                <div className="d-flex flex-column align-items-center gap-3">
+                  <div className="p-3 mb-2 rounded-3 text-start small border border-warning border-opacity-10" style={{ background: "rgba(245, 158, 11, 0.05)", maxWidth: "480px" }}>
+                    <div className="d-flex gap-2 align-items-center mb-1 text-warning fw-bold">
+                      <AlertTriangle size={15} />
+                      Udhëzim për Menaxherin:
+                    </div>
+                    <span className="text-white-50">
+                      Klikoni butonin e mëposhtëm për të hapur faqen e licencimit ku mund të vendosni emrin e biznesit dhe kodin e ri të licencës për të zhbllokuar sistemin.
+                    </span>
+                  </div>
+                  
+                  <button 
+                    onClick={() => navigate("/AktivizoSistemin")}
+                    className="btn btn-danger btn-lg fw-bold px-5 py-3 rounded-pill shadow-lg text-white d-flex align-items-center gap-2 hover-lift"
+                    style={{ 
+                      border: "none", 
+                      fontSize: "1.05rem", 
+                      background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                      boxShadow: "0 8px 24px rgba(239, 68, 68, 0.35)"
+                    }}
+                  >
+                    <RefreshCw size={18} />
+                    <span>Aktivizo Tani</span>
+                  </button>
+                </div>
+              ) : (
+                <div 
+                  className="mx-auto p-4 rounded-3 text-start border border-danger border-opacity-10" 
+                  style={{ background: "rgba(239, 68, 68, 0.03)", maxWidth: "480px" }}
+                >
+                  <div className="d-flex gap-2 align-items-center mb-1 text-danger fw-bold">
+                    <Shield size={16} />
+                    Njoftim për Stafin:
+                  </div>
+                  <span className="text-white-50 small">
+                    Ju lutemi kontaktoni menaxherin tuaj të biznesit për të aktivizuar ose rinovuar licencën e platformës në mënyrë që të rikthehet aksesi në të gjitha modulet.
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            <section className="mb-5">
+              <h4 className="section-title">
+                <LayoutDashboard size={24} className="text-primary" />
+                Veprimet e Shpejta
+              </h4>
+              <div className="categorized-quick-actions">
+                {categorizedQuickActions.map((group, groupIdx) => (
+                  <div key={groupIdx} className="mb-4" data-aos="fade-up">
+                    <h5 className="category-subtitle">
+                      <span className="category-bullet"></span>
+                      {group.category}
+                    </h5>
+                    <div className="quick-actions-grid">
+                      {group.actions.map((action, idx) => {
+                        const IconComponent = getShortcutIcon(action.path);
+                        return (
+                          <div key={idx} data-aos="zoom-in" data-aos-delay={idx * 30}>
+                            <Link to={action.path} className="quick-action-card">
+                              <div className="icon-wrapper">
+                                <IconComponent size={22} />
+                              </div>
+                              <span>{action.label}</span>
+                            </Link>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {categorizedQuickActions.length === 0 && (
+                <div className="text-center p-5 bg-white rounded-4 shadow-sm text-muted"> Nuk ka veprime të disponueshme për rolin tuaj. </div>
+              )}
+            </section>
+
+            <section className="mb-5">
+              <h4 className="section-title">
+                <User size={24} className="text-primary" />
+                Profili Personal
+              </h4>
+              <Card className="profile-card border-0 p-4">
+                <Tabs id="profile-tabs" activeKey={key} onSelect={(k) => setKey(k)} className="modern-tabs border-0">
+                  <Tab eventKey="kryesore" title="Shënimet Kryesore">
+                    <Row className="mt-2">
+                      <DataItem icon={User} label="Emri" value={user?.emri} delay={0} />
+                      <DataItem icon={User} label="Mbiemri" value={user?.mbiemri} delay={100} />
+                      <DataItem icon={Mail} label="Email Zyrtar" value={user?.email} delay={200} />
+                      <DataItem icon={UserCircle} label="Username" value={user?.username} delay={300} />
+                      <DataItem icon={Calendar} label="Fillimi i Kontratës" value={extra?.dataFillimitKontrates && new Date(extra.dataFillimitKontrates).toLocaleDateString("en-GB")} delay={400} />
+                      <DataItem icon={Clock} label="Fundi i Kontratës" value={extra?.dataMbarimitKontrates && new Date(extra.dataMbarimitKontrates).toLocaleDateString("en-GB")} delay={500} />
+                      <DataItem icon={IdCard} label="Nr. Personal" value={extra?.nrPersonal} delay={600} />
+                      <DataItem icon={Wallet} label="Paga Bruto" value={extra?.paga ? `${parseFloat(extra.paga).toFixed(2)} €` : null} delay={700} />
+                    </Row>
+                  </Tab>
+                  <Tab eventKey="ndihmese" title="Informacione Ndihmëse">
+                    <Row className="mt-2">
+                      <DataItem icon={MapPin} label="Adresa" value={extra?.adresa} delay={0} />
+                      <DataItem icon={IdCard} label="Datëlindja" value={extra?.datelindja && new Date(extra.datelindja).toLocaleDateString("en-GB")} delay={100} />
+                      <DataItem icon={Phone} label="Nr. Kontaktit" value={extra?.nrKontaktit} delay={200} />
+                      <DataItem icon={Mail} label="Email Privat" value={extra?.emailPrivat} delay={300} />
+                      <DataItem icon={Briefcase} label="Profesioni" value={extra?.profesioni} delay={400} />
+                      <DataItem icon={GraduationCap} label="Specializimi" value={extra?.specializimi} delay={500} />
+                      <DataItem icon={Building2} label="Banka" value={extra?.banka?.emriBankes} delay={600} />
+                      <DataItem icon={CreditCard} label="Nr. Llogarisë Bankare" value={extra?.numriLlogarisBankare} delay={700} />
+                      <Col md={6} lg={4} className="mb-4" data-aos="fade-up" data-aos-delay={800}>
+                        <div className="data-group">
+                          <div className="data-label">Statusi i Punëtorit</div>
+                          <div>
+                            {extra?.eshtePuntorAktive == "true" ? (
+                              <span className="badge-active">Aktiv</span>
+                            ) : (
+                              <span className="badge-inactive">Jo Aktiv</span>
+                            )}
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Tab>
+                </Tabs>
+              </Card>
+            </section>
+          </>
+        )}
       </Container>
 
       {/* ── Branding footer ── */}
@@ -306,7 +544,7 @@ const Dashboard = () => {
           background: "rgba(255,255,255,0.06)", borderRadius: "6px",
           padding: "0.18rem 0.55rem", fontFamily: "monospace",
         }}>
-          v2.0.4
+          v2.0.6
         </span>
       </footer>
 

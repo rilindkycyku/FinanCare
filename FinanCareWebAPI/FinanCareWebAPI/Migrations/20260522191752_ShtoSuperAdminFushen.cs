@@ -19,9 +19,42 @@ namespace FinanCareWebAPI.Migrations
                 nullable: false,
                 defaultValue: false);
 
+            // Zëvendësojmë përdoruesin ekzistues me ID 12 (nëse ka) me një ID të re, për të liruar ID 12 pa humbur të dhënat
+            migrationBuilder.Sql(@"
+                IF EXISTS (SELECT 1 FROM Perdoruesi WHERE UserID = 12)
+                BEGIN
+                    DECLARE @NewUserID INT;
+                    SELECT @NewUserID = MAX(UserID) + 1 FROM Perdoruesi;
+                    IF @NewUserID IS NULL OR @NewUserID < 13
+                        SET @NewUserID = 13;
+
+                    -- 1. Krijojmë një kopje të përdoruesit me ID-në e re
+                    SET IDENTITY_INSERT Perdoruesi ON;
+                    INSERT INTO Perdoruesi (UserID, Emri, Mbiemri, Email, Username, AspNetUserID, IsSuperAdmin)
+                    SELECT @NewUserID, Emri, Mbiemri, Email, Username, AspNetUserID, IsSuperAdmin
+                    FROM Perdoruesi
+                    WHERE UserID = 12;
+                    SET IDENTITY_INSERT Perdoruesi OFF;
+
+                    -- 2. Përditësojmë dinamikisht të gjitha tabelat që referencojnë Perdoruesi(UserID) si Foreign Key
+                    DECLARE @Sql NVARCHAR(MAX) = '';
+                    SELECT @Sql = @Sql + 'UPDATE [' + OBJECT_SCHEMA_NAME(fk.parent_object_id) + '].[' + OBJECT_NAME(fk.parent_object_id) + '] SET [' + c.name + '] = ' + CAST(@NewUserID AS NVARCHAR) + ' WHERE [' + c.name + '] = 12; '
+                    FROM sys.foreign_key_columns fkc
+                    JOIN sys.foreign_keys fk ON fkc.constraint_object_id = fk.object_id
+                    JOIN sys.columns c ON fkc.parent_object_id = c.object_id AND fkc.parent_column_id = c.column_id
+                    WHERE fk.referenced_object_id = OBJECT_ID('Perdoruesi');
+
+                    IF @Sql <> ''
+                        EXEC sp_executesql @Sql;
+
+                    -- 3. Fshijmë përdoruesin e vjetër me ID 12
+                    DELETE FROM Perdoruesi WHERE UserID = 12;
+                END
+            ");
+
             // ── 2. Seed i plotë i superadminit me InsertData ───────────────────
             const string saAspNetUserId = "1cf55bef-b993-4550-9a70-79aa99cd34df";
-            const int saUserId = 9999;
+            const int saUserId = 12;
 
             // AspNetUsers
             migrationBuilder.InsertData(
@@ -54,8 +87,8 @@ namespace FinanCareWebAPI.Migrations
             // Kartelat
             migrationBuilder.InsertData(
                 table: "Kartelat",
-                columns: new[] { "IDKartela", "DataKrijimit", "KodiKartela", "LlojiKarteles", "Rabati", "StafiID", "PartneriID" },
-                values: new object[] { 9999, null, "FINANCAREADMIN1@", "Fshirje", null, saUserId, null });
+                columns: new[] { "DataKrijimit", "KodiKartela", "LlojiKarteles", "Rabati", "StafiID", "PartneriID" },
+                values: new object[] { new DateTime(1900, 9, 1), "FINANCAREADMIN1@", "Fshirje", null, saUserId, null });
         }
 
 
@@ -63,12 +96,12 @@ namespace FinanCareWebAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             const string saAspNetUserId = "1cf55bef-b993-4550-9a70-79aa99cd34df";
-            const int saUserId = 9999;
+            const int saUserId = 12;
 
             migrationBuilder.DeleteData(
                 table: "Kartelat",
-                keyColumn: "IDKartela",
-                keyValue: 9999);
+                keyColumn: "KodiKartela",
+                keyValue: "FINANCAREADMIN1@");
 
             migrationBuilder.DeleteData(
                 table: "TeDhenatPerdoruesit",

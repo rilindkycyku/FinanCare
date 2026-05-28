@@ -107,6 +107,7 @@ builder.Services.AddSwaggerGen(c => {
 
 builder.Services.AddScoped<KartelaService>();
 builder.Services.AddScoped<IAdminLogService, AdminLogService>();
+builder.Services.AddScoped<ILicenseService, LicenseService>();
 
 
 

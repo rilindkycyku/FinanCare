@@ -14,6 +14,7 @@ import ZbritjetEProduktit from "./Pages/Materiali/Artikujt/ZbritjetEProduktit";
 import Qmimore from "./Pages/Materiali/Artikujt/Qmimore";
 import TabelaEPerdoruesve from "./Pages/Gjenerale/Stafi/TabelaEPerdoruesve";
 import Rolet from "./Pages/Gjenerale/Stafi/Rolet";
+import AktivizoSistemin from "./Pages/Gjenerale/Stafi/AktivizoSistemin";
 import KalkulimiIMallit from "./Pages/Materiali/Hyrjet/KalkulimiIMallit";
 import PerditesoTeDhenat from "./Pages/Gjenerale/TeDhenat/PerditesoTeDhenat";
 import KthimiMallitTeShitur from "./Pages/Materiali/Hyrjet/KthimiMallitTeShitur";
@@ -76,6 +77,7 @@ function App() {
         <Route path="/Qmimore" element={<Qmimore />} />
         <Route path="/Stafi" element={<TabelaEPerdoruesve />} />
         <Route path="/Rolet" element={<Rolet />} />
+        <Route path="/AktivizoSistemin" element={<AktivizoSistemin />} />
         <Route path="/KalkulimiIMallit" element={<KalkulimiIMallit />} />
         <Route path="/PerditesoTeDhenat" element={<PerditesoTeDhenat />} />
         <Route

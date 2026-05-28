@@ -9,6 +9,7 @@ using FinanCareWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Services;
 
 namespace FinanCareWebAPI.Controllers.SERVER
 {
@@ -21,17 +22,20 @@ namespace FinanCareWebAPI.Controllers.SERVER
         private readonly IConfiguration _configuration;
         private readonly FinanCareDbContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILicenseService _licenseService;
 
         public AuthenticateController(
             UserManager<IdentityUser> userManager,
-           RoleManager<IdentityRole> roleManager,
+            RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
-            FinanCareDbContext context)
+            FinanCareDbContext context,
+            ILicenseService licenseService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _context = context;
+            _licenseService = licenseService;
         }
 
         [Authorize]
@@ -236,6 +240,8 @@ namespace FinanCareWebAPI.Controllers.SERVER
                         Result = false
                     });
                 }
+
+
 
                 var roles = await _userManager.GetRolesAsync(useri_ekziston);
 

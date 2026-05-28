@@ -38,18 +38,27 @@ function EditoPerdorues(props) {
           `${API_BASE_URL}/api/Perdoruesi/shfaqSipasID?idUserAspNet=${props.id}`,
           authentikimi
         );
-        setPerdoruesi(response.data);
-        console.log(response.data);
+        
+        const data = response.data;
+        if (data && data.perdoruesi && !data.perdoruesi.teDhenatPerdoruesit) {
+          data.perdoruesi.teDhenatPerdoruesit = {
+            eshtePuntorAktive: "true",
+            isDeleted: "false"
+          };
+        }
+        
+        setPerdoruesi(data);
+        console.log(data);
 
         // Set selected options based on fetched data
         setSelectedBanka(
           bankaOptions.find(
             (option) =>
               option.value ==
-              response.data.perdoruesi.teDhenatPerdoruesit.bankaID
+              data.perdoruesi.teDhenatPerdoruesit?.bankaID
           )
         );
-        const filteredRoles = response.data.rolet.filter(
+        const filteredRoles = data.rolet.filter(
           (role) => role !== "User"
         );
         const lastRole =
@@ -261,14 +270,14 @@ function EditoPerdorues(props) {
                         <div className="sp-datepicker-wrapper">
                           <DatePicker
                             selected={
-                              new Date(
-                                perdoruesi?.perdoruesi?.teDhenatPerdoruesit.dataFillimitKontrates
-                              )
+                              perdoruesi?.perdoruesi?.teDhenatPerdoruesit?.dataFillimitKontrates
+                                ? new Date(perdoruesi.perdoruesi.teDhenatPerdoruesit.dataFillimitKontrates)
+                                : null
                             }
                             onChange={(date) =>
                               handleChange(
                                 "dataFillimitKontrates",
-                                date.toISOString()
+                                date ? date.toISOString() : null
                               )
                             }
                             dateFormat="dd/MM/yyyy"
@@ -284,23 +293,23 @@ function EditoPerdorues(props) {
                         <div className="sp-datepicker-wrapper">
                           <DatePicker
                             selected={
-                              new Date(
-                                perdoruesi?.perdoruesi?.teDhenatPerdoruesit.dataMbarimitKontrates
-                              )
+                              perdoruesi?.perdoruesi?.teDhenatPerdoruesit?.dataMbarimitKontrates
+                                ? new Date(perdoruesi.perdoruesi.teDhenatPerdoruesit.dataMbarimitKontrates)
+                                : null
                             }
                             onChange={(date) =>
                               handleChange(
                                 "dataMbarimitKontrates",
-                                date.toISOString()
+                                date ? date.toISOString() : null
                               )
                             }
                             dateFormat="dd/MM/yyyy"
                             className="sp-input w-100"
                             popperClassName="sp-datepicker-popper"
                             minDate={
-                              new Date(
-                                perdoruesi?.perdoruesi?.teDhenatPerdoruesit.dataFillimitKontrates
-                              )
+                              perdoruesi?.perdoruesi?.teDhenatPerdoruesit?.dataFillimitKontrates
+                                ? new Date(perdoruesi.perdoruesi.teDhenatPerdoruesit.dataFillimitKontrates)
+                                : null
                             }
                           />
                         </div>
@@ -402,12 +411,12 @@ function EditoPerdorues(props) {
                         <div className="sp-datepicker-wrapper">
                           <DatePicker
                             selected={
-                              new Date(
-                                perdoruesi?.perdoruesi?.teDhenatPerdoruesit.datelindja
-                              )
+                              perdoruesi?.perdoruesi?.teDhenatPerdoruesit?.datelindja
+                                ? new Date(perdoruesi.perdoruesi.teDhenatPerdoruesit.datelindja)
+                                : null
                             }
                             onChange={(date) =>
-                              handleChange("datelindja", date.toISOString())
+                              handleChange("datelindja", date ? date.toISOString() : null)
                             }
                             dateFormat="dd/MM/yyyy"
                             className="sp-input w-100"
@@ -579,6 +588,24 @@ function EditoPerdorues(props) {
                       </div>
                     </Col>
                   </Row>
+                  {perdoruesi?.perdoruesi?.teDhenatPerdoruesit?.eshtePuntorAktive === "false" && (
+                    <div 
+                      className="mt-3 p-2 d-flex align-items-center gap-2"
+                      style={{ 
+                        background: 'rgba(245, 158, 11, 0.1)', 
+                        borderLeft: '3px solid #f59e0b', 
+                        borderRadius: '4px',
+                        color: '#fbbf24',
+                        fontSize: '11px',
+                        lineHeight: '1.4'
+                      }}
+                    >
+                      <span style={{ fontSize: '14px', lineHeight: '1' }}>⚠️</span>
+                      <span>
+                        Çaktivizimi bllokon menjëherë hyrjen e përdoruesit në sistem dhe mbyll çdo sesion aktiv.
+                      </span>
+                    </div>
+                  )}
                 </Form>
               </div>
             </Tab>
