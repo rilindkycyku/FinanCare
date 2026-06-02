@@ -19,8 +19,8 @@ import "../../Styles/ShtoPagesat.css";
 
 /* ── Helpers ─────────────────────────────────────────────────── */
 // These must match KartelaFinanciare.jsx exactly
-const DEBIT_TYPES  = ["HYRJE", "FAT", "AS", "PARAGON", "SALDO", "ONLINE"];
-const CREDIT_TYPES = ["FL", "KMSH", "KMB", "PAGES"];
+const DEBIT_TYPES  = ["HYRJE", "FAT", "FATURIM", "AS", "PARAGON", "SALDO", "ONLINE"];
+const CREDIT_TYPES = ["FL", "KMSH", "KMB", "PAGES", "PAGESE"];
 
 function fmt(val) {
   const n = parseFloat(val);

@@ -53,6 +53,7 @@ services:
     container_name: financare-frontend
     ports:
       - "3000:80"
+      - "3443:443"
     depends_on:
       - api
     networks:
@@ -72,6 +73,7 @@ services:
     container_name: financare-online
     ports:
       - "3001:80"
+      - "3444:443"
     depends_on:
       - api
     networks:

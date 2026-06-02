@@ -1,4 +1,4 @@
-﻿using FinanCareWebAPI.Migrations;
+using FinanCareWebAPI.Migrations;
 using FinanCareWebAPI.Models;
 using FinanCareWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -65,14 +65,14 @@ namespace FinanCareWebAPI.Controllers.Stafi
                 .Where(x => x.LlojiKalkulimit == "PARAGON"
                     && x.DataRegjistrimit >= todayStart
                     && x.DataRegjistrimit < tomorrowStart)
-                .GroupBy(x => x.Stafi)  // Group by cashier
+                .GroupBy(x => new { x.Stafi.UserID, x.Stafi.Emri, x.Stafi.Mbiemri, x.Stafi.Username })  // Group by cashier properties
                 .Select(g => new
                 {
                     stafiID = g.Key.UserID,
                     emri = g.Key.Emri,
                     mbiemri = g.Key.Mbiemri,
                     username = g.Key.Username,
-                    totaliShitjeve = g.Sum(f => f.TotaliPaTVSH + f.TVSH)  // Total with VAT
+                    totaliShitjeve = g.Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))  // Total with VAT
                 })
                 .OrderBy(x => x.emri)  // Optional: sort by name
                 .ToListAsync();

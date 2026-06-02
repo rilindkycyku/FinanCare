@@ -82,8 +82,8 @@ const Row = ({ index, style, items, onRowClick }) => {
       <div className="lf-td lf-col-nr muted mono">{k.nrRendorFatures ?? "—"}</div>
       <div className="lf-td lf-col-data muted">{fmtDate(k.dataRegjistrimit)}</div>
       <div className="lf-td">
-        <span className={`lf-type-badge ${k.llojiKalkulimit}`}>
-          {TYPE_LABELS[k.llojiKalkulimit] ?? k.llojiKalkulimit}
+        <span className={`lf-type-badge ${k.llojiKalkulimit || 'N/A'}`}>
+          {TYPE_LABELS[k.llojiKalkulimit] ?? k.llojiKalkulimit ?? "N/A"}
         </span>
       </div>
       <div className="lf-td bold" style={{ overflow: "hidden" }}>
@@ -174,11 +174,39 @@ function ListaFaturave() {
     return () => clearTimeout(t);
   }, [searchText]);
 
+  // ─ Available Types based on fetched raw data ──────────────────
+  const availableTypes = useMemo(() => {
+    const types = new Set();
+    raw.forEach((k) => {
+      if (k.llojiKalkulimit) {
+        types.add(k.llojiKalkulimit);
+      }
+    });
+    return ALL_TYPES.filter((t) => types.has(t));
+  }, [raw]);
+
+  const isAllActive = useMemo(() => {
+    if (availableTypes.length === 0) return true;
+    return availableTypes.every((t) => activeTypes.has(t));
+  }, [availableTypes, activeTypes]);
+
+  // Auto-align active types when available types change to avoid empty state
+  useEffect(() => {
+    if (availableTypes.length === 0) return;
+    setActiveTypes((prev) => {
+      const hasAnyAvailableActive = availableTypes.some((t) => prev.has(t));
+      if (!hasAnyAvailableActive) {
+        return new Set(ALL_TYPES);
+      }
+      return prev;
+    });
+  }, [availableTypes]);
+
   // ─ Filtered + Sorted list ─────────────────────────────────────
   const filtered = useMemo(() => {
     let items = raw.filter((k) => {
       // Invoice type
-      if (!activeTypes.has(k.llojiKalkulimit)) return false;
+      if (!isAllActive && !activeTypes.has(k.llojiKalkulimit)) return false;
       // Payment type
       if (filterLlojiPageses !== "Te Gjitha" && k.llojiPageses !== filterLlojiPageses) return false;
       // Status
@@ -216,35 +244,9 @@ function ListaFaturave() {
     });
 
     return items;
-  }, [raw, activeTypes, filterLlojiPageses, filterStatusi, debouncedSearch, sortKey, sortDir]);
+  }, [raw, activeTypes, filterLlojiPageses, filterStatusi, debouncedSearch, sortKey, sortDir, isAllActive]);
 
-  // ─ Available Types based on fetched raw data ──────────────────
-  const availableTypes = useMemo(() => {
-    const types = new Set();
-    raw.forEach((k) => {
-      if (k.llojiKalkulimit) {
-        types.add(k.llojiKalkulimit);
-      }
-    });
-    return ALL_TYPES.filter((t) => types.has(t));
-  }, [raw]);
 
-  const isAllActive = useMemo(() => {
-    if (availableTypes.length === 0) return true;
-    return availableTypes.every((t) => activeTypes.has(t));
-  }, [availableTypes, activeTypes]);
-
-  // Auto-align active types when available types change to avoid empty state
-  useEffect(() => {
-    if (availableTypes.length === 0) return;
-    setActiveTypes((prev) => {
-      const hasAnyAvailableActive = availableTypes.some((t) => prev.has(t));
-      if (!hasAnyAvailableActive) {
-        return new Set(ALL_TYPES);
-      }
-      return prev;
-    });
-  }, [availableTypes]);
 
   // ─ KPIs ──────────────────────────────────────────────────────
   const kpis = useMemo(() => {
@@ -485,6 +487,10 @@ function ListaFaturave() {
   const handleExport = async () => {
     if (!filtered.length || exporting) return;
     setExporting(true);
+    
+    // Yield to the browser's render loop to show "Duke eksportuar..." before freezing
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
     try {
       const headers = [
         "Nr. Rendor", "Data", "Lloji", "Partneri",

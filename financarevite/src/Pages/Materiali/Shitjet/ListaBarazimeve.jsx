@@ -346,7 +346,7 @@ function ListaBarazimeve() {
       <div className="tabelaDiv">
         <div className="containerDashboardP py-4">
         <div className="text-center mb-5">
-          <h1 className="h2 fw-bold text-dark mb-2">Historiku i Barazimeve</h1>
+          <h1 className="h2 fw-bold text-white mb-2">Historiku i Barazimeve</h1>
           <p className="text-muted small">Monitoroni mbylljet e arkës dhe performancën e arkëtarëve</p>
         </div>
 
@@ -390,7 +390,7 @@ function ListaBarazimeve() {
                     {filtered.length > 0 && (
                       <EksportoTeDhenat
                         teDhenatJSON={exportData}
-                        emriDokumentit="Historiku_i_Barazimeve"
+                        emriDokumentit="Historiku i Barazimeve"
                       />
                     )}
                   </Col>

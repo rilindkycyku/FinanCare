@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import { Camera } from "lucide-react";
+import BarcodeScannerModal from "../../../TeTjera/BarcodeScannerModal";
 
 const ShtoProduktin = (props) => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -19,6 +21,7 @@ const ShtoProduktin = (props) => {
   const [fushatEZbrazura, setFushatEZbrazura] = useState(false);
   const [shfaqGabimin, setShfaqGabimin] = useState(false);
   const [mesazhiGabimit, setMesazhiGabimit] = useState("");
+  const [showScanner, setShowScanner] = useState(false);
 
   const getToken = localStorage.getItem("token");
 
@@ -58,6 +61,14 @@ const ShtoProduktin = (props) => {
 
   const onChange = (e) => {
     setProdukti({ ...produkti, [e.target.name]: e.target.value });
+  };
+
+  const handleScanResult = (scannedCode) => {
+    setShowScanner(false);
+    setProdukti({ ...produkti, barkodi: scannedCode });
+    setTimeout(() => {
+      document.getElementById("emriProduktit")?.focus();
+    }, 400);
   };
 
   async function handleSubmit() {
@@ -362,7 +373,16 @@ const ShtoProduktin = (props) => {
               <Row className="g-4 mb-3">
                 <Col md="6">
                   <div className="sp-input-group">
-                    <label className="sp-label">Barkodi <span className="text-danger">*</span></label>
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <label className="sp-label mb-0">Barkodi <span className="text-danger">*</span></label>
+                      <button 
+                        type="button"
+                        onClick={() => setShowScanner(true)}
+                        style={{ color: '#818cf8', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Camera size={14} /> Skano
+                      </button>
+                    </div>
                     <Form.Control
                       onChange={onChange}
                       value={produkti.barkodi}
@@ -595,6 +615,12 @@ const ShtoProduktin = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      
+      <BarcodeScannerModal 
+        show={showScanner} 
+        onHide={() => setShowScanner(false)} 
+        onScan={handleScanResult} 
+      />
     </>
   );
 };

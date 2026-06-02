@@ -4,6 +4,8 @@ import axios from "axios";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import BarcodeScannerModal from "../../../TeTjera/BarcodeScannerModal";
+import { Camera } from "lucide-react";
 
 
 const BartjaArtikullit = (props) => {
@@ -16,6 +18,28 @@ const BartjaArtikullit = (props) => {
   const [optionsBarkodiSelectedOld, setOptionsBarkodiSelectedOld] = useState(null);
   const [optionsBarkodiSelectedNew, setOptionsBarkodiSelectedNew] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [activeScanner, setActiveScanner] = useState(null);
+
+  const handleScanResult = (scannedCode) => {
+    setActiveScanner(null);
+    if (activeScanner === 'old') {
+      setInputValueOld(scannedCode);
+      setTimeout(() => {
+         const el = document.getElementById("artikulliVjeter-input");
+         if (el) el.focus();
+         const match = optionsBarkodi.find(opt => opt.label && opt.label.includes(scannedCode));
+         if (match) handleChangeOldProduct(match);
+      }, 400);
+    } else if (activeScanner === 'new') {
+      setInputValueNew(scannedCode);
+      setTimeout(() => {
+         const el = document.getElementById("artikulliRi-input");
+         if (el) el.focus();
+         const match = optionsBarkodi.find(opt => opt.label && opt.label.includes(scannedCode));
+         if (match) handleChangeNewProduct(match);
+      }, 400);
+    }
+  };
 
   const [oldProdukti, setOldProdukti] = useState({
     emriProduktit: '',
@@ -266,9 +290,19 @@ const BartjaArtikullit = (props) => {
                 </div>
 
                 <div className="sp-input-group mb-3">
-                  <label className="sp-label">Zgjidh Burimin <span className="text-danger">*</span></label>
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <label className="sp-label mb-0">Zgjidh Burimin <span className="text-danger">*</span></label>
+                    <button 
+                      type="button"
+                      onClick={() => setActiveScanner('old')}
+                      style={{ color: '#818cf8', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <Camera size={14} /> Skano
+                    </button>
+                  </div>
                   <div className="sp-select-container">
                     <Select
+                      inputId="artikulliVjeter-input"
                       value={optionsBarkodiSelectedOld}
                       onChange={handleChangeOldProduct}
                       options={realFilteredOptionsOld}
@@ -326,9 +360,19 @@ const BartjaArtikullit = (props) => {
                 </div>
 
                 <div className="sp-input-group mb-3">
-                  <label className="sp-label">Zgjidh Destinacionin <span className="text-danger">*</span></label>
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <label className="sp-label mb-0">Zgjidh Destinacionin <span className="text-danger">*</span></label>
+                    <button 
+                      type="button"
+                      onClick={() => setActiveScanner('new')}
+                      style={{ color: '#818cf8', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <Camera size={14} /> Skano
+                    </button>
+                  </div>
                   <div className="sp-select-container">
                     <Select
+                      inputId="artikulliRi-input"
                       value={optionsBarkodiSelectedNew}
                       onChange={handleChangeNewProduct}
                       options={filteredOptionsBarkodiNew}
@@ -390,6 +434,11 @@ const BartjaArtikullit = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <BarcodeScannerModal 
+        show={activeScanner !== null} 
+        onHide={() => setActiveScanner(null)} 
+        onScan={handleScanResult} 
+      />
     </>
   );
 };

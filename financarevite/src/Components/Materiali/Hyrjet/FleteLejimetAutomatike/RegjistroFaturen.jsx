@@ -461,9 +461,18 @@ function RegjistroFaturen(props) {
                     <Card.Body>
                       <Form>
                         <Form.Group controlId="idDheEmri" className="mb-3">
-                          <Form.Label className="fw-semibold">
-                            Produkti
-                          </Form.Label>
+                          <div className="d-flex justify-content-between align-items-center mb-1">
+                            <Form.Label className="fw-semibold mb-0">
+                              Produkti
+                            </Form.Label>
+                            <button 
+                              type="button"
+                              onClick={() => setShowScanner(true)}
+                              style={{ color: '#10b981', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <Camera size={14} /> Skano
+                            </button>
+                          </div>
                           <Form.Control
                             id="emriProduktit"
                             type="text"
@@ -663,6 +672,11 @@ function RegjistroFaturen(props) {
             </Container>
           </>
         )}
+        <BarcodeScannerModal 
+        show={showScanner} 
+        onHide={() => setShowScanner(false)} 
+        onScan={handleScanResult} 
+      />
       </div>
     </>
   );

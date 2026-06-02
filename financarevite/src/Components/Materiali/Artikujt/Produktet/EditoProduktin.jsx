@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-﻿import axios from "axios";
+import axios from "axios";
 import { Button, Form, Modal, Tabs, Tab, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
+import {
   faXmark,
-  faPenToSquare,
-  faGlobe,
+  faGlobe
 } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
-import "../../../../Pages/Styles/PremiumTheme.css";
-import { darkSelectStyles } from "@/utils/darkSelectStyles";
+import "../../../../Pages/Styles/PremiumTheme.css";
+import { Camera } from "lucide-react";
+import BarcodeScannerModal from "../../../TeTjera/BarcodeScannerModal";
 
 function EditoProduktin(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -19,6 +19,7 @@ function EditoProduktin(props) {
   const [kontrolloProduktin, setKontrolloProduktin] = useState(false);
   const [fushatEZbrazura, setFushatEZbrazura] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   // Select states
   const [optionsGrupiProduktit, setOptionsGrupiProduktit] = useState([]);
@@ -151,6 +152,14 @@ function EditoProduktin(props) {
 
   const onChange = (e) => {
     setProdukti({ ...produkti, [e.target.name]: e.target.value });
+  };
+
+  const handleScanResult = (scannedCode) => {
+    setShowScanner(false);
+    setProdukti({ ...produkti, barkodi: scannedCode });
+    setTimeout(() => {
+      document.getElementById("emriProduktit")?.focus();
+    }, 400);
   };
 
   // Focus navigation helper
@@ -411,7 +420,16 @@ function EditoProduktin(props) {
                   <Row className="g-4 mb-3">
                     <Col md="6">
                       <div className="sp-input-group">
-                        <label className="sp-label">Barkodi <span className="text-danger">*</span></label>
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <label className="sp-label mb-0">Barkodi <span className="text-danger">*</span></label>
+                          <button 
+                            type="button"
+                            onClick={() => setShowScanner(true)}
+                            style={{ color: '#818cf8', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                          >
+                            <Camera size={14} /> Skano
+                          </button>
+                        </div>
                         <Form.Control
                           name="barkodi"
                           value={produkti.barkodi || ""}
@@ -654,6 +672,12 @@ function EditoProduktin(props) {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <BarcodeScannerModal 
+        show={showScanner} 
+        onHide={() => setShowScanner(false)} 
+        onScan={handleScanResult} 
+      />
     </>
   );
 }

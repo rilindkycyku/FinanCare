@@ -11,7 +11,8 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
-
+import BarcodeScannerModal from "../../../Components/TeTjera/BarcodeScannerModal";
+import { ScanBarcode } from "lucide-react";
 function KartelaEArtikullit(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const selectRef = useRef(null);
@@ -19,6 +20,7 @@ function KartelaEArtikullit(props) {
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
   const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [produktiID, setproduktiID] = useState(0);
   const [kartelaEProduktit, setKartelaEProduktit] = useState([]);
@@ -203,6 +205,30 @@ function KartelaEArtikullit(props) {
     return results;
   }, [inputValue, options]);
 
+  const handleScan = (scannedBarcode) => {
+    setIsScannerOpen(false);
+    if (scannedBarcode) {
+      let lookupBarcode = scannedBarcode;
+      if (scannedBarcode.startsWith("2") && scannedBarcode.length === 13) {
+        const pluCode = scannedBarcode.substring(0, 7);
+        const hasPlu = options.find((opt) => opt.label.includes(pluCode));
+        if (hasPlu) lookupBarcode = pluCode;
+      }
+
+      const match = options.find((opt) =>
+        opt.label.toLowerCase().includes(lookupBarcode.toLowerCase())
+      );
+
+      if (match) {
+        handleChange(match);
+      } else {
+        setTipiMesazhit("danger");
+        setPershkrimiMesazhit(`Produkti me barkodin ${scannedBarcode} nuk u gjet!`);
+        setShfaqMesazhin(true);
+      }
+    }
+  };
+
   return (
     <>
       <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "Kalkulant", "Faturist", "1 Euro Menaxher"]} />
@@ -239,23 +265,38 @@ function KartelaEArtikullit(props) {
                   <Form>
                     <Form.Group controlId="idDheEmri">
                       <Form.Label>Produkti</Form.Label>
-                      <Select
-                        ref={selectRef}
-                        value={optionsSelected}
-                        onChange={handleChange}
-                        onInputChange={(val) => setInputValue(val)}
-                        onKeyDown={handleKeyDown}
-                        options={filteredOptions}
-                        id="produktiSelect" // Setting the id attribute
-                        inputId="produktiSelect-input" // Setting the input id attribute
-                        styles={darkSelectStyles}
-                        placeholder="Kërko produktin (min. 2 shkronja)..."
-                        noOptionsMessage={() =>
-                          inputValue.length < 2
-                            ? "Shkruani të paktën 2 karaktere..."
-                            : "Nuk u gjet asnjë produkt"
-                        }
-                      />
+                      <div className="d-flex align-items-center gap-2">
+                        <div style={{ flex: 1 }}>
+                          <Select
+                            ref={selectRef}
+                            value={optionsSelected}
+                            onChange={handleChange}
+                            onInputChange={(val) => setInputValue(val)}
+                            onKeyDown={handleKeyDown}
+                            options={filteredOptions}
+                            id="produktiSelect" // Setting the id attribute
+                            inputId="produktiSelect-input" // Setting the input id attribute
+                            styles={darkSelectStyles}
+                            placeholder="Kërko produktin (min. 2 shkronja)..."
+                            noOptionsMessage={() =>
+                              inputValue.length < 2
+                                ? "Shkruani të paktën 2 karaktere..."
+                                : "Nuk u gjet asnjë produkt"
+                            }
+                          />
+                        </div>
+                        <Button
+                          variant="secondary"
+                          className="d-flex align-items-center gap-2 Butoni"
+                          onClick={() => setIsScannerOpen(true)}
+                          style={{
+                            height: "38px",
+                            padding: "0 12px",
+                          }}
+                        >
+                          <ScanBarcode size={18} />
+                        </Button>
+                      </div>
                     </Form.Group>
                   </Form>
                   <br />
@@ -384,6 +425,12 @@ function KartelaEArtikullit(props) {
           </div>
         )}
       </div>
+
+      <BarcodeScannerModal 
+        show={isScannerOpen} 
+        onHide={() => setIsScannerOpen(false)} 
+        onScan={handleScan} 
+      />
     </>
   );
 }

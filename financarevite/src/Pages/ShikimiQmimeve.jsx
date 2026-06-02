@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
-import { Container, Row, Col, Badge } from "react-bootstrap";
+import { Container, Row, Col, Badge, Button } from "react-bootstrap";
 import ReactSelect from "react-select";
-import { Package, Tag, Search, TrendingUp, Info } from "lucide-react";
+import { Package, Tag, Search, TrendingUp, Info, Camera } from "lucide-react";
 import Titulli from "../Components/TeTjera/Titulli";
 import NavBar from "../Components/TeTjera/layout/NavBar";
 import Mesazhi from "../Components/TeTjera/layout/Mesazhi";
 import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import BarcodeScannerModal from "../Components/TeTjera/BarcodeScannerModal";
 
 function ShikimiQmimeve() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -17,6 +18,7 @@ function ShikimiQmimeve() {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isFetchingDetail, setIsFetchingDetail] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -120,28 +122,37 @@ function ShikimiQmimeve() {
     if (event.key === "Enter") {
       const currentInput = document.getElementById("barkodiSelect-input")?.value || "";
       if (currentInput.trim().length > 0) {
-        let lookupBarcode = currentInput.trim();
-        if (lookupBarcode.startsWith("2") && lookupBarcode.length === 13) {
-          const pluCode = lookupBarcode.substring(0, 7);
-          const matched = options.find(opt => opt.label.includes(pluCode));
-          if (matched) {
-            lookupBarcode = pluCode;
-          }
-        }
-
-        const matches = options.filter(opt => opt.label.toLowerCase().includes(lookupBarcode.toLowerCase()));
-        if (matches.length === 0) {
-          setTipiMesazhit("danger");
-          setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${currentInput})`);
-          setShfaqMesazhin(true);
-          setInputValue("");
-          setTimeout(() => selectRef.current?.focus(), 10);
-        } else {
-          event.preventDefault();
-          handleChange(matches[0]);
-        }
+        processBarcode(currentInput.trim());
+        event.preventDefault();
       }
     }
+  };
+
+  const processBarcode = (scannedCode) => {
+    let lookupBarcode = scannedCode.trim();
+    if (lookupBarcode.startsWith("2") && lookupBarcode.length === 13) {
+      const pluCode = lookupBarcode.substring(0, 7);
+      const matched = options.find(opt => opt.label.includes(pluCode));
+      if (matched) {
+        lookupBarcode = pluCode;
+      }
+    }
+
+    const matches = options.filter(opt => opt.label.toLowerCase().includes(lookupBarcode.toLowerCase()));
+    if (matches.length === 0) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${scannedCode})`);
+      setShfaqMesazhin(true);
+      setInputValue("");
+      setTimeout(() => selectRef.current?.focus(), 10);
+    } else {
+      handleChange(matches[0]);
+    }
+  };
+
+  const handleScanResult = (scannedCode) => {
+    setShowScanner(false);
+    processBarcode(scannedCode);
   };
 
   const product = kartelaEProduktit?.produkti;
@@ -241,9 +252,17 @@ function ShikimiQmimeve() {
                       : "Nuk u gjet asnjë produkt"
                   }
                 />
-                <div className="mt-3 d-flex align-items-center gap-2 text-muted-premium">
-                  <Info size={14} />
-                  <span>Shtypni Enter ose zgjidhni nga lista për të parë detajet</span>
+                <div className="mt-3 d-flex align-items-center justify-content-between flex-wrap gap-2 text-muted-premium">
+                  <div className="d-flex align-items-center gap-2">
+                    <Info size={14} />
+                    <span>Shtypni Enter ose zgjidhni nga lista</span>
+                  </div>
+                  <button 
+                    className="btn-scanner-premium" 
+                    onClick={() => setShowScanner(true)}
+                  >
+                    <Camera size={18} /> Skano Barkodin
+                  </button>
                 </div>
               </div>
             </div>
@@ -344,6 +363,12 @@ function ShikimiQmimeve() {
 
 
       </Container>
+
+      <BarcodeScannerModal 
+        show={showScanner} 
+        onHide={() => setShowScanner(false)} 
+        onScan={handleScanResult} 
+      />
 
       <style>{`
         .price-checker-wrapper {
@@ -559,6 +584,32 @@ function ShikimiQmimeve() {
         
         .border-slate-100 {
           border-color: var(--sp-border) !important;
+        }
+        
+        .btn-scanner-premium {
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          padding: 8px 18px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 15px -3px rgba(79, 70, 229, 0.4);
+          cursor: pointer;
+        }
+
+        .btn-scanner-premium:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px -5px rgba(79, 70, 229, 0.6);
+          background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+        }
+
+        .btn-scanner-premium:active {
+          transform: translateY(1px);
+          box-shadow: 0 2px 10px -3px rgba(79, 70, 229, 0.4);
         }
 
         @keyframes spin {

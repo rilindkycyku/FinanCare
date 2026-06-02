@@ -544,7 +544,7 @@ const Dashboard = () => {
           background: "rgba(255,255,255,0.06)", borderRadius: "6px",
           padding: "0.18rem 0.55rem", fontFamily: "monospace",
         }}>
-          v2.0.6
+          v2.0.7
         </span>
       </footer>
 

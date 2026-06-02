@@ -1,7 +1,7 @@
 import { useState } from "react";
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTags,
@@ -293,15 +293,22 @@ const generatePDF = (storeName, products) => {
 /* ─── Component ─────────────────────────────────────────────────── */
 const SalesLabel = ({ storeName, products }) => {
   const [showModal, setShowModal] = useState(false);
+  const [selectedDateFilter, setSelectedDateFilter] = useState("ALL");
 
-  const total = products?.length ?? 0;
+  const uniqueDates = [...new Set((products || []).map(p => `${p.dataZbritjes} -> ${p.dataSkadimit}`))].filter(Boolean).sort();
+
+  const filteredProducts = selectedDateFilter === "ALL" 
+    ? (products || []) 
+    : (products || []).filter(p => `${p.dataZbritjes} -> ${p.dataSkadimit}` === selectedDateFilter);
+
+  const total = filteredProducts.length;
   const avgDisc =
     total > 0
-      ? (products.reduce((s, p) => s + parseFloat(pct(p.normalPrice, p.salePrice)), 0) / total).toFixed(1)
+      ? (filteredProducts.reduce((s, p) => s + parseFloat(pct(p.normalPrice, p.salePrice)), 0) / total).toFixed(1)
       : 0;
   const maxSave =
     total > 0
-      ? Math.max(...products.map((p) => p.normalPrice - p.salePrice)).toFixed(2)
+      ? Math.max(...filteredProducts.map((p) => p.normalPrice - p.salePrice)).toFixed(2)
       : "0.00";
 
   return (
@@ -346,6 +353,32 @@ const SalesLabel = ({ storeName, products }) => {
         {/* Body */}
         <Modal.Body style={{ ...S.overlay, padding: "1.4rem" }}>
 
+          {/* Filter Bar */}
+          {uniqueDates.length > 0 && (
+            <div className="d-flex justify-content-end mb-3">
+              <Form.Select
+                size="sm"
+                value={selectedDateFilter}
+                onChange={(e) => setSelectedDateFilter(e.target.value)}
+                style={{
+                  width: "auto",
+                  minWidth: "200px",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#f1f5f9",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  boxShadow: "none"
+                }}
+              >
+                <option value="ALL" style={{ background: "#0f1827", color: "#f1f5f9" }}>Të Gjitha Datat</option>
+                {uniqueDates.map(date => (
+                  <option key={date} value={date} style={{ background: "#0f1827", color: "#f1f5f9" }}>Vetëm Data: {date}</option>
+                ))}
+              </Form.Select>
+            </div>
+          )}
+
           {/* Stats bar */}
           <div style={S.statsBar}>
             {[
@@ -370,7 +403,7 @@ const SalesLabel = ({ storeName, products }) => {
 
           {/* Product grid */}
           <div style={S.grid} className="custom-scrollbar">
-            {total > 0 ? products.map((item, i) => {
+            {total > 0 ? filteredProducts.map((item, i) => {
               const disc = pct(item.normalPrice, item.salePrice);
               return (
                 <div
@@ -429,7 +462,7 @@ const SalesLabel = ({ storeName, products }) => {
             </Button>
             <Button
               disabled={total === 0}
-              onClick={() => { generatePDF(storeName, products); setShowModal(false); }}
+              onClick={() => { generatePDF(storeName, filteredProducts); setShowModal(false); }}
               style={{
                 background: total === 0 ? "rgba(239,68,68,0.3)" : "linear-gradient(135deg,#ef4444,#dc2626)",
                 border: "none", color: "#fff", fontWeight: 800, borderRadius: 10,

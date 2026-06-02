@@ -9,6 +9,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 import { Form, Container, Row, Col } from "react-bootstrap";
+import BarcodeScannerModal from "../../../Components/TeTjera/BarcodeScannerModal";
+import { Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import RegjistroFaturen from "../../../Components/Materiali/Hyrjet/KthimiMallitShitur/RegjistroFaturen";
 import PerditesoStatusinKalk from "../../../Components/Materiali/Hyrjet/KthimiMallitShitur/PerditesoStatusinKalk";
@@ -31,6 +33,17 @@ function KalkulimiIMallit(props) {
   const [nrRendorKalkulimit, setNrRendorKalkulimit] = useState(0);
   const [Partneri, setPartneri] = useState(1);
   const [nrFatures, setNrFatures] = useState("");
+  const [showScannerFature, setShowScannerFature] = useState(false);
+  const handleScanFatureResult = (decodedText) => {
+    setNrFatures(decodedText);
+    setShowScannerFature(false);
+    const el = document.getElementById("dataEFatures");
+    if (el) {
+      el.focus();
+      setTimeout(() => el.select(), 0);
+    }
+  };
+
   const today = new Date();
   const initialDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0]; // Format as 'yyyy-MM-dd'
   const [dataEFatures, setDataEFatures] = useState(initialDate);
@@ -344,7 +357,18 @@ function KalkulimiIMallit(props) {
                   </Col>
                   <Col>
                     <Form.Group>
-                      <Form.Label>Nr. Fatures Referencuese</Form.Label>
+                      <Form.Label className="d-flex align-items-center gap-2 mb-2">
+                        Nr. Fatures Referencuese
+                        <button
+                            type="button"
+                            className="btn btn-sm d-inline-flex align-items-center justify-content-center ms-2"
+                            onClick={() => setShowScannerFature(true)}
+                            style={{ color: '#10b981', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            title="Skano faturën"
+                          >
+                            <Camera size={14} /> Skano
+                          </button>
+                      </Form.Label>
                       <Form.Control
                         id="nrFatures"
                         type="text"
@@ -442,7 +466,13 @@ function KalkulimiIMallit(props) {
             </>
           )
         )}
-      </div>
+      
+        <BarcodeScannerModal
+          show={showScannerFature}
+          onHide={() => setShowScannerFature(false)}
+          onScan={handleScanFatureResult}
+        />
+</div>
     </>
   );
 }

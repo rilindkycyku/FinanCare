@@ -23,6 +23,8 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import { Camera } from "lucide-react";
+import BarcodeScannerModal from "../../../TeTjera/BarcodeScannerModal";
 import Tabela from "../../../TeTjera/Tabela/Tabela";
 import PrintLabels from "../../../TeTjera/PrintLabels";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
@@ -615,6 +617,24 @@ function RegjistroFaturen(props) {
 
   const [options, setOptions] = useState([]);
   const [optionsSelected, setOptionsSelected] = useState(null);
+  const [showScanner, setShowScanner] = useState(false);
+
+  const handleScanResult = (scannedCode) => {
+    setShowScanner(false);
+    setInputValue(scannedCode);
+    setTimeout(() => {
+       const selectElement = document.getElementById("produktiSelect-input");
+       if (selectElement) {
+         selectElement.focus();
+         const match = options.find(opt => opt.label && opt.label.includes(scannedCode));
+         if (match) {
+            handleChange(match);
+         }
+       }
+    }, 400);
+  };
+
+
   const [loadingProdukteve, setLoadingProdukteve] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -864,9 +884,18 @@ function RegjistroFaturen(props) {
                     <Card.Body>
                       <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="idDheEmri" className="mb-3">
-                          <Form.Label className="fw-semibold">
-                            Produkti
-                          </Form.Label>
+                          <div className="d-flex justify-content-between align-items-center mb-1">
+                            <Form.Label className="fw-semibold mb-0">
+                              Produkti
+                            </Form.Label>
+                            <button 
+                              type="button"
+                              onClick={() => setShowScanner(true)}
+                              style={{ color: '#10b981', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              <Camera size={14} /> Skano
+                            </button>
+                          </div>
                           <Select
                             ref={selectRef}
                             onKeyDown={handleKaloTekSasia}
@@ -1145,6 +1174,11 @@ function RegjistroFaturen(props) {
             </Container>
           </>
         )}
+        <BarcodeScannerModal 
+        show={showScanner} 
+        onHide={() => setShowScanner(false)} 
+        onScan={handleScanResult} 
+      />
       </div>
     </>
   );

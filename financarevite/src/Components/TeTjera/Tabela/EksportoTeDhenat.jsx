@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Spinner } from 'react-bootstrap';
 import {
   Download,
   CheckCircle2
@@ -9,17 +9,28 @@ import { exportListExcel } from '../../../utils/exportInvoiceExcel';
 function EksportoTeDhenat(props) {
   const [showConfig, setShowConfig] = useState(false);
   const [selectedHeaders, setSelectedHeaders] = useState([]);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleExportExcelDirect = async () => {
-    const exportData = handleExportSelection();
-    const headers = selectedHeaders.length > 0 ? selectedHeaders : Object.keys(props.teDhenatJSON[0] || {});
-    await exportListExcel(
-      props.emriDokumentit || 'Eksporti i të Dhënave',
-      headers,
-      exportData,
-      `${props.emriDokumentit || 'FinanCare_Export'}.xlsx`
-    );
-    setShowConfig(false);
+  const handleExportExcelDirect = () => {
+    setIsExporting(true);
+    // Use setTimeout to allow the UI to re-render and show the spinner before the heavy export task blocks the thread
+    setTimeout(async () => {
+      try {
+        const exportData = handleExportSelection();
+        const headers = selectedHeaders.length > 0 ? selectedHeaders : Object.keys(props.teDhenatJSON[0] || {});
+        await exportListExcel(
+          props.emriDokumentit || 'Eksporti i të Dhënave',
+          headers,
+          exportData,
+          `${props.emriDokumentit || 'FinanCare_Export'}.xlsx`
+        );
+      } catch (error) {
+        console.error("Error during export:", error);
+      } finally {
+        setIsExporting(false);
+        setShowConfig(false);
+      }
+    }, 50);
   };
 
   const handleCheckboxChange = (header) => {
@@ -92,11 +103,18 @@ function EksportoTeDhenat(props) {
           </Button>
           <Button
             variant="primary"
-            className="btn-premium-shto"
-            disabled={selectedHeaders.length === 0}
+            className="btn-premium-shto d-flex align-items-center gap-2"
+            disabled={selectedHeaders.length === 0 || isExporting}
             onClick={handleExportExcelDirect}
           >
-            Eksporto Excel
+            {isExporting ? (
+              <>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                Duke eksportuar...
+              </>
+            ) : (
+              'Eksporto Excel'
+            )}
           </Button>
         </Modal.Footer>
       </Modal>

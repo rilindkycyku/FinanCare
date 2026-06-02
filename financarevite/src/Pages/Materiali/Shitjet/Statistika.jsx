@@ -378,13 +378,23 @@ function Statistika() {
                                   <div className="text-warning mt-0.5" style={{ minWidth: 16 }}><Sparkles size={16} /></div>
                                   <div style={{ fontSize: "0.72rem", lineHeight: "1.4", color: "#cbd5e1" }}>
                                     <span className="text-white fw-bold">Këshillë Financiare:</span>{" "}
-                                    Sot keni fituar të pastër <strong className="text-success">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0).toFixed(2)} €</strong>.
                                     {parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0) > 0 ? (
-                                      <span>
-                                        {" "}Nga ky fitim, ju sugjerojmë të ndani <strong className="text-info">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme * 0.3).toFixed(2)} € (30%)</strong> për veten apo shpenzime personale, ndërsa pjesën tjetër prej <strong className="text-white">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme * 0.7).toFixed(2)} € (70%)</strong> ta ri-investoni në biznes për furnizime dhe rritje!
-                                      </span>
+                                      <>
+                                        Sot keni fituar të pastër <strong className="text-success">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0).toFixed(2)} €</strong>.
+                                        <span>
+                                          {" "}Nga ky fitim, ju sugjerojmë të ndani <strong className="text-info">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme * 0.3).toFixed(2)} € (30%)</strong> për veten apo shpenzime personale, ndërsa pjesën tjetër prej <strong className="text-white">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme * 0.7).toFixed(2)} € (70%)</strong> ta ri-investoni në biznes për furnizime dhe rritje!
+                                        </span>
+                                      </>
+                                    ) : parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0) < 0 ? (
+                                      <>
+                                        Sot jeni në humbje prej <strong className="text-danger">{Math.abs(parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0)).toFixed(2)} €</strong>.
+                                        <span> Nuk ka fitim të regjistruar sot për t'u shpenzuar. Kryeni shitje të reja me marzh pozitiv për të dalë në fitim!</span>
+                                      </>
                                     ) : (
-                                      <span> Nuk ka fitim të regjistruar sot për t'u shpenzuar. Kryeni shitje të reja me marzh pozitiv për të krijuar fitim!</span>
+                                      <>
+                                        Sot nuk keni fitim të regjistruar (<strong className="text-secondary">0.00 €</strong>).
+                                        <span> Kryeni shitje të reja me marzh pozitiv për të krijuar fitim!</span>
+                                      </>
                                     )}
                                   </div>
                                 </div>

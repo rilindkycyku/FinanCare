@@ -8,6 +8,8 @@ import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Mesazhi from "../../../TeTjera/layout/Mesazhi";
 import Select from "react-select";
 import KontrolloAksesinNeFunksione from "../../../TeTjera/KontrolliAksesit/KontrolloAksesinNeFunksione";
+import BarcodeScannerModal from "../../../TeTjera/BarcodeScannerModal";
+import { Camera } from "lucide-react";
 
 function ProduktiNeZbritje(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -51,6 +53,22 @@ function ProduktiNeZbritje(props) {
   const [pershkrimiMesazhit, setPershkrimiMesazhit] = useState("");
   const [zbritjaNeRregull, setZbritjaNeRregull] = useState(false);
   const [kaZbritje, setKaZbritje] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+
+  const handleScanResult = (scannedCode) => {
+    setShowScanner(false);
+    setInputValue(scannedCode);
+    setTimeout(() => {
+       const selectElement = document.getElementById("produktiSelect-input");
+       if (selectElement) {
+         selectElement.focus();
+         const match = allOptions.find(opt => opt.label && opt.label.includes(scannedCode));
+         if (match) {
+            handleChange(match);
+         }
+       }
+    }, 400);
+  };
 
   // ── Optimized product search ──────────────────────────────────────────────
   const [allOptions, setAllOptions] = useState([]);   // full list loaded once
@@ -291,7 +309,16 @@ function ProduktiNeZbritje(props) {
         <Modal.Body>
           <Form>
             <Form.Group controlId="idDheEmri">
-              <Form.Label>Vlen per</Form.Label>
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <Form.Label className="mb-0">Vlen per</Form.Label>
+                <button 
+                  type="button"
+                  onClick={() => setShowScanner(true)}
+                  style={{ color: '#10b981', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <Camera size={14} /> Skano
+                </button>
+              </div>
               <Select
                 ref={selectRef}
                 value={optionsSelected}
@@ -393,6 +420,11 @@ function ProduktiNeZbritje(props) {
           </Button>
         </Modal.Footer>
       </Modal>
+      <BarcodeScannerModal 
+        show={showScanner} 
+        onHide={() => setShowScanner(false)} 
+        onScan={handleScanResult} 
+      />
     </>
   );
 }

@@ -31,7 +31,8 @@ import {
   CheckCircle2,
   Printer,
   Clock,
-  Coins
+  Coins,
+  Camera
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../Styles/POSLayout.css";
@@ -42,6 +43,7 @@ import Titulli from "../../../Components/TeTjera/Titulli";
 import jsPDF from "jspdf";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import NukEshteEOptimizuarPerMobile from "../../../Components/TeTjera/layout/NukEshteEOptimizuarPerMobile";
+import BarcodeScannerModal from "../../../Components/TeTjera/BarcodeScannerModal";
 
 function POS(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -1170,9 +1172,25 @@ function POS(props) {
   }, []);
 
   const [showNEEPM, setShowNEEPM] = useState(true);
+  const [showScanner, setShowScanner] = useState(false);
 
   const handleCloseNEEPM = () => {
     setShowNEEPM(false);
+  };
+
+  const handleScanResult = (scannedCode) => {
+    setShowScanner(false);
+    setInputValue(scannedCode);
+    setTimeout(() => {
+       const selectElement = document.getElementById("barkodiSelect-input");
+       if (selectElement) {
+         selectElement.focus();
+         const match = optionsBarkodi.find(opt => opt.label && opt.label.includes(scannedCode));
+         if (match) {
+            handleChange(match, scannedCode);
+         }
+       }
+    }, 400);
   };
 
   const [inputValue, setInputValue] = useState("");
@@ -1498,7 +1516,16 @@ function POS(props) {
                       <Row className="g-3">
                         <Col md={6}>
                           <Form.Group>
-                            <Form.Label className="small fw-bold text-muted text-uppercase mb-1">Barkodi / Produkti</Form.Label>
+                            <div className="d-flex justify-content-between align-items-center mb-1">
+                              <Form.Label className="small fw-bold text-muted text-uppercase mb-0">Barkodi / Produkti</Form.Label>
+                              <button 
+                                type="button"
+                                onClick={() => setShowScanner(true)}
+                                style={{ color: '#10b981', padding: '0', background: 'transparent', border: 'none', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <Camera size={14} /> Skano
+                              </button>
+                            </div>
                             <style>{`
                               .pos-input-card .pos-select__option--is-focused { background-color: rgba(16, 185, 129, 0.3) !important; color: white !important; cursor: pointer !important; }
                               .pos-input-card .pos-select__option--is-selected { background-color: #10b981 !important; color: white !important; }
@@ -1800,6 +1827,11 @@ function POS(props) {
             </div>
           </>
         )}
+        <BarcodeScannerModal 
+          show={showScanner} 
+          onHide={() => setShowScanner(false)} 
+          onScan={handleScanResult} 
+        />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
@@ -28,9 +28,9 @@ function BarazimiArkes() {
   const getID = localStorage.getItem("id");
   const getToken = localStorage.getItem("token");
 
-  const authentikimi = {
+  const authentikimi = useMemo(() => ({
     headers: { Authorization: `Bearer ${getToken}` },
-  };
+  }), [getToken]);
 
   const [teDhenat, setTeDhenat] = useState({});
   const [arkataret, setArkataret] = useState([]);
@@ -196,9 +196,18 @@ function BarazimiArkes() {
   };
 
   const handleSubmit = async () => {
-    if (!form.idArkatari) return alert("Zgjidhni arkëtarin!");
-    if (parseAmount(form.tjera) > 0 && !form.pershkrimiTjera.trim())
-      return alert("Plotësoni përshkrimin për 'Tjera'!");
+    if (!form.idArkatari) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Zgjidhni arkëtarin!");
+      setShfaqMesazhin(true);
+      return;
+    }
+    if (parseAmount(form.tjera) > 0 && !form.pershkrimiTjera.trim()) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Plotësoni përshkrimin për 'Tjera'!");
+      setShfaqMesazhin(true);
+      return;
+    }
 
     const selectedArkatar = arkataret.find(
       (a) => a.stafiID === form.idArkatari

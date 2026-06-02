@@ -403,8 +403,8 @@ export async function exportKartelaExcel(partner, tableRows, totals, partnerName
   ws.addRow([]);
   const brandRow = ws.addRow([
     "© FinanCare - POS, eOrder & More by Rilind Kyçyku",
-    "", "", "", "", "", "",
-    "WWW.RILINDKYCYKU.DEV"
+    "", "", "", "",
+    "WWW.RILINDKYCYKU.DEV", "", ""
   ]);
   brandRow.height = 20;
   ws.mergeCells(brandRow.number, 1, brandRow.number, 5);
@@ -451,7 +451,11 @@ export async function exportListExcel(title, headers, data, filename = "Eksport.
   wb.creator = "FinanCare";
   wb.created = new Date();
 
-  const ws = wb.addWorksheet(title.substring(0, 31), {
+  const safeSheetName = (title || "Sheet")
+    .replace(/[*?:\/\[\]\\]/g, "-") // Replace illegal characters with hyphen
+    .substring(0, 31);              // Excel limits sheet names to 31 chars
+
+  const ws = wb.addWorksheet(safeSheetName, {
     views: [{ state: "frozen", ySplit: 6 }],
     properties: { tabColor: { argb: CLR.tableHead } },
   });
@@ -558,6 +562,44 @@ export async function exportListExcel(title, headers, data, filename = "Eksport.
     });
   });
 
+  // 4.5 Totals Row
+  let hasTotals = false;
+  const totals = {};
+  headers.forEach(h => {
+    if (h.includes('€')) {
+      let sum = 0;
+      data.forEach(r => {
+        const valStr = String(r[h] || "").replace(/€/g, "").trim();
+        if (!isNaN(Number(valStr)) && valStr !== "") {
+          sum += Number(valStr);
+          hasTotals = true;
+        }
+      });
+      totals[h] = sum.toFixed(2);
+    }
+  });
+
+  if (hasTotals) {
+    const totValues = headers.map((h, idx) => {
+      if (idx === 1 && headers.length > 1) return "TOTALI";
+      if (idx === 0 && headers.length === 1) return "TOTALI";
+      return totals[h] !== undefined ? totals[h] : "";
+    });
+    const totRow = ws.addRow(totValues);
+    totRow.height = 22;
+    headers.forEach((h, colIdx) => {
+      const cell = totRow.getCell(colIdx + 1);
+      cell.fill = fill(CLR.totBg);
+      cell.font = font(true, CLR.totFg, 11);
+      cell.border = border("FF047857");
+      if (totals[h] !== undefined) {
+        cell.alignment = { horizontal: "right" };
+      } else {
+        cell.alignment = { horizontal: "center" };
+      }
+    });
+  }
+
   // Auto-fit Column Widths
   ws.columns.forEach((col, colIdx) => {
     let maxLen = headers[colIdx].length;
@@ -572,24 +614,35 @@ export async function exportListExcel(title, headers, data, filename = "Eksport.
   ws.addRow([]);
   const brandRowData = new Array(headers.length).fill("");
   brandRowData[0] = "© FinanCare - POS, eOrder & More by Rilind Kyçyku";
-  brandRowData[headers.length - 1] = "WWW.RILINDKYCYKU.DEV";
-
-  const brandRow = ws.addRow(brandRowData);
-  brandRow.height = 20;
 
   if (headers.length >= 4) {
     const leftSpan = Math.floor(headers.length * 0.6);
+    brandRowData[leftSpan] = "WWW.RILINDKYCYKU.DEV"; // Place text in the first cell of the right merged block
+    const brandRow = ws.addRow(brandRowData);
+    brandRow.height = 20;
     ws.mergeCells(brandRow.number, 1, brandRow.number, leftSpan);
     ws.mergeCells(brandRow.number, leftSpan + 1, brandRow.number, headers.length);
+    
+    const leftCell = brandRow.getCell(1);
+    leftCell.font = { italic: true, size: 9, color: { argb: "FF94A3B8" }, name: "Calibri" };
+    leftCell.alignment = { horizontal: "left", vertical: "middle" };
+
+    const rightCell = brandRow.getCell(leftSpan + 1);
+    rightCell.font = { bold: true, size: 9, color: { argb: "FF10B981" }, name: "Calibri" };
+    rightCell.alignment = { horizontal: "right", vertical: "middle" };
+  } else {
+    brandRowData[headers.length - 1] = "WWW.RILINDKYCYKU.DEV";
+    const brandRow = ws.addRow(brandRowData);
+    brandRow.height = 20;
+    
+    const leftCell = brandRow.getCell(1);
+    leftCell.font = { italic: true, size: 9, color: { argb: "FF94A3B8" }, name: "Calibri" };
+    leftCell.alignment = { horizontal: "left", vertical: "middle" };
+
+    const rightCell = brandRow.getCell(headers.length);
+    rightCell.font = { bold: true, size: 9, color: { argb: "FF10B981" }, name: "Calibri" };
+    rightCell.alignment = { horizontal: "right", vertical: "middle" };
   }
-
-  const leftCell = brandRow.getCell(1);
-  leftCell.font = { italic: true, size: 9, color: { argb: "FF94A3B8" }, name: "Calibri" };
-  leftCell.alignment = { horizontal: "left", vertical: "middle" };
-
-  const rightCell = brandRow.getCell(headers.length);
-  rightCell.font = { bold: true, size: 9, color: { argb: "FF10B981" }, name: "Calibri" };
-  rightCell.alignment = { horizontal: "right", vertical: "middle" };
 
   // Save
   const buffer = await wb.xlsx.writeBuffer();

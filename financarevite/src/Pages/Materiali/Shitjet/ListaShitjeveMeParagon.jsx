@@ -79,6 +79,7 @@ function ListaShitjeveMeParagon(props) {
   const [dataMbarim, setDataMbarim] = useState(
     new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0]
   );
+  const [operatoriZgjedhur, setOperatoriZgjedhur] = useState("");
 
   useEffect(() => {
     const shfaqKalkulimet = async () => {
@@ -96,6 +97,7 @@ function ListaShitjeveMeParagon(props) {
           kthimet.map((k) => ({
             ID: k.idRegjistrimit,
             "Nr. Fatures": k.nrFatures,
+            "Operatori": k.username,
             Partneri: k.emriBiznesit,
             "Data e Fatures": new Date(k.dataRegjistrimit).toISOString(),
             "Tot - TVSH €": parseFloat(k.totaliPaTVSH).toFixed(2),
@@ -239,6 +241,22 @@ function ListaShitjeveMeParagon(props) {
                       />
                     </Form.Group>
                   </Col>
+                  
+                  <Col md={3}>
+                    <Form.Group>
+                      <Form.Label>Operatori</Form.Label>
+                      <Form.Select
+                        value={operatoriZgjedhur}
+                        onChange={(e) => setOperatoriZgjedhur(e.target.value)}
+                      >
+                        <option value="">Te gjithe</option>
+                        {[...new Set(kalkulimet.map(k => k["Operatori"]))].filter(Boolean).map(op => (
+                          <option key={op} value={op}>{op}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+
                   <Col md={3} className="d-flex align-items-end">
                     <Button
                       variant="secondary"
@@ -251,8 +269,13 @@ function ListaShitjeveMeParagon(props) {
                     </Button>
                   </Col>
                 </Row>
-                <Tabela
-                  data={kalkulimet}
+                {(() => {
+                  const filteredKalkulimet = kalkulimet.filter(k => 
+                    operatoriZgjedhur ? k["Operatori"] === operatoriZgjedhur : true
+                  );
+                  return (
+                    <Tabela
+                      data={filteredKalkulimet}
                   tableName="Lista e Shitjeve me Paragon"
                   kaButona={true}
                   funksionShfaqFature={(e) => handleShfaqTeDhenat(e)}
@@ -263,7 +286,9 @@ function ListaShitjeveMeParagon(props) {
                   funksionNdryshoStatusinEFatures={() => setEdito(true)}
                   dateField="Data e Fatures"
                   mosShfaqID={true}
-                />
+                    />
+                  );
+                })()}
               </Container>
             </>
           )

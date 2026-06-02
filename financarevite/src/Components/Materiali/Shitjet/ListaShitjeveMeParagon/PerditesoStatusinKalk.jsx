@@ -24,6 +24,7 @@ function PerditesoStatusinKalk(props) {
   const [perditeso, setPerditeso] = useState("");
   const [hapKalkulimin, setHapKalkulimin] = useState(false);
   const [fshijKalkulimin, setFshijKalkulimin] = useState(false);
+  const [mbyllKalkuliminModal, setMbyllKalkuliminModal] = useState(false);
   const [statusiIFiltrimit, setStatusiIFiltrimit] = useState("");
   
   // ============================================================================
@@ -150,6 +151,25 @@ function PerditesoStatusinKalk(props) {
     }
   }
 
+  
+  async function mbyllKalkuliminFunksioni() {
+    try {
+      setLoadingAction(true);
+      await axios.put(
+        `${API_BASE_URL}/api/Faturat/ruajKalkulimin/perditesoStatusinKalkulimit?id=${nrKalkulimit}&statusi=true`,
+        {},
+        authentikimi
+      );
+      setMbyllKalkuliminModal(false);
+      filtroKalkulimet("fshijKalkulimet");
+    } catch (error) {
+      console.error(error);
+      alert("Gabim gjatë mbylljes së kalkulimit");
+    } finally {
+      setLoadingAction(false);
+    }
+  }
+
   async function fshijKalkuliminFunksioni() {
     try {
       setLoadingAction(true);
@@ -185,6 +205,8 @@ function PerditesoStatusinKalk(props) {
       setHapKalkulimin(true);
     } else if (funksioni === "fshijKalkulimin") {
       setFshijKalkulimin(true);
+    } else if (funksioni === "mbyllKalkulimin") {
+      setMbyllKalkuliminModal(true);
     }
   }
 
@@ -261,6 +283,57 @@ function PerditesoStatusinKalk(props) {
             disabled={loadingAction}>
             {loadingAction && <Spinner animation="border" size="sm" className="me-2" />}
             Konfirmo <FontAwesomeIcon icon={faCheck} />
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      
+      {/* Confirmation Modal - Mbyll Kalkulimin */}
+      <Modal
+        show={mbyllKalkuliminModal}
+        onHide={() => setMbyllKalkuliminModal(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title as="h5">Konfirmo Mbylljen e Kalkulimit</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong style={{ fontSize: "10pt" }}>
+            A jeni te sigurt qe deshironi ta mbyllni kete kalkulim?
+          </strong>
+          <hr />
+          <div style={{ fontSize: "10pt" }}>
+            <div className="mb-2">
+              <strong>Nr. Kalkulimit:</strong> {nrKalkulimit}
+            </div>
+            <div className="mb-2">
+              <strong>Partneri:</strong> {emriBiznesit}
+            </div>
+            <div className="mb-2">
+              <strong>Nr. Fatures:</strong> {nrFatures}
+            </div>
+            <div className="mb-2">
+              <strong>Data Fatures:</strong>{" "}
+              {new Date(dataFatures).toLocaleDateString("en-GB", {
+                dateStyle: "short",
+              })}
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setMbyllKalkuliminModal(false)}
+            disabled={loadingAction}>
+            Anulo <FontAwesomeIcon icon={faXmark} />
+          </Button>
+          <Button
+            size="sm"
+            variant="success"
+            onClick={() => mbyllKalkuliminFunksioni()}
+            disabled={loadingAction}>
+            {loadingAction && <Spinner animation="border" size="sm" className="me-2" />}
+            Mbyll <FontAwesomeIcon icon={faCheck} />
           </Button>
         </Modal.Footer>
       </Modal>
@@ -379,7 +452,7 @@ function PerditesoStatusinKalk(props) {
               size="sm"
               onClick={() => filtroKalkulimet("hapKalkulimet")}
               disabled={isLoading}>
-              Hap Kalkulimet
+              Kalkulimet e Mbyllura
             </Button>
             <Button
               style={{ marginRight: "0.5em", marginBottom: "0.5em" }}
@@ -387,7 +460,7 @@ function PerditesoStatusinKalk(props) {
               size="sm"
               onClick={() => filtroKalkulimet("fshijKalkulimet")}
               disabled={isLoading}>
-              Fshij Kalkulimet
+              Kalkulimet e Hapura
             </Button>
             <Button
               style={{ marginRight: "0.5em", marginBottom: "0.5em" }}
@@ -462,22 +535,44 @@ function PerditesoStatusinKalk(props) {
                                   <FontAwesomeIcon icon={faPenToSquare} />
                                 </Button>
                               ) : (
-                                <Button
-                                  variant="danger"
-                                  size="sm"
-                                  onClick={() =>
-                                    detajetRiKonfrimitKalkulimit(
-                                      k.emriBiznesit,
-                                      k.nrFatures,
-                                      k.idRegjistrimit,
-                                      k.dataRegjistrimit,
-                                      k.llojiKalkulimit,
-                                      "fshijKalkulimin"
-                                    )
-                                  }
-                                  disabled={loadingAction}>
-                                  <FontAwesomeIcon icon={faXmark} />
-                                </Button>
+                                
+                                <div className="d-flex gap-2 justify-content-center">
+                                  <Button
+                                    variant="success"
+                                    size="sm"
+                                    onClick={() =>
+                                      detajetRiKonfrimitKalkulimit(
+                                        k.emriBiznesit,
+                                        k.nrFatures,
+                                        k.idRegjistrimit,
+                                        k.dataRegjistrimit,
+                                        k.llojiKalkulimit,
+                                        "mbyllKalkulimin"
+                                      )
+                                    }
+                                    title="Mbyll Kalkulimin"
+                                    disabled={loadingAction}>
+                                    <FontAwesomeIcon icon={faCheck} />
+                                  </Button>
+                                  <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() =>
+                                      detajetRiKonfrimitKalkulimit(
+                                        k.emriBiznesit,
+                                        k.nrFatures,
+                                        k.idRegjistrimit,
+                                        k.dataRegjistrimit,
+                                        k.llojiKalkulimit,
+                                        "fshijKalkulimin"
+                                      )
+                                    }
+                                    title="Fshij Kalkulimin"
+                                    disabled={loadingAction}>
+                                    <FontAwesomeIcon icon={faXmark} />
+                                  </Button>
+                                </div>
+
                               )}
                             </>
                           ) : (

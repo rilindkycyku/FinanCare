@@ -315,10 +315,10 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
             // Process in memory
             var ShitjetDitoreSipasOperatorit = allData
                 .Where(x => x.IsDitore)
-                .GroupBy(p => p.Stafi)
+                .GroupBy(p => p.Stafi?.UserID)
                 .Select(g => new
                 {
-                    Stafi = g.Key,
+                    Stafi = g.FirstOrDefault()?.Stafi,
                     NumriBlerjeve = g.Count(),
                     TotaliBlerjeveEuro = g.Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
@@ -331,10 +331,10 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
 
             var ShitjetJavoreSipasOperatorit = allData
                 .Where(x => x.IsJavore)
-                .GroupBy(p => p.Stafi)
+                .GroupBy(p => p.Stafi?.UserID)
                 .Select(g => new
                 {
-                    Stafi = g.Key,
+                    Stafi = g.FirstOrDefault()?.Stafi,
                     NumriBlerjeve = g.Count(),
                     TotaliBlerjeveEuro = g.Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
@@ -347,10 +347,10 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
 
             var ShitjetMujoreSipasOperatorit = allData
                 .Where(x => x.IsMujore)
-                .GroupBy(p => p.Stafi)
+                .GroupBy(p => p.Stafi?.UserID)
                 .Select(g => new
                 {
-                    Stafi = g.Key,
+                    Stafi = g.FirstOrDefault()?.Stafi,
                     NumriBlerjeve = g.Count(),
                     TotaliBlerjeveEuro = g.Sum(f => (f.TotaliPaTVSH ?? 0) + (f.TVSH ?? 0))
                 })
