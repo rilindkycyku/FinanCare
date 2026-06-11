@@ -128,54 +128,54 @@ function EksportoTeDhenat(props) {
           overflow-y: auto;
           padding: 0.5rem;
           scrollbar-width: thin;
-          scrollbar-color: #1e2d45 transparent;
+          scrollbar-color: var(--sp-surface-3) transparent;
         }
         .column-item {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          background: #162033;
+          background: var(--sp-surface-2);
           padding: 0.6rem 0.75rem;
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.2s ease;
-          border: 1px solid rgba(255,255,255,0.08);
-          color: #94a3b8;
+          border: 1px solid var(--sp-border);
+          color: var(--sp-text-muted);
           font-size: 0.82rem;
           font-weight: 500;
         }
         .column-item:hover {
-          background: #1e2d45;
-          border-color: rgba(255,255,255,0.15);
-          color: #e2e8f0;
+          background: var(--sp-surface-3);
+          border-color: var(--sp-border);
+          color: var(--sp-text);
         }
         .column-item.active {
-          background: rgba(16,185,129,0.12);
-          border-color: #10b981;
-          color: #10b981;
+          background: var(--sp-emerald-glow);
+          border-color: var(--sp-emerald);
+          color: var(--sp-emerald);
           font-weight: 700;
         }
         .check-box {
           width: 18px;
           height: 18px;
           flex-shrink: 0;
-          border: 2px solid rgba(255,255,255,0.20);
+          border: 2px solid var(--sp-border);
           border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #0f1827;
+          background: var(--sp-surface);
           color: transparent;
         }
         .column-item.active .check-box {
-          background: #10b981;
-          border-color: #10b981;
+          background: var(--sp-emerald);
+          border-color: var(--sp-emerald);
           color: white;
         }
         .btn-small-link {
           background: none;
           border: none;
-          color: #10b981;
+          color: var(--sp-emerald);
           font-size: 0.75rem;
           font-weight: 700;
           padding: 0;
@@ -183,7 +183,7 @@ function EksportoTeDhenat(props) {
         }
         .btn-small-link:hover {
           text-decoration: underline;
-          color: #34d399;
+          color: var(--sp-emerald);
         }
       `}</style>
 

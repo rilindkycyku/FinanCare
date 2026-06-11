@@ -120,7 +120,7 @@ function ShikimiQmimeve() {
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      const currentInput = document.getElementById("barkodiSelect-input")?.value || "";
+      const currentInput = document.getElementById("shikimiSelect-input")?.value || "";
       if (currentInput.trim().length > 0) {
         processBarcode(currentInput.trim());
         event.preventDefault();
@@ -244,7 +244,7 @@ function ShikimiQmimeve() {
                   placeholder={isLoading ? "Duke u ngarkuar..." : "Kërko emrin ose barkodin..."}
                   isClearable
                   isLoading={isLoading}
-                  inputId="barkodiSelect-input"
+                  inputId="shikimiSelect-input"
                   onKeyDown={handleKeyDown}
                   noOptionsMessage={() =>
                     inputValue.length < 2

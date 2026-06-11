@@ -10,10 +10,12 @@ import {
   faMinus,
   faPrint,
   faSpinner,
-  faArrowLeft
+  faArrowLeft,
+  faQrcode
 } from "@fortawesome/free-solid-svg-icons";
 import { TailSpin } from "react-loader-spinner";
 
+import BarcodeScannerModal from "../../../Components/TeTjera/BarcodeScannerModal";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import Titulli from "../../../Components/TeTjera/Titulli";
@@ -34,6 +36,7 @@ function Qmimore() {
   const [loading, setLoading] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [siteName, setSiteName] = useState("FinanCare");
+  const [showScanner, setShowScanner] = useState(false);
 
   const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [tipiMesazhit, setTipiMesazhit] = useState("");
@@ -231,6 +234,34 @@ function Qmimore() {
     }
   };
 
+  const handleScannerDecode = async (scannedText) => {
+    setShowScanner(false);
+    if (!scannedText) return;
+    
+    let lookupBarcode = scannedText.trim();
+    
+    // PLU check (2xxxxxx...)
+    if (lookupBarcode.startsWith("2") && lookupBarcode.length === 13) {
+      const pluCode = lookupBarcode.substring(0, 7);
+      const matched = options.find(opt => opt.label.includes(pluCode));
+      if (matched) {
+        lookupBarcode = pluCode;
+      }
+    }
+
+    const matches = options.filter(opt =>
+      opt.label.toLowerCase().includes(lookupBarcode.toLowerCase())
+    );
+
+    if (matches.length === 0) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit(`Produkti me këtë barkod nuk u gjet! (${scannedText})`);
+      setShfaqMesazhin(true);
+    } else {
+      await handleChange(matches[0]);
+    }
+  };
+
   // 6. Action Handlers (Increment, Decrement, Input Edit, Delete, Clear)
   const handleUpdateQuantity = async (item, newQty) => {
     if (newQty < 1) return;
@@ -396,9 +427,19 @@ function Qmimore() {
             <Card className="sp-card mb-4">
               <Card.Body className="p-4">
                 <Form.Group controlId="idDheEmri" className="mb-0">
-                  <Form.Label className="sp-label d-flex align-items-center gap-2 mb-2">
-                    <FontAwesomeIcon icon={faBarcode} className="text-success" /> Skano Barkodin ose Kërko Produktin
-                  </Form.Label>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <Form.Label className="sp-label d-flex align-items-center gap-2 mb-0">
+                      <FontAwesomeIcon icon={faBarcode} className="text-success" /> Skano Barkodin ose Kërko Produktin
+                    </Form.Label>
+                    <Button 
+                      size="sm" 
+                      variant="outline-success" 
+                      className="d-flex align-items-center gap-2 rounded-3"
+                      onClick={() => setShowScanner(true)}
+                    >
+                      <FontAwesomeIcon icon={faQrcode} /> Skano me Kamerë
+                    </Button>
+                  </div>
                   <ReactSelect
                     ref={selectRef}
                     onKeyDown={handleKeyDown}
@@ -472,7 +513,7 @@ function Qmimore() {
                           <Form.Control
                             type="number"
                             className="text-center py-0 px-1 border-secondary bg-dark text-white rounded-2"
-                            style={{ width: "65px", height: "30px", fontSize: "10pt" }}
+                            style={{ width: "90px", height: "30px", fontSize: "11pt" }}
                             value={item.sasiaStokut}
                             min={1}
                             onChange={(e) => {
@@ -518,6 +559,11 @@ function Qmimore() {
           </>
         )}
       </div>
+      <BarcodeScannerModal 
+        show={showScanner} 
+        onHide={() => setShowScanner(false)} 
+        onScan={handleScannerDecode} 
+      />
     </>
   );
 }

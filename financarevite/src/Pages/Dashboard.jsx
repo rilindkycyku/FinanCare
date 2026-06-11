@@ -19,8 +19,11 @@ import NavBar from "../Components/TeTjera/layout/NavBar";
 import Titulli from "../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import { roleBasedDropdowns } from "../Components/TeTjera/layout/roleBasedDropdowns";
+import { useTheme } from "../Context/ThemeContext";
 import "./Styles/Dashboard.css";
 import "../Pages/Styles/DizajniPergjithshem.css";
+import "../Pages/Styles/PremiumTheme.css";
+
 
 const DataItem = ({ label, value, icon: Icon, delay }) => (
   <Col md={6} lg={4} className="mb-4" data-aos="fade-up" data-aos-delay={delay}>
@@ -42,6 +45,7 @@ const Dashboard = () => {
   const [userRoles, setUserRoles] = useState([]);
   const [licenseStatus, setLicenseStatus] = useState(null);
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const getID = localStorage.getItem("id");
   const token = localStorage.getItem("token");
@@ -190,17 +194,11 @@ const Dashboard = () => {
       <div className="welcome-hero" data-aos="fade-down">
         <Container>
           <Row className="align-items-center">
-            <Col md={8}>
+            <Col>
               <h1 className="fw-bold mb-2">Mirësevini, {user?.emri}! 👋</h1>
               <p className="opacity-75 mb-0 text-capitalize">
                 {dataAktuale}.
               </p>
-            </Col>
-            <Col md={4} className="text-md-end mt-3 mt-md-0">
-              <Badge className="bg-white text-primary rounded-pill px-3 py-2 shadow-sm fs-6">
-                <UserCircle size={18} className="me-2" />
-                {userRoles[0] || "Përdorues"}
-              </Badge>
             </Col>
           </Row>
         </Container>
@@ -528,14 +526,22 @@ const Dashboard = () => {
       }}>
         {/* Left — logo */}
         <img
-          src="/img/web/Logo.svg"
+          src={theme === "light" ? "/img/web/LogoBlack.svg" : "/img/web/LogoWhite.svg"}
           alt="FinanCare Logo"
           style={{ height: "32px", width: "auto", opacity: 0.85 }}
         />
 
         {/* Center — matching invoice footer text */}
         <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "rgba(255,255,255,0.45)", textAlign: "center" }}>
-          &copy; FinanCare - POS, eOrder &amp; More by Rilind Kyçyku
+          &copy; 2023 - {new Date().getFullYear()} FinanCare - POS, eOrder &amp; More by{" "}
+          <a
+            href="https://rilindkycyku.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--sp-emerald)', textDecoration: 'none', fontWeight: '600' }}
+          >
+            Rilind Kyçyku
+          </a>
         </span>
 
         {/* Right — version badge */}
@@ -544,7 +550,7 @@ const Dashboard = () => {
           background: "rgba(255,255,255,0.06)", borderRadius: "6px",
           padding: "0.18rem 0.55rem", fontFamily: "monospace",
         }}>
-          v2.0.7
+          v2.0.8
         </span>
       </footer>
 

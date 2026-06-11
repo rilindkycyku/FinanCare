@@ -8,10 +8,12 @@ import {
 } from "lucide-react";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
+import { useTheme } from "../../../Context/ThemeContext";
 
 const AktivizoSistemin = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const navigate = useNavigate();
+  const { isLight } = useTheme();
 
   // Status State
   const [loading, setLoading] = useState(true);
@@ -115,7 +117,11 @@ const AktivizoSistemin = () => {
 
         {/* Logo */}
         <div className="auth-logo-container" style={{ marginBottom: '1.5rem' }}>
-          <img src="/img/web/Logo.svg" alt="FinanCare Logo" className="auth-logo" />
+          <img 
+            src={isLight ? "/img/web/LogoBlack.svg" : "/img/web/LogoWhite.svg"} 
+            alt="FinanCare Logo" 
+            className="auth-logo" 
+          />
         </div>
 
         {/* Header */}
@@ -333,9 +339,19 @@ const AktivizoSistemin = () => {
         }}>
           <Link to="/LogIn" className="auth-link d-flex align-items-center gap-1" style={{ fontSize: '0.88rem' }}>
             <ArrowLeft size={15} />
-            <span>Kthehu tek Login</span>
+            <span>Kthehu</span>
           </Link>
-          <span style={{ fontSize: '0.78rem', color: '#334155' }}>© FinanCare. All rights reserved.</span>
+          <span style={{ fontSize: '0.78rem', color: 'var(--sp-text-muted)' }}>
+            &copy; 2023 - {new Date().getFullYear()} FinanCare - POS, eOrder &amp; More by{" "}
+            <a
+              href="https://rilindkycyku.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--sp-emerald)', textDecoration: 'none', fontWeight: 600 }}
+            >
+              Rilind Kyçyku
+            </a>
+          </span>
         </div>
       </div>
     </div>

@@ -270,7 +270,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
             <Text>(Emri, Mbiemri, Nënshkrimi & Vula)</Text>
             <Text>(Personi Përgjegjës)</Text>
             <Text style={styles.bold}>
-              © FinanCare - POS, eOrder & More by Rilind Kyçyku
+              © 2023 - {new Date().getFullYear()} FinanCare - POS, eOrder & More by Rilind Kyçyku
             </Text>
           </View>
           <View style={styles.signature}>
@@ -358,7 +358,7 @@ function FooterFatura({ faturaID, Barkodi, isPDF, data }) {
           <span>(Emri, Mbiemri, Nënshkrimi & Vula)</span>
           <span>(Personi Përgjegjës)</span>
           <br />
-          <strong>© FinanCare - POS, eOrder & More by Rilind Kyçyku</strong>
+          <strong>© 2023 - {new Date().getFullYear()} FinanCare - POS, eOrder & More by Rilind Kyçyku</strong>
         </div>
         <div className="nenshkrimi">
           <span>_________________________________________________</span>

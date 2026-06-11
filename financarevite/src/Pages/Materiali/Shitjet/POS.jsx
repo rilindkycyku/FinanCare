@@ -41,6 +41,7 @@ import { Modal } from "react-bootstrap";
 import Select from "react-select";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import jsPDF from "jspdf";
+import { useTheme } from "../../../Context/ThemeContext";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import NukEshteEOptimizuarPerMobile from "../../../Components/TeTjera/layout/NukEshteEOptimizuarPerMobile";
 import BarcodeScannerModal from "../../../Components/TeTjera/BarcodeScannerModal";
@@ -110,14 +111,7 @@ function POS(props) {
 
   const navigate = useNavigate();
 
-  const [posTheme, setPosTheme] = useState(
-    () => localStorage.getItem("pos-theme") || "dark"
-  );
-  const toggleTheme = () => {
-    const next = posTheme === "dark" ? "light" : "dark";
-    setPosTheme(next);
-    localStorage.setItem("pos-theme", next);
-  };
+  const { theme: posTheme, toggleTheme } = useTheme();
 
   const forceFocusBarkodi = () => {
     let attempts = 0;
@@ -283,7 +277,7 @@ function POS(props) {
           );
           
           const paragonInvoices = res.data
-            .filter(inv => inv.llojiKalkulimit === "PARAGON")
+            .filter(inv => inv.llojiKalkulimit === "PARAGON" && (inv.statusiKalkulimit === "true" || inv.statusiKalkulimit === true))
             .map(inv => ({
               idRegjistrimit: inv.idRegjistrimit,
               nrFatures: inv.nrFatures,

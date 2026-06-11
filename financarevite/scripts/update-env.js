@@ -35,8 +35,8 @@ async function updateEnv() {
   // (/api/...) so they go through the Vite proxy to https://localhost:7285.
   // This way mobile devices on the LAN can reach the API through the Vite
   // server without needing the backend to bind to a LAN IP.
-  const envContent = `VITE_API_BASE_URL=https://${ip}:${port}
-VITE_BASE_URL=https://${ip}:${port}
+  const envContent = `VITE_API_BASE_URL=http://${ip}:${port}
+VITE_BASE_URL=http://${ip}:${port}
 `
 
   fs.writeFileSync('.env', envContent.trim())

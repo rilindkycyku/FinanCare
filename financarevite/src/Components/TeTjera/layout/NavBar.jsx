@@ -18,7 +18,10 @@ import {
   Menu as MenuIcon,
   ChevronDown,
   Shield,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "../../../Context/ThemeContext";
 import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
@@ -38,6 +41,7 @@ function NavBar() {
   const [perditeso, setPerditeso] = useState("");
   const [daysRemaining, setDaysRemaining] = useState(null);
   const [licenseStatus, setLicenseStatus] = useState(null);
+  const { theme, toggleTheme } = useTheme();
 
   const authentikimi = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
@@ -138,7 +142,11 @@ function NavBar() {
     <MDBNavbar expand="lg" light sticky className="modern-navbar">
       <MDBContainer fluid>
         <MDBNavbarBrand href="/" className="fw-800">
-          <img src="/img/web/Logo.svg" alt="FinanCare Logo" className="brand-logo" />
+          <img
+            src={theme === "light" ? "/img/web/LogoBlack.svg" : "/img/web/LogoWhite.svg"}
+            alt="FinanCare Logo"
+            className="brand-logo"
+          />
         </MDBNavbarBrand>
 
         <MDBNavbarToggler
@@ -201,6 +209,21 @@ function NavBar() {
           <MDBNavbarNav right className="ms-auto d-flex flex-row justify-content-end align-items-center gap-3" style={{ width: 'auto' }}>
             {token ? (
               <>
+                {/* ── Theme Toggle ── */}
+                <button
+                  id="navbar-theme-toggle"
+                  onClick={toggleTheme}
+                  className="theme-toggle-btn"
+                  title={theme === "dark" ? "Kalo në modalitetin e ditës" : "Kalo në modalitetin e natës"}
+                  aria-label="Toggle theme"
+                >
+                  {theme === "dark" ? (
+                    <Sun size={17} />
+                  ) : (
+                    <Moon size={17} />
+                  )}
+                </button>
+
                 {licenseStatus && (
                   <button 
                     onClick={() => navigate("/AktivizoSistemin")}

@@ -61,8 +61,8 @@ const BarcodeScannerModal = ({ show, onHide, onScan }) => {
             minHeight: "300px", 
             borderRadius: "16px", 
             overflow: "hidden", 
-            border: "2px solid #4f46e5",
-            background: "#000"
+            border: "2px solid var(--sp-emerald)",
+            background: "var(--sp-surface-2)"
           }}
         ></div>
         <p className="mt-3 text-center mb-0" style={{ color: "var(--sp-text-muted)", fontSize: "0.9rem" }}>
@@ -101,7 +101,7 @@ const BarcodeScannerModal = ({ show, onHide, onScan }) => {
 
         /* html5-qrcode injected elements styling */
         #reader button {
-          background: #4f46e5 !important;
+          background: var(--sp-emerald) !important;
           color: white !important;
           border: none !important;
           border-radius: 8px !important;
@@ -112,30 +112,30 @@ const BarcodeScannerModal = ({ show, onHide, onScan }) => {
           transition: background 0.2s !important;
         }
         #reader button:hover {
-          background: #4338ca !important;
+          background: #059669 !important;
         }
         #reader a {
-          color: #818cf8 !important;
+          color: var(--sp-emerald) !important;
           text-decoration: none !important;
           font-weight: 500 !important;
           display: inline-block !important;
           margin-top: 10px !important;
         }
         #reader a:hover {
-          color: #a5b4fc !important;
+          color: #059669 !important;
           text-decoration: underline !important;
         }
         #reader select {
-          background: #1e293b !important;
-          color: white !important;
-          border: 1px solid #334155 !important;
+          background: var(--sp-surface-2) !important;
+          color: var(--sp-text) !important;
+          border: 1px solid var(--sp-border) !important;
           border-radius: 8px !important;
           padding: 8px !important;
           margin-bottom: 10px !important;
           outline: none !important;
         }
         #reader span {
-          color: #cbd5e1 !important;
+          color: var(--sp-text) !important;
         }
       `}</style>
     </Modal>

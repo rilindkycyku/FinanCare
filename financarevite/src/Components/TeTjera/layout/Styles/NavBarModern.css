@@ -341,3 +341,41 @@
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.3) !important;
   transform: translateY(-1px);
 }
+
+/* ── Theme Toggle Button ─────────────────────────────────────── */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--sp-border);
+  background: var(--sp-surface-2);
+  color: var(--sp-text-soft);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--sp-surface-3);
+  border-color: var(--sp-emerald);
+  color: var(--sp-emerald);
+  transform: rotate(15deg) scale(1.1);
+  box-shadow: 0 0 12px var(--sp-emerald-glow);
+}
+
+/* In light mode, flip the button surface */
+body.light-mode .theme-toggle-btn {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #475569;
+}
+
+body.light-mode .theme-toggle-btn:hover {
+  background: #e2e8f0;
+  border-color: #059669;
+  color: #059669;
+}

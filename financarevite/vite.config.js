@@ -6,7 +6,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 export default defineConfig({
   plugins: [
-    basicSsl(),
+    // basicSsl(), // Aplikacioni do të përdoret vetëm në rrjet lokal pa domain, prandaj e heqim
     react(),
     VitePWA({
       registerType: 'autoUpdate',

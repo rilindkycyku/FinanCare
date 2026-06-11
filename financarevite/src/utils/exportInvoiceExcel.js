@@ -215,7 +215,7 @@ export async function exportInvoiceExcel(teDhenatFat, produktet, biznesit) {
   // ── Branding & Copyright ─────────────────────────────────────
   ws.addRow([]);
   const brandRow = ws.addRow([
-    "© FinanCare - POS, eOrder & More by Rilind Kyçyku",
+    `© 2023 - ${new Date().getFullYear()} FinanCare - POS, eOrder & More by Rilind Kyçyku`,
     "", "", "", "", "",
     "WWW.RILINDKYCYKU.DEV"
   ]);
@@ -402,7 +402,7 @@ export async function exportKartelaExcel(partner, tableRows, totals, partnerName
   // Branding & Copyright
   ws.addRow([]);
   const brandRow = ws.addRow([
-    "© FinanCare - POS, eOrder & More by Rilind Kyçyku",
+    `© 2023 - ${new Date().getFullYear()} FinanCare - POS, eOrder & More by Rilind Kyçyku`,
     "", "", "", "",
     "WWW.RILINDKYCYKU.DEV", "", ""
   ]);
@@ -613,7 +613,7 @@ export async function exportListExcel(title, headers, data, filename = "Eksport.
   // Branding & Copyright
   ws.addRow([]);
   const brandRowData = new Array(headers.length).fill("");
-  brandRowData[0] = "© FinanCare - POS, eOrder & More by Rilind Kyçyku";
+  brandRowData[0] = `© 2023 - ${new Date().getFullYear()} FinanCare - POS, eOrder & More by Rilind Kyçyku`;
 
   if (headers.length >= 4) {
     const leftSpan = Math.floor(headers.length * 0.6);

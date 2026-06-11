@@ -1,4 +1,4 @@
-﻿// Bootstrap CSS
+// Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 // Bootstrap Bundle JS
 import "bootstrap/dist/js/bootstrap.bundle.min";
@@ -7,6 +7,7 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { ThemeProvider } from "./Context/ThemeContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -24,7 +25,9 @@ document.addEventListener('keydown', disableF5Refresh);
 root.render(
   <HelmetProvider>
     <BrowserRouter>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   </HelmetProvider>
 );

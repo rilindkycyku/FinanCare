@@ -339,7 +339,7 @@ function KartelaFinanciarePDFDoc({ rows, partner, biznesit, totHyrje, totDalje, 
             {/* Page footer */}
             <View style={s.pageFooter} fixed>
               <Text style={s.pageFooterText}>
-                {"© FinanCare - POS, eOrder & More by Rilind Kyçyku  ·  Kartela Financiare - "}{partnerName}{"  ·  "}{today}
+                {`© 2023 - ${new Date().getFullYear()} FinanCare - POS, eOrder & More by Rilind Kyçyku  ·  Kartela Financiare - ${partnerName}  ·  ${today}`}
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 <Text style={s.pageFooterText}>Faqe {pageNum}/{totalPages}</Text>

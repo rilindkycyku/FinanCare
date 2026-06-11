@@ -83,6 +83,7 @@ function KartelaEArtikullit(props) {
 
   useEffect(() => {
     const kartelaEProduktit = async () => {
+      if (!produktiID || produktiID === 0) return;
       try {
         const kartela = await axios.get(
           `${API_BASE_URL}/api/Produkti/KartelaArtikullit?id=${produktiID}`,
@@ -371,8 +372,8 @@ function KartelaEArtikullit(props) {
                         </tr>
                       </thead>
                       <tbody>
-                        {kartelaEProduktit?.hisotriaZbritjes?.map((p) => (
-                          <tr>
+                        {kartelaEProduktit?.hisotriaZbritjes?.map((p, index) => (
+                          <tr key={index}>
                             <td>
                               {new Date(p.dataZbritjes).toLocaleDateString(
                                 "en-GB",

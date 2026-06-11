@@ -60,7 +60,7 @@ Ju mund ta startoni projektin në dy mënyra: duke përdorur **Docker** (më e l
 
 ### Opsioni 2: Konfigurimi Manual (Pa Docker)
 
-Së pari duhet të bëhet konfigurimi i Connection String në `FinanCare/appsettings.json` dhe duhet të ndërrohet emri i Server me atë të serverit tuaj. Pastaj ju duhet të bëni run komandën **EntityFrameworkCore\\update-database** në **Serverin e Projektit - FinanCare**, e cila do të mundësojë gjenerimin në tërësi të databazës dhe insertimin e të dhënave bazike.
+Së pari duhet të bëhet konfigurimi i Connection String në `FinanCare/appsettings.json` dhe duhet të ndërrohet emri i Server me atë të serverit tuaj. Pastaj ju duhet të bëni run komandën **EntityFrameworkCore\update-database** në **Serverin e Projektit - FinanCare**, e cila do të mundësojë gjenerimin në tërësi të databazës dhe insertimin e të dhënave bazike.
 
 ### **Njoftimi për Ndryshimin e Serverit të API dhe Front**
 API i cili vjen nga ASP.NET Core mund të ndryshohet duke vendosur adresën IP në file-in `.env` që gjendet në folderin `financare`. Adresa IP mund të gjendet duke ekzekutuar komandën `ipconfig` në Command Prompt (CMD).  
@@ -80,6 +80,15 @@ Për të shmangur problemet gjatë përdorimit të HTTPS, duhet të krijohet dhe
 - **Hapi 2**: Ekzekutoni komandën:
 ```dotnet dev-certs https --trust```
 - **Rezultati**: Do të shihni një mesazh konfirmimi dhe certifikata HTTPS do të regjistrohet në sistemin tuaj për komunikim të sigurt gjatë zhvillimit.  
+
+### **Rregullimi i Skanerit të Barkodeve në Rrjet Lokal**
+Kur përdorni Docker për përdorim final, serveri përgatit automatikisht HTTPS në portin `3443` në mënyrë që kamera e skanerit të punojë nga telefonat/tabletët në rrjetin e dyqanit pa asnjë konfigurim shtesë.
+
+Kur zhvilloni manualisht me `npm run dev`, aplikacioni hapet në HTTP të thjeshtë (kështu menaxheri i fjalëkalimeve funksionon pa problem). Nëse dëshironi të testoni skanerin nga një telefon tjetër në rrjet pa aktivizuar HTTPS të komplikuar, bëni këtë në telefon:
+1. Hapni: `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
+2. Shtoni IP-në e serverit tuaj (p.sh., `http://192.168.1.10:5173`)
+3. Ndryshoni në **`Enabled`** dhe bëni **Relaunch**.
+Tani kamera do të punojë përmes HTTP pa ndonjë paralajmërim "Not Secure"!
 
 Pasi të keni përfunduar me këto hapa, ju duhet të bëni **run** serverin dhe pastaj në Visual Studio Code, pjesën e React që gjendet tek **financare**, duhet të hapet në terminal. Më pas duhen të bëhen run këto komanda:
 

@@ -11,9 +11,9 @@ const PrintLabels = ({ storeName, products }) => {
   const generatePDF = () => {
     const doc = new jsPDF("p", "mm", "a4");
 
-    // Optimized Compact Grid Settings (4x13 = 52 labels per page)
-    const columns = 4;
-    const rows = 13;
+    // Optimized Grid Settings (3x10 = 30 labels per page)
+    const columns = 3;
+    const rows = 10;
     const margin = 5;
     const gutter = 1; // Gap between labels for easy cutting
     const labelWidth = (210 - (margin * 2) - (gutter * (columns - 1))) / columns;
@@ -89,45 +89,43 @@ const PrintLabels = ({ storeName, products }) => {
       doc.rect(xPos, yPos, labelWidth, labelHeight, "S");
 
       // Product Name (wrapped and scaled dynamically)
-      const nameMaxWidth = labelWidth - 3.6;
-      const nameMaxHeight = 5.8;
+      const nameMaxWidth = labelWidth - 4.0;
+      const nameMaxHeight = 8.0;
       const { fontSize: nameFontSize, lines: nameLines } = getOptimalFontSizeForName(
         product.name,
         nameMaxWidth,
         nameMaxHeight,
-        9.5,
-        5.2
+        12.0,
+        7.0
       );
+
+      // Vertically center the name based on the number of lines
+      let nameStartY = yPos + 7.5; // Push down for 1 line so it fills the space
+      if (nameLines.length > 1) {
+        nameStartY = yPos + 5.5; // Keep higher for 2 lines
+      }
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(nameFontSize);
       doc.setTextColor(30, 41, 59); // Slate-800
-      doc.text(nameLines, xPos + 1.8, yPos + 4.2);
+      doc.text(nameLines, xPos + 2.0, nameStartY);
 
       // Thin Horizontal Divider Line
       doc.setDrawColor(226, 232, 240); // Slate-200
       doc.setLineWidth(0.12);
-      doc.line(xPos + 1.8, yPos + 9.3, xPos + labelWidth - 1.8, yPos + 9.3);
+      doc.line(xPos + 2.0, yPos + 11.5, xPos + labelWidth - 2.0, yPos + 11.5);
 
       // Price Formatting (Main focus)
-      const priceText = `${parseFloat(product.price).toFixed(2)} €`;
-      const priceMaxWidth = 25.5;
-      const priceFontSize = getOptimalFontSize(priceText, priceMaxWidth, 20, 11);
+      const priceText = `${parseFloat(product.price).toFixed(2)}`;
+      const priceMaxWidth = 39.0;
+      // Cap the font size at 40 so it doesn't grow too tall and overlap the divider line
+      const priceFontSize = getOptimalFontSize(priceText, priceMaxWidth, 40, 24);
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(priceFontSize);
       doc.setTextColor(0, 0, 0);
-      doc.text(priceText, xPos + 1.8, yPos + 16.8);
-
-      // Wholesale Price (Smaller layout below price)
-      const wsPriceText = `${parseFloat(product.wholesalePrice).toFixed(2)} €`;
-      const wsFullText = `QM. SH: ${wsPriceText}`;
-      const wsFontSize = getOptimalFontSize(wsFullText, priceMaxWidth, 6.0, 4.6);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(wsFontSize);
-      doc.setTextColor(100, 116, 139); // Slate-500
-      doc.text(wsFullText, xPos + 1.8, yPos + 19.8);
+      // Center the price horizontally within its 39mm allocated box (midpoint is 2.0 + 19.5 = 21.5)
+      doc.text(priceText, xPos + 21.5, yPos + 25.5, { align: "center" });
 
       // Barcode Generation & Addition (Right bottom section)
       let barcodeImage = null;
@@ -149,17 +147,17 @@ const PrintLabels = ({ storeName, products }) => {
 
       if (barcodeImage) {
         // Position barcode on the right column
-        const bcWidth = 18.5;
-        const bcHeight = 7.4;
-        const bcX = xPos + labelWidth - 1.8 - bcWidth;
-        const bcY = yPos + 10.2;
+        const bcWidth = 20.0;
+        const bcHeight = 12.0;
+        const bcX = xPos + labelWidth - 2.0 - bcWidth;
+        const bcY = yPos + 13.0; // Align neatly under the divider
         doc.addImage(barcodeImage, "PNG", bcX, bcY, bcWidth, bcHeight);
 
         // Tiny barcode caption under the bars
         doc.setFont("courier", "bold");
-        doc.setFontSize(4.2);
+        doc.setFontSize(5.0);
         doc.setTextColor(100, 116, 139); // Slate-500
-        doc.text(product.barcode.trim(), bcX + (bcWidth / 2), yPos + 19.8, { align: "center" });
+        doc.text(product.barcode.trim(), bcX + (bcWidth / 2), yPos + 26.5, { align: "center" });
       }
 
       itemCount++;
@@ -239,7 +237,7 @@ const PrintLabels = ({ storeName, products }) => {
               Totali i Etiketave: <Badge bg="primary" className="ms-1">{products.length}</Badge>
             </div>
             <div className="text-white-50 small">
-              Formati: <Badge bg="secondary" className="ms-1">A4 (4x13 Labels - Compact)</Badge>
+              Formati: <Badge bg="secondary" className="ms-1">A4 (3x10 Labels - Standard)</Badge>
             </div>
           </div>
         </Modal.Body>

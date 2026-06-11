@@ -70,3 +70,22 @@ a {
 .form-outline .form-control:focus ~ .form-notch .form-notch-middle {
   border-color: var(--primary) !important;
 }
+
+/* ── Light mode body & scrollbar overrides ───────────────────── */
+body.light-mode {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-mode::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+body.light-mode::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-color: #e2e8f0;
+}
+
+body.light-mode::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

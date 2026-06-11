@@ -3,12 +3,14 @@ import "./Styles/LogIn.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { Mail, Lock, LogIn as LoginIcon, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, LogIn as LoginIcon, Eye, EyeOff, Sun, Moon } from "lucide-react";
 import Titulli from "../Components/TeTjera/Titulli";
+import { useTheme } from "../Context/ThemeContext";
 
 const LogIn = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const [email, setEmail]         = useState("");
   const [password, setPassword]   = useState("");
@@ -88,10 +90,33 @@ const LogIn = () => {
     <div className="auth-wrapper">
       <Titulli titulli={"Login"} />
 
+      <div style={{ position: "absolute", top: "20px", right: "20px", zIndex: 50 }}>
+        <button
+          onClick={toggleTheme}
+          style={{
+            background: "var(--sp-surface)",
+            border: "1px solid var(--sp-border)",
+            color: "var(--sp-text)",
+            borderRadius: "50%",
+            width: "42px",
+            height: "42px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+          }}
+          title={theme === "light" ? "Kalo në Dark Mode" : "Kalo në Light Mode"}
+        >
+          {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+        </button>
+      </div>
+
       <div className={`auth-card ${shake ? "shake" : ""}`}>
         {/* Logo */}
         <div className="auth-logo-container">
-          <img src="/img/web/Logo.svg" alt="FinanCare Logo" className="auth-logo" />
+          <img src={theme === "light" ? "/img/web/LogoBlack.svg" : "/img/web/LogoWhite.svg"} alt="FinanCare Logo" className="auth-logo" />
         </div>
 
         {/* Header */}
@@ -128,6 +153,7 @@ const LogIn = () => {
               <Mail className="auth-icon-left" size={18} />
               <input
                 id="login-email"
+                name="email"
                 type="email"
                 className={`auth-input${emailError ? " error" : ""}`}
                 placeholder="emri@shembull.com"
@@ -147,6 +173,7 @@ const LogIn = () => {
               <Lock className="auth-icon-left" size={18} />
               <input
                 id="login-password"
+                name="password"
                 type={showPassword ? "text" : "password"}
                 className={`auth-input has-right-icon${passwordError ? " error" : ""}`}
                 placeholder="••••••••"
@@ -193,7 +220,17 @@ const LogIn = () => {
 
         {/* Footer */}
         <div className="auth-footer mt-4 text-center">
-          <span style={{ fontSize: '0.78rem', color: '#334155' }}>© FinanCare. All rights reserved.</span>
+          <span style={{ fontSize: '0.78rem', color: 'var(--sp-text-muted)' }}>
+            &copy; 2023 - {new Date().getFullYear()} FinanCare - POS, eOrder &amp; More by{" "}
+            <a 
+              href="https://rilindkycyku.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ color: 'var(--sp-emerald)', textDecoration: 'none', fontWeight: '600' }}
+            >
+              Rilind Kyçyku
+            </a>
+          </span>
         </div>
       </div>
     </div>

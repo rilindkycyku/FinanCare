@@ -501,3 +501,349 @@ body {
   padding: 4rem 2rem;
   width: 100%;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT MODE — scoped to body.light-mode
+   All --sp-* variables are overridden here. Every component that
+   uses these tokens automatically picks up the correct colors.
+   ══════════════════════════════════════════════════════════════ */
+
+body.light-mode {
+  --sp-bg:          #f1f5f9;
+  --sp-surface:     #ffffff;
+  --sp-surface-2:   #f8fafc;
+  --sp-surface-3:   #e2e8f0;
+
+  --sp-border:      rgba(0, 0, 0, 0.08);
+  --sp-border-glow: rgba(16, 185, 129, 0.35);
+
+  --sp-emerald:     #059669;
+  --sp-emerald-glow:rgba(5, 150, 105, 0.15);
+  --sp-cyan:        #0284c7;
+  --sp-cyan-glow:   rgba(2, 132, 199, 0.12);
+  --sp-red:         #dc2626;
+  --sp-text:        #0f172a;
+  --sp-text-soft:   #334155;
+  --sp-text-muted:  #64748b;
+}
+
+/* ── Body overrides ──────────────────────────────────────────── */
+body.light-mode {
+  background-color: var(--sp-bg) !important;
+  color: var(--sp-text) !important;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+body.light-mode ::-webkit-scrollbar-track {
+  background: var(--sp-surface-3);
+}
+body.light-mode ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-color: var(--sp-surface-3);
+}
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ── Navbar ──────────────────────────────────────────────────── */
+body.light-mode .modern-navbar {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-mode .nav-link-modern {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .nav-link-modern:hover,
+body.light-mode .dropdown.show > .nav-link-modern {
+  background: var(--sp-emerald) !important;
+  color: #fff !important;
+  border-color: var(--sp-emerald) !important;
+}
+
+body.light-mode .navbar-toggler {
+  color: #334155 !important;
+}
+
+body.light-mode .user-profile-nav {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .user-profile-nav:hover {
+  background: #e2e8f0;
+}
+
+body.light-mode .user-name-top {
+  color: #0f172a !important;
+}
+
+body.light-mode .user-role-badge {
+  color: #64748b !important;
+}
+
+body.light-mode .modern-dropdown .dropdown-menu {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12) !important;
+}
+
+body.light-mode .modern-dropdown .dropdown-item {
+  color: #334155 !important;
+}
+
+body.light-mode .modern-dropdown .dropdown-item:hover {
+  background: #f1f5f9 !important;
+  color: var(--sp-emerald) !important;
+}
+
+body.light-mode .dropdown-category-header {
+  color: #94a3b8 !important;
+}
+
+body.light-mode .sign-out-btn:hover {
+  background: #fef2f2 !important;
+}
+
+/* ── Modal ───────────────────────────────────────────────────── */
+body.light-mode .modal-content {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .modal-title {
+  color: #0f172a !important;
+}
+
+body.light-mode .sp-modal .modal-content {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .sp-modal .modal-header {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .sp-modal .btn-close {
+  filter: none !important;
+  opacity: 0.7 !important;
+}
+
+body.light-mode .sp-modal .form-label {
+  color: #334155 !important;
+}
+
+body.light-mode .sp-modal .form-control {
+  background: #f8fafc !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #0f172a !important;
+}
+
+/* ── Modal body table ────────────────────────────────────────── */
+body.light-mode .modal-body table.table tbody td {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .modal-body table.table thead th {
+  background: #f8fafc !important;
+  color: #64748b !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .modal-body table.table tbody tr:hover td {
+  background: #f1f5f9 !important;
+  border-color: var(--sp-emerald) !important;
+  color: #0f172a !important;
+}
+
+/* ── Form Controls ───────────────────────────────────────────── */
+body.light-mode .form-control,
+body.light-mode .form-select {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+body.light-mode .form-control:focus,
+body.light-mode .form-select:focus {
+  border-color: var(--sp-emerald) !important;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15) !important;
+}
+
+body.light-mode .form-control:disabled,
+body.light-mode .form-select:disabled {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+}
+
+body.light-mode .form-control::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.light-mode .form-check-input {
+  background-color: #e2e8f0 !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ── SP-Card ─────────────────────────────────────────────────── */
+body.light-mode .sp-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-mode .sp-card-header {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .sp-card-header h3 {
+  color: #475569;
+}
+
+/* ── SP-Table ────────────────────────────────────────────────── */
+body.light-mode .sp-table thead th {
+  background: #f8fafc !important;
+  color: #64748b !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .sp-table tbody td {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-mode .sp-table tbody tr:hover td {
+  background: #f1f5f9 !important;
+  border-color: var(--sp-emerald) !important;
+  color: #0f172a !important;
+}
+
+/* ── Pagination ─────────────────────────────────────────────── */
+body.light-mode .pagination .page-link {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #475569 !important;
+}
+
+/* ── React-Select ────────────────────────────────────────────── */
+body.light-mode .sp-select-container .sp-select__control {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+body.light-mode .sp-select-container .sp-select__single-value {
+  color: #0f172a !important;
+}
+
+body.light-mode .sp-select-container .sp-select__menu {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .sp-select-container .sp-select__option--is-focused {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* ── Datepicker ──────────────────────────────────────────────── */
+body.light-mode .react-datepicker {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .react-datepicker__header {
+  background-color: #f8fafc !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .react-datepicker__current-month,
+body.light-mode .react-datepicker__day-name {
+  color: #334155 !important;
+}
+
+body.light-mode .react-datepicker__day {
+  color: #0f172a !important;
+}
+
+/* ── ContainerDashboardP (tables) ────────────────────────────── */
+body.light-mode .containerDashboardP {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .containerDashboardP tr th {
+  background: #f8fafc !important;
+  color: #64748b !important;
+}
+
+body.light-mode .containerDashboardP tr td {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  color: #334155;
+}
+
+body.light-mode .containerDashboardP tr:hover td {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* ── DataPerFiltrim filter bar ───────────────────────────────── */
+body.light-mode .DataPerFiltrim {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+body.light-mode .btn-cancel {
+  background: #f1f5f9 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #475569 !important;
+}
+
+body.light-mode .btn-premium-outline {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #475569 !important;
+}
+
+body.light-mode .btn-premium-outline:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────── */
+body.light-mode .sp-tabs .nav-link {
+  color: #94a3b8 !important;
+}
+
+body.light-mode .sp-tabs .nav-link.active {
+  color: var(--sp-emerald) !important;
+}
+
+body.light-mode .sp-tabs .nav-link:hover {
+  color: #0f172a !important;
+}
+
+/* ── Text helpers ────────────────────────────────────────────── */
+body.light-mode .text-muted { color: #64748b !important; }
+body.light-mode .text-soft  { color: #475569 !important; }
+body.light-mode .text-white-50 { color: #64748b !important; }
+body.light-mode .text-white    { color: #0f172a !important; }
+
+
+/* Secondary Button Override for Theme */
+.btn-secondary { background-color: var(--sp-surface-3) !important; color: var(--sp-text) !important; border-color: var(--sp-border) !important; }
+.btn-secondary:hover { background-color: var(--sp-emerald) !important; border-color: var(--sp-emerald) !important; color: white !important; }
