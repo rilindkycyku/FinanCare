@@ -32,39 +32,51 @@ const StatCard = ({ title, value, icon: IconComp, color, trend, trendValue, dela
   </Card>
 );
 
-const ComparisonCard = ({ title, value, compareValue, suffix, isCurrency, delay }) => {
-  const diff = value - compareValue;
-  const isPositive = diff >= 0;
-  return (
-    <Card className="stat-card-modern h-100" data-aos="fade-up" data-aos-delay={delay}>
-      <Card.Body>
-        <div className="kpi-label mb-1">{title}</div>
-        <h3 className="kpi-value mb-3">{isCurrency ? `${parseFloat(value || 0).toFixed(2)} €` : value}</h3>
-        <div className={`p-2 rounded-3 d-flex align-items-center gap-2 ${isPositive ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"}`} style={{ fontSize: "0.85rem" }}>
-          {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-          <span className="fw-bold">{Math.abs(diff).toFixed(isCurrency ? 2 : 0)}{isCurrency ? " €" : ""}</span>
-          <span className="opacity-75">{suffix}</span>
-        </div>
-      </Card.Body>
-    </Card>
-  );
-};
+const ComparisonCard = ({ title, value, compareValue, suffix, isCurrency, delay, extras }) => {
+    const diff = value - compareValue;
+    const isPositive = diff >= 0;
+    return (
+      <Card className="stat-card-modern h-100 d-flex flex-column" data-aos="fade-up" data-aos-delay={delay}>
+        <Card.Body className="d-flex flex-column">
+          <div className="kpi-label mb-1">{title}</div>
+          <h3 className="kpi-value mb-3">{isCurrency ? `${parseFloat(value || 0).toFixed(2)} €` : value}</h3>
+          <div className={`p-2 rounded-3 d-flex align-items-center gap-2 ${isPositive ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"} mb-3`} style={{ fontSize: "0.85rem" }}>
+            {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+            <span className="fw-bold">{Math.abs(diff).toFixed(isCurrency ? 2 : 0)}{isCurrency ? " €" : ""}</span>
+            <span className="opacity-75">{suffix}</span>
+          </div>
+          {extras && extras.length > 0 && (
+            <div className="mt-auto border-top pt-3" style={{ borderColor: "var(--sp-border, rgba(255,255,255,0.05))" }}>
+              <div className="d-flex justify-content-between">
+                {extras.map((ex, i) => (
+                  <div key={i} className="d-flex flex-column">
+                    <span className="text-secondary" style={{ fontSize: "0.75rem" }}>{ex.label}</span>
+                    <span className={`fw-bold text-${ex.color || 'white'}`} style={{ fontSize: "0.9rem" }}>{ex.val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card.Body>
+      </Card>
+    );
+  };
 
 // --- Ranked list row ---
-const RankedRow = ({ rank, name, sub, value, share, barColor = "#10b981" }) => (
+const RankedRow = ({ rank, name, sub, value, barWidth, shareText, barColor = "#10b981" }) => (
   <div className="d-flex align-items-center gap-2 mb-2 py-1">
     <span className="text-secondary fw-bold" style={{ minWidth: 22, fontSize: "0.8rem" }}>#{rank}</span>
     <div className="flex-grow-1 min-w-0">
-      <div className="fw-semibold text-white text-truncate" style={{ fontSize: "0.85rem" }}>{name}</div>
+      <div className="fw-semibold text-theme-main text-truncate" style={{ fontSize: "0.85rem" }}>{name}</div>
       {sub && <div className="text-secondary" style={{ fontSize: "0.7rem" }}>{sub}</div>}
     </div>
     <span className="fw-bold text-info" style={{ fontSize: "0.85rem", minWidth: 85, textAlign: "right" }}>{value}</span>
     <div style={{ minWidth: 55 }}>
       <div className="op-bar-track" style={{ height: 5 }}>
-        <div className="op-bar-fill" style={{ width: `${share}%`, height: 5, background: `linear-gradient(90deg, ${barColor}, ${barColor}aa)` }} />
+        <div className="op-bar-fill" style={{ width: `${barWidth}%`, height: 5, background: `linear-gradient(90deg, ${barColor}, ${barColor}aa)` }} />
       </div>
     </div>
-    <span className="text-secondary" style={{ fontSize: "0.7rem", minWidth: 32 }}>{share.toFixed(1)}%</span>
+    <span className="text-secondary" style={{ fontSize: "0.7rem", minWidth: 32 }}>{shareText.toFixed(1)}%</span>
   </div>
 );
 
@@ -82,6 +94,9 @@ function Statistika() {
   const [sotSubTab, setSotSubTab] = useState("permbledhja");
   const [opSubTab, setOpSubTab] = useState("ditore");
   const [analSubTab, setAnalSubTab] = useState("produktet");
+  const [produktetView, setProduktetView] = useState("grafiku");
+  const [klientetView, setKlientetView] = useState("grafiku");
+  const [partneretView, setPartneretView] = useState("grafiku");
 
   const getToken = localStorage.getItem("token");
   const authentikimi = useMemo(() => ({ headers: { Authorization: `Bearer ${getToken}` } }), [getToken]);
@@ -116,12 +131,12 @@ function Statistika() {
   }, [fetchAllData]);
 
   const produktetData = useMemo(() => ({
-    labels: top15Produktet?.map((k) => k.produkti?.emriProduktit) || [],
-    datasets: [
-      { label: "Sasia e Shitur", data: top15Produktet?.map((k) => k.totaliPorosive) || [], backgroundColor: "rgba(16,185,129,0.7)", borderColor: "#10b981", borderRadius: 8 },
-      { label: "Vlera ne €", data: top15Produktet?.map((k) => parseFloat(k.totaliBlerjeve || 0).toFixed(2)) || [], backgroundColor: "rgba(6,182,212,0.7)", borderColor: "#06b6d4", borderRadius: 8 },
-    ],
-  }), [top15Produktet]);
+      labels: top15Produktet?.map((k) => k.produkti?.emriProduktit) || [],
+      datasets: [
+        { label: "Sasia e Shitur", data: top15Produktet?.map((k) => Number(k.totaliPorosive)) || [], backgroundColor: "rgba(16,185,129,0.7)", borderColor: "#10b981", borderRadius: 8, yAxisID: 'y' },
+        { label: "Vlera ne EUR", data: top15Produktet?.map((k) => Number(parseFloat(k.totaliBlerjeve || 0).toFixed(2))) || [], backgroundColor: "rgba(6,182,212,0.7)", borderColor: "#06b6d4", borderRadius: 8, yAxisID: 'y1' },
+      ],
+    }), [top15Produktet]);
 
   const shitjetJavoreData = useMemo(() => ({
     labels: shitjetJavore?.totaletDitore?.map((k) => { const d = new Date(k.data); return ["Die", "Hen", "Mar", "Mer", "Enj", "Pre", "Sht"][d.getDay()]; }) || [],
@@ -133,16 +148,75 @@ function Statistika() {
     }],
   }), [shitjetJavore]);
 
+
+  
+  const getChartOptions = (dataArray, yTitle = 'Sasia') => ({
+    responsive: true, maintainAspectRatio: false,
+    plugins: { 
+      legend: { position: "bottom", labels: { color: "var(--sp-text, #f1f5f9)" } },
+      tooltip: {
+        callbacks: {
+          title: (context) => {
+             const index = context[0].dataIndex;
+             return dataArray[index]?.produkti?.emriProduktit || dataArray[index]?.partneri?.emriBiznesit || "E panjohur";
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        type: 'linear', display: true, position: 'left', min: 0,
+        grid: { color: "var(--sp-border, rgba(255,255,255,0.05))" }, beginAtZero: true,
+        ticks: { color: "#10b981" }, title: { display: true, text: yTitle, color: "#10b981" }
+      },
+      y1: {
+        type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0,
+        beginAtZero: true, ticks: { color: "#06b6d4" }, title: { display: true, text: 'Vlera ne €', color: "#06b6d4" }
+      },
+      x: { grid: { display: false }, ticks: { color: "#94a3b8" } },
+    },
+  });
+
+  const produktetChartOptions = useMemo(() => getChartOptions(top15Produktet, 'Sasia e Shitur'), [top15Produktet]);
+  const bleresitChartOptions = useMemo(() => getChartOptions(top15Bleresit, 'Numri i Blerjeve'), [top15Bleresit]);
+  const biznesetChartOptions = useMemo(() => getChartOptions(top15Bizneset, 'Numri i Blerjeve'), [top15Bizneset]);
+
+  const bleresitData = useMemo(() => ({
+      labels: top15Bleresit?.map((k) => {
+          let name = k.partneri?.emriBiznesit || "Klient";
+          return name.length > 20 ? name.substring(0, 20) + "..." : name;
+      }) || [],
+      datasets: [
+        { label: "Numri Blerjeve", data: top15Bleresit?.map((k) => Number(k.numriBlerjeve)) || [], backgroundColor: "rgba(16,185,129,0.7)", borderColor: "#10b981", borderRadius: 8, yAxisID: 'y' },
+        { label: "Vlera ne EUR", data: top15Bleresit?.map((k) => Number(parseFloat(k.totaliBlerjeveEuro || 0).toFixed(2))) || [], backgroundColor: "rgba(59,130,246,0.7)", borderColor: "#3b82f6", borderRadius: 8, yAxisID: 'y1' },
+      ],
+    }), [top15Bleresit]);
+
+  const biznesetData = useMemo(() => ({
+      labels: top15Bizneset?.map((k) => {
+          let name = k.partneri?.emriBiznesit || "Biznes";
+          return name.length > 20 ? name.substring(0, 20) + "..." : name;
+      }) || [],
+      datasets: [
+        { label: "Numri Blerjeve", data: top15Bizneset?.map((k) => Number(k.numriBlerjeve)) || [], backgroundColor: "rgba(16,185,129,0.7)", borderColor: "#10b981", borderRadius: 8, yAxisID: 'y' },
+        { label: "Vlera ne EUR", data: top15Bizneset?.map((k) => Number(parseFloat(k.totaliBlerjeveEuro || 0).toFixed(2))) || [], backgroundColor: "rgba(59,130,246,0.7)", borderColor: "#3b82f6", borderRadius: 8, yAxisID: 'y1' },
+      ],
+    }), [top15Bizneset]);
+
+
   const chartOptions = useMemo(() => ({
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: "bottom", labels: { color: "#f1f5f9" } } },
+    plugins: { legend: { position: "bottom", labels: { color: "var(--sp-text, #f1f5f9)" } } },
     scales: {
-      y: { grid: { color: "rgba(255,255,255,0.05)" }, beginAtZero: true, ticks: { color: "#94a3b8" } },
+      y: { grid: { color: "var(--sp-border, rgba(255,255,255,0.05))" }, beginAtZero: true, min: 0, ticks: { color: "#94a3b8" } },
       x: { grid: { display: false }, ticks: { color: "#94a3b8" } },
     },
   }), []);
 
   const totalShitjeveGjithsej = parseFloat((totaleTeNdryshme?.totaliShitjeve || 0) + (totaleTeNdryshme?.totaliShitjeveParagonEuro || 0)).toFixed(2);
+  const sumProduktet = top15Produktet.reduce((acc, p) => acc + parseFloat(p.totaliBlerjeve || 0), 0);
+  const sumBleresit = top15Bleresit.reduce((acc, p) => acc + parseFloat(p.totaliBlerjeveEuro || 0), 0);
+  const sumBizneset = top15Bizneset.reduce((acc, p) => acc + parseFloat(p.totaliBlerjeveEuro || 0), 0);
 
   const groupByUser = (rows = []) => {
     const map = new Map();
@@ -177,7 +251,7 @@ function Statistika() {
   }
 
   // --- Shared KPI mini-cell ---
-  const KpiMini = ({ label, val, note, noteColor, bg = "rgba(255,255,255,0.04)", border = "rgba(255,255,255,0.08)" }) => (
+  const KpiMini = ({ label, val, note, noteColor, bg = "var(--sp-border, rgba(255,255,255,0.05))", border = "var(--sp-border, rgba(255,255,255,0.05))" }) => (
     <div className="p-3 rounded-3" style={{ background: bg, border: `1px solid ${border}` }}>
       <div className="kpi-label mb-1" style={{ fontSize: "0.63rem" }}>{label}</div>
       <div className="fw-bold text-white" style={{ fontSize: "1.15rem" }}>{val}</div>
@@ -221,15 +295,21 @@ function Statistika() {
               const parDjeshme = totaleTeNdryshme?.totaliPorosiveDjeshme || 0;
               const avgDjeshme = parDjeshme > 0 ? totalDjeshme / parDjeshme : 0;
               const fatSotEur = Math.max(totalSotme - totalEur, 0);
-              const fatSotPar = totaleTeNdryshme?.totaliPorosiveSotme || 0;
-              const fatAvg = fatSotPar > 0 ? fatSotEur / fatSotPar : 0;
-              const fatDjeEur = Math.max(totalDjeshme - totalEur, 0);
-              const fatDjePar = totaleTeNdryshme?.totaliPorosiveDjeshme || 0;
-              const fatDiff = fatSotEur - fatDjeEur;
-              const fatUp = fatDiff >= 0;
+                const fatSotPar = Math.max((totaleTeNdryshme?.totaliPorosiveSotme || 0) - totalPar, 0);
+                const fatAvg = fatSotPar > 0 ? fatSotEur / fatSotPar : 0;
+                
+                const fatDjeEur = Math.max((totaleTeNdryshme?.totaliShitjeveDjeshme || 0) - (shitjetMeParagon?.shitjetDjeshme?.shitjetDitoreEuro || 0), 0);
+                const fatDjePar = Math.max((totaleTeNdryshme?.totaliPorosiveDjeshme || 0) - (shitjetMeParagon?.shitjetDjeshme?.shitjetDitoreParagon || 0), 0);
+                
+                const fatDiff = fatSotEur - fatDjeEur;
+                const fatUp = fatDiff >= 0;
               const javoreData = shitjetJavore?.totaletDitore || [];
-              const fatJavEur = parseFloat(shitjetJavore?.TotaletJavore?.TotaliShitjeveJavore || 0);
-              const fatJavPar = shitjetJavore?.TotaletJavore?.TotaliPorosiveJavore || 0;
+              const totaliShitjeveJavoreAll = shitjetJavore?.totaletJavore?.totaliShitjeveJavore || shitjetJavore?.TotaletJavore?.TotaliShitjeveJavore || 0;
+              const totaliPorosiveJavoreAll = shitjetJavore?.totaletJavore?.totaliPorosiveJavore || shitjetJavore?.TotaletJavore?.TotaliPorosiveJavore || 0;
+              const fatJavEur = Math.max(parseFloat(totaliShitjeveJavoreAll) - parseFloat(shitjetMeParagon?.shitjetJavore?.shitjetJavoreEuro || 0), 0);
+              const fatJavPar = Math.max(parseInt(totaliPorosiveJavoreAll) - parseInt(shitjetMeParagon?.shitjetJavore?.shitjetJavoreParagon || 0), 0);
+              const fatAvgDje = fatDjePar > 0 ? fatDjeEur / fatDjePar : 0;
+              const fatPct = fatDjeEur > 0 ? (Math.abs(fatDiff) / fatDjeEur * 100).toFixed(1) : "100";
               return (
                 <div className="mt-4">
                   <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
@@ -256,7 +336,7 @@ function Statistika() {
                     return (
                       <>
                         {/* WIDGET: Pasqyra e Profitit Ditor */}
-                        <Card className="stat-card-modern border-0 mb-4 overflow-hidden position-relative" style={{ background: "linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(20, 184, 166, 0.05) 100%)", border: "1px solid rgba(16, 185, 129, 0.15) !important" }}>
+                        <Card className="stat-card-modern border-0 mb-4 overflow-hidden position-relative" style={{ background: "var(--sp-profit-container-bg, linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(20, 184, 166, 0.05) 100%))", border: "1px solid var(--sp-profit-container-border, rgba(16, 185, 129, 0.15))" }}>
                           <div className="position-absolute" style={{ width: "150px", height: "150px", background: "rgba(16, 185, 129, 0.15)", filter: "blur(60px)", top: "-30px", right: "-30px", borderRadius: "50%", zIndex: 0 }} />
                           <div className="position-absolute" style={{ width: "100px", height: "100px", background: "rgba(20, 184, 166, 0.1)", filter: "blur(40px)", bottom: "-20px", left: "-20px", borderRadius: "50%", zIndex: 0 }} />
                           
@@ -280,7 +360,7 @@ function Statistika() {
 
                             <Row className="g-4 mb-4">
                               <Col xl={3} lg={6}>
-                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "rgba(16, 185, 129, 0.08)", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "var(--sp-card-green-bg, rgba(16, 185, 129, 0.08))", border: "1px solid var(--sp-card-green-border, rgba(16, 185, 129, 0.2))" }}>
                                   <div>
                                     <div className="d-flex justify-content-between align-items-center mb-2">
                                       <span className="text-secondary" style={{ fontSize: "0.75rem", fontWeight: 600 }}>FITIMI NETO SOT</span>
@@ -297,7 +377,7 @@ function Statistika() {
                               </Col>
 
                               <Col xl={3} lg={6}>
-                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "rgba(6, 182, 212, 0.06)", border: "1px solid rgba(6, 182, 212, 0.15)" }}>
+                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "var(--sp-card-cyan-bg, rgba(6, 182, 212, 0.06))", border: "1px solid var(--sp-card-cyan-border, rgba(6, 182, 212, 0.15))" }}>
                                   <div>
                                     <div className="d-flex justify-content-between align-items-center mb-2">
                                       <span className="text-secondary" style={{ fontSize: "0.75rem", fontWeight: 600 }}>MARZHI I PROFITIT</span>
@@ -318,7 +398,7 @@ function Statistika() {
                               </Col>
 
                               <Col xl={3} lg={6}>
-                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+                                <div className="p-3 rounded-4 h-100 position-relative d-flex flex-column justify-content-between" style={{ background: "var(--sp-card-gray-bg, var(--sp-border, rgba(255,255,255,0.05)))", border: "1px solid var(--sp-card-gray-border, var(--sp-border, rgba(255,255,255,0.05)))" }}>
                                   <div>
                                     <div className="d-flex justify-content-between align-items-center mb-2">
                                       <span className="text-secondary" style={{ fontSize: "0.75rem", fontWeight: 600 }}>GJITHSEJ SHITUR SOT</span>
@@ -354,7 +434,7 @@ function Statistika() {
                               </Col>
                             </Row>
 
-                            <hr style={{ borderColor: "rgba(255, 255, 255, 0.07)", margin: "1.5rem 0" }} />
+                            <hr style={{ borderColor: "var(--sp-border, rgba(255,255,255,0.05))", margin: "1.5rem 0" }} />
 
                             <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
                               <div className="d-flex align-items-center gap-3">
@@ -373,11 +453,11 @@ function Statistika() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="p-3 rounded-3 flex-grow-1 flex-md-grow-0" style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.05)", maxWidth: "550px" }}>
+                              <div className="p-3 rounded-3 flex-grow-1 flex-md-grow-0" style={{ background: "var(--sp-border, rgba(255,255,255,0.05))", border: "1px solid var(--sp-border, rgba(255,255,255,0.05))", maxWidth: "550px" }}>
                                 <div className="d-flex align-items-start gap-2">
                                   <div className="text-warning mt-0.5" style={{ minWidth: 16 }}><Sparkles size={16} /></div>
-                                  <div style={{ fontSize: "0.72rem", lineHeight: "1.4", color: "#cbd5e1" }}>
-                                    <span className="text-white fw-bold">Këshillë Financiare:</span>{" "}
+                                  <div style={{ fontSize: "0.72rem", lineHeight: "1.4", color: "var(--sp-text-soft, #cbd5e1)" }}>
+                                    <span className="text-theme-main fw-bold">Këshillë Financiare:</span>{" "}
                                     {parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0) > 0 ? (
                                       <>
                                         Sot keni fituar të pastër <strong className="text-success">{parseFloat(totaleTeNdryshme?.profitiBrutoSotme || 0).toFixed(2)} €</strong>.
@@ -440,7 +520,7 @@ function Statistika() {
                               <Card.Body className="p-4">
                                 <Row className="g-3 mb-4">
                                   {[
-                                    { label: "Vlera POS Sot", val: `${totalEur.toFixed(2)} €`, note: pct ? `${isUp ? "+" : "-"}${pct}% vs dje` : "Pa ndryshim", noteColor: isUp ? "success" : "danger" },
+                                    { label: "Vlera POS Sot", val: `${totalEur.toFixed(2)} €`, note: `${isUp ? "+" : "-"}${pct}% vs dje`, noteColor: isUp ? "success" : "danger" },
                                     { label: "Paragon Sot", val: totalPar, note: `Dje: ${parDjeshme}`, noteColor: "secondary" },
                                     { label: "Mesatare / Par.", val: `${avgTicket.toFixed(2)} €`, note: `Dje: ${avgDjeshme.toFixed(2)} €`, noteColor: "secondary" },
                                     { label: "Operatorë Aktiv", val: operators.length, note: "Ka shitur sot", noteColor: "primary" },
@@ -453,17 +533,17 @@ function Statistika() {
                                   ? <div className="text-secondary text-center py-3" style={{ fontSize: "0.85rem" }}>Nuk ka shitje POS sot</div>
                                   : operators.slice(0, 6).map((k, i) => {
                                     const share = totalEur > 0 ? k.totaliBlerjeveEuro / totalEur * 100 : 0;
-                                    return <RankedRow key={i} rank={i + 1} name={k?.stafi?.username} value={`${k.totaliBlerjeveEuro.toFixed(2)} €`} share={share} />;
+                                    return <RankedRow key={i} rank={i + 1} name={k?.stafi?.username} value={`${k.totaliBlerjeveEuro.toFixed(2)} €`} barWidth={operators[0]?.totaliBlerjeveEuro > 0 ? k.totaliBlerjeveEuro / operators[0].totaliBlerjeveEuro * 100 : 0} shareText={share} />;
                                   })
                                 }
-                                <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+                                <div className="mt-4 pt-3" style={{ borderTop: "1px solid var(--sp-border, rgba(255,255,255,0.05))" }}>
                                   <div className="kpi-label mb-2">Konteksti POS</div>
                                   <div className="d-flex gap-3">
                                     {[
                                       { label: "Jave", val: `${parseFloat(shitjetMeParagon?.shitjetJavore?.shitjetJavoreEuro || 0).toFixed(2)} €`, sub: `${shitjetMeParagon?.shitjetJavore?.shitjetJavoreParagon || 0} par.` },
                                       { label: "Muaj", val: `${parseFloat(shitjetMeParagon?.shitjetMujore?.shitjetMujoreEuro || 0).toFixed(2)} €`, sub: `${shitjetMeParagon?.shitjetMujore?.shitjetMujoreParagon || 0} par.` },
                                     ].map(({ label, val, sub }) => (
-                                      <div key={label} className="flex-grow-1 p-3 rounded-3" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                                      <div key={label} className="flex-grow-1 p-3 rounded-3" style={{ background: "var(--sp-card-gray-bg, var(--sp-border, rgba(255,255,255,0.05)))", border: "1px solid var(--sp-card-gray-border, var(--sp-border, rgba(255,255,255,0.05)))" }}>
                                         <div className="kpi-label" style={{ fontSize: "0.62rem" }}>{label}</div>
                                         <div className="fw-bold text-success" style={{ fontSize: "1rem" }}>{val}</div>
                                         <div className="text-secondary" style={{ fontSize: "0.72rem" }}>{sub}</div>
@@ -490,10 +570,10 @@ function Statistika() {
                               <Card.Body className="p-4">
                                 <Row className="g-3 mb-4">
                                   {[
-                                    { label: "Vlera FAT Sot", val: `${fatSotEur.toFixed(2)} €`, note: `${fatUp ? "+" : ""}${fatDiff.toFixed(2)} € vs dje`, noteColor: fatUp ? "success" : "danger" },
-                                    { label: "Porosi Sot", val: fatSotPar, note: `Dje: ${fatDjePar}`, noteColor: "secondary" },
-                                    { label: "Mesatare / Por.", val: `${fatAvg.toFixed(2)} €`, note: `Totali: ${totalSotme.toFixed(2)} €`, noteColor: "secondary" },
-                                    { label: "Porosi Javore", val: fatJavPar, note: `${fatJavEur.toFixed(2)} € jave`, noteColor: "info" },
+                                    { label: "Vlera FAT Sot", val: `${fatSotEur.toFixed(2)} €`, note: `${fatUp ? "+" : "-"}${fatPct}% vs dje`, noteColor: fatUp ? "success" : "danger" },
+                                      { label: "Porosi Sot", val: fatSotPar, note: `Dje: ${fatDjePar}`, noteColor: "secondary" },
+                                      { label: "Mesatare / Por.", val: `${fatAvg.toFixed(2)} €`, note: `Dje: ${fatAvgDje.toFixed(2)} €`, noteColor: "secondary" },
+                                      { label: "Porosi Javore", val: fatJavPar, note: `${fatJavEur.toFixed(2)} € javë`, noteColor: "info" },
                                   ].map(({ label, val, note, noteColor }, i) => (
                                     <Col key={i} xs={6}><KpiMini label={label} val={val} note={note} noteColor={noteColor} bg="rgba(59,130,246,0.06)" border="rgba(59,130,246,0.15)" /></Col>
                                   ))}
@@ -505,7 +585,7 @@ function Statistika() {
                                     const maxVal = Math.max(...javoreData.map(d => parseFloat(d.totaliShitjeveDitore || 0)), 1);
                                     const days = ["Die", "Hen", "Mar", "Mer", "Enj", "Pre", "Sht"];
                                     return (
-                                      <div className="d-flex flex-column gap-2">
+                                      <div className="d-flex flex-column gap-2 align-items-start">
                                         {[...javoreData].reverse().map((d, i) => {
                                           const v = parseFloat(d.totaliShitjeveDitore || 0);
                                           const p2 = maxVal > 0 ? v / maxVal * 100 : 0;
@@ -524,14 +604,14 @@ function Statistika() {
                                     );
                                   })()
                                 }
-                                <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+                                <div className="mt-4 pt-3" style={{ borderTop: "1px solid var(--sp-border, rgba(255,255,255,0.05))" }}>
                                   <div className="kpi-label mb-2">Konteksti FAT</div>
                                   <div className="d-flex gap-3">
                                     {[
                                       { label: "Këtë Muaj", val: `${parseFloat(totaleTeNdryshme?.totaliShitjeveKeteMuaj || 0).toFixed(2)} €`, sub: `${totaleTeNdryshme?.totaliPorosiveKeteMuaj || 0} porosi` },
                                       { label: "Muaji Kaluar", val: `${parseFloat(totaleTeNdryshme?.totaliShitjeveMuajinKaluar || 0).toFixed(2)} €`, sub: `${totaleTeNdryshme?.totaliPorosiveMuajinKaluar || 0} porosi` },
                                     ].map(({ label, val, sub }) => (
-                                      <div key={label} className="flex-grow-1 p-3 rounded-3" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                                      <div key={label} className="flex-grow-1 p-3 rounded-3" style={{ background: "var(--sp-card-gray-bg, var(--sp-border, rgba(255,255,255,0.05)))", border: "1px solid var(--sp-card-gray-border, var(--sp-border, rgba(255,255,255,0.05)))" }}>
                                         <div className="kpi-label" style={{ fontSize: "0.62rem" }}>{label}</div>
                                         <div className="fw-bold text-primary" style={{ fontSize: "1rem" }}>{val}</div>
                                         <div className="text-secondary" style={{ fontSize: "0.72rem" }}>{sub}</div>
@@ -671,39 +751,47 @@ function Statistika() {
               {/* Chart + comparison cards */}
               <Row className="g-4 mb-4">
                 <Col xl={8} data-aos="fade-right">
-                  <Card className="stat-card-modern border-0">
-                    <Card.Body className="p-4">
-                      <div className="d-flex align-items-center justify-content-between mb-4">
-                        <h5 className="fw-bold mb-0 text-white">Trendi i Shitjeve Javore (FAT)</h5>
-                        <Badge bg="primary-subtle" text="primary" className="rounded-pill px-3">7 Ditët e Fundit</Badge>
-                      </div>
-                      <div style={{ height: "320px" }}>
-                        <ChartComponent chartType="line" chartData={shitjetJavoreData} chartOptions={chartOptions} />
-                      </div>
-                    </Card.Body>
-                  </Card>
+                  <Card className="stat-card-modern border-0 h-100">
+                      <Card.Body className="p-4 d-flex flex-column">
+                        <div className="d-flex align-items-center justify-content-between mb-4">
+                          <h5 className="fw-bold mb-0 text-white">Trendi i Shitjeve Javore (FAT)</h5>
+                          <Badge bg="primary-subtle" text="primary" className="rounded-pill px-3">7 Ditët e Fundit</Badge>
+                        </div>
+                        <div className="flex-grow-1 position-relative" style={{ minHeight: "320px" }}>
+                          <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+                            <ChartComponent chartType="line" chartData={shitjetJavoreData} chartOptions={chartOptions} />
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
                 </Col>
                 <Col xl={4}>
                   <div className="d-flex flex-column gap-3 h-100">
                     <h6 className="kpi-label mb-1 px-1">Performanca Ditore vs Mujore</h6>
-                    <ComparisonCard title="Sot vs Dje" value={totaleTeNdryshme?.totaliShitjeveSotme} compareValue={totaleTeNdryshme?.totaliShitjeveDjeshme} suffix="ndryshim" isCurrency={true} delay={0} />
-                    <ComparisonCard title="Këtë Muaj vs Kaluar" value={totaleTeNdryshme?.totaliShitjeveKeteMuaj} compareValue={totaleTeNdryshme?.totaliShitjeveMuajinKaluar} suffix="ndryshim" isCurrency={true} delay={100} />
-                    <Card className="stat-card-modern border-0 flex-grow-1">
-                      <Card.Body className="p-4">
-                        <div className="kpi-label mb-3">Porosi Muajore</div>
-                        {[
-                          { label: "Këtë Muaj (FAT)", val: totaleTeNdryshme?.totaliPorosiveKeteMuaj || 0, color: "info" },
-                          { label: "Muaji Kaluar (FAT)", val: totaleTeNdryshme?.totaliPorosiveMuajinKaluar || 0, color: "secondary" },
-                          { label: "Sot (FAT)", val: totaleTeNdryshme?.totaliPorosiveSotme || 0, color: "success" },
-                          { label: "Dje (FAT)", val: totaleTeNdryshme?.totaliPorosiveDjeshme || 0, color: "warning" },
-                        ].map(({ label, val, color }) => (
-                          <div key={label} className="d-flex justify-content-between align-items-center mb-2 pb-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                            <span className="text-secondary" style={{ fontSize: "0.82rem" }}>{label}</span>
-                            <span className={`fw-bold text-${color}`} style={{ fontSize: "0.95rem" }}>{val}</span>
-                          </div>
-                        ))}
-                      </Card.Body>
-                    </Card>
+                    <ComparisonCard 
+                      title="Sot vs Dje" 
+                      value={totaleTeNdryshme?.totaliShitjeveSotme} 
+                      compareValue={totaleTeNdryshme?.totaliShitjeveDjeshme} 
+                      suffix="ndryshim" 
+                      isCurrency={true} 
+                      delay={0}
+                      extras={[
+                        { label: "Porosi Sot (FAT)", val: totaleTeNdryshme?.totaliPorosiveSotme || 0, color: "success" },
+                        { label: "Porosi Dje (FAT)", val: totaleTeNdryshme?.totaliPorosiveDjeshme || 0, color: "warning" }
+                      ]} 
+                    />
+                    <ComparisonCard 
+                      title="Këtë Muaj vs Kaluar" 
+                      value={totaleTeNdryshme?.totaliShitjeveKeteMuaj} 
+                      compareValue={totaleTeNdryshme?.totaliShitjeveMuajinKaluar} 
+                      suffix="ndryshim" 
+                      isCurrency={true} 
+                      delay={100}
+                      extras={[
+                        { label: "Porosi Këtë Muaj (FAT)", val: totaleTeNdryshme?.totaliPorosiveKeteMuaj || 0, color: "info" },
+                        { label: "Porosi Muajin Kaluar", val: totaleTeNdryshme?.totaliPorosiveMuajinKaluar || 0, color: "secondary" }
+                      ]} 
+                    />
                   </div>
                 </Col>
               </Row>
@@ -718,9 +806,9 @@ function Statistika() {
                     </Card.Header>
                     <Card.Body className="p-4 pt-3">
                       {top15Produktet.slice(0, 5).map((k, i) => {
-                        const maxV = parseFloat(top15Produktet[0]?.totaliBlerjeve || 1);
+                        const maxV = Math.max(...top15Produktet.map(p => parseFloat(p.totaliBlerjeve || 0)), 1);
                         const v = parseFloat(k.totaliBlerjeve || 0);
-                        return <RankedRow key={i} rank={i + 1} name={k?.produkti?.emriProduktit} sub={`${k.totaliPorosive} njësi`} value={`${v.toFixed(2)} €`} share={maxV > 0 ? v / maxV * 100 : 0} />;
+                        return <RankedRow key={i} rank={i + 1} name={k?.produkti?.emriProduktit} sub={`${k.totaliPorosive} ${k.produkti?.njesia || "njësi"}`} value={`${v.toFixed(2)} €`} barWidth={maxV > 0 ? v / maxV * 100 : 0} shareText={sumProduktet > 0 ? v / sumProduktet * 100 : 0} />;
                       })}
                     </Card.Body>
                   </Card>
@@ -733,9 +821,9 @@ function Statistika() {
                     </Card.Header>
                     <Card.Body className="p-4 pt-3">
                       {top15Bleresit.slice(0, 5).map((k, i) => {
-                        const maxV = parseFloat(top15Bleresit[0]?.totaliBlerjeveEuro || 1);
+                        const maxV = Math.max(...top15Bleresit.map(p => parseFloat(p.totaliBlerjeveEuro || 0)), 1);
                         const v = parseFloat(k.totaliBlerjeveEuro || 0);
-                        return <RankedRow key={i} rank={i + 1} name={k?.partneri?.emriBiznesit} sub={k?.partneri?.kartela?.kodiKartela || "Pa Kartelë"} value={`${v.toFixed(2)} €`} share={maxV > 0 ? v / maxV * 100 : 0} barColor="#06b6d4" />;
+                        return <RankedRow key={i} rank={i + 1} name={k?.partneri?.emriBiznesit} sub={k?.partneri?.kartela?.kodiKartela || "Pa Kartelë"} value={`${v.toFixed(2)} €`} barWidth={maxV > 0 ? v / maxV * 100 : 0} shareText={sumBleresit > 0 ? v / sumBleresit * 100 : 0} barColor="#06b6d4" />;
                       })}
                     </Card.Body>
                   </Card>
@@ -748,9 +836,9 @@ function Statistika() {
                     </Card.Header>
                     <Card.Body className="p-4 pt-3">
                       {top15Bizneset.slice(0, 5).map((k, i) => {
-                        const maxV = parseFloat(top15Bizneset[0]?.totaliBlerjeveEuro || 1);
+                        const maxV = Math.max(...top15Bizneset.map(p => parseFloat(p.totaliBlerjeveEuro || 0)), 1);
                         const v = parseFloat(k.totaliBlerjeveEuro || 0);
-                        return <RankedRow key={i} rank={i + 1} name={k?.partneri?.emriBiznesit} value={`${v.toFixed(2)} €`} share={maxV > 0 ? v / maxV * 100 : 0} barColor="#3b82f6" />;
+                        return <RankedRow key={i} rank={i + 1} name={k?.partneri?.emriBiznesit} value={`${v.toFixed(2)} €`} barWidth={maxV > 0 ? v / maxV * 100 : 0} shareText={sumBizneset > 0 ? v / sumBizneset * 100 : 0} barColor="#3b82f6" />;
                       })}
                     </Card.Body>
                   </Card>
@@ -802,7 +890,7 @@ function Statistika() {
                         { label: "FAT Vlera", val: `${fatEur.toFixed(2)} €`, color: "primary" },
                         { label: "FAT Mes/Por", val: `${fatAvg.toFixed(2)} €`, color: "secondary" },
                       ].map(({ label, val, color }) => (
-                        <div key={label} className="text-center px-3 py-2 rounded-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                        <div key={label} className="text-center px-3 py-2 rounded-3" style={{ background: "var(--sp-card-gray-bg, var(--sp-border, rgba(255,255,255,0.05)))", border: "1px solid var(--sp-card-gray-border, var(--sp-border, rgba(255,255,255,0.05)))" }}>
                           <div className="kpi-label mb-0" style={{ fontSize: "0.62rem" }}>{label}</div>
                           <div className={`fw-bold text-${color}`} style={{ fontSize: "0.9rem" }}>{val}</div>
                         </div>
@@ -922,7 +1010,7 @@ function Statistika() {
                               const isActive = p.key === opSubTab;
                               return (
                                 <div key={p.key} className={`p-3 rounded-3 mb-2 cursor-pointer ${isActive ? "active-period" : ""}`}
-                                  style={{ background: isActive ? "rgba(16,185,129,0.1)" : "rgba(255,255,255,0.03)", border: `1px solid ${isActive ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.06)"}`, cursor: "pointer" }}
+                                  style={{ background: isActive ? "rgba(16,185,129,0.1)" : "var(--sp-border, rgba(255,255,255,0.05))", border: `1px solid ${isActive ? "rgba(16,185,129,0.3)" : "var(--sp-border, rgba(255,255,255,0.05))"}`, cursor: "pointer" }}
                                   onClick={() => setOpSubTab(p.key)}>
                                   <div className="d-flex justify-content-between mb-2">
                                     <span className={`fw-bold ${isActive ? "text-success" : "text-white"}`} style={{ fontSize: "0.85rem" }}>{p.label}</span>
@@ -946,15 +1034,38 @@ function Statistika() {
           {/* ═══════════════ ANALITIKA TAB ═══════════════ */}
           <Tab eventKey="insights" title={<div className="d-flex align-items-center gap-2"><BarChart3 size={18} /> Analitika</div>}>
             <div className="mt-4">
-              <div className="d-flex align-items-center justify-content-between mb-4">
-                <div className="subtab-pills">
-                  {[
-                    { key: "produktet", label: "Produktet" },
-                    { key: "bleresit", label: "Klientet" },
-                    { key: "partnerit", label: "Partneret" },
-                  ].map(st => (
-                    <button key={st.key} className={`subtab-pill ${analSubTab === st.key ? "active" : ""}`} onClick={() => setAnalSubTab(st.key)}>{st.label}</button>
-                  ))}
+              <div className="d-flex align-items-start justify-content-between mb-4">
+                <div className="d-flex flex-column gap-2 align-items-start">
+                  <div className="subtab-pills">
+                    {[
+                      { key: "produktet", label: "Produktet" },
+                      { key: "bleresit", label: "Klientet" },
+                      { key: "partnerit", label: "Partneret" },
+                    ].map(st => (
+                      <button key={st.key} className={`subtab-pill ${analSubTab === st.key ? "active" : ""}`} onClick={() => setAnalSubTab(st.key)}>{st.label}</button>
+                    ))}
+                  </div>
+
+                  {analSubTab === "produktet" && (
+                    <div className="subtab-pills" style={{ transform: "scale(0.85)", transformOrigin: "left center", margin: 0 }}>
+                      <button className={`subtab-pill ${produktetView === "grafiku" ? "active" : ""}`} onClick={() => setProduktetView("grafiku")}>Grafiku</button>
+                      <button className={`subtab-pill ${produktetView === "lista" ? "active" : ""}`} onClick={() => setProduktetView("lista")}>Lista</button>
+                    </div>
+                  )}
+
+                  {analSubTab === "bleresit" && (
+                    <div className="subtab-pills" style={{ transform: "scale(0.85)", transformOrigin: "left center", margin: 0 }}>
+                      <button className={`subtab-pill ${klientetView === "grafiku" ? "active" : ""}`} onClick={() => setKlientetView("grafiku")}>Grafiku</button>
+                      <button className={`subtab-pill ${klientetView === "tabela" ? "active" : ""}`} onClick={() => setKlientetView("tabela")}>Tabela</button>
+                    </div>
+                  )}
+
+                  {analSubTab === "partnerit" && (
+                    <div className="subtab-pills" style={{ transform: "scale(0.85)", transformOrigin: "left center", margin: 0 }}>
+                      <button className={`subtab-pill ${partneretView === "grafiku" ? "active" : ""}`} onClick={() => setPartneretView("grafiku")}>Grafiku</button>
+                      <button className={`subtab-pill ${partneretView === "tabela" ? "active" : ""}`} onClick={() => setPartneretView("tabela")}>Tabela</button>
+                    </div>
+                  )}
                 </div>
                 <Badge bg="secondary-subtle" text="secondary" className="rounded-pill px-3">Top 15</Badge>
               </div>
@@ -962,8 +1073,9 @@ function Statistika() {
               {/* ANALITIKA: Produktet */}
               {analSubTab === "produktet" && (
                 <Row className="g-4">
-                  <Col xl={8}>
-                    <Card className="stat-card-modern border-0">
+                  <Col xl={12}>
+                    {produktetView === "grafiku" && (
+                    <Card className="stat-card-modern border-0 mb-4">
                       <Card.Body className="p-4">
                         <div className="d-flex justify-content-between align-items-center mb-4">
                           <h5 className="fw-bold mb-0 text-white">Top 15 Produktet më të Shitura</h5>
@@ -973,25 +1085,56 @@ function Statistika() {
                           </div>
                         </div>
                         <div style={{ height: "420px" }}>
-                          <ChartComponent chartType="bar" chartData={produktetData} chartOptions={chartOptions} />
+                          <ChartComponent chartType="bar" chartData={produktetData} chartOptions={produktetChartOptions} />
                         </div>
                       </Card.Body>
                     </Card>
-                  </Col>
-                  <Col xl={4}>
-                    <Card className="stat-card-modern border-0 h-100">
-                      <Card.Header className="bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between">
-                        <h6 className="fw-bold mb-0 text-white">Renditja e Produkteve</h6>
-                        <Package size={18} className="text-success" />
+                    )}
+
+                    {produktetView === "lista" && (
+                    <Card className="stat-card-modern border-0">
+                      <Card.Header className="bg-transparent border-0 pt-4 px-5 pb-2 d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center gap-2">
+                          <div className="icon-box bg-success-subtle text-success mb-0" style={{ width: 32, height: 32, borderRadius: 8 }}><Package size={16} /></div>
+                          <h6 className="fw-bold text-white mb-0">Renditja e Produkteve</h6>
+                        </div>
+                        <Badge bg="success-subtle" text="success" className="rounded-pill px-3">Top 15</Badge>
                       </Card.Header>
-                      <Card.Body className="p-4 pt-3" style={{ overflowY: "auto", maxHeight: 480 }}>
-                        {top15Produktet.map((k, i) => {
-                          const maxV = parseFloat(top15Produktet[0]?.totaliBlerjeve || 1);
-                          const v = parseFloat(k.totaliBlerjeve || 0);
-                          return <RankedRow key={i} rank={i + 1} name={k?.produkti?.emriProduktit} sub={`${k.totaliPorosive} njësi`} value={`${v.toFixed(2)} €`} share={maxV > 0 ? v / maxV * 100 : 0} />;
-                        })}
+                      <Card.Body className="p-0">
+                        <div className="premium-table-container">
+                          <table className="table sp-table mb-0">
+                            <thead><tr>
+                              <th className="px-5">#</th><th className="px-3">Produkti</th>
+                              <th className="px-3 text-center">Sasia e Shitur</th><th className="px-3 text-end">Vlera Totale</th>
+                              <th className="px-4" style={{ minWidth: 150 }}>Pjesëmarrja</th>
+                            </tr></thead>
+                            <tbody>
+                              {top15Produktet.map((k, i) => {
+                                const maxV = Math.max(...top15Produktet.map(p => parseFloat(p.totaliBlerjeve || 0)), 1);
+                                const v = parseFloat(k.totaliBlerjeve || 0);
+                                return (
+                                  <tr key={i}>
+                                    <td className="px-5 text-secondary fw-bold">{i + 1}</td>
+                                    <td className="px-3 fw-semibold text-white">{k?.produkti?.emriProduktit}</td>
+                                    <td className="px-3 text-center">{k.totaliPorosive} {k.produkti?.njesia || "njësi"}</td>
+                                    <td className="px-3 text-end text-success fw-bold">{v.toFixed(2)} €</td>
+                                    <td className="px-4">
+                                      <div className="d-flex align-items-center gap-2">
+                                        <div className="op-bar-track flex-grow-1" style={{ height: 7 }}>
+                                          <div className="op-bar-fill" style={{ width: `${maxV > 0 ? v / maxV * 100 : 0}%`, height: 7, background: "linear-gradient(90deg,#10b981,#34d399)" }} />
+                                        </div>
+                                        <span className="text-secondary" style={{ fontSize: "0.75rem", minWidth: 38 }}>{sumProduktet > 0 ? (v / sumProduktet * 100).toFixed(1) : "0.0"}%</span>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       </Card.Body>
                     </Card>
+                    )}
                   </Col>
                 </Row>
               )}
@@ -1000,6 +1143,20 @@ function Statistika() {
               {analSubTab === "bleresit" && (
                 <Row className="g-4">
                   <Col xl={12}>
+                    {klientetView === "grafiku" && (
+                    <Card className="stat-card-modern border-0 mb-4">
+                      <Card.Header className="bg-transparent border-0 pt-4 px-4 pb-0">
+                        <h6 className="fw-bold mb-0 text-white">Top 15 Klientët (Grafiku)</h6>
+                      </Card.Header>
+                      <Card.Body className="p-4">
+                        <div style={{ height: "380px" }}>
+                          <ChartComponent chartType="bar" chartData={bleresitData} chartOptions={bleresitChartOptions} />
+                        </div>
+                      </Card.Body>
+                    </Card>
+                    )}
+
+                    {klientetView === "tabela" && (
                     <Card className="stat-card-modern border-0">
                       <Card.Header className="bg-transparent border-0 pt-4 px-5 pb-2 d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center gap-2">
@@ -1018,7 +1175,7 @@ function Statistika() {
                             </tr></thead>
                             <tbody>
                               {top15Bleresit.map((k, i) => {
-                                const maxV = parseFloat(top15Bleresit[0]?.totaliBlerjeveEuro || 1);
+                                const maxV = Math.max(...top15Bleresit.map(p => parseFloat(p.totaliBlerjeveEuro || 0)), 1);
                                 const v = parseFloat(k.totaliBlerjeveEuro || 0);
                                 const avg = k.numriBlerjeve > 0 ? v / k.numriBlerjeve : 0;
                                 return (
@@ -1034,7 +1191,7 @@ function Statistika() {
                                         <div className="op-bar-track flex-grow-1" style={{ height: 7 }}>
                                           <div className="op-bar-fill" style={{ width: `${maxV > 0 ? v / maxV * 100 : 0}%`, height: 7, background: "linear-gradient(90deg,#06b6d4,#38bdf8)" }} />
                                         </div>
-                                        <span className="text-secondary" style={{ fontSize: "0.75rem", minWidth: 38 }}>{maxV > 0 ? (v / maxV * 100).toFixed(1) : 0}%</span>
+                                        <span className="text-secondary" style={{ fontSize: "0.75rem", minWidth: 38 }}>{sumBleresit > 0 ? (v / sumBleresit * 100).toFixed(1) : "0.0"}%</span>
                                       </div>
                                     </td>
                                   </tr>
@@ -1045,6 +1202,7 @@ function Statistika() {
                         </div>
                       </Card.Body>
                     </Card>
+                    )}
                   </Col>
                 </Row>
               )}
@@ -1053,6 +1211,20 @@ function Statistika() {
               {analSubTab === "partnerit" && (
                 <Row className="g-4">
                   <Col xl={12}>
+                    {partneretView === "grafiku" && (
+                    <Card className="stat-card-modern border-0 mb-4">
+                      <Card.Header className="bg-transparent border-0 pt-4 px-4 pb-0">
+                        <h6 className="fw-bold mb-0 text-white">Top 15 Partnerët (Grafiku)</h6>
+                      </Card.Header>
+                      <Card.Body className="p-4">
+                        <div style={{ height: "380px" }}>
+                          <ChartComponent chartType="bar" chartData={biznesetData} chartOptions={biznesetChartOptions} />
+                        </div>
+                      </Card.Body>
+                    </Card>
+                    )}
+
+                    {partneretView === "tabela" && (
                     <Card className="stat-card-modern border-0">
                       <Card.Header className="bg-transparent border-0 pt-4 px-5 pb-2 d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center gap-2">
@@ -1071,7 +1243,7 @@ function Statistika() {
                             </tr></thead>
                             <tbody>
                               {top15Bizneset.map((k, i) => {
-                                const maxV = parseFloat(top15Bizneset[0]?.totaliBlerjeveEuro || 1);
+                                const maxV = Math.max(...top15Bizneset.map(p => parseFloat(p.totaliBlerjeveEuro || 0)), 1);
                                 const v = parseFloat(k.totaliBlerjeveEuro || 0);
                                 const avg = k.numriBlerjeve > 0 ? v / k.numriBlerjeve : 0;
                                 return (
@@ -1089,7 +1261,7 @@ function Statistika() {
                                         <div className="op-bar-track flex-grow-1" style={{ height: 7 }}>
                                           <div className="op-bar-fill" style={{ width: `${maxV > 0 ? v / maxV * 100 : 0}%`, height: 7, background: "linear-gradient(90deg,#3b82f6,#60a5fa)" }} />
                                         </div>
-                                        <span className="text-secondary" style={{ fontSize: "0.75rem", minWidth: 38 }}>{maxV > 0 ? (v / maxV * 100).toFixed(1) : 0}%</span>
+                                        <span className="text-secondary" style={{ fontSize: "0.75rem", minWidth: 38 }}>{sumBizneset > 0 ? (v / sumBizneset * 100).toFixed(1) : "0.0"}%</span>
                                       </div>
                                     </td>
                                   </tr>
@@ -1100,6 +1272,7 @@ function Statistika() {
                         </div>
                       </Card.Body>
                     </Card>
+                    )}
                   </Col>
                 </Row>
               )}

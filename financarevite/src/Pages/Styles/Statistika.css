@@ -296,3 +296,91 @@
 .stat-dashboard-container .text-info     { color: #67e8f9 !important; }
 .stat-dashboard-container .text-warning  { color: #fcd34d !important; }
 .stat-dashboard-container .text-danger   { color: #fca5a5 !important; }
+
+/* Light Mode Fixes */
+body.light-mode .stat-dashboard-container .text-white { color: var(--sp-text, #0f172a) !important; }
+
+body.light-mode .today-progress-track { background: var(--sp-surface-3, rgba(0,0,0,0.08)); }
+body.light-mode .op-bar-track { background: var(--sp-surface-3, rgba(0,0,0,0.08)); }
+
+body.light-mode {
+  --sp-card-green-bg: #f8fafc;
+  --sp-card-green-border: rgba(16, 185, 129, 0.15);
+  --sp-card-cyan-bg: #f8fafc;
+  --sp-card-cyan-border: rgba(6, 182, 212, 0.15);
+  --sp-card-gray-bg: #f8fafc;
+  --sp-card-gray-border: #e2e8f0;
+  --sp-card-red-bg: #f8fafc;
+  --sp-card-red-border: rgba(239, 68, 68, 0.15);
+}
+
+
+/* Light Mode Fixes Extended */
+body.light-mode {
+  --sp-profit-container-bg: #ffffff;
+  --sp-profit-container-border: #e2e8f0;
+}
+
+body.light-mode .btn-white.btn-outline-light {
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  background-color: transparent !important;
+}
+body.light-mode .btn-white.btn-outline-light:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+body.light-mode .subtab-pills {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+body.light-mode .subtab-pill {
+  color: #64748b !important;
+}
+body.light-mode .subtab-pill:hover {
+  background: #e2e8f0 !important;
+  color: #334155 !important;
+}
+body.light-mode .subtab-pill.active {
+  background: #10b981 !important;
+  color: #fff !important;
+}
+
+/* Subtle Badges in Light Mode */
+body.light-mode .bg-info-subtle {
+  background-color: #e0f2fe !important;
+  color: #0284c7 !important;
+}
+body.light-mode .bg-secondary-subtle {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+body.light-mode .bg-danger-subtle {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+body.light-mode .bg-success-subtle {
+  background-color: #dcfce7 !important;
+  color: #16a34a !important;
+}
+body.light-mode .bg-primary-subtle {
+  background-color: #dbeafe !important;
+  color: #2563eb !important;
+}
+
+/* Light Mode Text Utilities */
+body.light-mode .stat-dashboard-container .text-info, body.light-mode .text-info { color: #0284c7 !important; }
+body.light-mode .stat-dashboard-container .text-success, body.light-mode .text-success { color: #059669 !important; }
+body.light-mode .stat-dashboard-container .text-danger, body.light-mode .text-danger { color: #dc2626 !important; }
+body.light-mode .stat-dashboard-container .text-secondary, body.light-mode .text-secondary { color: #475569 !important; }
+body.light-mode .stat-dashboard-container .text-primary, body.light-mode .text-primary { color: #2563eb !important; }
+body.light-mode .stat-dashboard-container .text-warning, body.light-mode .text-warning { color: #d97706 !important; }
+
+
+/* Light Mode Solid Badges */
+body.light-mode .stat-dashboard-container .bg-success, body.light-mode .bg-success { background-color: #059669 !important; }
+body.light-mode .stat-dashboard-container .bg-info, body.light-mode .bg-info { background-color: #0284c7 !important; }
+body.light-mode .stat-dashboard-container .bg-danger, body.light-mode .bg-danger { background-color: #dc2626 !important; }
+

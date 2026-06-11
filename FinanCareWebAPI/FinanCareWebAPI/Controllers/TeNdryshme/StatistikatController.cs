@@ -195,7 +195,7 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
 
             var totalet = new
             {
-                TotaliShitjeve = Math.Abs(totShitjevePaTVSHFat + totShitjeveVetemTVSHFat - totShitjevePaTVSHFl - totShitjeveVetemTVSHFl),
+                TotaliShitjeve = Math.Abs(totShitjevePaTVSHFat + totShitjeveVetemTVSHFat + totShitjeveParagonPaTVSH + totShitjeveParagonetemTVSH),
                 TotaliKlient = totKlient,
                 TotaliKlientBiznesi = totKlientBiznesi,
                 TotaliProdukteve = totProdukteve,
@@ -203,13 +203,13 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                 TotaliShitjeveParagonEuro = Math.Abs(totShitjeveParagonPaTVSH + totShitjeveParagonetemTVSH),
                 TotaliShitjeveParagon = totPorosiveParagon,
                 TotaliPorosiveSotme = totPorosiveSotme,
-                TotaliShitjeveSotme = Math.Abs(totShitjeveSotmePaTVSHFat + totShitjeveSotmeVetemTVSHFat - totShitjeveSotmePaTVSHFl - totShitjeveSotmeVetemTVSHFl + totShitjeveSotmeParagon),
+                TotaliShitjeveSotme = Math.Abs(totShitjeveSotmePaTVSHFat + totShitjeveSotmeVetemTVSHFat + totShitjeveSotmeParagon),
                 TotaliPorosiveKeteMuaj = totPorosiveMujore,
-                TotaliShitjeveKeteMuaj = Math.Abs(totShitjeveMujorePaTVSHFat + totShitjeveMujoreVetemTVSHFat - totShitjeveMujorePaTVSHFl - totShitjeveMujoreVetemTVSHFl + totShitjeveMujoreParagon),
+                TotaliShitjeveKeteMuaj = Math.Abs(totShitjeveMujorePaTVSHFat + totShitjeveMujoreVetemTVSHFat + totShitjeveMujoreParagon),
                 TotaliPorosiveDjeshme = totPorosiveDjeshme,
-                TotaliShitjeveDjeshme = Math.Abs(totShitjeveDjeshmePaTVSHFat + totShitjeveDjeshmeVetemTVSHFat - totShitjeveDjeshmePaTVSHFl - totShitjeveDjeshmeVetemTVSHFl + totShitjeveDjeshmeParagon),
+                TotaliShitjeveDjeshme = Math.Abs(totShitjeveDjeshmePaTVSHFat + totShitjeveDjeshmeVetemTVSHFat + totShitjeveDjeshmeParagon),
                 TotaliPorosiveMuajinKaluar = totPorosiveMujoreKaluar,
-                TotaliShitjeveMuajinKaluar = Math.Abs(totShitjeveMujoreKaluarPaTVSHFat + totShitjeveMujoreKaluarVetemTVSHFat - totShitjeveMujoreKaluarPaTVSHFl - totShitjeveMujoreKaluarVetemTVSHFl + totShitjeveMujoreKaluarParagon),
+                TotaliShitjeveMuajinKaluar = Math.Abs(totShitjeveMujoreKaluarPaTVSHFat + totShitjeveMujoreKaluarVetemTVSHFat + totShitjeveMujoreKaluarParagon),
 
                 // Daily P&L calculations
                 BlerjetSotmePaTVSH = blerjetSotmePaTVSH,
@@ -391,16 +391,17 @@ namespace FinanCareWebAPI.Controllers.TeNdryshme
                         e.StokuQmimiProduktit.QmimiBleres,
                         e.StokuQmimiProduktit.QmimiProduktit,
                         e.ZbritjaQmimitProduktit.Rabati,
+                        Njesia = e.NjesiaMatese != null ? e.NjesiaMatese.EmriNjesiaMatese : "njësi",
                     },
-                    TotaliPorosive = (e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FAT").Sum(q => q.SasiaStokut) - e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FL").Sum(q => q.SasiaStokut)),
-                    TotaliBlerjeve = (e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FAT").Sum(q => q.SasiaStokut) - e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FL").Sum(q => q.SasiaStokut)) * e.StokuQmimiProduktit.QmimiProduktit,
+                    TotaliPorosive = (e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FAT" || x.Faturat.LlojiKalkulimit == "PARAGON").Sum(q => q.SasiaStokut) - e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FL").Sum(q => q.SasiaStokut)),
+                    TotaliBlerjeve = (e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FAT" || x.Faturat.LlojiKalkulimit == "PARAGON").Sum(q => q.SasiaStokut) - e.TeDhenatFaturat.Where(x => x.Faturat.LlojiKalkulimit == "FL").Sum(q => q.SasiaStokut)) * e.StokuQmimiProduktit.QmimiProduktit,
                 })
-                .OrderByDescending(g => g.TotaliPorosive)
-                .ThenByDescending(g => g.TotaliBlerjeve)
+                .OrderByDescending(g => g.TotaliBlerjeve)
+                .ThenByDescending(g => g.TotaliPorosive)
                 .Take(15)
                 .ToListAsync();
 
-            return Ok(produktet);
+            return Ok(produktet.Where(x => x.TotaliBlerjeve > 0 || x.TotaliPorosive > 0));
         }
 
         // ============================================================================
