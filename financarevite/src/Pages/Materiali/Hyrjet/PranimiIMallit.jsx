@@ -197,6 +197,18 @@ function KalkulimiIMallit(props) {
 
   async function handleRegjistroKalkulimin() {
     if (isSubmitting) return;
+    if (!Partneri) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Ju lutem zgjidhni nje partner!");
+      setShfaqMesazhin(true);
+      return;
+    }
+    if (!nrFatures) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Ju lutem vendosni numrin e fatures!");
+      setShfaqMesazhin(true);
+      return;
+    }
     setIsSubmitting(true);
     try {
     try {
@@ -413,7 +425,7 @@ function KalkulimiIMallit(props) {
                     </Col>
                     <Col md={4} className="mb-3">
                       <Form.Group controlId="produktiSelect">
-                        <Form.Label className="sp-label">Partneri</Form.Label>
+                        <Form.Label className="sp-label">Partneri <span style={{ color: "red" }}>*</span></Form.Label>
                         <Select
                           className="sp-select-container"
                           classNamePrefix="sp-select"
@@ -431,7 +443,7 @@ function KalkulimiIMallit(props) {
                     <Col md={4} className="mb-3">
                       <Form.Group controlId="nrFatures">
                         <Form.Label className="sp-label">
-                          Nr. Fatures
+                          Nr. Fatures <span style={{ color: "red" }}>*</span>
                           <button
                             type="button"
                             className="btn btn-sm d-inline-flex align-items-center justify-content-center ms-2"

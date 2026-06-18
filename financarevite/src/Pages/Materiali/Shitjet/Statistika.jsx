@@ -12,6 +12,7 @@ import ChartComponent from "../../../Components/TeTjera/Chart/ChartComponent";
 import Titulli from "../../../Components/TeTjera/Titulli";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import NavBar from "../../../Components/TeTjera/layout/NavBar";
+import Mesazhi from "../../../Components/TeTjera/layout/Mesazhi";
 import "../../Styles/Statistika.css";
 import "../../Styles/DizajniPergjithshem.css";
 
@@ -90,6 +91,8 @@ function Statistika() {
   const [shitjetJavore, setShitjetJavore] = useState({});
   const [shitjetMeParagon, setShitjetMeParagon] = useState({});
   const [loading, setLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const [shfaqMesazhin, setShfaqMesazhin] = useState(false);
   const [activeTab, setActiveTab] = useState("sot");
   const [sotSubTab, setSotSubTab] = useState("permbledhja");
   const [opSubTab, setOpSubTab] = useState("ditore");
@@ -120,8 +123,10 @@ function Statistika() {
       setShitjetMeParagon(paragonRes.data);
     } catch (e) {
       console.error("Error fetching statistics:", e);
+      setShfaqMesazhin(true);
     } finally {
       setLoading(false);
+      setHasLoadedOnce(true);
     }
   }, [API_BASE_URL, authentikimi]);
 
@@ -228,8 +233,8 @@ function Statistika() {
     return Array.from(map.values()).sort((a, b) => b.totaliBlerjeveEuro - a.totaliBlerjeveEuro);
   };
 
-  // --- Loading ---
-  if (loading) {
+  // --- Loading (only the first time; subsequent refreshes happen in place) ---
+  if (loading && !hasLoadedOnce) {
     return (
       <div className="stat-dashboard-container">
         <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "1 Euro Menaxher"]} />
@@ -264,6 +269,13 @@ function Statistika() {
       <KontrolloAksesinNeFaqe roletELejuara={["Menaxher", "1 Euro Menaxher"]} />
       <Titulli titulli={"Statistika | Dashboard"} />
       <NavBar />
+      {shfaqMesazhin && (
+        <Mesazhi
+          setShfaqMesazhin={setShfaqMesazhin}
+          pershkrimi="Ndodhi një gabim gjatë marrjes së statistikave. Provoni përsëri."
+          tipi="danger"
+        />
+      )}
 
       <Container fluid className="py-4" style={{ paddingLeft: "2rem", paddingRight: "2rem" }}>
         <header className="d-flex align-items-center justify-content-between mb-5 flex-wrap gap-3" data-aos="fade-down">
@@ -271,7 +283,14 @@ function Statistika() {
             <h2 className="fw-bold text-white mb-1">Qendra e Statistikave</h2>
             <p className="text-secondary mb-0">Monitoroni performancen ne kohe reale.</p>
           </div>
-          <Button variant="outline-light" className="btn-white shadow-sm rounded-pill px-4 d-flex align-items-center gap-2 py-2" onClick={fetchAllData}>
+          <Button
+            variant="outline-light"
+            className="btn-white shadow-sm rounded-pill px-4 d-flex align-items-center gap-2 py-2"
+            onClick={fetchAllData}
+            disabled={loading}
+            aria-busy={loading}
+            aria-label="Përditëso statistikat"
+          >
             <RefreshCw size={18} className={loading ? "spin" : ""} />Perditeso
           </Button>
         </header>
@@ -326,7 +345,7 @@ function Statistika() {
                     </div>
                     <div className="subtab-pills">
                       {[{ key: "permbledhja", label: "Përmbledhja" }, { key: "operatoret", label: "Operatorët" }, { key: "krahasimi", label: "Krahasimi" }].map(st => (
-                        <button key={st.key} className={`subtab-pill ${sotSubTab === st.key ? "active" : ""}`} onClick={() => setSotSubTab(st.key)}>{st.label}</button>
+                        <button key={st.key} className={`subtab-pill ${sotSubTab === st.key ? "active" : ""}`} aria-pressed={sotSubTab === st.key} onClick={() => setSotSubTab(st.key)}>{st.label}</button>
                       ))}
                     </div>
                   </div>
@@ -878,7 +897,7 @@ function Statistika() {
                   <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
                     <div className="subtab-pills">
                       {periods.map(p => (
-                        <button key={p.key} className={`subtab-pill ${opSubTab === p.key ? "active" : ""}`} onClick={() => setOpSubTab(p.key)}>{p.label}</button>
+                        <button key={p.key} className={`subtab-pill ${opSubTab === p.key ? "active" : ""}`} aria-pressed={opSubTab === p.key} onClick={() => setOpSubTab(p.key)}>{p.label}</button>
                       ))}
                     </div>
                     <div className="d-flex gap-3 flex-wrap">
@@ -1042,28 +1061,28 @@ function Statistika() {
                       { key: "bleresit", label: "Klientet" },
                       { key: "partnerit", label: "Partneret" },
                     ].map(st => (
-                      <button key={st.key} className={`subtab-pill ${analSubTab === st.key ? "active" : ""}`} onClick={() => setAnalSubTab(st.key)}>{st.label}</button>
+                      <button key={st.key} className={`subtab-pill ${analSubTab === st.key ? "active" : ""}`} aria-pressed={analSubTab === st.key} onClick={() => setAnalSubTab(st.key)}>{st.label}</button>
                     ))}
                   </div>
 
                   {analSubTab === "produktet" && (
                     <div className="subtab-pills" style={{ transform: "scale(0.85)", transformOrigin: "left center", margin: 0 }}>
-                      <button className={`subtab-pill ${produktetView === "grafiku" ? "active" : ""}`} onClick={() => setProduktetView("grafiku")}>Grafiku</button>
-                      <button className={`subtab-pill ${produktetView === "lista" ? "active" : ""}`} onClick={() => setProduktetView("lista")}>Lista</button>
+                      <button className={`subtab-pill ${produktetView === "grafiku" ? "active" : ""}`} aria-pressed={produktetView === "grafiku"} onClick={() => setProduktetView("grafiku")}>Grafiku</button>
+                      <button className={`subtab-pill ${produktetView === "lista" ? "active" : ""}`} aria-pressed={produktetView === "lista"} onClick={() => setProduktetView("lista")}>Lista</button>
                     </div>
                   )}
 
                   {analSubTab === "bleresit" && (
                     <div className="subtab-pills" style={{ transform: "scale(0.85)", transformOrigin: "left center", margin: 0 }}>
-                      <button className={`subtab-pill ${klientetView === "grafiku" ? "active" : ""}`} onClick={() => setKlientetView("grafiku")}>Grafiku</button>
-                      <button className={`subtab-pill ${klientetView === "tabela" ? "active" : ""}`} onClick={() => setKlientetView("tabela")}>Tabela</button>
+                      <button className={`subtab-pill ${klientetView === "grafiku" ? "active" : ""}`} aria-pressed={klientetView === "grafiku"} onClick={() => setKlientetView("grafiku")}>Grafiku</button>
+                      <button className={`subtab-pill ${klientetView === "tabela" ? "active" : ""}`} aria-pressed={klientetView === "tabela"} onClick={() => setKlientetView("tabela")}>Tabela</button>
                     </div>
                   )}
 
                   {analSubTab === "partnerit" && (
                     <div className="subtab-pills" style={{ transform: "scale(0.85)", transformOrigin: "left center", margin: 0 }}>
-                      <button className={`subtab-pill ${partneretView === "grafiku" ? "active" : ""}`} onClick={() => setPartneretView("grafiku")}>Grafiku</button>
-                      <button className={`subtab-pill ${partneretView === "tabela" ? "active" : ""}`} onClick={() => setPartneretView("tabela")}>Tabela</button>
+                      <button className={`subtab-pill ${partneretView === "grafiku" ? "active" : ""}`} aria-pressed={partneretView === "grafiku"} onClick={() => setPartneretView("grafiku")}>Grafiku</button>
+                      <button className={`subtab-pill ${partneretView === "tabela" ? "active" : ""}`} aria-pressed={partneretView === "tabela"} onClick={() => setPartneretView("tabela")}>Tabela</button>
                     </div>
                   )}
                 </div>

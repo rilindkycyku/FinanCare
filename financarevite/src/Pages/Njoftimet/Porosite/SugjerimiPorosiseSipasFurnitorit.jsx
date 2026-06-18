@@ -57,8 +57,7 @@ function stockClass(stock, avgWeekly) {
 
 /* â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function SugjerimiPorosiseSipasFurnitorit() {
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "https://localhost:7285";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
   const [furnitoret, setFurnitoret] = useState([]);
   const [selectedFurnitor, setSelectedFurnitor] = useState(null);
@@ -294,7 +293,7 @@ function SugjerimiPorosiseSipasFurnitorit() {
                   <Truck size={16} style={{ marginRight: "0.5rem", opacity: 0.7 }} />
                   {selectedFurnitor.label}
                   <span style={{ fontWeight: 500, color: "var(--sp-text-muted)", marginLeft: "0.5rem", fontSize: "0.78rem" }}>
-                    Â· {produktet.length} produkte
+                    · {produktet.length} produkte
                   </span>
                 </h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -433,7 +432,7 @@ function SugjerimiPorosiseSipasFurnitorit() {
                   {p.emriProduktit}
                   {s.isOutOfStock && <span className="sp-oos ms-2"><XCircle size={10} /> Jashtë Stok</span>}
                   <br />
-                  <small>{p.barkodi} &nbsp;Â·&nbsp; <LevelBadge level={s.suggestionLevel} /></small>
+                  <small>{p.barkodi} &nbsp;·&nbsp; <LevelBadge level={s.suggestionLevel} /></small>
                 </Modal.Title>
               </Modal.Header>
 
@@ -476,13 +475,13 @@ function SugjerimiPorosiseSipasFurnitorit() {
                 <div className="sp-recommend-box">
                   <div className="rec-label">Sugjerimi Inteligjent i Sistemit</div>
                   <span className="rec-qty">
-                    {recommended > 0 ? recommended.toLocaleString() : "âœ“"}
+                    {recommended > 0 ? recommended.toLocaleString() : "✓"}
                   </span>
                   {recommended > 0 ? (
                     <>
                       <div className="rec-packs">
                         {packsRecommended > 0 && (
-                          <span>{packsRecommended} pako × {s.packSize} copë/pako &nbsp;Â·&nbsp; </span>
+                          <span>{packsRecommended} pako × {s.packSize} copë/pako &nbsp;·&nbsp; </span>
                         )}
                         <span>copë</span>
                       </div>

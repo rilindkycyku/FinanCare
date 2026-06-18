@@ -15,12 +15,12 @@ import {
 
 /* ─── Inline styles ─────────────────────────────────────────────── */
 const S = {
-  overlay: { background: "linear-gradient(180deg,#0f1827 0%,#080f1a 100%)" },
+  overlay: { background: "var(--sp-bg)" },
   statsBar: { display: "flex", gap: "0.85rem", marginBottom: "1.25rem", flexWrap: "wrap" },
   statChip: {
     flex: "1 1 110px",
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    background: "var(--sp-surface-2)",
+    border: "1px solid var(--sp-border)",
     borderRadius: "12px",
     padding: "0.7rem 0.9rem",
     display: "flex", alignItems: "center", gap: "0.6rem", minWidth: "100px",
@@ -36,13 +36,13 @@ const S = {
     gap: "0.75rem", maxHeight: "400px", overflowY: "auto", paddingRight: "4px",
   },
   card: {
-    background: "#0f1827", border: "1px solid rgba(255,255,255,0.07)",
+    background: "var(--sp-surface-2)", border: "1px solid var(--sp-border)",
     borderRadius: "13px", padding: "0.9rem", display: "flex",
     flexDirection: "column", gap: "0.45rem",
     transition: "border-color 0.2s ease, transform 0.2s ease", cursor: "default",
   },
   cardTop: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem" },
-  productName: { fontSize: "0.88rem", fontWeight: 700, color: "#f1f5f9", lineHeight: 1.3, flex: 1 },
+  productName: { fontSize: "0.88rem", fontWeight: 700, color: "var(--sp-text)", lineHeight: 1.3, flex: 1 },
   discountBadge: {
     background: "linear-gradient(135deg,#ef4444,#dc2626)", color: "#fff",
     fontWeight: 800, fontSize: "0.78rem", padding: "0.22rem 0.55rem",
@@ -50,7 +50,7 @@ const S = {
     boxShadow: "0 4px 12px rgba(239,68,68,0.35)",
   },
   priceRow: { display: "flex", alignItems: "center", gap: "0.45rem", marginTop: "0.15rem" },
-  oldPrice: { fontSize: "0.83rem", color: "#94a3b8", textDecoration: "line-through" },
+  oldPrice: { fontSize: "0.83rem", color: "var(--sp-text-muted)", textDecoration: "line-through" },
   arrow: { color: "#10b981", fontSize: "0.68rem" },
   newPrice: { fontSize: "1.05rem", fontWeight: 800, color: "#10b981" },
   datePill: {
@@ -61,11 +61,11 @@ const S = {
   },
   barcodePill: {
     display: "inline-flex", alignItems: "center", gap: "0.35rem",
-    background: "rgba(148,163,184,0.07)", border: "1px solid rgba(148,163,184,0.12)",
+    background: "var(--sp-surface-3)", border: "1px solid var(--sp-border)",
     borderRadius: "6px", padding: "0.15rem 0.45rem",
-    fontSize: "0.65rem", color: "#94a3b8", fontFamily: "monospace",
+    fontSize: "0.65rem", color: "var(--sp-text-muted)", fontFamily: "monospace",
   },
-  emptyState: { gridColumn: "1 / -1", textAlign: "center", padding: "3rem 1rem", color: "#94a3b8" },
+  emptyState: { gridColumn: "1 / -1", textAlign: "center", padding: "3rem 1rem", color: "var(--sp-text-muted)" },
 };
 
 const pct = (normal, sale) => {
@@ -328,8 +328,8 @@ const SalesLabel = ({ storeName, products }) => {
 
         {/* Header */}
         <Modal.Header closeButton style={{
-          background: "linear-gradient(135deg,#0f1827,#162033)",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          background: "var(--sp-surface-2)",
+          borderBottom: "1px solid var(--sp-border)",
           padding: "1.2rem 1.5rem",
         }}>
           <Modal.Title className="d-flex align-items-center gap-3" style={{ fontWeight: 900, fontSize: "1.05rem" }}>
@@ -342,8 +342,8 @@ const SalesLabel = ({ storeName, products }) => {
               <FontAwesomeIcon icon={faTags} style={{ color: "#fff", fontSize: "0.95rem" }} />
             </span>
             <div>
-              <div style={{ color: "#f1f5f9" }}>Etiketat e Zbritjeve</div>
-              <div style={{ fontSize: "0.7rem", fontWeight: 500, color: "#64748b", marginTop: 2 }}>
+              <div style={{ color: "var(--sp-text)" }}>Etiketat e Zbritjeve</div>
+              <div style={{ fontSize: "0.7rem", fontWeight: 500, color: "var(--sp-text-muted)", marginTop: 2 }}>
                 Konfirmoni produktet · Formati A4 · 3 × 7 = 21 etiketa / faqe
               </div>
             </div>
@@ -363,17 +363,17 @@ const SalesLabel = ({ storeName, products }) => {
                 style={{
                   width: "auto",
                   minWidth: "200px",
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  color: "#f1f5f9",
+                  background: "var(--sp-surface-2)",
+                  border: "1px solid var(--sp-border)",
+                  color: "var(--sp-text)",
                   borderRadius: "8px",
                   fontWeight: 600,
                   boxShadow: "none"
                 }}
               >
-                <option value="ALL" style={{ background: "#0f1827", color: "#f1f5f9" }}>Të Gjitha Datat</option>
+                <option value="ALL" style={{ background: "var(--sp-surface)", color: "var(--sp-text)" }}>Të Gjitha Datat</option>
                 {uniqueDates.map(date => (
-                  <option key={date} value={date} style={{ background: "#0f1827", color: "#f1f5f9" }}>Vetëm Data: {date}</option>
+                  <option key={date} value={date} style={{ background: "var(--sp-surface)", color: "var(--sp-text)" }}>Vetëm Data: {date}</option>
                 ))}
               </Form.Select>
             </div>
@@ -392,14 +392,14 @@ const SalesLabel = ({ storeName, products }) => {
                   <FontAwesomeIcon icon={icon} />
                 </div>
                 <div>
-                  <div style={{ fontSize: "0.6rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
+                  <div style={{ fontSize: "0.6rem", color: "var(--sp-text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
                   <div style={{ fontSize: "1.15rem", fontWeight: 900, color: vColor, lineHeight: 1.1 }}>{value}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", marginBottom: "1.1rem" }} />
+          <div style={{ height: 1, background: "var(--sp-border)", marginBottom: "1.1rem" }} />
 
           {/* Product grid */}
           <div style={S.grid} className="custom-scrollbar">
@@ -410,7 +410,7 @@ const SalesLabel = ({ storeName, products }) => {
                   key={i}
                   style={S.card}
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(239,68,68,0.35)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--sp-border)"; e.currentTarget.style.transform = "translateY(0)"; }}
                 >
                   <div style={S.cardTop}>
                     <span style={S.productName}>{item.name}</span>
@@ -437,7 +437,7 @@ const SalesLabel = ({ storeName, products }) => {
                 <div style={{ fontSize: "2.2rem", opacity: 0.35, marginBottom: "0.65rem" }}>
                   <FontAwesomeIcon icon={faTags} />
                 </div>
-                <div style={{ fontWeight: 700, fontSize: "0.88rem", color: "#64748b" }}>Nuk ka oferta aktive</div>
+                <div style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--sp-text-muted)" }}>Nuk ka oferta aktive</div>
               </div>
             )}
           </div>
@@ -445,12 +445,12 @@ const SalesLabel = ({ storeName, products }) => {
 
         {/* Footer */}
         <Modal.Footer style={{
-          background: "linear-gradient(135deg,#0f1827,#162033)",
-          borderTop: "1px solid rgba(255,255,255,0.07)",
+          background: "var(--sp-surface-2)",
+          borderTop: "1px solid var(--sp-border)",
           padding: "0.9rem 1.5rem",
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
-          <span style={{ fontSize: "0.72rem", color: "#475569" }}>
+          <span style={{ fontSize: "0.72rem", color: "var(--sp-text-muted)" }}>
             <FontAwesomeIcon icon={faLayerGroup} className="me-1" />
             {total} etiket{total !== 1 ? "a" : "ë"} · {Math.ceil(total / 21)} faqe A4
           </span>

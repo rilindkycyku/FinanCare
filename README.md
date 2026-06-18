@@ -112,6 +112,81 @@ Pasi të bëhet konfigurimi, ju mund të kyçeni me këto të dhëna:
 | burime.njerzore@financare.com           | burimenjerzore1@           | Burime Njerzore       |
 | puntor.thjeshte@financare.com           | puntorthjeshte1@           | Puntor i Thjeshtë     |
 
+# AksesiFinancare
+
+## Gjenerale
+
+| **Faqja**                | **Roli**                                                                                                |
+|---------------------------|----------------------------------------------------------------------------------------------------------|
+| Partneret (grup)           | Menaxher, Financa, Mbeshtetje e Klientit, Kalkulant, Pergjegjes i Porosive, 1 Euro Menaxher, 1 Euro Staff |
+| Kartela Financiare          | Menaxher, Financa, Mbeshtetje e Klientit, 1 Euro Menaxher                                                  |
+| ShtoPagesat                 | Menaxher, Financa, 1 Euro Menaxher                                                                         |
+| Lista e Partnereve          | Menaxher, Kalkulant, Komercialist, Pergjegjes i Porosive, 1 Euro Menaxher, 1 Euro Staff                   |
+| Stafi (grup)                | Menaxher, Burime Njerzore, 1 Euro Menaxher                                                                 |
+| Lista e Perdorueseve        | Menaxher, Burime Njerzore, 1 Euro Menaxher                                                                 |
+| Te Dhenat (grup)            | Te Gjitha Rolet                                                                                            |
+| Bankat                      | Menaxher, Financa, Burime Njerzore, 1 Euro Menaxher                                                        |
+| Llogarit Bankare Biznesit   | Te Gjitha Rolet                                                                                            |
+| Perditeso Fjalekalimin      | Te Gjitha Rolet                                                                                            |
+| Te Dhenat e Biznesit        | Te Gjitha Rolet                                                                                            |
+| Bart te Dhenat - Online     | Menaxher                                                                                                   |
+
+## Materiali
+
+| **Faqja**                          | **Roli**                                                                                                          |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| Artikujt (grup)                      | Te Gjithe                                                                                                          |
+| Grupet e Produktit                   | Menaxher, Kalkulant, 1 Euro Menaxher, 1 Euro Staff                                                                 |
+| Kartela e Artikullit                 | Menaxher, Kalkulant, Faturist, 1 Euro Menaxher                                                                     |
+| Lista e Produkteve                   | Te Gjithe                                                                                                          |
+| Njesia Matese                        | Menaxher, Kalkulant, 1 Euro Menaxher, 1 Euro Staff                                                                 |
+| Zbritjet e Produktit                 | Menaxher, Kalkulant, 1 Euro Menaxher                                                                               |
+| Stoqet                               | Menaxher, Kalkulant, 1 Euro Menaxher                                                                               |
+| Qmimore (Shtyp Etiketat)             | Menaxher, Pergjegjes i Porosive, Puntor i Thjeshte, Kalkulant, Arkatar, Faturist, 1 Euro Menaxher, 1 Euro Staff   |
+| Hyrjet (grup)                        | Menaxher, Kalkulant, Komercialist, Faturist, Arkatar, Pergjegjes i Porosive, 1 Euro Menaxher, 1 Euro Staff        |
+| Fletelejimet                         | Menaxher, Kalkulant, Komercialist, Faturist                                                                        |
+| Fletelejimet Automatike              | Menaxher, Kalkulant, Komercialist, Faturist                                                                        |
+| Kalkulimi i Mallit                   | Menaxher, Kalkulant, 1 Euro Menaxher                                                                               |
+| Kthim i Mallit te Shitur             | Menaxher, Kalkulant, Arkatar, 1 Euro Menaxher, 1 Euro Staff                                                        |
+| Kalkulimi Fillestar Vjetor           | Menaxher, Kalkulant, 1 Euro Menaxher                                                                               |
+| Pranimi I Mallit                     | Menaxher, Kalkulant, Pergjegjes i Porosive, 1 Euro Menaxher, 1 Euro Staff                                          |
+| Shitjet (grup)                       | Menaxher, Kalkulant, Komercialist, Faturist, Arkatar, 1 Euro Menaxher, 1 Euro Staff                               |
+| Asgjesim i Stokut                    | Menaxher, Kalkulant, 1 Euro Menaxher                                                                               |
+| Kthim i Mallit te Blere              | Menaxher, Kalkulant, 1 Euro Menaxher                                                                               |
+| Porosite                             | Menaxher, Kalkulant, Faturist                                                                                      |
+| Ofertat                              | Menaxher, Kalkulant, Komercialist, Faturist                                                                        |
+| Porosite Online                      | Menaxher, Kalkulant, Komercialist, Faturist                                                                        |
+| Lista Shitjeve me Paragon            | Menaxher, 1 Euro Menaxher                                                                                          |
+| POS                                  | Menaxher, Arkatar, 1 Euro Menaxher, 1 Euro Staff                                                                   |
+| Statistika                           | Menaxher, 1 Euro Menaxher                                                                                          |
+| Lista e Barazimeve                   | Menaxher, 1 Euro Menaxher                                                                                          |
+| Barazo Arken                         | Menaxher, Arkatar, 1 Euro Menaxher, 1 Euro Staff                                                                   |
+
+## Njoftimet
+
+| **Faqja**                                  | **Roli**                                                                                                  |
+|----------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| Njoftimet (grup)                              | Menaxher, Puntor i Thjeshte, Pergjegjes i Porosive                                                        |
+| Artikujt Pa Stok                              | Menaxher, Pergjegjes i Porosive, 1 Euro Menaxher, 1 Euro Staff                                            |
+| Afatet e Skadimit                             | Menaxher, Puntor i Thjeshte, Pergjegjes i Porosive, Komercialist, Kalkulant, 1 Euro Menaxher, 1 Euro Staff |
+| Furnitoret (grup)                             | Menaxher, Financa, Mbeshtetje e Klientit, Kalkulant, 1 Euro Menaxher, 1 Euro Staff                         |
+| &nbsp;&nbsp;Ditet e Furnizimit                | Menaxher, Pergjegjes i Porosive, Kalkulant, 1 Euro Menaxher, 1 Euro Staff                                  |
+| Porosite (grup)                               | Menaxher, Financa, Mbeshtetje e Klientit, Kalkulant, 1 Euro Menaxher, 1 Euro Staff                         |
+| &nbsp;&nbsp;Sugjerimi Porosise sipas Furnitorit | Menaxher, Pergjegjes i Porosive, Kalkulant, 1 Euro Menaxher, 1 Euro Staff                                |
+| &nbsp;&nbsp;Sugjerimi i Porosis               | Menaxher, Pergjegjes i Porosive, Kalkulant, 1 Euro Menaxher, 1 Euro Staff                                  |
+| Faturat (grup)                                | Menaxher, Burime Njerzore                                                                                  |
+
+## Te Tjera
+
+| **Faqja**                       | **Roli**                                                                                  |
+|------------------------------------|-------------------------------------------------------------------------------------------|
+| Dashboard                           | Te Gjithe perveq Qmimore                                                                  |
+| Shikimi Qmimeve                     | Te Gjithe                                                                                  |
+| Login                                | Te Gjithe                                                                                  |
+| Gjurmimi (grup)                      | Menaxher, Financa, Mbeshtetje e Klientit, Kalkulant, Pergjegjes i Porosive, 1 Euro Menaxher |
+| &nbsp;&nbsp;Gjurmimi                 | Menaxher, 1 Euro Menaxher                                                                  |
+| &nbsp;&nbsp;Lista e Gjitha Faturave  | Menaxher, Kalkulant, Financa, 1 Euro Menaxher                                              |
+
 ## Informata të tjera
 
 Në rast se dëshironi të përdorni të dhënat e FinanCare, ato mund t’i gjeni në file-in që gjendet në folderin **Databaza** me emrin **FinanCareDB.sql**. Këtë file duhet ta bëni execute në **SQL Server** pasi të keni bërë konfigurimet paraprake.

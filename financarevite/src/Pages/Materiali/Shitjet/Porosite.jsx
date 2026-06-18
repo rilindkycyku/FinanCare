@@ -187,6 +187,12 @@ function KthimIMallitTeBlere(props) {
 
   async function handleRegjistroKalkulimin() {
     if (isSubmitting) return;
+    if (!Partneri) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Ju lutem zgjidhni nje partner!");
+      setShfaqMesazhin(true);
+      return;
+    }
     setIsSubmitting(true);
     try {
     try {
@@ -378,7 +384,7 @@ function KthimIMallitTeBlere(props) {
                       </Form.Group>
                     </Form.Group>
                     <Form.Group controlId="idDheEmri">
-                      <Form.Label>Partneri</Form.Label>
+                      <Form.Label>Partneri <span style={{ color: "red" }}>*</span></Form.Label>
                       <Select
                         value={optionsSelected}
                         onChange={handleChange}

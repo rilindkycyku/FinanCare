@@ -175,6 +175,12 @@ function KalkulimiIMallit(props) {
 
   async function handleRegjistroKalkulimin() {
     if (isSubmitting) return;
+    if (!Partneri) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Ju lutem zgjidhni nje partner!");
+      setShfaqMesazhin(true);
+      return;
+    }
     setIsSubmitting(true);
     try {
     try {

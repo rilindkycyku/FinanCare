@@ -153,7 +153,7 @@ function KartelaFinanciare() {
   // Derived
   const totHyrje = parseFloat(kartela?.totaliHyrese || 0);
   const totDalje = parseFloat(kartela?.totaliDalese || 0);
-  const saldo = totDalje - totHyrje;
+  const saldo = tableRows.length ? tableRows[tableRows.length - 1]._saldo : totDalje - totHyrje;
   const partner = kartela?.partneri;
   const hasData = !loading && tableRows.length > 0;
 

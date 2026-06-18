@@ -84,7 +84,7 @@ function EditoLlogarin(props) {
           authentikimi
         );
         setOptionsSelected(
-          options.filter((item) => item.value == bankaKerkim.data[0].bankaID)
+          options.find((item) => item.value == bankaKerkim.data[0].bankaID) || null
         );
         setBanka(bankaKerkim.data[0]);
         console.log(banka);
@@ -245,29 +245,7 @@ function EditoLlogarin(props) {
                         value={optionsSelected}
                         onChange={handleChangeBanka}
                         options={options}
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            borderColor: 'rgba(255, 255, 255, 0.1)',
-                            borderRadius: '8px',
-                            color: 'white'
-                          }),
-                          menu: (base) => ({
-                            ...base,
-                            background: '#1a1d21',
-                            border: '1px solid rgba(255, 255, 255, 0.1)'
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            background: state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                            color: 'white'
-                          }),
-                          singleValue: (base) => ({
-                            ...base,
-                            color: 'white'
-                          })
-                        }}
+                        styles={darkSelectStyles}
                       />
                     </div>
                   </div>

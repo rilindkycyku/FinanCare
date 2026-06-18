@@ -90,6 +90,26 @@
   --kf-radius-sm:   8px;
 }
 
+body.light-mode {
+  --kf-bg:          #f1f5f9;
+  --kf-surface:     #ffffff;
+  --kf-surface-2:   #f8fafc;
+  --kf-surface-3:   #e2e8f0;
+  --kf-border:      rgba(0,0,0,0.08);
+  --kf-border-glow: rgba(16,185,129,0.35);
+  --kf-emerald:     #059669;
+  --kf-emerald-dk:  #047857;
+  --kf-emerald-glow:rgba(5,150,105,0.15);
+  --kf-cyan:        #0284c7;
+  --kf-cyan-glow:   rgba(2,132,199,0.12);
+  --kf-amber:       #d97706;
+  --kf-red:         #dc2626;
+  --kf-red-glow:    rgba(220,38,38,0.12);
+  --kf-text:        #0f172a;
+  --kf-text-soft:   #334155;
+  --kf-text-muted:  #64748b;
+}
+
 /* ── Page Wrapper ─────────────────────────────────────────────── */
 .kf-page {
   min-height: 100vh;
@@ -129,7 +149,7 @@
   font-size: clamp(1.5rem, 3vw, 2.2rem);
   font-weight: 900;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #fff 40%, var(--kf-emerald));
+  background: linear-gradient(135deg, var(--kf-text) 40%, var(--kf-emerald));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

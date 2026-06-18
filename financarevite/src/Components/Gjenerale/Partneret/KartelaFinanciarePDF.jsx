@@ -9,6 +9,8 @@ import {
 } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 
+const stripHtml = (value) => String(value ?? "").replace(/<[^>]*>/g, "");
+
 Font.register({
   family: "Quicksand",
   fonts: [
@@ -313,7 +315,7 @@ function KartelaFinanciarePDFDoc({ rows, partner, biznesit, totHyrje, totDalje, 
                     <Text style={[s.cData, s.tdText]}>{r["Data"]}</Text>
                     <Text style={[s.cLloji, s.tdBold]}>{r["Lloji"]}</Text>
                     <Text style={[s.cNrFat, s.tdText]}>{r["Nr. Faturës"]}</Text>
-                    <Text style={[s.cPersh, s.tdMuted]} numberOfLines={1}>{r["Përshkrimi"]}</Text>
+                    <Text style={[s.cPersh, s.tdMuted]} numberOfLines={1}>{stripHtml(r["Përshkrimi"])}</Text>
                     <Text style={[s.cFat, r["Faturim €"] !== "-" ? s.tdGreen : s.tdMuted]}>{r["Faturim €"]}</Text>
                     <Text style={[s.cPag, r["Pagesë €"] !== "-" ? s.tdRed : s.tdMuted]}>{r["Pagesë €"]}</Text>
                     <Text style={[s.cSaldo, saldoNeg ? s.tdRed : s.tdBlue]}>{r["Saldo €"]}</Text>

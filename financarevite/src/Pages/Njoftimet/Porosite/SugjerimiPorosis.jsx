@@ -187,8 +187,8 @@ function SugjerimiPorosise() {
               <div
                 style={{
                   background: noNeedToOrder
-                    ? "linear-gradient(145deg, #052010, #0a2d18)"
-                    : "linear-gradient(145deg, #050d1a, #080f20)",
+                    ? "linear-gradient(145deg, var(--sp-emerald-glow), var(--sp-surface))"
+                    : "linear-gradient(145deg, var(--sp-surface-2), var(--sp-surface))",
                   border: `1px solid ${bannerAccent}33`,
                   borderRadius: "var(--radius-lg)",
                   padding: "2.5rem 2rem",

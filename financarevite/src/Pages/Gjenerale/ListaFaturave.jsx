@@ -8,7 +8,8 @@ import ChartComponent from "../../Components/TeTjera/Chart/ChartComponent";
 import {
   FileText, ArrowUpDown, ArrowUp, ArrowDown,
   Search, RotateCcw, Sheet, TrendingUp, Lock, Unlock, X,
-  DollarSign, User, Calendar, CreditCard, Percent, Truck, BarChart3, PieChart
+  User, Calendar, CreditCard, Percent, Truck, BarChart3, PieChart,
+  Package, AlertCircle
 } from "lucide-react";
 import "../Styles/ListaFaturave.css";
 
@@ -37,19 +38,6 @@ const fmtDate = (iso) => {
   }
 };
 
-const fmtDateLong = (iso) => {
-  if (!iso) return "—";
-  try {
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return "—";
-    const days = ["E diel", "E hënë", "E martë", "E mërkurë", "E enjte", "E premte", "E shtunë"];
-    const months = ["Janar", "Shkurt", "Mars", "Prill", "Maj", "Qershor", "Korrik", "Gusht", "Shtator", "Tetor", "Nëntor", "Dhjetor"];
-    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-  } catch {
-    return "—";
-  }
-};
-
 // Map llojiKalkulimit → human label
 const TYPE_LABELS = {
   FAT: "Porosi",
@@ -61,6 +49,7 @@ const TYPE_LABELS = {
   PARAGON: "Paragon",
   FL: "Flete Lej.",
   PAGES: "Pagesë",
+  KLFV: "Kalk. Vjetor",
 };
 
 const ALL_TYPES = Object.keys(TYPE_LABELS);
@@ -141,6 +130,9 @@ function ListaFaturave() {
   // Tab views and drawer state
   const [activeTab, setActiveTab] = useState("lista");
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [invoiceItems, setInvoiceItems] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
+  const [itemsError, setItemsError] = useState(false);
 
   // List ref for scroll
   const listRef = useRef();
@@ -166,6 +158,68 @@ function ListaFaturave() {
   }, [dataFillim, dataMbarim, auth, API_BASE_URL]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  // ─ Fetch invoice line items when a row is selected ─────────────
+  useEffect(() => {
+    if (!selectedInvoice?.idRegjistrimit) {
+      setInvoiceItems([]);
+      return;
+    }
+    let cancelled = false;
+    setItemsLoading(true);
+    setItemsError(false);
+    axios
+      .get(
+        `${API_BASE_URL}/api/Faturat/shfaqTeDhenatKalkulimit?idRegjistrimit=${selectedInvoice.idRegjistrimit}`,
+        auth
+      )
+      .then((res) => {
+        if (cancelled) return;
+        setInvoiceItems(res.data ?? []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Invoice items fetch error:", err);
+        setInvoiceItems([]);
+        setItemsError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setItemsLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [selectedInvoice, API_BASE_URL, auth]);
+
+  // ─ Derived invoice item rows (price/discount/VAT breakdown) ────
+  const invoiceItemRows = useMemo(() => {
+    return invoiceItems.map((produkti) => {
+      const qmimiShites = parseFloat(produkti.qmimiShites) || 0;
+      const sasia = parseFloat(produkti.sasiaStokut) || 0;
+      const tvshRate = parseFloat(produkti.llojiTVSH) || 0;
+      const rabati1 = parseFloat(produkti.rabati1) || 0;
+      const rabati2 = parseFloat(produkti.rabati2) || 0;
+      const rabati3 = parseFloat(produkti.rabati3) || 0;
+      const totalRabati = (rabati1 + rabati2 + rabati3) / 100;
+      const qmimiPaTVSH = qmimiShites / (1 + tvshRate / 100);
+      const qmimiMeRabat = qmimiShites * (1 - totalRabati);
+      const tvshValue = qmimiMeRabat * (tvshRate / 100) * sasia;
+      const shuma = qmimiMeRabat * sasia;
+      return {
+        produkti,
+        qmimiPaTVSH,
+        rabatiTotal: rabati1 + rabati2 + rabati3,
+        tvshRate,
+        qmimiMeRabat,
+        tvshValue,
+        shuma,
+        sasia,
+      };
+    });
+  }, [invoiceItems]);
+
+  const invoiceItemsTotal = useMemo(
+    () => invoiceItemRows.reduce((s, r) => s + r.shuma, 0),
+    [invoiceItemRows]
+  );
 
   // ─ Debounced search ───────────────────────────────────────────
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -918,65 +972,127 @@ function ListaFaturave() {
             </div>
 
              <div className="lf-drawer-body">
-              <div className="lf-modal-columns">
-                <div className="lf-modal-col-left">
-                  <div className="lf-drawer-section">
-                    <span className={`lf-type-badge ${selectedInvoice.llojiKalkulimit}`} style={{ marginBottom: "0.8rem", display: "inline-block" }}>
-                      {TYPE_LABELS[selectedInvoice.llojiKalkulimit] ?? selectedInvoice.llojiKalkulimit}
-                    </span>
+
+              {/* Top identity + meta strip */}
+              <div className="lf-invoice-topbar">
+                <div className="lf-invoice-topbar-id">
+                  <span className={`lf-type-badge ${selectedInvoice.llojiKalkulimit}`}>
+                    {TYPE_LABELS[selectedInvoice.llojiKalkulimit] ?? selectedInvoice.llojiKalkulimit}
+                  </span>
+                  <div>
                     <h4 className="lf-drawer-title">{selectedInvoice.emriBiznesit || "Partner i Panjohur"}</h4>
                     {selectedInvoice.idPartneri && <div className="lf-drawer-meta">ID e Partnerit: {selectedInvoice.idPartneri}</div>}
                   </div>
+                </div>
+                <div className="lf-invoice-topbar-status">
+                  {selectedInvoice.statusiKalkulimit === "true" ? (
+                    <span className="lf-status closed"><Lock size={12} /> I Mbyllur</span>
+                  ) : (
+                    <span className="lf-status open"><Unlock size={12} /> I Hapur</span>
+                  )}
+                </div>
+              </div>
 
-                  <div className="lf-drawer-section">
-                    <div className="lf-drawer-grid">
-                      <div className="lf-drawer-item">
-                        <span className="lf-drawer-label"><Sheet size={11} style={{ marginRight: 4, opacity: 0.7 }} /> Nr. i Faturës</span>
-                        <span className="lf-drawer-val mono">{selectedInvoice.nrFatures || "—"}</span>
-                      </div>
-                      <div className="lf-drawer-item">
-                        <span className="lf-drawer-label"><TrendingUp size={11} style={{ marginRight: 4, opacity: 0.7 }} /> Nr. Rendor (Sistem)</span>
-                        <span className="lf-drawer-val mono">{selectedInvoice.nrRendorFatures ?? "—"}</span>
-                      </div>
-                      <div className="lf-drawer-item">
-                        <span className="lf-drawer-label"><Calendar size={11} style={{ marginRight: 4, opacity: 0.7 }} /> Data e Regjistrimit</span>
-                        <span className="lf-drawer-val">{fmtDateLong(selectedInvoice.dataRegjistrimit)}</span>
-                      </div>
-                      <div className="lf-drawer-item">
-                        <span className="lf-drawer-label"><Calendar size={11} style={{ marginRight: 4, opacity: 0.7 }} /> Ora e Regjistrimit</span>
-                        <span className="lf-drawer-val">
-                          {selectedInvoice.dataRegjistrimit
-                            ? new Date(selectedInvoice.dataRegjistrimit).toLocaleTimeString("sq-AL", { hour: "2-digit", minute: "2-digit" })
-                            : "—"}
-                        </span>
-                      </div>
-                      <div className="lf-drawer-item">
-                        <span className="lf-drawer-label"><CreditCard size={11} style={{ marginRight: 4, opacity: 0.7 }} /> Mënyra e Pagesës</span>
-                        <span className="lf-drawer-val bold text-info">{selectedInvoice.llojiPageses || "Tjetër"}</span>
-                      </div>
-                      <div className="lf-drawer-item">
-                        <span className="lf-drawer-label"><Lock size={11} style={{ marginRight: 4, opacity: 0.7 }} /> Statusi i Faturës</span>
-                        <span className="lf-drawer-val">
-                          {selectedInvoice.statusiKalkulimit === "true" ? (
-                            <span className="lf-status closed"><Lock size={12} /> I Mbyllur</span>
-                          ) : (
-                            <span className="lf-status open"><Unlock size={12} /> I Hapur</span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
+              <div className="lf-meta-chip-row">
+                <div className="lf-meta-chip">
+                  <Sheet size={12} /><span>Nr. Faturës</span>
+                  <strong className="mono">{selectedInvoice.nrFatures || "—"}</strong>
+                </div>
+                <div className="lf-meta-chip">
+                  <TrendingUp size={12} /><span>Nr. Rendor</span>
+                  <strong className="mono">{selectedInvoice.nrRendorFatures ?? "—"}</strong>
+                </div>
+                <div className="lf-meta-chip">
+                  <Calendar size={12} /><span>Data &amp; Ora</span>
+                  <strong>
+                    {fmtDate(selectedInvoice.dataRegjistrimit)}
+                    {selectedInvoice.dataRegjistrimit &&
+                      ` ${new Date(selectedInvoice.dataRegjistrimit).toLocaleTimeString("sq-AL", { hour: "2-digit", minute: "2-digit" })}`}
+                  </strong>
+                </div>
+                <div className="lf-meta-chip">
+                  <CreditCard size={12} /><span>Pagesa</span>
+                  <strong className="text-info">{selectedInvoice.llojiPageses || "Tjetër"}</strong>
+                </div>
+                <div className="lf-meta-chip">
+                  <User size={12} /><span>Operatori</span>
+                  <strong>{selectedInvoice.username || "—"}</strong>
+                </div>
+              </div>
+
+              {/* Main content: items table + financial summary side by side */}
+              {/* Items table — full width so all columns are visible without clipping */}
+              <div className="lf-drawer-section lf-items-section">
+                <h5 className="lf-drawer-sec-title">
+                  <Package size={13} style={{ marginRight: 6, verticalAlign: "-2px" }} />
+                  Artikujt e Faturës {invoiceItemRows.length > 0 && `(${invoiceItemRows.length})`}
+                </h5>
+
+                {itemsLoading ? (
+                  <div className="lf-items-state">
+                    <div className="lf-progress-wrap"><div className="lf-progress-bar" /></div>
+                    <p>Duke ngarkuar artikujt...</p>
                   </div>
+                ) : itemsError ? (
+                  <div className="lf-items-state">
+                    <AlertCircle size={28} style={{ opacity: 0.4 }} />
+                    <p>Nuk u arrit të ngarkohen artikujt e faturës.</p>
+                  </div>
+                ) : invoiceItemRows.length === 0 ? (
+                  <div className="lf-items-state">
+                    <Package size={28} style={{ opacity: 0.15 }} />
+                    <p>Kjo faturë nuk ka artikuj të regjistruar.</p>
+                  </div>
+                ) : (
+                  <div className="lf-items-table-wrap">
+                    <table className="lf-items-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Emërtimi</th>
+                          <th>Njm</th>
+                          <th className="right">Sasia</th>
+                          <th className="right">Çmimi (pa TVSH)</th>
+                          <th className="right">Rabati</th>
+                          <th className="right">TVSH %</th>
+                          <th className="right">TVSH €</th>
+                          <th className="right">Shuma €</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoiceItemRows.map((row, idx) => (
+                          <tr key={idx}>
+                            <td className="muted">{idx + 1}</td>
+                            <td className="bold">{row.produkti.emriProduktit || "—"}</td>
+                            <td className="muted">{row.produkti.emriNjesiaMatese || "—"}</td>
+                            <td className="right mono">{fmt(row.sasia)}</td>
+                            <td className="right mono">{fmt(row.qmimiPaTVSH)} €</td>
+                            <td className="right mono">
+                              {row.rabatiTotal > 0 ? `${fmt(row.rabatiTotal)} %` : "—"}
+                            </td>
+                            <td className="right mono">{fmt(row.tvshRate)} %</td>
+                            <td className="right mono">{fmt(row.tvshValue)} €</td>
+                            <td className="right mono bold emerald">{fmt(row.shuma)} €</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colSpan={8} className="right bold">Totali Artikujve:</td>
+                          <td className="right mono bold emerald">{fmt(invoiceItemsTotal)} €</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                )}
+              </div>
 
+              {/* Financial summary + notes, side by side below the items table */}
+              <div className="lf-modal-columns">
+                <div className="lf-modal-col-left">
                   <div className="lf-drawer-section">
-                    <h5 className="lf-drawer-sec-title">Detaje të Tjera</h5>
-                    <div className="lf-drawer-item" style={{ marginBottom: "0.8rem" }}>
-                      <span className="lf-drawer-label"><User size={11} style={{ marginRight: 4, opacity: 0.7 }} /> Operator (Stafi)</span>
-                      <span className="lf-drawer-val">{selectedInvoice.username || "—"} (ID: {selectedInvoice.stafiID || "—"})</span>
-                    </div>
-                    <div className="lf-drawer-item">
-                      <span className="lf-drawer-label">Shënime / Përshkrim Shtesë</span>
-                      <p className="lf-drawer-desc">{selectedInvoice.pershkrimShtese || "Nuk ka shënime shtesë për këtë faturë."}</p>
-                    </div>
+                    <h5 className="lf-drawer-sec-title">Shënime / Përshkrim Shtesë</h5>
+                    <p className="lf-drawer-desc">{selectedInvoice.pershkrimShtese || "Nuk ka shënime shtesë për këtë faturë."}</p>
                   </div>
                 </div>
 

@@ -122,8 +122,9 @@ function ShikimiQmimeve() {
     if (event.key === "Enter") {
       const currentInput = document.getElementById("shikimiSelect-input")?.value || "";
       if (currentInput.trim().length > 0) {
-        processBarcode(currentInput.trim());
         event.preventDefault();
+        processBarcode(currentInput.trim());
+        selectRef.current?.blur();
       }
     }
   };

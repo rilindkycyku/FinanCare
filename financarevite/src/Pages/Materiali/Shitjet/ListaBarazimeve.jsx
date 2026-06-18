@@ -70,6 +70,16 @@ const pdfStyles = StyleSheet.create({
   },
   diffLabel: { fontSize: 10, textTransform: "uppercase", marginBottom: 5 },
   diffValue: { fontSize: 28, fontWeight: "bold" },
+  noteBox: {
+    marginTop: 20,
+    padding: 12,
+    borderRadius: 6,
+    backgroundColor: "#f8fafc",
+    borderLeft: 3,
+    borderLeftColor: "#94a3b8",
+  },
+  noteLabel: { fontSize: 9, fontWeight: "bold", color: "#475569", marginBottom: 3 },
+  noteText: { fontSize: 10, color: "#64748b" },
   footer: {
     position: "absolute",
     bottom: 30,
@@ -289,6 +299,13 @@ function ListaBarazimeve() {
                   : "Mungesë"}
             </Text>
           </View>
+
+          {barazim.pershkrimiTjera && (
+            <View style={pdfStyles.noteBox}>
+              <Text style={pdfStyles.noteLabel}>SHËNIM</Text>
+              <Text style={pdfStyles.noteText}>{barazim.pershkrimiTjera}</Text>
+            </View>
+          )}
 
           <Text style={pdfStyles.footer}>
             FinanCare Management System - Gjeneruar më: {new Date().toLocaleDateString("sq-AL")} {new Date().toLocaleTimeString("sq-AL")}

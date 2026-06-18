@@ -28,28 +28,36 @@ const border = (color = CLR.border) => ({
 
 const fill = (argb) => ({ type: "pattern", pattern: "solid", fgColor: { argb } });
 
+const stripHtml = (value) => String(value ?? "").replace(/<[^>]*>/g, "");
+
 const font = (bold = false, color = CLR.valueFg, size = 11) => ({
   bold, color: { argb: color }, size, name: "Calibri",
 });
+
+/**
+ * Fetches business info when not already provided, falling back to defaults on failure.
+ */
+async function getBusinessInfo(biznesit) {
+  if (biznesit) return biznesit;
+  try {
+    const token = localStorage.getItem("token");
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+    const res = await axios.get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching business info inside export utility:", err);
+    return null;
+  }
+}
 
 /**
  * Exports a styled invoice + products Excel using ExcelJS.
  * Mirrors the "Te Dhenat e Fatures" UI layout.
  */
 export async function exportInvoiceExcel(teDhenatFat, produktet, biznesit) {
-  let biz = biznesit;
-  if (!biz) {
-    try {
-      const token = localStorage.getItem("token");
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-      const res = await axios.get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      biz = res.data;
-    } catch (err) {
-      console.error("Error fetching business info inside export utility:", err);
-    }
-  }
+  const biz = await getBusinessInfo(biznesit);
 
   const shopName = biz?.emriIBiznesit || "FinanCare POS";
   const shopNUI = `NUI: ${biz?.nui || "–"} / NF: ${biz?.nf || "–"} / TVSH: ${biz?.nrTVSH || "–"}`;
@@ -177,8 +185,8 @@ export async function exportInvoiceExcel(teDhenatFat, produktet, biznesit) {
       idx + 1,
       `${p.idProduktit} - ${p.emriProduktit}`,
       p.sasiaStokut,
-      parseFloat(p.qmimiBleres).toFixed(2),
-      parseFloat(p.qmimiShites).toFixed(2),
+      parseFloat(p.qmimiBleres || 0).toFixed(2),
+      parseFloat(p.qmimiShites || 0).toFixed(2),
       totB.toFixed(2),
       totS.toFixed(2),
       "", "",
@@ -242,19 +250,7 @@ export async function exportInvoiceExcel(teDhenatFat, produktet, biznesit) {
  * Exports a styled Kartela Financiare Excel using ExcelJS.
  */
 export async function exportKartelaExcel(partner, tableRows, totals, partnerName, biznesit) {
-  let biz = biznesit;
-  if (!biz) {
-    try {
-      const token = localStorage.getItem("token");
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-      const res = await axios.get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      biz = res.data;
-    } catch (err) {
-      console.error("Error fetching business info inside export utility:", err);
-    }
-  }
+  const biz = await getBusinessInfo(biznesit);
 
   const shopName = biz?.emriIBiznesit || "FinanCare POS";
   const shopNUI = `NUI: ${biz?.nui || "–"} / NF: ${biz?.nf || "–"} / TVSH: ${biz?.nrTVSH || "–"}`;
@@ -362,7 +358,7 @@ export async function exportKartelaExcel(partner, tableRows, totals, partnerName
       r["Data"],
       r["Lloji"],
       r["Nr. Faturës"] || "-",
-      r["Përshkrimi"] || "-",
+      stripHtml(r["Përshkrimi"]) || "-",
       r["Faturim €"] || "-",
       r["Pagesë €"] || "-",
       r["Saldo €"] || "-"
@@ -429,19 +425,7 @@ export async function exportKartelaExcel(partner, tableRows, totals, partnerName
  * Reusable utility to export ANY flat data list into a beautifully styled ExcelJS workbook.
  */
 export async function exportListExcel(title, headers, data, filename = "Eksport.xlsx", biznesit) {
-  let biz = biznesit;
-  if (!biz) {
-    try {
-      const token = localStorage.getItem("token");
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-      const res = await axios.get(`${API_BASE_URL}/api/TeDhenatBiznesit/ShfaqTeDhenat`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      biz = res.data;
-    } catch (err) {
-      console.error("Error fetching business info inside exportListExcel:", err);
-    }
-  }
+  const biz = await getBusinessInfo(biznesit);
 
   const shopName = biz?.emriIBiznesit || "FinanCare POS";
   const shopNUI = `NUI: ${biz?.nui || "–"} / NF: ${biz?.nf || "–"} / TVSH: ${biz?.nrTVSH || "–"}`;
@@ -565,8 +549,9 @@ export async function exportListExcel(title, headers, data, filename = "Eksport.
   // 4.5 Totals Row
   let hasTotals = false;
   const totals = {};
+  const runningBalanceCols = ["saldo", "balance", "gjendja"];
   headers.forEach(h => {
-    if (h.includes('€')) {
+    if (h.includes('€') && !runningBalanceCols.some(k => h.toLowerCase().includes(k))) {
       let sum = 0;
       data.forEach(r => {
         const valStr = String(r[h] || "").replace(/€/g, "").trim();
@@ -580,10 +565,15 @@ export async function exportListExcel(title, headers, data, filename = "Eksport.
   });
 
   if (hasTotals) {
+    const lastRow = data[data.length - 1];
     const totValues = headers.map((h, idx) => {
       if (idx === 1 && headers.length > 1) return "TOTALI";
       if (idx === 0 && headers.length === 1) return "TOTALI";
-      return totals[h] !== undefined ? totals[h] : "";
+      if (totals[h] !== undefined) return totals[h];
+      if (h.includes('€') && runningBalanceCols.some(k => h.toLowerCase().includes(k))) {
+        return String(lastRow?.[h] || "").replace(/€/g, "").trim();
+      }
+      return "";
     });
     const totRow = ws.addRow(totValues);
     totRow.height = 22;
@@ -592,7 +582,7 @@ export async function exportListExcel(title, headers, data, filename = "Eksport.
       cell.fill = fill(CLR.totBg);
       cell.font = font(true, CLR.totFg, 11);
       cell.border = border("FF047857");
-      if (totals[h] !== undefined) {
+      if (totals[h] !== undefined || (h.includes('€') && runningBalanceCols.some(k => h.toLowerCase().includes(k)))) {
         cell.alignment = { horizontal: "right" };
       } else {
         cell.alignment = { horizontal: "center" };
