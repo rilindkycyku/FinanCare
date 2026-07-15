@@ -210,6 +210,8 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 <details>
 <summary><b>📦 Materiali — Artikujt</b></summary>
 
+![Menaxhimi i Artikujve](ReadMeImages/App/montage/showcase-materiali.png)
+
 ### Lista e Produkteve
 ![Lista e Produkteve](ReadMeImages/App/20-Lista-e-Produkteve.png)
 ### Kartela e Artikullit
@@ -254,6 +256,8 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 <details>
 <summary><b>🧾 Materiali — Shitjet</b></summary>
 
+![POS, Paragon & Analitika](ReadMeImages/App/montage/showcase-shitjet.png)
+
 ### POS (Pika e Shitjes)
 ![POS](ReadMeImages/App/44-POS.png)
 ### Statistikat e Dyqanit
@@ -276,6 +280,8 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 <details>
 <summary><b>🔔 Njoftimet</b></summary>
 
+![Kontrolli & Siguria](ReadMeImages/App/montage/showcase-njoftimet.png)
+
 ### Artikujt Pa Stok
 ![Artikujt Pa Stok](ReadMeImages/App/50-Artikujt-Pa-Stok.png)
 ### Afatet e Skadimit
@@ -292,6 +298,8 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 <details>
 <summary><b>🗂️ Gjenerale — Partnerët & Financat</b></summary>
 
+![Partnerët & Financat](ReadMeImages/App/montage/showcase-gjenerale.png)
+
 ### Lista e Partnerëve
 ![Lista e Partnerëve](ReadMeImages/App/70-Lista-e-Partnereve.png)
 ### Kartela Financiare
@@ -307,6 +315,8 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 
 <details>
 <summary><b>👥 Gjenerale — Stafi, Biznesi & Sistemi</b></summary>
+
+![Përdoruesit, Rolet & Licenca](ReadMeImages/App/montage/showcase-stafi.png)
 
 ### Lista e Përdoruesve
 ![Lista e Përdoruesve](ReadMeImages/App/73-Lista-e-Perdoruesve.png)
