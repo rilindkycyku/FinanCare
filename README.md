@@ -350,8 +350,10 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 
 ### Fatura Tatimore (FAT)
 ![Fatura](ReadMeImages/App/90-Fatura.png)
-### Paragon (POS)
+### Paragon (POS) · A4
 ![Paragon](ReadMeImages/App/91-Paragon.png)
+### Kupon Termik (Paragon 75mm)
+![Kupon Termik](ReadMeImages/App/92-Paragon-Thermal.png)
 ### Çmimorja (Printim)
 ![Çmimorja](ReadMeImages/Qmimorja.jpg)
 ### Çmimorja me Zbritje
