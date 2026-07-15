@@ -346,16 +346,18 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 <details>
 <summary><b>🖨️ Dokumente & Printime</b></summary>
 
-### Fatura
-![Fatura](ReadMeImages/Fatura.jpg)
-### Paragon
-![Paragon](ReadMeImages/Paragon.jpg)
-### Pagesat e Faturës
-![Pagesat e Faturës](ReadMeImages/PagesatEFatures.png)
+![Faturimi & Printimi](ReadMeImages/App/montage/showcase-printime.png)
+
+### Fatura Tatimore (FAT)
+![Fatura](ReadMeImages/App/90-Fatura.png)
+### Paragon (POS)
+![Paragon](ReadMeImages/App/91-Paragon.png)
 ### Çmimorja (Printim)
 ![Çmimorja](ReadMeImages/Qmimorja.jpg)
 ### Çmimorja me Zbritje
 ![Çmimorja me Zbritje](ReadMeImages/QmimorjaZbritjes.jpg)
+### Pagesat e Faturës
+![Pagesat e Faturës](ReadMeImages/PagesatEFatures.png)
 ### Eksportimi i të Dhënave (Excel)
 ![Eksportimi Excel](ReadMeImages/ExportimiTeDhenave.jpeg)
 
