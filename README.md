@@ -354,12 +354,12 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 ![Paragon](ReadMeImages/App/91-Paragon.png)
 ### Kupon Termik (Paragon 75mm)
 ![Kupon Termik](ReadMeImages/App/92-Paragon-Thermal.png)
-### Çmimorja (Printim)
-![Çmimorja](ReadMeImages/Qmimorja.jpg)
-### Çmimorja me Zbritje
-![Çmimorja me Zbritje](ReadMeImages/QmimorjaZbritjes.jpg)
-### Pagesat e Faturës
-![Pagesat e Faturës](ReadMeImages/PagesatEFatures.png)
+### Çmimorja (Etiketat e Çmimeve)
+![Çmimorja - Etiketat](ReadMeImages/App/93-Qmimorja-Etiketat.png)
+### Etiketat e Zbritjes
+![Etiketat e Zbritjes](ReadMeImages/App/94-Etiketat-Zbritjes.png)
+### Regjistrimi i Pagesës (Faturim)
+![Regjistrimi i Pagesës](ReadMeImages/App/95-Pagesa-Receipt.png)
 ### Eksportimi i të Dhënave (Excel)
 ![Eksportimi Excel](ReadMeImages/ExportimiTeDhenave.jpeg)
 
