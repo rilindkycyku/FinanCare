@@ -193,65 +193,163 @@ Në rast se dëshironi të përdorni të dhënat e FinanCare, ato mund t’i gje
 
 ## Pamja e FinanCare
 
-### Login
+![FinanCare — POS, eOrder & Kontabilitet](ReadMeImages/App/montage/hero.png)
 
-![](ReadMeImages/Login.png)
+![Përmbledhje e faqeve kryesore](ReadMeImages/App/montage/showcase.png)
 
-### Dashboard
+> _Pamjet e mëposhtme janë kapur me **të dhëna demonstrimi** (fiktive) për një biznes shembull — **Prima Market SH.P.K.** — vetëm për ilustrim. Aplikacioni shfaqet në temën e errët (Dark Mode)._
 
-![](ReadMeImages/Dashboard.png)
+Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë për të parë të gjitha faqet.
 
-### Tabela
+### Kryesore
 
-![](ReadMeImages/Tabela.png)
+| Login | Dashboard |
+|:---:|:---:|
+| ![Login](ReadMeImages/App/01-Login.png) | ![Dashboard](ReadMeImages/App/00-Dashboard.png) |
 
-### Eksportimi të Dhënave
+<details>
+<summary><b>📦 Materiali — Artikujt</b></summary>
 
-![](ReadMeImages/ExportimiTeDhenave.png)
-
-### Eksportimi të Dhënave - EXCEL
-
-![](ReadMeImages/ExportimiTeDhenave.jpeg)
-
+### Lista e Produkteve
+![Lista e Produkteve](ReadMeImages/App/20-Lista-e-Produkteve.png)
 ### Kartela e Artikullit
+![Kartela e Artikullit](ReadMeImages/App/23-Kartela-e-Artikullit.png)
+### Grupet e Produktit
+![Grupet e Produktit](ReadMeImages/App/21-Grupet-e-Produktit.png)
+### Njësia Matëse
+![Njësia Matëse](ReadMeImages/App/22-Njesia-Matese.png)
+### Stoqet
+![Stoqet](ReadMeImages/App/24-Stoqet.png)
+### Zbritjet e Produktit
+![Zbritjet e Produktit](ReadMeImages/App/25-Zbritjet-e-Produktit.png)
+### Qmimore (Shtyp Etiketat)
+![Qmimore](ReadMeImages/App/26-Qmimore.png)
+### Shikimi i Çmimeve
+![Shikimi i Çmimeve](ReadMeImages/App/27-Shikimi-i-Qmimeve.png)
 
-![](ReadMeImages/KartelaEArtikullit.png)
+</details>
 
+<details>
+<summary><b>📥 Materiali — Hyrjet</b></summary>
+
+### Kalkulimi i Mallit
+![Kalkulimi i Mallit](ReadMeImages/App/30-Kalkulimi-i-Mallit.png)
+### Pranimi i Mallit
+![Pranimi i Mallit](ReadMeImages/App/34-Pranimi-i-Mallit.png)
+### Fletëlejimet
+![Fletëlejimet](ReadMeImages/App/31-Flete-Lejimet.png)
+### Fletëlejimet Automatike
+![Fletëlejimet Automatike](ReadMeImages/App/32-Flete-Lejimet-Automatike.png)
+### Kalkulimi Fillestar Vjetor
+![Kalkulimi Fillestar Vjetor](ReadMeImages/App/33-Kalkulimi-Fillestar-Vjetor.png)
+### Kthimi i Mallit të Shitur
+![Kthimi i Mallit të Shitur](ReadMeImages/App/35-Kthimi-i-Mallit-te-Shitur.png)
+### Kthim i Mallit të Blerë
+![Kthim i Mallit të Blerë](ReadMeImages/App/36-Kthim-i-Mallit-te-Blere.png)
+### Asgjësimi i Stokut
+![Asgjësimi i Stokut](ReadMeImages/App/37-Asgjesimi-i-Stokut.png)
+
+</details>
+
+<details>
+<summary><b>🧾 Materiali — Shitjet</b></summary>
+
+### POS (Pika e Shitjes)
+![POS](ReadMeImages/App/44-POS.png)
+### Statistikat e Dyqanit
+![Statistika](ReadMeImages/App/45-Statistika.png)
+### Porosite
+![Porosite](ReadMeImages/App/40-Porosite.png)
+### Ofertat
+![Ofertat](ReadMeImages/App/41-Ofertat.png)
+### Porosite Online (eOrder)
+![Porosite Online](ReadMeImages/App/42-Porosite-Online.png)
+### Lista e Shitjeve me Paragon
+![Lista Shitjeve me Paragon](ReadMeImages/App/43-Lista-Shitjeve-me-Paragon.png)
+### Lista e Barazimeve
+![Lista e Barazimeve](ReadMeImages/App/46-Lista-e-Barazimeve.png)
+### Barazo Arkën
+![Barazo Arkën](ReadMeImages/App/47-Barazo-Arken.png)
+
+</details>
+
+<details>
+<summary><b>🔔 Njoftimet</b></summary>
+
+### Artikujt Pa Stok
+![Artikujt Pa Stok](ReadMeImages/App/50-Artikujt-Pa-Stok.png)
+### Afatet e Skadimit
+![Afatet e Skadimit](ReadMeImages/App/51-Afatet-e-Skadimit.png)
+### Ditët e Furnizimit
+![Ditët e Furnizimit](ReadMeImages/App/52-Ditet-e-Furnizimit.png)
+### Sugjerimi i Porosisë
+![Sugjerimi i Porosisë](ReadMeImages/App/53-Sugjerimi-i-Porosis.png)
+### Sugjerimi i Porosisë sipas Furnitorit
+![Sugjerimi sipas Furnitorit](ReadMeImages/App/54-Sugjerimi-Porosise-sipas-Furnitorit.png)
+
+</details>
+
+<details>
+<summary><b>🗂️ Gjenerale — Partnerët & Financat</b></summary>
+
+### Lista e Partnerëve
+![Lista e Partnerëve](ReadMeImages/App/70-Lista-e-Partnereve.png)
 ### Kartela Financiare
+![Kartela Financiare](ReadMeImages/App/71-Kartela-Financiare.png)
+### Shto Pagesat / Faturimet
+![Shto Pagesat](ReadMeImages/App/72-Shto-Pagesat.png)
+### Bankat
+![Bankat](ReadMeImages/App/76-Bankat.png)
+### Llogaritë Bankare të Biznesit
+![Llogaritë Bankare](ReadMeImages/App/77-Llogarite-Bankare-te-Biznesit.png)
 
-![](ReadMeImages/KartelaFinanciare.png)
+</details>
 
-### Kontrollimi Çmimeve
+<details>
+<summary><b>👥 Gjenerale — Stafi, Biznesi & Sistemi</b></summary>
 
-![](ReadMeImages/KontrollimiQmimev.png)
+### Lista e Përdoruesve
+![Lista e Përdoruesve](ReadMeImages/App/73-Lista-e-Perdoruesve.png)
+### Lista e Roleve
+![Lista e Roleve](ReadMeImages/App/74-Lista-e-Roleve.png)
+### Të Dhënat e Biznesit
+![Të Dhënat e Biznesit](ReadMeImages/App/79-Te-Dhenat-e-Biznesit.png)
+### Përditëso Fjalëkalimin
+![Përditëso Fjalëkalimin](ReadMeImages/App/78-Perditeso-Fjalekalimin.png)
+### Bart të Dhënat - Online
+![Bart të Dhënat](ReadMeImages/App/80-Bart-te-Dhenat-Online.png)
+### Aktivizo Sistemin (Licenca)
+![Aktivizo Sistemin](ReadMeImages/App/75-Aktivizo-Sistemin.png)
+
+</details>
+
+<details>
+<summary><b>🔎 Gjurmimi & Faturat</b></summary>
+
+### Gjurmimi i Sistemit
+![Gjurmimi](ReadMeImages/App/60-Gjurmimi.png)
+### Lista e Gjitha Faturave
+![Lista e Gjitha Faturave](ReadMeImages/App/61-Lista-e-Gjitha-Faturave.png)
+
+</details>
+
+<details>
+<summary><b>🖨️ Dokumente & Printime</b></summary>
 
 ### Fatura
-
-![](ReadMeImages/Fatura.jpg)
-
+![Fatura](ReadMeImages/Fatura.jpg)
 ### Paragon
-
-![](ReadMeImages/Paragon.jpg)
-
+![Paragon](ReadMeImages/Paragon.jpg)
 ### Pagesat e Faturës
+![Pagesat e Faturës](ReadMeImages/PagesatEFatures.png)
+### Çmimorja (Printim)
+![Çmimorja](ReadMeImages/Qmimorja.jpg)
+### Çmimorja me Zbritje
+![Çmimorja me Zbritje](ReadMeImages/QmimorjaZbritjes.jpg)
+### Eksportimi i të Dhënave (Excel)
+![Eksportimi Excel](ReadMeImages/ExportimiTeDhenave.jpeg)
 
-![](ReadMeImages/PagesatEFatures.png)
-
-### POS
-
-![](ReadMeImages/POS.png)
-
-### Çmimorja
-
-![](ReadMeImages/Qmimorja.jpg)
-
-### Çmimorja Zbritjes
-
-![](ReadMeImages/QmimorjaZbritjes.jpg)
-
-### Statistikat
-
-![](ReadMeImages/Statistikat.png)
+</details>
 
 ## Të Drejtat e Autorit (Copyright & License)
 
