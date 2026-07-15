@@ -348,6 +348,8 @@ Aplikacioni ndahet në grupe funksionesh. Klikoni secilin seksion më poshtë p�
 
 ![Faturimi & Printimi](ReadMeImages/App/montage/showcase-printime.png)
 
+![Etiketa & Pagesa](ReadMeImages/App/montage/showcase-etiketa.png)
+
 ### Fatura Tatimore (FAT)
 ![Fatura](ReadMeImages/App/90-Fatura.png)
 ### Paragon (POS) · A4
