@@ -13,6 +13,15 @@ export const DEFAULT_TVSH_TYPES = [
   { id: "tvsh_default_18", emri: "TVSH Standarde", perqindja: 18 },
 ];
 
+// FinanCareLite has no stock/warehouse ledger, so document "types" are a label-only
+// distinction — they change the title shown on the invoice, its numbering prefix, and (for a
+// Fletëkthim) flip the line-item amounts negative. No stock or debit/credit effects.
+export const DOCUMENT_TYPES = [
+  { value: "FAT", label: "Faturë Shitëse", titleLabel: "FATURË SHITËSE", negateAmounts: false },
+  { value: "POR", label: "Porosi", titleLabel: "POROSI", negateAmounts: false },
+  { value: "KTHIM", label: "Fletëkthim (Kredit Notë)", titleLabel: "FLETËKTHIM", negateAmounts: true },
+];
+
 export const DEFAULT_UNITS = [
   { id: "unit_default_cope", emri: "copë" },
   { id: "unit_default_kg", emri: "kg" },

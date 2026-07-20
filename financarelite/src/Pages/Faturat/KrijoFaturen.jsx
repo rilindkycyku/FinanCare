@@ -11,6 +11,7 @@ import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 import { generateNrFatures } from "../../lib/invoiceView";
 import { darkSelectStyles } from "../../lib/darkSelectStyles";
 import { useTvshTypes, useUnits } from "../../lib/useConfigLists";
+import { DOCUMENT_TYPES } from "../../lib/options";
 
 const BLANK_CLIENT = { emriBiznesit: "", nui: "", nrf: "", tvsh: "", adresa: "", nrKontaktit: "", email: "" };
 
@@ -40,9 +41,19 @@ function KrijoFaturen() {
   const [pershkrimShtese, setPershkrimShtese] = useState("");
   const [transporti, setTransporti] = useState("");
   const [dataRegjistrimit, setDataRegjistrimit] = useState(new Date().toISOString().slice(0, 10));
+  const [llojiDokumentit, setLlojiDokumentit] = useState(DOCUMENT_TYPES[0].value);
   const [saving, setSaving] = useState(false);
   const tvshTypes = useTvshTypes();
   const units = useUnits();
+
+  const dokumentiZgjedhur = DOCUMENT_TYPES.find((d) => d.value === llojiDokumentit) || DOCUMENT_TYPES[0];
+  // A Fletëkthim (credit note) shows every amount as negative — done once here, on the same
+  // items every other total already derives from, so the line-item table, footer TVSH
+  // breakdown, and saved invoice all agree without any of them needing to special-case it.
+  const signedItems = useMemo(() => {
+    if (!dokumentiZgjedhur.negateAmounts) return items;
+    return items.map((it) => ({ ...it, qmimiShites: String(-(parseFloat(it.qmimiShites) || 0)) }));
+  }, [items, dokumentiZgjedhur.negateAmounts]);
 
   // Compact label ("18%") so the narrow line-item column stays readable — the full name
   // ("TVSH Standarde") is what shows on the product form and the "Llojet e TVSH" settings list.
@@ -120,8 +131,12 @@ function KrijoFaturen() {
     [products]
   );
 
-  const validItems = useMemo(() => items.filter((it) => it.emriProduktit && parseFloat(it.qmimiShites) > 0), [items]);
-  const totals = useMemo(() => calcInvoiceTotals(validItems, transporti), [validItems, transporti]);
+  const validItems = useMemo(
+    () => signedItems.filter((it, i) => items[i].emriProduktit && parseFloat(items[i].qmimiShites) > 0),
+    [signedItems, items]
+  );
+  const transportiSigned = dokumentiZgjedhur.negateAmounts ? -(parseFloat(transporti) || 0) : transporti;
+  const totals = useMemo(() => calcInvoiceTotals(validItems, transportiSigned), [validItems, transportiSigned]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -133,14 +148,20 @@ function KrijoFaturen() {
     try {
       const allInvoices = await getAll(STORES.invoices);
       const nrRendorFatures = allInvoices.length + 1;
-      const nrFatures = generateNrFatures(teDhenatBiznesit.shkurtesaEmritBiznesit, nrRendorFatures, new Date(dataRegjistrimit));
+      const nrFatures = generateNrFatures(
+        teDhenatBiznesit.shkurtesaEmritBiznesit,
+        nrRendorFatures,
+        new Date(dataRegjistrimit),
+        dokumentiZgjedhur.value
+      );
       const record = {
         id: makeId("inv"),
         nrFatures,
         nrRendorFatures,
+        llojiDokumentit: dokumentiZgjedhur.value,
         dataRegjistrimit: new Date(dataRegjistrimit).toISOString(),
         pershkrimShtese,
-        transporti: parseFloat(transporti) || 0,
+        transporti: parseFloat(transportiSigned) || 0,
         klienti,
         items: validItems.map((it) => ({
           emriProduktit: it.emriProduktit,
@@ -170,6 +191,22 @@ function KrijoFaturen() {
         <h1 className="titulliPerditeso">Faturë e Re</h1>
 
         <Form onSubmit={handleSave}>
+          <Row className="g-3 mb-4">
+            <Col md={4}>
+              <Form.Label>Lloji i Dokumentit</Form.Label>
+              <Select
+                styles={darkSelectStyles}
+                classNamePrefix="react-select"
+                options={DOCUMENT_TYPES}
+                value={dokumentiZgjedhur}
+                onChange={(opt) => setLlojiDokumentit(opt.value)}
+              />
+              {dokumentiZgjedhur.negateAmounts && (
+                <div className="text-muted small mt-1">Shumat do të shfaqen si negative (kthim/kredit).</div>
+              )}
+            </Col>
+          </Row>
+
           <h5 className="mt-2 mb-3">Të Dhënat e Klientit</h5>
           <Row className="g-3 mb-4">
             <Col md={4}>

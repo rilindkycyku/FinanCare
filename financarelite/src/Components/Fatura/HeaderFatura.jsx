@@ -26,7 +26,9 @@ const styles = StyleSheet.create({
 });
 
 const TITLE_MAP = {
-  FAT: "FATURË",
+  FAT: "FATURË SHITËSE",
+  POR: "POROSI",
+  KTHIM: "FLETËKTHIM",
   PARAGON: "PARAGON",
   OFERTE: "OFERTË",
 };

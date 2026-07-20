@@ -9,7 +9,7 @@ export function buildFaturaData({ invoice, teDhenatBiznesit, banks, currencies }
     produktet: invoice.items || [],
     teDhenatFat: {
       regjistrimet: {
-        llojiKalkulimit: "FAT",
+        llojiKalkulimit: invoice.llojiDokumentit || "FAT",
         nrFatures: invoice.nrFatures,
         nrRendorFatures: invoice.nrRendorFatures,
         dataRegjistrimit: invoice.dataRegjistrimit,
@@ -27,10 +27,11 @@ export function buildFaturaData({ invoice, teDhenatBiznesit, banks, currencies }
   };
 }
 
-/** Generates the next `nrFatures` in the same format the original barcode uses. */
-export function generateNrFatures(shkurtesaEmritBiznesit, nrRendorFatures, date = new Date()) {
+/** Generates the next `nrFatures` in the same format the original barcode uses. `prefix`
+ * marks the document type (FAT/POR/KTHIM) in the middle segment. */
+export function generateNrFatures(shkurtesaEmritBiznesit, nrRendorFatures, date = new Date(), prefix = "FAT") {
   const dita = date.getDate().toString().padStart(2, "0");
   const muaji = (date.getMonth() + 1).toString().padStart(2, "0");
   const viti = date.getFullYear().toString().slice(-2);
-  return `${shkurtesaEmritBiznesit || "FAT"}-${dita}${muaji}${viti}-FAT-${nrRendorFatures}`;
+  return `${shkurtesaEmritBiznesit || "FAT"}-${dita}${muaji}${viti}-${prefix}-${nrRendorFatures}`;
 }

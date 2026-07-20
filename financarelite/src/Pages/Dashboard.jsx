@@ -6,6 +6,7 @@ import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import { getAll, getBusinessDetails, STORES } from "../lib/db";
 import { calcInvoiceTotals } from "../lib/invoiceCalc";
+import { DOCUMENT_TYPES } from "../lib/options";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
@@ -69,11 +70,15 @@ function Dashboard() {
           <p className="text-muted">Nuk keni krijuar ende asnjë faturë.</p>
         ) : (
           <ul className="list-unstyled">
-            {recent.map((inv) => (
-              <li key={inv.id} className="mb-2">
-                <Link to={`/faturat/${inv.id}`}>{inv.nrFatures}</Link> — {inv.klienti?.emriBiznesit}
-              </li>
-            ))}
+            {recent.map((inv) => {
+              const dokumenti = DOCUMENT_TYPES.find((d) => d.value === inv.llojiDokumentit) || DOCUMENT_TYPES[0];
+              return (
+                <li key={inv.id} className="mb-2">
+                  <Link to={`/faturat/${inv.id}`}>{inv.nrFatures}</Link> — {inv.klienti?.emriBiznesit}
+                  <span className="text-muted small ms-2">({dokumenti.label})</span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
