@@ -6,6 +6,8 @@ import Fatura from "../../Components/Fatura/Fatura";
 import ShareQrModal from "../../Components/ShareQrModal";
 import { getOne, getBusinessDetails, getAll, STORES } from "../../lib/db";
 import { buildFaturaData } from "../../lib/invoiceView";
+import { buildInvoiceShareQr } from "../../lib/invoiceQr";
+import { QrTooLargeError } from "../../lib/qr";
 
 function FaturaView() {
   const { id } = useParams();
@@ -14,6 +16,7 @@ function FaturaView() {
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState(null);
   const [banks, setBanks] = useState([]);
   const [currencies, setCurrencies] = useState([]);
+  const [shareQr, setShareQr] = useState({ status: "loading", link: null, dataUrl: null });
   const [showShare, setShowShare] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +32,26 @@ function FaturaView() {
     );
   }, [id]);
 
+  // Computed once the invoice is loaded — reused both to embed a QR directly on the invoice
+  // (on-screen + PDF) and to power the "QR / Shpërndaj" modal, so both always match.
+  useEffect(() => {
+    if (!invoice) return;
+    let cancelled = false;
+    setShareQr({ status: "loading", link: null, dataUrl: null });
+    buildInvoiceShareQr({ teDhenatBiznesit, banks, currencies, invoice })
+      .then((qr) => {
+        if (!cancelled) setShareQr({ status: "ready", ...qr });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Gabim gjatë krijimit të QR-së:", err);
+        setShareQr({ status: err instanceof QrTooLargeError ? "tooLarge" : "failed", link: null, dataUrl: null });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [invoice, teDhenatBiznesit, banks, currencies]);
+
   return (
     <>
       <PageTitle title="Fatura" />
@@ -43,16 +66,16 @@ function FaturaView() {
         <>
           <Fatura
             data={buildFaturaData({ invoice, teDhenatBiznesit, banks, currencies })}
+            qrCodeDataUrl={shareQr.status === "ready" ? shareQr.dataUrl : undefined}
             onBack={() => navigate("/faturat")}
             onShare={() => setShowShare(true)}
           />
           <ShareQrModal
             show={showShare}
             onHide={() => setShowShare(false)}
-            teDhenatBiznesit={teDhenatBiznesit}
-            banks={banks}
-            currencies={currencies}
-            invoice={invoice}
+            status={shareQr.status}
+            link={shareQr.link}
+            dataUrl={shareQr.dataUrl}
           />
         </>
       )}

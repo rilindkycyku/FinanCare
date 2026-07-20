@@ -1,47 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Modal, Button, Spinner } from "react-bootstrap";
 import { Copy, Share2 } from "lucide-react";
-import { buildInvoicePayload, encodeInvoiceToLink, toQrPayloadUrl } from "../lib/shareLink";
-import { qrDataUrl, QrTooLargeError } from "../lib/qr";
 
-/** QR modal for one invoice — same interaction pattern as GuestSeat's share-link QR modal. */
-function ShareQrModal({ show, onHide, teDhenatBiznesit, banks, currencies, invoice }) {
-  const [link, setLink] = useState(null);
-  const [dataUrl, setDataUrl] = useState(null);
-  const [status, setStatus] = useState("loading");
+/** QR modal for one invoice — same interaction pattern as GuestSeat's share-link QR modal.
+ * `status`/`link`/`dataUrl` are computed once by the parent (see `buildInvoiceShareQr`) and
+ * reused here, so the modal always shows exactly the QR that's also embedded on the invoice. */
+function ShareQrModal({ show, onHide, status = "loading", link, dataUrl }) {
   const [copied, setCopied] = useState(false);
 
   const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
-
-  useEffect(() => {
-    if (!show) return;
-    let cancelled = false;
-    setStatus("loading");
-    setLink(null);
-    setDataUrl(null);
-    (async () => {
-      try {
-        const payload = buildInvoicePayload({ teDhenatBiznesit, banks, currencies, invoice });
-        const url = await encodeInvoiceToLink(payload);
-        if (cancelled) return;
-        setLink(url);
-        try {
-          const png = await qrDataUrl(toQrPayloadUrl(url));
-          if (cancelled) return;
-          setDataUrl(png);
-          setStatus("ready");
-        } catch (err) {
-          if (cancelled) return;
-          setStatus(err instanceof QrTooLargeError ? "tooLarge" : "failed");
-        }
-      } catch {
-        if (!cancelled) setStatus("failed");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [show, teDhenatBiznesit, banks, currencies, invoice]);
 
   const copyLink = async () => {
     if (!link) return;

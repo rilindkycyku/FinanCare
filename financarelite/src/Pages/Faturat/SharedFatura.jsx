@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Fatura from "../../Components/Fatura/Fatura";
 import PageTitle from "../../Components/PageTitle";
-import { decodeInvoicePayload } from "../../lib/shareLink";
+import { decodeInvoicePayload, toQrPayloadUrl } from "../../lib/shareLink";
 import { buildFaturaData } from "../../lib/invoiceView";
+import { qrDataUrl } from "../../lib/qr";
 
 /** Renders an invoice decoded straight from a `#i=...` share-link payload — no IndexedDB lookup,
  * so this works on any device that opens the QR/link, even with no local FinanCareLite data. */
 function SharedFatura({ encoded }) {
   const [data, setData] = useState(null);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState(null);
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
@@ -31,6 +33,17 @@ function SharedFatura({ encoded }) {
         })
       );
       setStatus("ready");
+
+      // The current page URL *is* the share link already (it's what got us here) — re-render it
+      // as a QR so the PDF exported from a scan still carries a working QR back to itself, no
+      // need to rebuild/re-encode the payload.
+      qrDataUrl(toQrPayloadUrl(window.location.href))
+        .then((png) => {
+          if (!cancelled) setQrCodeDataUrl(png);
+        })
+        .catch(() => {
+          /* non-critical — the invoice still renders and downloads fine without it */
+        });
     });
     return () => {
       cancelled = true;
@@ -58,7 +71,7 @@ function SharedFatura({ encoded }) {
   return (
     <>
       <PageTitle title="Fatura e Ndarë" />
-      <Fatura data={data} autoDownload readOnly />
+      <Fatura data={data} qrCodeDataUrl={qrCodeDataUrl} autoDownload readOnly />
     </>
   );
 }

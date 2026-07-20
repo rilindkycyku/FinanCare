@@ -23,8 +23,10 @@ const styles = StyleSheet.create({
   cell: { flex: 1, padding: 3, fontSize: 7, textAlign: "center" },
 });
 
-/** Renders one invoice, on-screen and as a downloadable PDF. `data` = { produktet, teDhenatFat, teDhenatBiznesit, bankat }. */
-function Fatura({ data, onBack, onShare, autoDownload = false, readOnly = false }) {
+/** Renders one invoice, on-screen and as a downloadable PDF. `data` = { produktet, teDhenatFat, teDhenatBiznesit, bankat }.
+ * `qrCodeDataUrl`, once available, is embedded directly on the invoice footer (on-screen and in
+ * the PDF) so a printed/exported copy carries a working "scan to reopen" code on its own. */
+function Fatura({ data, qrCodeDataUrl, onBack, onShare, autoDownload = false, readOnly = false }) {
   const { produktet = [], teDhenatFat = {}, teDhenatBiznesit = {}, bankat = [], currencies = [] } = data || {};
   const [saving, setSaving] = useState(false);
   const [autoDownloaded, setAutoDownloaded] = useState(false);
@@ -89,7 +91,7 @@ function Fatura({ data, onBack, onShare, autoDownload = false, readOnly = false 
             NrFaqes={pageNumber}
             NrFaqeve={estimatedPages}
             isPDF
-            data={{ produktet, teDhenatFat, teDhenatBiznesit, bankat, currencies }}
+            data={{ produktet, teDhenatFat, teDhenatBiznesit, bankat, currencies, qrCodeDataUrl }}
             forceFooterNewPage={forceFooterNewPage}
           />
         </Page>
@@ -101,7 +103,7 @@ function Fatura({ data, onBack, onShare, autoDownload = false, readOnly = false 
             <View style={{ padding: 20, fontSize: 11 }}>
               <HeaderFatura Barkodi={barkodi} NrFaqes={pageNumber + 1} NrFaqeve={estimatedPages} isPDF data={{ teDhenatFat, teDhenatBiznesit }} />
               <View style={styles.hr} />
-              <FooterFatura Barkodi={barkodi} isPDF data={{ teDhenatFat, produktet, bankat, currencies }} />
+              <FooterFatura Barkodi={barkodi} isPDF data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
             </View>
           </Page>
         );
@@ -177,7 +179,7 @@ function Fatura({ data, onBack, onShare, autoDownload = false, readOnly = false 
         <hr className="invoice-hr" />
         <TeDhenatFatura ProduktiPare={0} ProduktiFundit={produktet.length} isPDF={false} data={{ produktet }} />
         <hr className="invoice-hr" />
-        <FooterFatura Barkodi={barkodi} isPDF={false} data={{ teDhenatFat, produktet, bankat, currencies }} />
+        <FooterFatura Barkodi={barkodi} isPDF={false} data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
       </div>
     </div>
   );
