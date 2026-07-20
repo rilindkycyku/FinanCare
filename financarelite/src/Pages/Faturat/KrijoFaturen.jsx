@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Row, Col, Button, Table } from "react-bootstrap";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import { Plus, Trash2 } from "lucide-react";
 import NavBar from "../../Components/NavBar";
 import PageTitle from "../../Components/PageTitle";
@@ -9,7 +10,7 @@ import { getAll, getBusinessDetails, put, makeId, STORES } from "../../lib/db";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 import { generateNrFatures } from "../../lib/invoiceView";
 import { darkSelectStyles } from "../../lib/darkSelectStyles";
-import { TVSH_OPTIONS } from "../../lib/options";
+import { useTvshTypes, useUnits } from "../../lib/useConfigLists";
 
 const BLANK_CLIENT = { emriBiznesit: "", nui: "", nrf: "", tvsh: "", adresa: "", nrKontaktit: "", email: "" };
 
@@ -40,6 +41,16 @@ function KrijoFaturen() {
   const [transporti, setTransporti] = useState("");
   const [dataRegjistrimit, setDataRegjistrimit] = useState(new Date().toISOString().slice(0, 10));
   const [saving, setSaving] = useState(false);
+  const tvshTypes = useTvshTypes();
+  const units = useUnits();
+
+  // Compact label ("18%") so the narrow line-item column stays readable — the full name
+  // ("TVSH Standarde") is what shows on the product form and the "Llojet e TVSH" settings list.
+  const tvshOptions = useMemo(
+    () => tvshTypes.map((t) => ({ value: String(t.perqindja), label: `${t.perqindja}%` })),
+    [tvshTypes]
+  );
+  const unitOptions = useMemo(() => units.map((u) => ({ value: u.emri, label: u.emri })), [units]);
 
   useEffect(() => {
     Promise.all([getAll(STORES.clients), getAll(STORES.products), getBusinessDetails()]).then(
@@ -101,7 +112,7 @@ function KrijoFaturen() {
   const removeItem = (key) => setItems((prev) => prev.filter((it) => it.key !== key));
 
   const clientOptions = useMemo(
-    () => [{ value: "", label: "— klient i ri / ad-hoc —" }, ...clients.map((c) => ({ value: c.id, label: c.emriBiznesit }))],
+    () => [{ value: "", label: "— klient i ri —" }, ...clients.map((c) => ({ value: c.id, label: c.emriBiznesit }))],
     [clients]
   );
   const productOptions = useMemo(
@@ -173,9 +184,15 @@ function KrijoFaturen() {
             </Col>
             <Col md={4}>
               <Form.Label>
-                Emri i Klientit <span className="text-danger">*</span>
+                Emri i Klientit / Firmës <span className="text-danger">*</span>
               </Form.Label>
-              <Form.Control name="emriBiznesit" value={klienti.emriBiznesit} onChange={onKlientiChange} required />
+              <Form.Control
+                name="emriBiznesit"
+                value={klienti.emriBiznesit}
+                onChange={onKlientiChange}
+                placeholder="Person fizik ose emri i biznesit"
+                required
+              />
             </Col>
             <Col md={4}>
               <Form.Label>Adresa</Form.Label>
@@ -216,7 +233,7 @@ function KrijoFaturen() {
               <Plus size={14} className="me-1" /> Shto
             </Button>
             <Button variant="outline-light" onClick={addBlankItem}>
-              <Plus size={14} className="me-1" /> Artikull Ad-hoc
+              <Plus size={14} className="me-1" /> Shto Artikull Manualisht
             </Button>
           </div>
 
@@ -224,10 +241,10 @@ function KrijoFaturen() {
             <thead>
               <tr>
                 <th style={{ minWidth: 180 }}>Emërtimi</th>
-                <th style={{ width: 90 }}>Njm</th>
+                <th style={{ width: 130 }}>Njm</th>
                 <th style={{ width: 90 }}>Sasia</th>
                 <th style={{ width: 110 }}>Çmimi €</th>
-                <th style={{ width: 110 }}>TVSH %</th>
+                <th style={{ width: 140 }}>TVSH %</th>
                 <th style={{ width: 90 }}>Rabati %</th>
                 <th></th>
               </tr>
@@ -243,11 +260,14 @@ function KrijoFaturen() {
                       placeholder="Emri i artikullit"
                     />
                   </td>
-                  <td>
-                    <Form.Control
-                      size="sm"
-                      value={it.emriNjesiaMatese}
-                      onChange={(e) => updateItem(it.key, "emriNjesiaMatese", e.target.value)}
+                  <td style={{ minWidth: 130 }}>
+                    <CreatableSelect
+                      styles={darkSelectStyles}
+                      classNamePrefix="react-select"
+                      options={unitOptions}
+                      formatCreateLabel={(input) => `Përdor "${input}"`}
+                      value={it.emriNjesiaMatese ? { value: it.emriNjesiaMatese, label: it.emriNjesiaMatese } : null}
+                      onChange={(opt) => updateItem(it.key, "emriNjesiaMatese", opt?.value || "")}
                     />
                   </td>
                   <td>
@@ -268,12 +288,12 @@ function KrijoFaturen() {
                       onChange={(e) => updateItem(it.key, "qmimiShites", e.target.value)}
                     />
                   </td>
-                  <td style={{ minWidth: 100 }}>
+                  <td style={{ minWidth: 140 }}>
                     <Select
                       styles={darkSelectStyles}
                       classNamePrefix="react-select"
-                      options={TVSH_OPTIONS}
-                      value={TVSH_OPTIONS.find((o) => o.value === it.llojiTVSH)}
+                      options={tvshOptions}
+                      value={tvshOptions.find((o) => o.value === it.llojiTVSH) || null}
                       onChange={(opt) => updateItem(it.key, "llojiTVSH", opt.value)}
                     />
                   </td>
@@ -314,7 +334,7 @@ function KrijoFaturen() {
           <div className="d-flex justify-content-end mb-4">
             <div className="text-end">
               <div className="text-muted small">Totali Pa TVSH: {totals.totaliPaTVSH.toFixed(2)} €</div>
-              <div className="text-muted small">TVSH: {(totals.tvsH8 + totals.tvsH18).toFixed(2)} €</div>
+              <div className="text-muted small">TVSH: {totals.totaliTVSH.toFixed(2)} €</div>
               <div className="fs-4 fw-bold">Çmimi Total: {totals.totaliFinal.toFixed(2)} €</div>
             </div>
           </div>

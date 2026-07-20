@@ -23,9 +23,8 @@ export function calcLineItem(item) {
 export function calcInvoiceTotals(items, transporti = 0) {
   let totaliMeTVSH = 0;
   let totaliPaTVSH = 0;
-  let tvsH8 = 0;
-  let tvsH18 = 0;
   let rabati = 0;
+  const tvshByRate = new Map();
 
   (items || []).forEach((item) => {
     const sasia = parseFloat(item.sasiaStokut ?? item.sasia) || 0;
@@ -45,12 +44,18 @@ export function calcInvoiceTotals(items, transporti = 0) {
     totaliPaTVSH += paTvsh;
     rabati += discountAmount;
 
-    if (tvshPerc === 8) tvsH8 += tvshVal;
-    else if (tvshPerc === 18) tvsH18 += tvshVal;
+    if (tvshPerc > 0) tvshByRate.set(tvshPerc, (tvshByRate.get(tvshPerc) || 0) + tvshVal);
   });
 
   const transportiVal = parseFloat(transporti) || 0;
   const totaliFinal = totaliMeTVSH + transportiVal;
+  // Every TVSH rate actually used on the invoice's items becomes its own breakdown row —
+  // no longer limited to Kosovo's 8%/18%, so Albania's 10%/20% (or any other set the business
+  // configures under "Llojet e TVSH") shows up the same way.
+  const tvshBreakdown = Array.from(tvshByRate.entries())
+    .sort((a, b) => a[0] - b[0])
+    .map(([rate, value]) => ({ rate, value }));
+  const totaliTVSH = tvshBreakdown.reduce((sum, t) => sum + t.value, 0);
 
-  return { totaliMeTVSH, totaliPaTVSH, tvsH8, tvsH18, rabati, transporti: transportiVal, totaliFinal };
+  return { totaliMeTVSH, totaliPaTVSH, tvshBreakdown, totaliTVSH, rabati, transporti: transportiVal, totaliFinal };
 }

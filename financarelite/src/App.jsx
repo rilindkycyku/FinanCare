@@ -7,6 +7,7 @@ import TeDhenatBiznesit from "./Pages/TeDhenatBiznesit";
 import Klientet from "./Pages/Klientet";
 import Produktet from "./Pages/Produktet";
 import TeDhena from "./Pages/TeDhena";
+import Cilesimet from "./Pages/Cilesimet";
 import ListaFaturave from "./Pages/Faturat/ListaFaturave";
 import KrijoFaturen from "./Pages/Faturat/KrijoFaturen";
 import FaturaView from "./Pages/Faturat/FaturaView";
@@ -29,6 +30,7 @@ function App() {
       <Route path="/klientet" element={<Klientet />} />
       <Route path="/produktet" element={<Produktet />} />
       <Route path="/te-dhena" element={<TeDhena />} />
+      <Route path="/cilesimet" element={<Cilesimet />} />
       <Route path="/faturat" element={<ListaFaturave />} />
       <Route path="/faturat/re" element={<KrijoFaturen />} />
       <Route path="/faturat/:id" element={<FaturaView />} />

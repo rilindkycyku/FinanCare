@@ -108,6 +108,11 @@ body {
   opacity: 0.6;
 }
 
+.form-control::placeholder {
+  color: var(--sp-text-muted) !important;
+  opacity: 1 !important;
+}
+
 /* Premium Buttons */
 .btn {
   border-radius: 12px !important;
