@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Row, Col, Button, Table } from "react-bootstrap";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import { Plus, Trash2 } from "lucide-react";
 import NavBar from "../../Components/NavBar";
 import PageTitle from "../../Components/PageTitle";
@@ -9,7 +10,8 @@ import { getAll, getBusinessDetails, put, makeId, STORES } from "../../lib/db";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 import { generateNrFatures } from "../../lib/invoiceView";
 import { darkSelectStyles } from "../../lib/darkSelectStyles";
-import { TVSH_OPTIONS } from "../../lib/options";
+import { useTvshTypes, useUnits } from "../../lib/useConfigLists";
+import { DOCUMENT_TYPES } from "../../lib/options";
 
 const BLANK_CLIENT = { emriBiznesit: "", nui: "", nrf: "", tvsh: "", adresa: "", nrKontaktit: "", email: "" };
 
@@ -39,7 +41,27 @@ function KrijoFaturen() {
   const [pershkrimShtese, setPershkrimShtese] = useState("");
   const [transporti, setTransporti] = useState("");
   const [dataRegjistrimit, setDataRegjistrimit] = useState(new Date().toISOString().slice(0, 10));
+  const [llojiDokumentit, setLlojiDokumentit] = useState(DOCUMENT_TYPES[0].value);
   const [saving, setSaving] = useState(false);
+  const tvshTypes = useTvshTypes();
+  const units = useUnits();
+
+  const dokumentiZgjedhur = DOCUMENT_TYPES.find((d) => d.value === llojiDokumentit) || DOCUMENT_TYPES[0];
+  // A Fletëkthim (credit note) shows every amount as negative — done once here, on the same
+  // items every other total already derives from, so the line-item table, footer TVSH
+  // breakdown, and saved invoice all agree without any of them needing to special-case it.
+  const signedItems = useMemo(() => {
+    if (!dokumentiZgjedhur.negateAmounts) return items;
+    return items.map((it) => ({ ...it, qmimiShites: String(-(parseFloat(it.qmimiShites) || 0)) }));
+  }, [items, dokumentiZgjedhur.negateAmounts]);
+
+  // Compact label ("18%") so the narrow line-item column stays readable — the full name
+  // ("TVSH Standarde") is what shows on the product form and the "Llojet e TVSH" settings list.
+  const tvshOptions = useMemo(
+    () => tvshTypes.map((t) => ({ value: String(t.perqindja), label: `${t.perqindja}%` })),
+    [tvshTypes]
+  );
+  const unitOptions = useMemo(() => units.map((u) => ({ value: u.emri, label: u.emri })), [units]);
 
   useEffect(() => {
     Promise.all([getAll(STORES.clients), getAll(STORES.products), getBusinessDetails()]).then(
@@ -101,7 +123,7 @@ function KrijoFaturen() {
   const removeItem = (key) => setItems((prev) => prev.filter((it) => it.key !== key));
 
   const clientOptions = useMemo(
-    () => [{ value: "", label: "— klient i ri / ad-hoc —" }, ...clients.map((c) => ({ value: c.id, label: c.emriBiznesit }))],
+    () => [{ value: "", label: "— klient i ri —" }, ...clients.map((c) => ({ value: c.id, label: c.emriBiznesit }))],
     [clients]
   );
   const productOptions = useMemo(
@@ -109,8 +131,12 @@ function KrijoFaturen() {
     [products]
   );
 
-  const validItems = useMemo(() => items.filter((it) => it.emriProduktit && parseFloat(it.qmimiShites) > 0), [items]);
-  const totals = useMemo(() => calcInvoiceTotals(validItems, transporti), [validItems, transporti]);
+  const validItems = useMemo(
+    () => signedItems.filter((it, i) => items[i].emriProduktit && parseFloat(items[i].qmimiShites) > 0),
+    [signedItems, items]
+  );
+  const transportiSigned = dokumentiZgjedhur.negateAmounts ? -(parseFloat(transporti) || 0) : transporti;
+  const totals = useMemo(() => calcInvoiceTotals(validItems, transportiSigned), [validItems, transportiSigned]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -122,14 +148,20 @@ function KrijoFaturen() {
     try {
       const allInvoices = await getAll(STORES.invoices);
       const nrRendorFatures = allInvoices.length + 1;
-      const nrFatures = generateNrFatures(teDhenatBiznesit.shkurtesaEmritBiznesit, nrRendorFatures, new Date(dataRegjistrimit));
+      const nrFatures = generateNrFatures(
+        teDhenatBiznesit.shkurtesaEmritBiznesit,
+        nrRendorFatures,
+        new Date(dataRegjistrimit),
+        dokumentiZgjedhur.value
+      );
       const record = {
         id: makeId("inv"),
         nrFatures,
         nrRendorFatures,
+        llojiDokumentit: dokumentiZgjedhur.value,
         dataRegjistrimit: new Date(dataRegjistrimit).toISOString(),
         pershkrimShtese,
-        transporti: parseFloat(transporti) || 0,
+        transporti: parseFloat(transportiSigned) || 0,
         klienti,
         items: validItems.map((it) => ({
           emriProduktit: it.emriProduktit,
@@ -159,6 +191,22 @@ function KrijoFaturen() {
         <h1 className="titulliPerditeso">Faturë e Re</h1>
 
         <Form onSubmit={handleSave}>
+          <Row className="g-3 mb-4">
+            <Col md={4}>
+              <Form.Label>Lloji i Dokumentit</Form.Label>
+              <Select
+                styles={darkSelectStyles}
+                classNamePrefix="react-select"
+                options={DOCUMENT_TYPES}
+                value={dokumentiZgjedhur}
+                onChange={(opt) => setLlojiDokumentit(opt.value)}
+              />
+              {dokumentiZgjedhur.negateAmounts && (
+                <div className="text-muted small mt-1">Shumat do të shfaqen si negative (kthim/kredit).</div>
+              )}
+            </Col>
+          </Row>
+
           <h5 className="mt-2 mb-3">Të Dhënat e Klientit</h5>
           <Row className="g-3 mb-4">
             <Col md={4}>
@@ -173,9 +221,15 @@ function KrijoFaturen() {
             </Col>
             <Col md={4}>
               <Form.Label>
-                Emri i Klientit <span className="text-danger">*</span>
+                Emri i Klientit / Firmës <span className="text-danger">*</span>
               </Form.Label>
-              <Form.Control name="emriBiznesit" value={klienti.emriBiznesit} onChange={onKlientiChange} required />
+              <Form.Control
+                name="emriBiznesit"
+                value={klienti.emriBiznesit}
+                onChange={onKlientiChange}
+                placeholder="Person fizik ose emri i biznesit"
+                required
+              />
             </Col>
             <Col md={4}>
               <Form.Label>Adresa</Form.Label>
@@ -216,7 +270,7 @@ function KrijoFaturen() {
               <Plus size={14} className="me-1" /> Shto
             </Button>
             <Button variant="outline-light" onClick={addBlankItem}>
-              <Plus size={14} className="me-1" /> Artikull Ad-hoc
+              <Plus size={14} className="me-1" /> Shto Artikull Manualisht
             </Button>
           </div>
 
@@ -224,10 +278,10 @@ function KrijoFaturen() {
             <thead>
               <tr>
                 <th style={{ minWidth: 180 }}>Emërtimi</th>
-                <th style={{ width: 90 }}>Njm</th>
+                <th style={{ width: 130 }}>Njm</th>
                 <th style={{ width: 90 }}>Sasia</th>
                 <th style={{ width: 110 }}>Çmimi €</th>
-                <th style={{ width: 110 }}>TVSH %</th>
+                <th style={{ width: 140 }}>TVSH %</th>
                 <th style={{ width: 90 }}>Rabati %</th>
                 <th></th>
               </tr>
@@ -243,11 +297,14 @@ function KrijoFaturen() {
                       placeholder="Emri i artikullit"
                     />
                   </td>
-                  <td>
-                    <Form.Control
-                      size="sm"
-                      value={it.emriNjesiaMatese}
-                      onChange={(e) => updateItem(it.key, "emriNjesiaMatese", e.target.value)}
+                  <td style={{ minWidth: 130 }}>
+                    <CreatableSelect
+                      styles={darkSelectStyles}
+                      classNamePrefix="react-select"
+                      options={unitOptions}
+                      formatCreateLabel={(input) => `Përdor "${input}"`}
+                      value={it.emriNjesiaMatese ? { value: it.emriNjesiaMatese, label: it.emriNjesiaMatese } : null}
+                      onChange={(opt) => updateItem(it.key, "emriNjesiaMatese", opt?.value || "")}
                     />
                   </td>
                   <td>
@@ -268,12 +325,12 @@ function KrijoFaturen() {
                       onChange={(e) => updateItem(it.key, "qmimiShites", e.target.value)}
                     />
                   </td>
-                  <td style={{ minWidth: 100 }}>
+                  <td style={{ minWidth: 140 }}>
                     <Select
                       styles={darkSelectStyles}
                       classNamePrefix="react-select"
-                      options={TVSH_OPTIONS}
-                      value={TVSH_OPTIONS.find((o) => o.value === it.llojiTVSH)}
+                      options={tvshOptions}
+                      value={tvshOptions.find((o) => o.value === it.llojiTVSH) || null}
                       onChange={(opt) => updateItem(it.key, "llojiTVSH", opt.value)}
                     />
                   </td>
@@ -314,7 +371,7 @@ function KrijoFaturen() {
           <div className="d-flex justify-content-end mb-4">
             <div className="text-end">
               <div className="text-muted small">Totali Pa TVSH: {totals.totaliPaTVSH.toFixed(2)} €</div>
-              <div className="text-muted small">TVSH: {(totals.tvsH8 + totals.tvsH18).toFixed(2)} €</div>
+              <div className="text-muted small">TVSH: {totals.totaliTVSH.toFixed(2)} €</div>
               <div className="fs-4 fw-bold">Çmimi Total: {totals.totaliFinal.toFixed(2)} €</div>
             </div>
           </div>

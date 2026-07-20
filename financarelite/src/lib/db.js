@@ -4,8 +4,10 @@
  * Same hand-rolled wrapper shape as GuestSeat's `db.ts` (openDb/withStore), ported to plain JS.
  */
 
+import { DEFAULT_TVSH_TYPES, DEFAULT_UNITS } from "./options";
+
 const DB_NAME = "financarelite";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export const STORES = {
   businessDetails: "businessDetails",
@@ -14,6 +16,8 @@ export const STORES = {
   products: "products",
   invoices: "invoices",
   currencies: "currencies",
+  tvshTypes: "tvshTypes",
+  units: "units",
 };
 
 const BUSINESS_DETAILS_KEY = "main";
@@ -47,6 +51,16 @@ function openDb() {
       }
       if (!db.objectStoreNames.contains(STORES.currencies)) {
         db.createObjectStore(STORES.currencies, { keyPath: "id" });
+      }
+      // Seeded only at first creation — the business fully owns the list from then on (can
+      // edit, add to, or delete every default row without it coming back on next load).
+      if (!db.objectStoreNames.contains(STORES.tvshTypes)) {
+        const store = db.createObjectStore(STORES.tvshTypes, { keyPath: "id" });
+        DEFAULT_TVSH_TYPES.forEach((t) => store.add(t));
+      }
+      if (!db.objectStoreNames.contains(STORES.units)) {
+        const store = db.createObjectStore(STORES.units, { keyPath: "id" });
+        DEFAULT_UNITS.forEach((u) => store.add(u));
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -111,13 +125,15 @@ export function putBusinessDetails(record) {
 // ---- whole-database export / import (JSON backup) ----
 
 export async function exportAllData() {
-  const [businessDetails, banks, clients, products, invoices, currencies] = await Promise.all([
+  const [businessDetails, banks, clients, products, invoices, currencies, tvshTypes, units] = await Promise.all([
     getBusinessDetails(),
     getAll(STORES.banks),
     getAll(STORES.clients),
     getAll(STORES.products),
     getAll(STORES.invoices),
     getAll(STORES.currencies),
+    getAll(STORES.tvshTypes),
+    getAll(STORES.units),
   ]);
   return {
     app: "FinanCareLite",
@@ -129,6 +145,8 @@ export async function exportAllData() {
     products,
     invoices,
     currencies,
+    tvshTypes,
+    units,
   };
 }
 
@@ -142,6 +160,8 @@ export async function importAllData(data) {
     clearStore(STORES.products),
     clearStore(STORES.invoices),
     clearStore(STORES.currencies),
+    clearStore(STORES.tvshTypes),
+    clearStore(STORES.units),
   ]);
   if (data.businessDetails) await putBusinessDetails(data.businessDetails);
   await Promise.all([
@@ -150,5 +170,7 @@ export async function importAllData(data) {
     ...(data.products ?? []).map((p) => put(STORES.products, p)),
     ...(data.invoices ?? []).map((i) => put(STORES.invoices, i)),
     ...(data.currencies ?? []).map((c) => put(STORES.currencies, c)),
+    ...(data.tvshTypes ?? []).map((t) => put(STORES.tvshTypes, t)),
+    ...(data.units ?? []).map((u) => put(STORES.units, u)),
   ]);
 }

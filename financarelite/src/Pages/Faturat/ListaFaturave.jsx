@@ -5,12 +5,15 @@ import PageTitle from "../../Components/PageTitle";
 import Tabela from "../../Components/Tabela/Tabela";
 import { getAll, remove, STORES } from "../../lib/db";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
+import { DOCUMENT_TYPES } from "../../lib/options";
 
 function toRow(inv) {
   const totals = calcInvoiceTotals(inv.items, inv.transporti);
+  const dokumenti = DOCUMENT_TYPES.find((d) => d.value === inv.llojiDokumentit) || DOCUMENT_TYPES[0];
   return {
     ID: inv.id,
     "Nr. Faturës": inv.nrFatures,
+    Lloji: dokumenti.label,
     Klienti: inv.klienti?.emriBiznesit || "-",
     Data: inv.dataRegjistrimit,
     "Totali €": totals.totaliFinal.toFixed(2),

@@ -68,7 +68,6 @@ body {
 .containerDashboardP {
   background: transparent !important;
   padding: 1.5rem !important;
-  min-height: 100vh;
 }
 
 .main-content {

@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Building2, Users, Package, FileText, DatabaseBackup, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Package, FileText, ClipboardList, Settings, DatabaseBackup, Sun, Moon } from "lucide-react";
 import { useTheme } from "../Context/ThemeContext";
 import "./NavBar.css";
 
@@ -9,6 +9,8 @@ const LINKS = [
   { to: "/klientet", label: "Klientët", icon: Users },
   { to: "/produktet", label: "Produktet", icon: Package },
   { to: "/faturat", label: "Faturat", icon: FileText },
+  { to: "/kartela-analitike", label: "Kartela Analitike", icon: ClipboardList },
+  { to: "/cilesimet", label: "Cilësimet", icon: Settings },
   { to: "/te-dhena", label: "Eksporto / Importo", icon: DatabaseBackup },
 ];
 

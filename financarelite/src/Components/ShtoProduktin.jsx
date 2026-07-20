@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import { Camera } from "lucide-react";
 import { put, makeId, STORES } from "../lib/db";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
-import { TVSH_OPTIONS } from "../lib/options";
+import { useTvshTypes, useUnits } from "../lib/useConfigLists";
 import BarcodeScannerModal from "./BarcodeScannerModal";
 
 const BLANK = {
@@ -20,10 +21,18 @@ const BLANK = {
 function ShtoProduktin({ show, onHide, onSaved, initial }) {
   const [produkti, setProdukti] = useState(BLANK);
   const [showScanner, setShowScanner] = useState(false);
+  const tvshTypes = useTvshTypes();
+  const units = useUnits();
 
   useEffect(() => {
     if (show) setProdukti(initial || BLANK);
   }, [show, initial]);
+
+  const tvshOptions = useMemo(
+    () => tvshTypes.map((t) => ({ value: String(t.perqindja), label: `${t.emri} (${t.perqindja}%)` })),
+    [tvshTypes]
+  );
+  const unitOptions = useMemo(() => units.map((u) => ({ value: u.emri, label: u.emri })), [units]);
 
   const onChange = (e) => setProdukti({ ...produkti, [e.target.name]: e.target.value });
 
@@ -41,7 +50,7 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
   };
 
   return (
-    <Modal size="lg" show={show} onHide={onHide}>
+    <Modal size="lg" show={show} onHide={onHide} className="sp-modal">
       <Modal.Header closeButton>
         <Modal.Title>{initial ? "Ndrysho Produktin" : "Shto Produkt të Ri"}</Modal.Title>
       </Modal.Header>
@@ -75,15 +84,23 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
 
             <Col md={4}>
               <Form.Label>Njësia Matëse</Form.Label>
-              <Form.Control name="emriNjesiaMatese" value={produkti.emriNjesiaMatese} onChange={onChange} placeholder="copë, kg, orë..." />
+              <CreatableSelect
+                styles={darkSelectStyles}
+                classNamePrefix="react-select"
+                options={unitOptions}
+                placeholder="copë, kg, orë..."
+                formatCreateLabel={(input) => `Përdor "${input}"`}
+                value={produkti.emriNjesiaMatese ? { value: produkti.emriNjesiaMatese, label: produkti.emriNjesiaMatese } : null}
+                onChange={(opt) => setProdukti({ ...produkti, emriNjesiaMatese: opt?.value || "" })}
+              />
             </Col>
             <Col md={4}>
               <Form.Label>TVSH %</Form.Label>
               <Select
                 styles={darkSelectStyles}
                 classNamePrefix="react-select"
-                options={TVSH_OPTIONS}
-                value={TVSH_OPTIONS.find((o) => o.value === produkti.llojiTVSH)}
+                options={tvshOptions}
+                value={tvshOptions.find((o) => o.value === produkti.llojiTVSH) || null}
                 onChange={(opt) => setProdukti({ ...produkti, llojiTVSH: opt.value })}
               />
             </Col>

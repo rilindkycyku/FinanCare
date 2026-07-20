@@ -38,7 +38,7 @@ function FooterFatura({ Barkodi, isPDF, data }) {
   const activeCurrencies = (currencies || []).filter((c) => c.code && parseFloat(c.rate) > 0);
 
   const transporti = parseFloat(teDhenatFat?.regjistrimet?.transporti) || 0;
-  const { totaliMeTVSH, totaliPaTVSH, tvsH8, tvsH18, rabati, totaliFinal } = calcInvoiceTotals(produktet, transporti);
+  const { totaliMeTVSH, totaliPaTVSH, tvshBreakdown, rabati, totaliFinal } = calcInvoiceTotals(produktet, transporti);
 
   const activeBanks = (banks || []).filter((b) => b.emriBankes);
 
@@ -110,14 +110,12 @@ function FooterFatura({ Barkodi, isPDF, data }) {
                 <Text style={[styles.cell, styles.boldT, styles.header]}>Totali Pa TVSH</Text>
                 <Text style={styles.cell}>{totaliPaTVSH.toFixed(2)} €</Text>
               </View>
-              <View style={styles.row}>
-                <Text style={[styles.cell, styles.boldT, styles.header]}>TVSH 8%</Text>
-                <Text style={styles.cell}>{tvsH8.toFixed(2)} €</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={[styles.cell, styles.boldT, styles.header]}>TVSH 18%</Text>
-                <Text style={styles.cell}>{tvsH18.toFixed(2)} €</Text>
-              </View>
+              {tvshBreakdown.map(({ rate, value }) => (
+                <View style={styles.row} key={rate}>
+                  <Text style={[styles.cell, styles.boldT, styles.header]}>TVSH {rate}%</Text>
+                  <Text style={styles.cell}>{value.toFixed(2)} €</Text>
+                </View>
+              ))}
               {transporti > 0 && (
                 <View style={styles.row}>
                   <Text style={[styles.cell, styles.boldT, styles.header]}>Transporti</Text>
@@ -188,14 +186,12 @@ function FooterFatura({ Barkodi, isPDF, data }) {
             <strong>Totali Pa TVSH: </strong>
             {totaliPaTVSH.toFixed(2)} €
           </p>
-          <p>
-            <strong>TVSH 8%: </strong>
-            {tvsH8.toFixed(2)} €
-          </p>
-          <p>
-            <strong>TVSH 18%: </strong>
-            {tvsH18.toFixed(2)} €
-          </p>
+          {tvshBreakdown.map(({ rate, value }) => (
+            <p key={rate}>
+              <strong>TVSH {rate}%: </strong>
+              {value.toFixed(2)} €
+            </p>
+          ))}
           {transporti > 0 && (
             <p>
               <strong>Transporti: </strong>
