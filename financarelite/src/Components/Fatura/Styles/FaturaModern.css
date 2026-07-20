@@ -1,0 +1,144 @@
+/* Modern Invoice View Styling */
+:root {
+  --invoice-bg: #fff;
+  --invoice-border: #e2e8f0;
+  --invoice-text: #1e293b;
+  --invoice-muted: #64748b;
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+}
+
+.invoice-viewer-container {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.invoice-paper {
+  width: 210mm; /* A4 Width */
+  margin: 0 auto;
+  background: white !important;
+  color: var(--invoice-text) !important;
+  padding: 2.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-radius: 12px;
+  position: relative;
+  border: 1px solid var(--invoice-border);
+}
+
+/* Force dark text for all elements inside the invoice paper to prevent dark-mode invisible text */
+.invoice-paper * {
+  color: var(--invoice-text) !important;
+}
+
+.invoice-paper .text-muted,
+.invoice-paper .invoice-hr {
+  color: var(--invoice-muted) !important;
+}
+
+.invoice-toolbar {
+  position: sticky;
+  top: 4.5rem; /* Keeps it under the FinanCareLite navbar */
+  z-index: 90;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  width: 95%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.invoice-title-main {
+  font-weight: 850;
+  color: #1e293b;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.invoice-page-hint {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 1.5rem;
+  white-space: nowrap;
+}
+
+/* Premium Buttons for Toolbar */
+.btn-invoice-action {
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 0.6rem 1.25rem !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease !important;
+  white-space: nowrap;
+}
+
+.btn-invoice-save {
+  background: var(--primary-gradient) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+.btn-invoice-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4) !important;
+}
+
+.btn-invoice-close {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+.btn-invoice-close:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+/* Fatura Content Styling */
+.invoice-hr {
+  border: 0;
+  border-top: 1px solid #edf2f7;
+  margin: 1.5rem 0;
+}
+
+@media print {
+  .invoice-viewer-container {
+    background: white;
+    padding: 0;
+  }
+  .invoice-toolbar {
+    display: none;
+  }
+  .invoice-paper {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 210mm) {
+  .invoice-paper, .invoice-toolbar {
+    width: 95%;
+  }
+}
