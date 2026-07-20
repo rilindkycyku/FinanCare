@@ -1,0 +1,63 @@
+.fclite-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem 2rem;
+  background: var(--sp-surface, #0f1827);
+  border-bottom: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
+  flex-wrap: wrap;
+}
+
+.fclite-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--sp-text, #f1f5f9);
+  white-space: nowrap;
+}
+
+.fclite-navbar-brand img {
+  height: 32px;
+  width: auto;
+}
+
+.fclite-navbar-brand strong {
+  color: var(--sp-emerald, #10b981);
+}
+
+.fclite-navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.fclite-navlink {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sp-text-muted, #94a3b8);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.fclite-navlink:hover {
+  background: var(--sp-surface-2, #162033);
+  color: var(--sp-text, #f1f5f9);
+}
+
+.fclite-navlink.active {
+  background: var(--sp-emerald-glow, rgba(16, 185, 129, 0.15));
+  color: var(--sp-emerald, #10b981);
+}

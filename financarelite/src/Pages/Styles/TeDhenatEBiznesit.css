@@ -1,0 +1,11 @@
+.TeDhenatContainer{
+  width: 80%;
+  margin: 0 auto;
+}
+
+.logo img{
+  width: 100%;
+  aspect-ratio: 3/2;
+  object-fit: contain;
+  margin-bottom: 0.5em;
+}
