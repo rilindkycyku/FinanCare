@@ -15,20 +15,11 @@
 .fclite-navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--sp-text, #f1f5f9);
-  white-space: nowrap;
 }
 
-.fclite-navbar-brand img {
-  height: 32px;
+.fclite-brand-logo {
+  height: 34px;
   width: auto;
-}
-
-.fclite-navbar-brand strong {
-  color: var(--sp-emerald, #10b981);
 }
 
 .fclite-navbar-links {

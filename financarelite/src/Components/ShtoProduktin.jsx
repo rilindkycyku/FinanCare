@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import Select from "react-select";
 import { Camera } from "lucide-react";
 import { put, makeId, STORES } from "../lib/db";
+import { darkSelectStyles } from "../lib/darkSelectStyles";
+import { TVSH_OPTIONS } from "../lib/options";
 import BarcodeScannerModal from "./BarcodeScannerModal";
 
 const BLANK = {
@@ -76,11 +79,13 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
             </Col>
             <Col md={4}>
               <Form.Label>TVSH %</Form.Label>
-              <Form.Select name="llojiTVSH" value={produkti.llojiTVSH} onChange={onChange}>
-                <option value="0">0%</option>
-                <option value="8">8%</option>
-                <option value="18">18%</option>
-              </Form.Select>
+              <Select
+                styles={darkSelectStyles}
+                classNamePrefix="react-select"
+                options={TVSH_OPTIONS}
+                value={TVSH_OPTIONS.find((o) => o.value === produkti.llojiTVSH)}
+                onChange={(opt) => setProdukti({ ...produkti, llojiTVSH: opt.value })}
+              />
             </Col>
             <Col md={4}>
               <Form.Label>

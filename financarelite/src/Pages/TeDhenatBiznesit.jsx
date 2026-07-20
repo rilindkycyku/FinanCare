@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { Form, Row, Col, Button, Table } from "react-bootstrap";
+import Select from "react-select";
 import { Trash2, Plus } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import { getBusinessDetails, putBusinessDetails, getAll, put, remove, makeId, STORES } from "../lib/db";
+import { darkSelectStyles } from "../lib/darkSelectStyles";
+import { CURRENCY_OPTIONS } from "../lib/options";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 import "./Styles/TeDhenatEBiznesit.css";
@@ -183,16 +186,14 @@ function TeDhenatBiznesit() {
                   onChange={(e) => setNewBank({ ...newBank, numriLlogaris: e.target.value })}
                 />
               </td>
-              <td>
-                <Form.Select
-                  size="sm"
-                  value={newBank.valuta}
-                  onChange={(e) => setNewBank({ ...newBank, valuta: e.target.value })}
-                >
-                  <option value="EUR">EUR</option>
-                  <option value="USD">USD</option>
-                  <option value="CHF">CHF</option>
-                </Form.Select>
+              <td style={{ minWidth: 130 }}>
+                <Select
+                  styles={darkSelectStyles}
+                  classNamePrefix="react-select"
+                  options={CURRENCY_OPTIONS}
+                  value={CURRENCY_OPTIONS.find((o) => o.value === newBank.valuta)}
+                  onChange={(opt) => setNewBank({ ...newBank, valuta: opt.value })}
+                />
               </td>
               <td>
                 <Button variant="outline-success" size="sm" onClick={addBank}>

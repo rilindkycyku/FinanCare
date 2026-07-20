@@ -18,10 +18,7 @@ function NavBar() {
   return (
     <nav className="fclite-navbar">
       <div className="fclite-navbar-brand">
-        <img src="/img/web/LogoLight.png" alt="FinanCareLite" />
-        <span>
-          FinanCare<strong>Lite</strong>
-        </span>
+        <img src={theme === "light" ? "/img/web/LogoBlack.svg" : "/img/web/LogoWhite.svg"} alt="FinanCare" className="fclite-brand-logo" />
       </div>
       <div className="fclite-navbar-links">
         {LINKS.map((link) => {

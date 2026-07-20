@@ -12,6 +12,9 @@
   "dependencies": {
     "@react-pdf/renderer": "^4.3.0",
     "bootstrap": "^5.3.2",
+    "date-fns": "^3.6.0",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "html5-qrcode": "^2.3.8",
     "jsbarcode": "^3.11.6",
     "lucide-react": "^0.562.0",
@@ -20,7 +23,8 @@
     "react-barcode": "^1.5.3",
     "react-bootstrap": "^2.7.2",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.9.0"
+    "react-router-dom": "^6.9.0",
+    "react-select": "^5.8.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

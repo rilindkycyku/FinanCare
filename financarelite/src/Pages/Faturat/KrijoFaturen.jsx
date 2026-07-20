@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Row, Col, Button, Table } from "react-bootstrap";
+import Select from "react-select";
 import { Plus, Trash2 } from "lucide-react";
 import NavBar from "../../Components/NavBar";
 import PageTitle from "../../Components/PageTitle";
 import { getAll, getBusinessDetails, put, makeId, STORES } from "../../lib/db";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 import { generateNrFatures } from "../../lib/invoiceView";
+import { darkSelectStyles } from "../../lib/darkSelectStyles";
+import { TVSH_OPTIONS } from "../../lib/options";
 
 const BLANK_CLIENT = { emriBiznesit: "", nui: "", nrf: "", tvsh: "", adresa: "", nrKontaktit: "", email: "" };
 
@@ -48,7 +51,8 @@ function KrijoFaturen() {
     );
   }, []);
 
-  const onSelectClient = (id) => {
+  const onSelectClient = (opt) => {
+    const id = opt?.value || "";
     setSelectedClientId(id);
     const c = clients.find((c) => c.id === id);
     if (c) {
@@ -95,6 +99,15 @@ function KrijoFaturen() {
   };
 
   const removeItem = (key) => setItems((prev) => prev.filter((it) => it.key !== key));
+
+  const clientOptions = useMemo(
+    () => [{ value: "", label: "— klient i ri / ad-hoc —" }, ...clients.map((c) => ({ value: c.id, label: c.emriBiznesit }))],
+    [clients]
+  );
+  const productOptions = useMemo(
+    () => products.map((p) => ({ value: p.id, label: `${p.emriProduktit} (${parseFloat(p.qmimiShites || 0).toFixed(2)} €)` })),
+    [products]
+  );
 
   const validItems = useMemo(() => items.filter((it) => it.emriProduktit && parseFloat(it.qmimiShites) > 0), [items]);
   const totals = useMemo(() => calcInvoiceTotals(validItems, transporti), [validItems, transporti]);
@@ -150,14 +163,13 @@ function KrijoFaturen() {
           <Row className="g-3 mb-4">
             <Col md={4}>
               <Form.Label>Zgjidh nga Klientët (opsionale)</Form.Label>
-              <Form.Select value={selectedClientId} onChange={(e) => onSelectClient(e.target.value)}>
-                <option value="">— klient i ri / ad-hoc —</option>
-                {clients.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.emriBiznesit}
-                  </option>
-                ))}
-              </Form.Select>
+              <Select
+                styles={darkSelectStyles}
+                classNamePrefix="react-select"
+                options={clientOptions}
+                value={clientOptions.find((o) => o.value === selectedClientId)}
+                onChange={onSelectClient}
+              />
             </Col>
             <Col md={4}>
               <Form.Label>
@@ -189,16 +201,16 @@ function KrijoFaturen() {
 
           <h5 className="mb-3">Artikujt</h5>
           <div className="d-flex gap-2 align-items-end mb-3 flex-wrap">
-            <div>
+            <div style={{ minWidth: 260 }}>
               <Form.Label>Shto nga Produktet</Form.Label>
-              <Form.Select value={productToAdd} onChange={(e) => setProductToAdd(e.target.value)} style={{ minWidth: 220 }}>
-                <option value="">— zgjidh produkt —</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.emriProduktit} ({parseFloat(p.qmimiShites || 0).toFixed(2)} €)
-                  </option>
-                ))}
-              </Form.Select>
+              <Select
+                styles={darkSelectStyles}
+                classNamePrefix="react-select"
+                options={productOptions}
+                placeholder="— zgjidh produkt —"
+                value={productOptions.find((o) => o.value === productToAdd) || null}
+                onChange={(opt) => setProductToAdd(opt?.value || "")}
+              />
             </div>
             <Button variant="outline-light" onClick={addProductItem} disabled={!productToAdd}>
               <Plus size={14} className="me-1" /> Shto
@@ -215,7 +227,7 @@ function KrijoFaturen() {
                 <th style={{ width: 90 }}>Njm</th>
                 <th style={{ width: 90 }}>Sasia</th>
                 <th style={{ width: 110 }}>Çmimi €</th>
-                <th style={{ width: 90 }}>TVSH %</th>
+                <th style={{ width: 110 }}>TVSH %</th>
                 <th style={{ width: 90 }}>Rabati %</th>
                 <th></th>
               </tr>
@@ -256,12 +268,14 @@ function KrijoFaturen() {
                       onChange={(e) => updateItem(it.key, "qmimiShites", e.target.value)}
                     />
                   </td>
-                  <td>
-                    <Form.Select size="sm" value={it.llojiTVSH} onChange={(e) => updateItem(it.key, "llojiTVSH", e.target.value)}>
-                      <option value="0">0%</option>
-                      <option value="8">8%</option>
-                      <option value="18">18%</option>
-                    </Form.Select>
+                  <td style={{ minWidth: 100 }}>
+                    <Select
+                      styles={darkSelectStyles}
+                      classNamePrefix="react-select"
+                      options={TVSH_OPTIONS}
+                      value={TVSH_OPTIONS.find((o) => o.value === it.llojiTVSH)}
+                      onChange={(opt) => updateItem(it.key, "llojiTVSH", opt.value)}
+                    />
                   </td>
                   <td>
                     <Form.Control
