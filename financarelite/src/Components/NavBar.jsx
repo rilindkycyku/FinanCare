@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Building2, Users, Package, FileText, DatabaseBackup } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Package, FileText, DatabaseBackup, Sun, Moon } from "lucide-react";
+import { useTheme } from "../Context/ThemeContext";
 import "./NavBar.css";
 
 const LINKS = [
@@ -12,6 +13,8 @@ const LINKS = [
 ];
 
 function NavBar() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <nav className="fclite-navbar">
       <div className="fclite-navbar-brand">
@@ -30,6 +33,15 @@ function NavBar() {
             </NavLink>
           );
         })}
+        <button
+          type="button"
+          className="fclite-theme-toggle"
+          onClick={toggleTheme}
+          title={theme === "dark" ? "Kalo në temën e bardhë" : "Kalo në temën e errët"}
+          aria-label="Ndrysho temën"
+        >
+          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
       </div>
     </nav>
   );
