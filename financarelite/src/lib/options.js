@@ -15,11 +15,14 @@ export const DEFAULT_TVSH_TYPES = [
 
 // FinanCareLite has no stock/warehouse ledger, so document "types" are a label-only
 // distinction — they change the title shown on the invoice, its numbering prefix, and (for a
-// Fletëkthim) flip the line-item amounts negative. No stock or debit/credit effects.
-export const DOCUMENT_TYPES = [
-  { value: "FAT", label: "Faturë Shitëse", titleLabel: "FATURË SHITËSE", negateAmounts: false },
-  { value: "POR", label: "Porosi", titleLabel: "POROSI", negateAmounts: false },
-  { value: "KTHIM", label: "Fletëkthim (Kredit Notë)", titleLabel: "FLETËKTHIM", negateAmounts: true },
+// Fletëkthim, or any custom type marked as such) flip the line-item amounts negative. No stock
+// or debit/credit effects. Seeded once into IndexedDB (see db.js) same as TVSH types/units —
+// after that the business owns the list and can add its own custom document types from the
+// "Llojet e Faturave" settings section (see LlojetEDokumentit.jsx).
+export const DEFAULT_DOCUMENT_TYPES = [
+  { id: "doctype_default_fat", value: "FAT", label: "Faturë Shitëse", titleLabel: "FATURË SHITËSE", negateAmounts: false },
+  { id: "doctype_default_por", value: "POR", label: "Porosi", titleLabel: "POROSI", negateAmounts: false },
+  { id: "doctype_default_kthim", value: "KTHIM", label: "Fletëkthim (Kredit Notë)", titleLabel: "FLETËKTHIM", negateAmounts: true },
 ];
 
 export const DEFAULT_UNITS = [

@@ -11,15 +11,16 @@ Font.register({
 });
 
 const styles = StyleSheet.create({
-  footer: { flexDirection: "row", justifyContent: "space-between", marginTop: 10, fontFamily: "Quicksand" },
-  column: { width: "48%", fontSize: 9 },
+  footer: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginTop: 10, fontFamily: "Quicksand" },
+  column: { width: "40%", fontSize: 9 },
   text: { fontSize: 9 },
   bold: { fontWeight: "bold", marginTop: 6 },
   hr: { borderBottomWidth: 1, borderColor: "black", marginVertical: 5 },
-  signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
+  signatures: { flexDirection: "row", justifyContent: "space-around", marginTop: 10 },
   signature: { textAlign: "center", fontSize: 7, marginTop: 20 },
-  qrBlock: { textAlign: "center", fontSize: 6, alignItems: "center" },
-  qrImage: { width: 46, height: 46, marginBottom: 3 },
+  qrSection: { width: "16%", alignItems: "center", fontSize: 6 },
+  qrBlock: { textAlign: "center", fontSize: 7, alignItems: "center" },
+  qrImage: { width: 85, height: 85, marginBottom: 4 },
   bankTable: { width: "100%", borderStyle: "solid", borderWidth: 1, borderColor: "#ccc", marginTop: 5 },
   bankRow: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" },
   bankHeader: { backgroundColor: "#f0f0f0" },
@@ -96,6 +97,12 @@ function FooterFatura({ Barkodi, isPDF, data }) {
             </Text>
             {bankTable(true)}
           </View>
+          {qrCodeDataUrl && (
+            <View style={styles.qrSection}>
+              <Image src={qrCodeDataUrl} style={styles.qrImage} />
+              <Text>Skano për ta hapur online</Text>
+            </View>
+          )}
           <View style={styles.column}>
             <View style={styles.table}>
               <View style={styles.row}>
@@ -145,12 +152,6 @@ function FooterFatura({ Barkodi, isPDF, data }) {
             <Text>(Personi Përgjegjës)</Text>
             <Text style={styles.bold}>© 2023 - {new Date().getFullYear()} FinanCareLite</Text>
           </View>
-          {qrCodeDataUrl && (
-            <View style={styles.qrBlock}>
-              <Image src={qrCodeDataUrl} style={styles.qrImage} />
-              <Text>Skano për ta hapur online</Text>
-            </View>
-          )}
           <View style={styles.signature}>
             <Text>_________________________________________________</Text>
             <Text>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</Text>
@@ -163,8 +164,8 @@ function FooterFatura({ Barkodi, isPDF, data }) {
 
   return (
     <div style={{ marginTop: "auto" }}>
-      <div className="header">
-        <div className="teDhenatKompanis">
+      <div className="header" style={{ alignItems: "flex-start" }}>
+        <div className="teDhenatKompanis" style={qrCodeDataUrl ? { width: "40%" } : undefined}>
           <p>
             Gjatë pagesës ju lutem të shkruani numrin e Faturës: <strong>{Barkodi}</strong>
           </p>
@@ -173,7 +174,13 @@ function FooterFatura({ Barkodi, isPDF, data }) {
           </p>
           {bankTable(false)}
         </div>
-        <div className="data">
+        {qrCodeDataUrl && (
+          <div style={{ width: "16%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <img src={qrCodeDataUrl} alt="QR e faturës" style={{ width: 90, height: 90, marginBottom: 4 }} />
+            <span style={{ fontSize: "7pt", fontWeight: "bold", textAlign: "center" }}>Skano për ta hapur online</span>
+          </div>
+        )}
+        <div className="data" style={qrCodeDataUrl ? { width: "40%" } : undefined}>
           <p>
             <strong>Nëntotali: </strong>
             {(totaliMeTVSH + rabati).toFixed(2)} €
@@ -218,12 +225,6 @@ function FooterFatura({ Barkodi, isPDF, data }) {
           <br />
           <strong>© 2023 - {new Date().getFullYear()} FinanCareLite</strong>
         </div>
-        {qrCodeDataUrl && (
-          <div className="nenshkrimi">
-            <img src={qrCodeDataUrl} alt="QR e faturës" style={{ width: 64, height: 64, marginBottom: 4 }} />
-            <span>Skano për ta hapur online</span>
-          </div>
-        )}
         <div className="nenshkrimi">
           <span>_________________________________________________</span>
           <span>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</span>

@@ -65,6 +65,8 @@ function POS(props) {
   const [vendosKartelenBleresit, setVendosKartelenBleresit] = useState(false);
   const [kartelaBleresit, setKartelaBleresit] = useState(null);
   const [teDhenatKartelaBleresit, setTeDhenatKartelaBleresit] = useState(null);
+  const [emriBleresit, setEmriBleresit] = useState("");
+  const [duke_ruajturKlientin, setDukeRuajturKlientin] = useState(false);
 
   const [vendosKartelenFshirjeProduktit, setVendosKartelenFshirjeProduktit] =
     useState(false);
@@ -733,6 +735,7 @@ function POS(props) {
     setTeDhenatKartelaBleresit(null);
     setIDProduktiFunditShtuar(null);
     setKartelaBleresit(null);
+    setEmriBleresit("");
     setRabati2(0);
     setRabati1(0);
 
@@ -920,6 +923,83 @@ function POS(props) {
     }
   }
 
+  // Saves a walk-in customer typed by name (no loyalty card) as a real
+  // Partneri record, then ties the current sale to it, so every POS sale
+  // ends up attributable to a stored customer for analytics.
+  async function RuajKlientinERi() {
+    const emri = (emriBleresit || "").trim();
+    if (!emri) {
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Ju lutem shkruani emrin e klientit!");
+      setShfaqMesazhin(true);
+      return;
+    }
+    setDukeRuajturKlientin(true);
+    try {
+      const fjalet = emri.split(/\s+/);
+      const shkurtesa = (
+        (fjalet[0]?.charAt(0) || "K") + (fjalet[1]?.charAt(0) || "L")
+      ).toUpperCase();
+
+      const partneriResponse = await axios.post(
+        `${API_BASE_URL}/api/Partneri/shtoPartnerin`,
+        {
+          emriBiznesit: emri,
+          shkurtesaPartnerit: shkurtesa,
+          nui: "0",
+          nrf: "0",
+          tvsh: "0",
+          email: null,
+          adresa: null,
+          nrKontaktit: null,
+          llojiPartnerit: "B",
+        },
+        authentikimi,
+      );
+      const idPartneriIRi = partneriResponse.data.idPartneri;
+
+      const r = await axios.get(
+        `${API_BASE_URL}/api/Faturat/shfaqRegjistrimetNgaID?id=${selectedInvoice}`,
+        authentikimi,
+      );
+      await axios.put(
+        `${API_BASE_URL}/api/Faturat/perditesoFaturen?idKalulimit=${selectedInvoice}`,
+        {
+          llojiPageses: r.data.regjistrimet.llojiPageses,
+          statusiKalkulimit: r.data.regjistrimet.statusiKalkulimit,
+          idPartneri: idPartneriIRi,
+          dataRegjistrimit: r.data.regjistrimet.dataRegjistrimit,
+          stafiID: r.data.regjistrimet.stafiID,
+          totaliPaTVSH: parseFloat(r.data.regjistrimet.totaliPaTVSH),
+          tvsh: parseFloat(r.data.regjistrimet.tvsh),
+          statusiPageses: r.data.statusiPageses,
+          llojiKalkulimit: r.data.regjistrimet.llojiKalkulimit,
+          nrFatures: r.data.regjistrimet.nrFatures,
+          pershkrimShtese: r.data.regjistrimet.pershkrimShtese,
+          rabati: parseFloat(r.data.rabati),
+          nrRendorFatures: r.data.regjistrimet.nrRendorFatures,
+          idBonusKartela: r.data.regjistrimet.idBonusKartela,
+        },
+        authentikimi,
+      );
+
+      setIDPartneri(idPartneriIRi);
+      setEmriBleresit("");
+      setVendosKartelenBleresit(false);
+      setPerditesoFat(Date.now());
+      setTipiMesazhit("success");
+      setPershkrimiMesazhit("Klienti u ruajt dhe u lidh me këtë faturë!");
+      setShfaqMesazhin(true);
+    } catch (error) {
+      console.error(error);
+      setTipiMesazhit("danger");
+      setPershkrimiMesazhit("Gabim gjatë ruajtjes së klientit të ri!");
+      setShfaqMesazhin(true);
+    } finally {
+      setDukeRuajturKlientin(false);
+    }
+  }
+
   async function VendosKartelenFshirjesProduktit(karta = null, idProd = null) {
     const isAutomated = typeof karta === 'string' && karta.trim() !== '';
     const kodi = isAutomated ? karta : kartelaFshirjes;
@@ -1089,12 +1169,44 @@ function POS(props) {
                   autoFocus
                 />
               </Form.Group>
+
+              <div className="d-flex align-items-center gap-2 my-3">
+                <hr className="flex-grow-1 m-0" />
+                <span className="text-muted small fw-bold">OSE</span>
+                <hr className="flex-grow-1 m-0" />
+              </div>
+
+              <Form.Group>
+                <Form.Label>Emri i Klientit (nëse s'ka kartelë)</Form.Label>
+                <Form.Control
+                  id="emriBleresit"
+                  type="text"
+                  value={emriBleresit}
+                  onChange={(e) => setEmriBleresit(e.target.value)}
+                  placeholder="Shkruani emrin e klientit"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      RuajKlientinERi();
+                    }
+                  }}
+                />
+                <Form.Text className="text-muted">
+                  Do të ruhet si klient i ri dhe do të lidhet me këtë faturë (do të shfaqet në analitikë).
+                </Form.Text>
+              </Form.Group>
             </Modal.Body>
             <Modal.Footer>
               <Button
                 variant="secondary"
                 onClick={() => setVendosKartelenBleresit(false)}>
                 Anulo
+              </Button>
+              <Button
+                variant="primary"
+                onClick={RuajKlientinERi}
+                disabled={duke_ruajturKlientin || !emriBleresit.trim()}>
+                {duke_ruajturKlientin ? "Duke ruajtur..." : "Ruaj Klientin e Ri"}
               </Button>
               <Button variant="warning" onClick={VendosKartelenBleresit}>
                 Vendos Kartelen

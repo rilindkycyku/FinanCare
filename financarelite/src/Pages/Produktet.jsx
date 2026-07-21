@@ -4,6 +4,7 @@ import PageTitle from "../Components/PageTitle";
 import ShtoProduktin from "../Components/ShtoProduktin";
 import Tabela from "../Components/Tabela/Tabela";
 import { getAll, remove, STORES } from "../lib/db";
+import { useDialog } from "../Context/DialogContext";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
@@ -22,6 +23,7 @@ function Produktet() {
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
+  const dialog = useDialog();
 
   const load = () => getAll(STORES.products).then(setProducts);
 
@@ -42,7 +44,7 @@ function Produktet() {
   };
 
   const onDelete = async (id) => {
-    if (!confirm("Ta fshij këtë produkt?")) return;
+    if (!(await dialog.confirm("Ta fshij këtë produkt?", { title: "Fshi Produktin" }))) return;
     await remove(STORES.products, id);
     load();
   };

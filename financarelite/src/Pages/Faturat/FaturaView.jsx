@@ -4,10 +4,11 @@ import NavBar from "../../Components/NavBar";
 import PageTitle from "../../Components/PageTitle";
 import Fatura from "../../Components/Fatura/Fatura";
 import ShareQrModal from "../../Components/ShareQrModal";
-import { getOne, getBusinessDetails, getAll, STORES } from "../../lib/db";
+import { getOne, getBusinessDetails, getAll, put, STORES } from "../../lib/db";
 import { buildFaturaData } from "../../lib/invoiceView";
 import { buildInvoiceShareQr } from "../../lib/invoiceQr";
 import { QrTooLargeError } from "../../lib/qr";
+import { useDialog } from "../../Context/DialogContext";
 
 function FaturaView() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ function FaturaView() {
   const [shareQr, setShareQr] = useState({ status: "loading", link: null, dataUrl: null });
   const [showShare, setShowShare] = useState(false);
   const [loading, setLoading] = useState(true);
+  const dialog = useDialog();
 
   useEffect(() => {
     Promise.all([getOne(STORES.invoices, id), getBusinessDetails(), getAll(STORES.banks), getAll(STORES.currencies)]).then(
@@ -52,6 +54,19 @@ function FaturaView() {
     };
   }, [invoice, teDhenatBiznesit, banks, currencies]);
 
+  const mbyllur = invoice ? invoice.mbyllur !== false : true;
+
+  const onToggleStatus = async () => {
+    if (!invoice) return;
+    const mesazhi = mbyllur
+      ? "Ta hap këtë faturë për redaktim?"
+      : "Ta mbyll këtë faturë? Nuk do të mund ta redaktoni derisa ta hapni sërish.";
+    if (!(await dialog.confirm(mesazhi, { title: "Ndrysho Statusin" }))) return;
+    const updated = { ...invoice, mbyllur: !mbyllur };
+    await put(STORES.invoices, updated);
+    setInvoice(updated);
+  };
+
   return (
     <>
       <PageTitle title="Fatura" />
@@ -69,6 +84,9 @@ function FaturaView() {
             qrCodeDataUrl={shareQr.status === "ready" ? shareQr.dataUrl : undefined}
             onBack={() => navigate("/faturat")}
             onShare={() => setShowShare(true)}
+            mbyllur={mbyllur}
+            onToggleStatus={onToggleStatus}
+            onEdit={!mbyllur ? () => navigate(`/faturat/${id}/edit`) : undefined}
           />
           <ShareQrModal
             show={showShare}

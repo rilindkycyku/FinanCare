@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { Form, Row, Col, Button, Table, Modal } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Form, Row, Col, Button, Table, Modal, Alert } from "react-bootstrap";
 import Select from "react-select";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Info } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import { getBusinessDetails, putBusinessDetails, getAll, put, remove, makeId, STORES } from "../lib/db";
@@ -15,7 +15,8 @@ import "./Styles/TeDhenatEBiznesit.css";
 const BUZ_FIELDS = [
   { name: "emriIBiznesit", label: "Emri i Biznesit", md: 6, required: true },
   { name: "shkurtesaEmritBiznesit", label: "Shkurtesa e Emrit (përdoret në faturë)", md: 6, required: true },
-  { name: "nui", label: "Numri Unik Identifikues (NUI)", md: 4 },
+  { name: "menaxheri", label: "Menaxheri / Personi i Autorizuar", md: 4 },
+  { name: "nui", label: "Numri Unik Identifikues (NUI)", md: 4, required: true },
   { name: "nf", label: "Numri Fiskal (NF)", md: 4 },
   { name: "nrTVSH", label: "Numri TVSH", md: 4 },
   { name: "email", label: "Email", md: 4 },
@@ -44,6 +45,11 @@ function TeDhenatBiznesit() {
   const [showArbkModal, setShowArbkModal] = useState(false);
   const [arbkResults, setArbkResults] = useState([]);
   const [arbkImported, setArbkImported] = useState(false);
+  const [arbkJson, setArbkJson] = useState("");
+  const [arbkError, setArbkError] = useState("");
+  // A ref (not state) so it's readable synchronously the instant the follow-up submit event
+  // fires, regardless of whether React has already re-rendered `edito` to true by then.
+  const suppressNextSubmit = useRef(false);
 
   const loadAll = async () => {
     const [biz, bankList] = await Promise.all([getBusinessDetails(), getAll(STORES.banks)]);
@@ -71,36 +77,44 @@ function TeDhenatBiznesit() {
     setEdito(true);
     setShowArbkModal(false);
     setArbkResults([]);
+    setArbkJson("");
+    setArbkError("");
     setArbkImported(true);
     setTimeout(() => setArbkImported(false), 2500);
+  };
+
+  const handleAutoParse = (payloadStr) => {
+    try {
+      const realList = parseArbkPayload(payloadStr);
+      if (realList.length === 1) {
+        applyArbkData(realList[0]);
+      } else if (realList.length > 1) {
+        setArbkResults(realList);
+        setShowArbkModal(true);
+      }
+    } catch (e) {
+      console.error("Gabim në leximin automatik nga ARBK", e);
+    }
   };
 
   // Bridge contract from FinanCare-ARBK-Extension: listens for a postMessage while the tab is
   // open, and for a one-shot localStorage flag set right before the extension focuses this tab.
   useEffect(() => {
-    const handleAutoParse = (payloadStr) => {
-      try {
-        const realList = parseArbkPayload(payloadStr);
-        if (realList.length === 1) {
-          applyArbkData(realList[0]);
-        } else if (realList.length > 1) {
-          setArbkResults(realList);
-          setShowArbkModal(true);
-        }
-      } catch (e) {
-        console.error("Gabim në leximin automatik nga ARBK", e);
-      }
-    };
-
     const handleMessage = (event) => {
       if (event.data && event.data.type === "ARBK_BRIDGE_DATA" && event.data.payload) {
+        setArbkJson(event.data.payload);
         handleAutoParse(event.data.payload);
+        // Without this, the flag below survives and gets wrongly replayed on whichever
+        // FinanCare page/component mounts next (e.g. pre-filling business details with
+        // a client's ARBK data), since only the mount-time check used to clear it.
+        localStorage.removeItem("arbk_bridge_data");
       }
     };
     window.addEventListener("message", handleMessage);
 
     const savedData = localStorage.getItem("arbk_bridge_data");
     if (savedData) {
+      setArbkJson(savedData);
       handleAutoParse(savedData);
       localStorage.removeItem("arbk_bridge_data");
     }
@@ -108,6 +122,25 @@ function TeDhenatBiznesit() {
     return () => window.removeEventListener("message", handleMessage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Manual fallback for when the browser extension isn't installed/enabled: paste the ARBK
+  // page's own `localStorage.getItem("state")` value straight into the textarea below.
+  const handleParseJSON = () => {
+    try {
+      if (!arbkJson) return;
+      const realList = parseArbkPayload(arbkJson);
+      if (realList.length === 0) {
+        throw new Error("Nuk u gjet asnjë biznes aktiv i regjistruar në këtë JSON.");
+      } else if (realList.length === 1) {
+        applyArbkData(realList[0]);
+      } else {
+        setArbkResults(realList);
+      }
+      setArbkError("");
+    } catch (err) {
+      setArbkError("Gabim gjatë leximit: " + err.message);
+    }
+  };
 
   const onChange = (e) => setFormValue({ ...formValue, [e.target.name]: e.target.value });
 
@@ -120,6 +153,13 @@ function TeDhenatBiznesit() {
 
   const handleRuaj = async (e) => {
     e.preventDefault();
+    // Defensive: this form has been seen to receive a spurious native submit event immediately
+    // following the "Ndrysho të dhënat" button's click even with type="button" set, which would
+    // otherwise silently save + immediately re-disable the fields the moment edit mode turns on.
+    if (suppressNextSubmit.current) {
+      suppressNextSubmit.current = false;
+      return;
+    }
     await putBusinessDetails(formValue);
     setEdito(false);
     setSaved(true);
@@ -144,7 +184,7 @@ function TeDhenatBiznesit() {
       <PageTitle title="Të Dhënat e Biznesit" />
       <NavBar />
       <div className="containerDashboardP">
-        <h1 className="titulliPerditeso">Të Dhënat e Biznesit</h1>
+        <h1 className="titulliPerditeso mb-0">Të Dhënat e Biznesit</h1>
         <p className="text-muted mb-4">
           Këto të dhëna shfaqen në krye të çdo fature (emri, NUI, NF, TVSH, adresa, kontakti, logoja).
         </p>
@@ -157,7 +197,10 @@ function TeDhenatBiznesit() {
               {BUZ_FIELDS.map((f) => (
                 <Col md={f.md} key={f.name}>
                   <Form.Group>
-                    <Form.Label>{f.label}</Form.Label>
+                    <Form.Label>
+                      {f.label}
+                      {f.required && <span className="text-danger ms-1">*</span>}
+                    </Form.Label>
                     <Form.Control
                       name={f.name}
                       value={formValue[f.name] ?? ""}
@@ -168,6 +211,13 @@ function TeDhenatBiznesit() {
                   </Form.Group>
                 </Col>
               ))}
+              {edito && (
+                <Col xs={12}>
+                  <p className="text-muted small mb-0">
+                    <span className="text-danger">*</span> Fusha të detyrueshme
+                  </p>
+                </Col>
+              )}
 
               <Col md={4} className="d-flex flex-column align-items-center justify-content-center">
                 {formValue.logo || edito ? (
@@ -185,7 +235,16 @@ function TeDhenatBiznesit() {
 
               <Col xs={12}>
                 {!edito ? (
-                  <Button className="btn-primary" onClick={() => setEdito(true)}>
+                  <Button
+                    type="button"
+                    className="btn-primary"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      suppressNextSubmit.current = true;
+                      setEdito(true);
+                    }}
+                  >
                     Ndrysho të dhënat
                   </Button>
                 ) : (
@@ -270,35 +329,79 @@ function TeDhenatBiznesit() {
         onHide={() => {
           setShowArbkModal(false);
           setArbkResults([]);
+          setArbkJson("");
+          setArbkError("");
         }}
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title as="h6">Zgjidhni Biznesin nga ARBK</Modal.Title>
+          <Modal.Title as="h6">{arbkResults.length > 0 ? "Zgjidhni Biznesin nga ARBK" : "Importo nga ARBK"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="small mb-3">
-            U gjetën <strong>{arbkResults.length}</strong> biznese. Zgjidhni njërin:
-          </p>
-          <div className="list-group" style={{ maxHeight: 350, overflowY: "auto" }}>
-            {arbkResults.map((biz, idx) => (
-              <button
-                key={idx}
-                type="button"
-                className="list-group-item list-group-item-action mb-2 rounded"
-                onClick={() => applyArbkData(biz)}
-              >
-                <div className="d-flex justify-content-between align-items-center mb-1">
-                  <strong>{biz.EmriBiznesit}</strong>
-                  <span className="badge bg-secondary ms-2">{biz.StatusiARBK}</span>
-                </div>
-                <div className="small text-muted">
-                  NUI: {biz.NUI || "-"} | {biz.Adresa}, {biz.Komuna}
-                </div>
-              </button>
-            ))}
-          </div>
+          {arbkResults.length === 0 ? (
+            <>
+              <Alert variant="info" className="py-2 small mb-3">
+                <Info size={14} className="me-2" />
+                Instaloni shtesën <strong>FinanCare ARBK Bridge</strong> për import automatik me një klikim, ose ngjisni
+                më poshtë <code>localStorage.getItem("state")</code> nga faqja e ARBK-së.
+              </Alert>
+              {arbkError && (
+                <Alert variant="danger" className="py-2 small">
+                  {arbkError}
+                </Alert>
+              )}
+              <Form.Control
+                as="textarea"
+                rows={6}
+                placeholder='{"version":2,"locale":"sq",...}'
+                value={arbkJson}
+                onChange={(e) => setArbkJson(e.target.value)}
+              />
+            </>
+          ) : (
+            <>
+              <p className="small mb-3">
+                U gjetën <strong>{arbkResults.length}</strong> biznese. Zgjidhni njërin:
+              </p>
+              <div className="list-group" style={{ maxHeight: 350, overflowY: "auto" }}>
+                {arbkResults.map((biz, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className="list-group-item list-group-item-action mb-2 rounded"
+                    onClick={() => applyArbkData(biz)}
+                  >
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <strong>{biz.EmriBiznesit}</strong>
+                      <span className="badge bg-secondary ms-2">{biz.StatusiARBK}</span>
+                    </div>
+                    <div className="small text-muted">
+                      NUI: {biz.NUI || "-"} | {biz.Adresa}, {biz.Komuna}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowArbkModal(false);
+              setArbkResults([]);
+              setArbkJson("");
+              setArbkError("");
+            }}
+          >
+            Anulo
+          </Button>
+          {arbkResults.length === 0 && (
+            <Button variant="success" onClick={handleParseJSON} disabled={!arbkJson}>
+              Analizo JSON
+            </Button>
+          )}
+        </Modal.Footer>
       </Modal>
     </>
   );

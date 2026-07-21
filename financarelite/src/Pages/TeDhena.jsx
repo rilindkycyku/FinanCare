@@ -4,12 +4,14 @@ import { Download, Upload } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import { exportAllData, importAllData } from "../lib/db";
+import { useDialog } from "../Context/DialogContext";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
 function TeDhena() {
   const [message, setMessage] = useState(null);
   const fileInputRef = useRef(null);
+  const dialog = useDialog();
 
   const handleExport = async () => {
     const data = await exportAllData();
@@ -28,7 +30,11 @@ function TeDhena() {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    if (!confirm("Importimi do të zëvendësojë të gjitha të dhënat aktuale (klientë, produkte, fatura, kurse). Vazhdo?")) return;
+    const proceed = await dialog.confirm(
+      "Importimi do të zëvendësojë të gjitha të dhënat aktuale (klientë, produkte, fatura, kurse). Vazhdo?",
+      { title: "Konfirmo Importimin" }
+    );
+    if (!proceed) return;
     try {
       const text = await file.text();
       const data = JSON.parse(text);

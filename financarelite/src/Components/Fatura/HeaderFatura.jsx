@@ -46,21 +46,29 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
   // at a higher resolution, then scale the PDF <Image> back down to the same
   // physical size so it prints crisp instead of pixelated.
   const BARCODE_SCALE = 4;
+  // Invoice numbers (e.g. "Datao-210726-FAT-2") are long alphanumeric strings, so at
+  // full module width the generated barcode was overflowing the header column. Cap the
+  // displayed width and scale height down with it, keeping the bar-width ratios intact
+  // (uniform scaling doesn't break scannability, only non-uniform stretching would).
+  const MAX_BARCODE_WIDTH = 190;
 
   const generateBarcodeImage = () => {
     const canvas = document.createElement("canvas");
     JsBarcode(canvas, Barkodi || " ", {
-      width: 2 * BARCODE_SCALE,
-      height: 40 * BARCODE_SCALE,
-      fontSize: 15 * BARCODE_SCALE,
-      margin: 6 * BARCODE_SCALE,
+      width: 1 * BARCODE_SCALE,
+      height: 28 * BARCODE_SCALE,
+      fontSize: 10 * BARCODE_SCALE,
+      margin: 4 * BARCODE_SCALE,
       displayValue: true,
     });
-    return {
-      dataUrl: canvas.toDataURL("image/png"),
-      width: canvas.width / BARCODE_SCALE,
-      height: canvas.height / BARCODE_SCALE,
-    };
+    let width = canvas.width / BARCODE_SCALE;
+    let height = canvas.height / BARCODE_SCALE;
+    if (width > MAX_BARCODE_WIDTH) {
+      const scale = MAX_BARCODE_WIDTH / width;
+      width = MAX_BARCODE_WIDTH;
+      height *= scale;
+    }
+    return { dataUrl: canvas.toDataURL("image/png"), width, height };
   };
 
   if (isPDF) {
@@ -160,7 +168,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
       <div className="data">
         <div className="barkodi">
           <h3>{TITLE_MAP[llojiKalkulimit] || "FATURË"}</h3>
-          <Barcode value={Barkodi || " "} height={50} width={1} fontSize={12} />
+          <Barcode value={Barkodi || " "} height={40} width={0.9} fontSize={10} />
         </div>
         <div className="teDhenatEKlientit">
           <p>

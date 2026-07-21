@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./Styles/FaturaModern.css";
 import { Document, Page, pdf, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import { Button, Spinner } from "react-bootstrap";
-import { Download, ArrowLeft, FileText, Share2 } from "lucide-react";
+import { Download, ArrowLeft, FileText, Share2, Pencil, Lock, Unlock } from "lucide-react";
 import DetajeFatura from "./DetajeFatura";
 import HeaderFatura from "./HeaderFatura";
 import TeDhenatFatura from "./TeDhenatFatura";
@@ -26,7 +26,17 @@ const styles = StyleSheet.create({
 /** Renders one invoice, on-screen and as a downloadable PDF. `data` = { produktet, teDhenatFat, teDhenatBiznesit, bankat }.
  * `qrCodeDataUrl`, once available, is embedded directly on the invoice footer (on-screen and in
  * the PDF) so a printed/exported copy carries a working "scan to reopen" code on its own. */
-function Fatura({ data, qrCodeDataUrl, onBack, onShare, autoDownload = false, readOnly = false }) {
+function Fatura({
+  data,
+  qrCodeDataUrl,
+  onBack,
+  onShare,
+  onEdit,
+  mbyllur,
+  onToggleStatus,
+  autoDownload = false,
+  readOnly = false,
+}) {
   const { produktet = [], teDhenatFat = {}, teDhenatBiznesit = {}, bankat = [], currencies = [] } = data || {};
   const [saving, setSaving] = useState(false);
   const [autoDownloaded, setAutoDownloaded] = useState(false);
@@ -158,6 +168,19 @@ function Fatura({ data, qrCodeDataUrl, onBack, onShare, autoDownload = false, re
           {onShare && (
             <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onShare}>
               <Share2 size={18} /> QR / Shpërndaj
+            </Button>
+          )}
+
+          {onToggleStatus && (
+            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onToggleStatus}>
+              {mbyllur ? <Unlock size={18} /> : <Lock size={18} />}
+              {mbyllur ? "Hap Faturën" : "Mbyll Faturën"}
+            </Button>
+          )}
+
+          {onEdit && !mbyllur && (
+            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onEdit}>
+              <Pencil size={18} /> Ndrysho
             </Button>
           )}
 

@@ -14,7 +14,7 @@ export async function qrDataUrl(text, options) {
     return await QRCode.toDataURL(text, {
       errorCorrectionLevel: "L",
       margin: 1,
-      width: 384,
+      width: 480,
       color: { dark: "#0f172a", light: "#ffffff" },
       ...options,
     });

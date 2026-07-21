@@ -3,10 +3,11 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { Camera } from "lucide-react";
-import { put, makeId, STORES } from "../lib/db";
+import { getAll, put, makeId, STORES } from "../lib/db";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
 import { useTvshTypes, useUnits } from "../lib/useConfigLists";
 import BarcodeScannerModal from "./BarcodeScannerModal";
+import { useDialog } from "../Context/DialogContext";
 
 const BLANK = {
   emriProduktit: "",
@@ -21,6 +22,7 @@ const BLANK = {
 function ShtoProduktin({ show, onHide, onSaved, initial }) {
   const [produkti, setProdukti] = useState(BLANK);
   const [showScanner, setShowScanner] = useState(false);
+  const dialog = useDialog();
   const tvshTypes = useTvshTypes();
   const units = useUnits();
 
@@ -45,6 +47,23 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
     e.preventDefault();
     if (!produkti.emriProduktit || !produkti.qmimiShites) return;
     const record = { id: produkti.id || makeId("prod"), ...produkti };
+
+    const nameKey = record.emriProduktit.trim().toLowerCase();
+    const barcodeKey = record.barkodi?.trim().toLowerCase();
+    const existingProducts = await getAll(STORES.products);
+    const duplicate = existingProducts.find(
+      (p) =>
+        p.id !== record.id &&
+        (p.emriProduktit?.trim().toLowerCase() === nameKey || (barcodeKey && p.barkodi?.trim().toLowerCase() === barcodeKey))
+    );
+    if (duplicate) {
+      const proceed = await dialog.confirm(
+        `Një produkt me emrin "${record.emriProduktit}" ekziston tashmë. Ta ruaj gjithsesi si produkt të ri?`,
+        { title: "Produkt i ngjashëm ekziston" }
+      );
+      if (!proceed) return;
+    }
+
     await put(STORES.products, record);
     onSaved(record);
   };

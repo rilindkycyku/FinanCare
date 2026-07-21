@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Col, Form, InputGroup, Pagination, Row, Card } from "react-bootstrap";
-import { Plus, Search, Filter, Eraser, Edit3, Trash2, Eye, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Plus, Search, Filter, Eraser, Edit3, Trash2, Eye, Lock, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import EksportoTeDhenat from "./EksportoTeDhenat";
 import SortIcon from "./SortIcon";
@@ -29,6 +29,7 @@ function Tabela({
   funksionShfaqFature,
   funksionButonEdit,
   funksionButonFshij,
+  funksionNdryshoStatusin,
   dateField,
   mosShfaqID,
   mosShfaqKerkimin,
@@ -171,18 +172,23 @@ function Tabela({
                         <td className="text-center premium-td">
                           <div className="d-flex justify-content-center gap-2">
                             {funksionShfaqFature && (
-                              <button className="btn-action info" onClick={() => funksionShfaqFature(item.ID)} title="Shiko">
+                              <button type="button" className="btn-action info" onClick={() => funksionShfaqFature(item.ID)} title="Shiko">
                                 <Eye size={16} />
                               </button>
                             )}
                             {funksionButonEdit && (
-                              <button className="btn-action edit" onClick={() => funksionButonEdit(item.ID)} title="Ndrysho">
+                              <button type="button" className="btn-action edit" onClick={() => funksionButonEdit(item.ID)} title="Ndrysho">
                                 <Edit3 size={16} />
                               </button>
                             )}
                             {funksionButonFshij && (
-                              <button className="btn-action delete" onClick={() => funksionButonFshij(item.ID)} title="Fshij">
+                              <button type="button" className="btn-action delete" onClick={() => funksionButonFshij(item.ID)} title="Fshij">
                                 <Trash2 size={16} />
+                              </button>
+                            )}
+                            {funksionNdryshoStatusin && (
+                              <button type="button" className="btn-action status" onClick={() => funksionNdryshoStatusin(item.ID)} title="Ndrysho Statusin">
+                                <Lock size={16} />
                               </button>
                             )}
                           </div>
@@ -350,6 +356,7 @@ function Tabela({
         .btn-action.info { color: var(--sp-cyan); }
         .btn-action.edit { color: #f59e0b; }
         .btn-action.delete { color: var(--sp-red); }
+        .btn-action.status { color: #f59e0b; }
         .btn-action:hover { transform: translateY(-2px); background: var(--sp-surface-2); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .premium-pagination-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; color: var(--sp-text-muted); font-size: 0.85rem; }
         .premium-pagination .page-item .page-link {
