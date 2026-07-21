@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button, Tab, Tabs, Form, Row, Col, Alert } from "react-bootstrap";
 import { Search, Info } from "lucide-react";
 import { put, makeId, STORES } from "../lib/db";
+import { parseArbkPayload } from "../lib/arbk";
 
 const BLANK = {
   llojiPartnerit: "privat",
@@ -16,15 +17,6 @@ const BLANK = {
   nrKontaktit: "",
   email: "",
 };
-
-/** Parses the exact ARBK bridge payload shape the FinanCare-ARBK-Extension sends. */
-function parseArbkPayload(payloadStr) {
-  const parsed = JSON.parse(payloadStr);
-  const list = parsed?.tableSearch?.tableList || [];
-  return list
-    .filter((item) => item.teDhenatBiznesit && item.teDhenatBiznesit.StatusiARBK === "Regjistruar")
-    .map((item) => item.teDhenatBiznesit);
-}
 
 function ShtoKlientin({ show, onHide, onSaved, initial }) {
   const [klienti, setKlienti] = useState(BLANK);

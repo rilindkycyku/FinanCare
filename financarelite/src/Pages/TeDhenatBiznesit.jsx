@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Row, Col, Button, Table } from "react-bootstrap";
+import { Form, Row, Col, Button, Table, Modal } from "react-bootstrap";
 import Select from "react-select";
 import { Trash2, Plus } from "lucide-react";
 import NavBar from "../Components/NavBar";
@@ -7,6 +7,7 @@ import PageTitle from "../Components/PageTitle";
 import { getBusinessDetails, putBusinessDetails, getAll, put, remove, makeId, STORES } from "../lib/db";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
 import { CURRENCY_OPTIONS } from "../lib/options";
+import { parseArbkPayload } from "../lib/arbk";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 import "./Styles/TeDhenatEBiznesit.css";
@@ -40,6 +41,9 @@ function TeDhenatBiznesit() {
   const [saved, setSaved] = useState(false);
   const [banks, setBanks] = useState([]);
   const [newBank, setNewBank] = useState(BLANK_BANK);
+  const [showArbkModal, setShowArbkModal] = useState(false);
+  const [arbkResults, setArbkResults] = useState([]);
+  const [arbkImported, setArbkImported] = useState(false);
 
   const loadAll = async () => {
     const [biz, bankList] = await Promise.all([getBusinessDetails(), getAll(STORES.banks)]);
@@ -50,6 +54,59 @@ function TeDhenatBiznesit() {
 
   useEffect(() => {
     loadAll();
+  }, []);
+
+  const applyArbkData = (biz) => {
+    setFormValue((prev) => ({
+      ...prev,
+      emriIBiznesit: biz.EmriBiznesit || prev.emriIBiznesit,
+      shkurtesaEmritBiznesit:
+        biz.EmriTregtar || biz.EmriBiznesit?.substring(0, 3)?.toUpperCase() || prev.shkurtesaEmritBiznesit,
+      nui: biz.NUI || prev.nui,
+      nf: biz.NumriFiskal || prev.nf,
+      adresa: `${biz.Adresa || ""}, ${biz.Komuna || ""}`.trim().replace(/^,|,$/g, ""),
+      nrKontaktit: biz.Telefoni || prev.nrKontaktit,
+      email: biz.Email || prev.email,
+    }));
+    setEdito(true);
+    setShowArbkModal(false);
+    setArbkResults([]);
+    setArbkImported(true);
+    setTimeout(() => setArbkImported(false), 2500);
+  };
+
+  // Bridge contract from FinanCare-ARBK-Extension: listens for a postMessage while the tab is
+  // open, and for a one-shot localStorage flag set right before the extension focuses this tab.
+  useEffect(() => {
+    const handleAutoParse = (payloadStr) => {
+      try {
+        const realList = parseArbkPayload(payloadStr);
+        if (realList.length === 1) {
+          applyArbkData(realList[0]);
+        } else if (realList.length > 1) {
+          setArbkResults(realList);
+          setShowArbkModal(true);
+        }
+      } catch (e) {
+        console.error("Gabim në leximin automatik nga ARBK", e);
+      }
+    };
+
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === "ARBK_BRIDGE_DATA" && event.data.payload) {
+        handleAutoParse(event.data.payload);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+
+    const savedData = localStorage.getItem("arbk_bridge_data");
+    if (savedData) {
+      handleAutoParse(savedData);
+      localStorage.removeItem("arbk_bridge_data");
+    }
+
+    return () => window.removeEventListener("message", handleMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onChange = (e) => setFormValue({ ...formValue, [e.target.name]: e.target.value });
@@ -137,6 +194,9 @@ function TeDhenatBiznesit() {
                   </Button>
                 )}
                 {saved && <span className="text-success ms-3 fw-bold">U ruajt me sukses ✓</span>}
+                {arbkImported && (
+                  <span className="text-success ms-3 fw-bold">Të dhënat u importuan nga ARBK ✓</span>
+                )}
               </Col>
             </Row>
           </Form>
@@ -204,6 +264,42 @@ function TeDhenatBiznesit() {
           </tbody>
         </Table>
       </div>
+
+      <Modal
+        show={showArbkModal}
+        onHide={() => {
+          setShowArbkModal(false);
+          setArbkResults([]);
+        }}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title as="h6">Zgjidhni Biznesin nga ARBK</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="small mb-3">
+            U gjetën <strong>{arbkResults.length}</strong> biznese. Zgjidhni njërin:
+          </p>
+          <div className="list-group" style={{ maxHeight: 350, overflowY: "auto" }}>
+            {arbkResults.map((biz, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className="list-group-item list-group-item-action mb-2 rounded"
+                onClick={() => applyArbkData(biz)}
+              >
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <strong>{biz.EmriBiznesit}</strong>
+                  <span className="badge bg-secondary ms-2">{biz.StatusiARBK}</span>
+                </div>
+                <div className="small text-muted">
+                  NUI: {biz.NUI || "-"} | {biz.Adresa}, {biz.Komuna}
+                </div>
+              </button>
+            ))}
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
