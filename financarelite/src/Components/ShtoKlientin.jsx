@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button, Tab, Tabs, Form, Row, Col, Alert } from "react-bootstrap";
 import { Search, Info } from "lucide-react";
 import { put, makeId, STORES } from "../lib/db";
+import { parseArbkPayload } from "../lib/arbk";
 
 const BLANK = {
   llojiPartnerit: "privat",
@@ -16,15 +17,6 @@ const BLANK = {
   nrKontaktit: "",
   email: "",
 };
-
-/** Parses the exact ARBK bridge payload shape the FinanCare-ARBK-Extension sends. */
-function parseArbkPayload(payloadStr) {
-  const parsed = JSON.parse(payloadStr);
-  const list = parsed?.tableSearch?.tableList || [];
-  return list
-    .filter((item) => item.teDhenatBiznesit && item.teDhenatBiznesit.StatusiARBK === "Regjistruar")
-    .map((item) => item.teDhenatBiznesit);
-}
 
 function ShtoKlientin({ show, onHide, onSaved, initial }) {
   const [klienti, setKlienti] = useState(BLANK);
@@ -145,10 +137,6 @@ function ShtoKlientin({ show, onHide, onSaved, initial }) {
         <Modal.Header closeButton>
           <div className="d-flex align-items-center w-100 justify-content-between">
             <Modal.Title>{initial ? "Ndrysho Klientin" : "Shto Klientin e Ri"}</Modal.Title>
-            <Button variant="outline-info" size="sm" onClick={() => setShowArbkModal(true)} className="rounded-pill px-3 me-3 fw-bold">
-              <Search size={14} className="me-2" />
-              Importo nga ARBK
-            </Button>
           </div>
         </Modal.Header>
         <Modal.Body>
