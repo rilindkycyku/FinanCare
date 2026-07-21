@@ -41,20 +41,30 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
   const { teDhenatFat, teDhenatBiznesit } = data || {};
   const llojiKalkulimit = teDhenatFat?.regjistrimet?.llojiKalkulimit || "FAT";
 
-  const generateBarcodeDataUrl = () => {
+  // JsBarcode draws onto a canvas at 1x pixel density; embedding that raw PNG
+  // into the PDF makes it look blurry once printed/zoomed. Render the canvas
+  // at a higher resolution, then scale the PDF <Image> back down to the same
+  // physical size so it prints crisp instead of pixelated.
+  const BARCODE_SCALE = 4;
+
+  const generateBarcodeImage = () => {
     const canvas = document.createElement("canvas");
     JsBarcode(canvas, Barkodi || " ", {
-      width: 2,
-      height: 40,
-      fontSize: 15,
-      margin: 6,
+      width: 2 * BARCODE_SCALE,
+      height: 40 * BARCODE_SCALE,
+      fontSize: 15 * BARCODE_SCALE,
+      margin: 6 * BARCODE_SCALE,
       displayValue: true,
     });
-    return canvas.toDataURL("image/png");
+    return {
+      dataUrl: canvas.toDataURL("image/png"),
+      width: canvas.width / BARCODE_SCALE,
+      height: canvas.height / BARCODE_SCALE,
+    };
   };
 
   if (isPDF) {
-    const barcodeDataUrl = generateBarcodeDataUrl();
+    const barcode = generateBarcodeImage();
 
     return (
       <View style={styles.header}>
@@ -94,7 +104,10 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, isPDF, data }) {
         <View style={styles.column}>
           <View style={styles.barcodeContainer}>
             <Text style={[styles.title, styles.bold]}>{TITLE_MAP[llojiKalkulimit] || "FATURË"}</Text>
-            <Image src={barcodeDataUrl} style={styles.barcodeImage} />
+            <Image
+              src={barcode.dataUrl}
+              style={[styles.barcodeImage, { width: barcode.width, height: barcode.height }]}
+            />
           </View>
           <Text style={styles.text}>
             <Text style={styles.bold}>{teDhenatFat?.regjistrimet?.emriBiznesit || ""}</Text>
