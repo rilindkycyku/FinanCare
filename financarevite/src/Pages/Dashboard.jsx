@@ -193,12 +193,17 @@ const Dashboard = () => {
 
       <div className="welcome-hero" data-aos="fade-down">
         <Container>
-          <Row className="align-items-center">
-            <Col>
+          <Row className="align-items-center justify-content-between g-3">
+            <Col xs="auto">
               <h1 className="fw-bold mb-2">Mirësevini, {user?.emri}! 👋</h1>
               <p className="opacity-75 mb-0 text-capitalize">
                 {dataAktuale}.
               </p>
+            </Col>
+            <Col xs="auto">
+              <Link to="/Porosite" className="hero-cta">
+                <PlusCircle size={18} /> Porosi e Re
+              </Link>
             </Col>
           </Row>
         </Container>

@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
-import { TrendingUp, TrendingDown, Wallet, Lightbulb, X, Building2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Lightbulb, X, Building2, Printer, Download, Loader2 } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import Tabela from "../Components/Tabela/Tabela";
-import { getAll, STORES } from "../lib/db";
+import { getAll, getBusinessDetails, STORES } from "../lib/db";
 import { calcInvoiceTotals } from "../lib/invoiceCalc";
-import { DOCUMENT_TYPES } from "../lib/options";
+import { DEFAULT_DOCUMENT_TYPES } from "../lib/options";
+import { useDocumentTypes } from "../lib/useConfigLists";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
+import { downloadKartelaAnalitikePDF, printKartelaAnalitikePDF } from "../Components/KartelaAnalitikePDF";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
@@ -37,12 +39,20 @@ function KartelaAnalitike() {
   const [invoices, setInvoices] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [showTip, setShowTip] = useState(true);
+  const [teDhenatBiznesit, setTeDhenatBiznesit] = useState({});
+  const [savingPdf, setSavingPdf] = useState(false);
+  const [printingPdf, setPrintingPdf] = useState(false);
+  const documentTypesLoaded = useDocumentTypes();
+  const documentTypes = documentTypesLoaded.length > 0 ? documentTypesLoaded : DEFAULT_DOCUMENT_TYPES;
 
   useEffect(() => {
-    Promise.all([getAll(STORES.clients), getAll(STORES.invoices)]).then(([clientList, invoiceList]) => {
-      setClients(clientList);
-      setInvoices(invoiceList);
-    });
+    Promise.all([getAll(STORES.clients), getAll(STORES.invoices), getBusinessDetails()]).then(
+      ([clientList, invoiceList, biz]) => {
+        setClients(clientList);
+        setInvoices(invoiceList);
+        setTeDhenatBiznesit(biz || {});
+      }
+    );
   }, []);
 
   const clientOptions = useMemo(() => clients.map((c) => ({ value: c.id, label: c.emriBiznesit })), [clients]);
@@ -59,15 +69,20 @@ function KartelaAnalitike() {
     let hyrje = 0;
     let dalje = 0;
     const rows = sorted.map((inv, i) => {
-      const dokumenti = DOCUMENT_TYPES.find((d) => d.value === inv.llojiDokumentit) || DOCUMENT_TYPES[0];
+      const dokumenti = documentTypes.find((d) => d.value === inv.llojiDokumentit) || documentTypes[0];
       const totali = calcInvoiceTotals(inv.items, inv.transporti).totaliFinal;
       // Porosi is just a pending order, not a completed sale — it lists here but doesn't touch
       // the balance, mirroring how FinanCare's own ledger skips document types outside its
-      // debit/credit lists.
+      // debit/credit lists. Every other type — FAT, KTHIM, and any custom type added from
+      // "Llojet e Faturave" — moves the balance based on its own Pozitive/Negative choice: a
+      // positive type adds to what's owed (faturim), a negative one reduces it (pagese), so a
+      // brand-new custom type behaves correctly without needing its own special case here.
       let faturim = 0;
       let pagese = 0;
-      if (dokumenti.value === "FAT") faturim = totali;
-      else if (dokumenti.value === "KTHIM") pagese = Math.abs(totali);
+      if (dokumenti.value !== "POR") {
+        if (dokumenti.negateAmounts) pagese = Math.abs(totali);
+        else faturim = totali;
+      }
       saldo += faturim - pagese;
       hyrje += faturim;
       dalje += pagese;
@@ -84,7 +99,41 @@ function KartelaAnalitike() {
       };
     });
     return { rows, hyrje, dalje, saldo };
-  }, [invoices, selectedClient]);
+  }, [invoices, selectedClient, documentTypes]);
+
+  const kartelaPdfArgs = () => ({
+    rows: ledger.rows,
+    client: selectedClient,
+    teDhenatBiznesit,
+    hyrje: ledger.hyrje,
+    dalje: ledger.dalje,
+    saldo: ledger.saldo,
+    clientName: selectedClient.emriBiznesit,
+  });
+
+  const handlePrint = async () => {
+    if (!selectedClient || printingPdf) return;
+    setPrintingPdf(true);
+    try {
+      await printKartelaAnalitikePDF(kartelaPdfArgs());
+    } catch (err) {
+      console.error("Gabim gjatë krijimit të PDF-së për printim:", err);
+    } finally {
+      setPrintingPdf(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!selectedClient || savingPdf) return;
+    setSavingPdf(true);
+    try {
+      await downloadKartelaAnalitikePDF(kartelaPdfArgs());
+    } catch (err) {
+      console.error("Gabim gjatë krijimit të PDF-së:", err);
+    } finally {
+      setSavingPdf(false);
+    }
+  };
 
   return (
     <>
@@ -113,17 +162,32 @@ function KartelaAnalitike() {
           </div>
         )}
 
-        <label className="ka-select-label">Zgjidh Klientin</label>
-        <div style={{ maxWidth: 420 }} className="mb-4">
-          <Select
-            styles={darkSelectStyles}
-            classNamePrefix="react-select"
-            options={clientOptions}
-            isClearable
-            placeholder="— zgjidh klientin —"
-            value={clientOptions.find((o) => o.value === selectedClientId) || null}
-            onChange={(opt) => setSelectedClientId(opt?.value || "")}
-          />
+        <div className="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
+          <div style={{ maxWidth: 420, width: "100%" }}>
+            <label className="ka-select-label">Zgjidh Klientin</label>
+            <Select
+              styles={darkSelectStyles}
+              classNamePrefix="react-select"
+              options={clientOptions}
+              isClearable
+              placeholder="— zgjidh klientin —"
+              value={clientOptions.find((o) => o.value === selectedClientId) || null}
+              onChange={(opt) => setSelectedClientId(opt?.value || "")}
+            />
+          </div>
+
+          {selectedClient && (
+            <div className="d-flex gap-2">
+              <button type="button" className="ka-action-btn" onClick={handlePrint} disabled={printingPdf}>
+                {printingPdf ? <Loader2 size={14} className="ka-spin" /> : <Printer size={14} />}
+                {printingPdf ? "Duke përgatitur..." : "Printo"}
+              </button>
+              <button type="button" className="ka-action-btn" onClick={handleDownloadPdf} disabled={savingPdf}>
+                {savingPdf ? <Loader2 size={14} className="ka-spin" /> : <Download size={14} />}
+                {savingPdf ? "Duke gjeneruar..." : "Shkarko PDF"}
+              </button>
+            </div>
+          )}
         </div>
 
         {selectedClient && (
@@ -194,6 +258,23 @@ function KartelaAnalitike() {
           border-radius: 16px;
           padding: 1rem 1.25rem;
         }
+        .ka-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: var(--sp-surface-2);
+          border: 1px solid var(--sp-border);
+          color: var(--sp-text);
+          border-radius: 10px;
+          padding: 0.6rem 1.1rem;
+          font-weight: 700;
+          font-size: 0.85rem;
+          transition: all 0.2s ease;
+        }
+        .ka-action-btn:hover:not(:disabled) { border-color: var(--sp-emerald); color: var(--sp-emerald); background: var(--sp-surface-3); }
+        .ka-action-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .ka-spin { animation: ka-spin 0.8s linear infinite; }
+        @keyframes ka-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .btn-close-ka {
           background: none;
           border: none;

@@ -4,10 +4,10 @@
  * Same hand-rolled wrapper shape as GuestSeat's `db.ts` (openDb/withStore), ported to plain JS.
  */
 
-import { DEFAULT_TVSH_TYPES, DEFAULT_UNITS } from "./options";
+import { DEFAULT_TVSH_TYPES, DEFAULT_UNITS, DEFAULT_DOCUMENT_TYPES } from "./options";
 
 const DB_NAME = "financarelite";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export const STORES = {
   businessDetails: "businessDetails",
@@ -18,6 +18,7 @@ export const STORES = {
   currencies: "currencies",
   tvshTypes: "tvshTypes",
   units: "units",
+  documentTypes: "documentTypes",
 };
 
 const BUSINESS_DETAILS_KEY = "main";
@@ -62,9 +63,30 @@ function openDb() {
         const store = db.createObjectStore(STORES.units, { keyPath: "id" });
         DEFAULT_UNITS.forEach((u) => store.add(u));
       }
+      if (!db.objectStoreNames.contains(STORES.documentTypes)) {
+        const store = db.createObjectStore(STORES.documentTypes, { keyPath: "id" });
+        DEFAULT_DOCUMENT_TYPES.forEach((t) => store.add(t));
+      }
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result;
+      // Without this, an older tab left open from before a DB_VERSION bump (like the one that
+      // added the documentTypes store) holds its connection open forever, and every new
+      // tab/reload's indexedDB.open() call blocks silently — the whole app just hangs on
+      // "Duke ngarkuar..." with no error. Closing on versionchange lets the newer connection
+      // proceed immediately.
+      db.onversionchange = () => db.close();
+      resolve(db);
+    };
+    req.onerror = () => {
+      dbPromise = null;
+      reject(req.error);
+    };
+    req.onblocked = () => {
+      console.warn(
+        "FinanCareLite: databaza është e bllokuar nga një skedë tjetër e hapur më parë. Mbyllni skedat e tjera të FinanCareLite dhe rifreskoni."
+      );
+    };
   });
   return dbPromise;
 }
@@ -125,16 +147,18 @@ export function putBusinessDetails(record) {
 // ---- whole-database export / import (JSON backup) ----
 
 export async function exportAllData() {
-  const [businessDetails, banks, clients, products, invoices, currencies, tvshTypes, units] = await Promise.all([
-    getBusinessDetails(),
-    getAll(STORES.banks),
-    getAll(STORES.clients),
-    getAll(STORES.products),
-    getAll(STORES.invoices),
-    getAll(STORES.currencies),
-    getAll(STORES.tvshTypes),
-    getAll(STORES.units),
-  ]);
+  const [businessDetails, banks, clients, products, invoices, currencies, tvshTypes, units, documentTypes] =
+    await Promise.all([
+      getBusinessDetails(),
+      getAll(STORES.banks),
+      getAll(STORES.clients),
+      getAll(STORES.products),
+      getAll(STORES.invoices),
+      getAll(STORES.currencies),
+      getAll(STORES.tvshTypes),
+      getAll(STORES.units),
+      getAll(STORES.documentTypes),
+    ]);
   return {
     app: "FinanCareLite",
     version: 1,
@@ -147,6 +171,7 @@ export async function exportAllData() {
     currencies,
     tvshTypes,
     units,
+    documentTypes,
   };
 }
 
@@ -162,6 +187,7 @@ export async function importAllData(data) {
     clearStore(STORES.currencies),
     clearStore(STORES.tvshTypes),
     clearStore(STORES.units),
+    clearStore(STORES.documentTypes),
   ]);
   if (data.businessDetails) await putBusinessDetails(data.businessDetails);
   await Promise.all([
@@ -172,5 +198,6 @@ export async function importAllData(data) {
     ...(data.currencies ?? []).map((c) => put(STORES.currencies, c)),
     ...(data.tvshTypes ?? []).map((t) => put(STORES.tvshTypes, t)),
     ...(data.units ?? []).map((u) => put(STORES.units, u)),
+    ...(data.documentTypes ?? []).map((t) => put(STORES.documentTypes, t)),
   ]);
 }

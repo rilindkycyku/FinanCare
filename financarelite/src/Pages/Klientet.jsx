@@ -4,6 +4,7 @@ import PageTitle from "../Components/PageTitle";
 import ShtoKlientin from "../Components/ShtoKlientin";
 import Tabela from "../Components/Tabela/Tabela";
 import { getAll, remove, STORES } from "../lib/db";
+import { useDialog } from "../Context/DialogContext";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
@@ -22,6 +23,7 @@ function Klientet() {
   const [clients, setClients] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
+  const dialog = useDialog();
 
   const load = () => getAll(STORES.clients).then(setClients);
 
@@ -42,7 +44,7 @@ function Klientet() {
   };
 
   const onDelete = async (id) => {
-    if (!confirm("Ta fshij këtë klient?")) return;
+    if (!(await dialog.confirm("Ta fshij këtë klient?", { title: "Fshi Klientin" }))) return;
     await remove(STORES.clients, id);
     load();
   };

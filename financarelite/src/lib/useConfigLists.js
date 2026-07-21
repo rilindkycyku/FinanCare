@@ -25,3 +25,15 @@ export function useUnits() {
 
   return units;
 }
+
+/** The business-configured invoice document types — the 3 built-in ones (Faturë Shitëse,
+ * Porosi, Fletëkthim) plus any custom types added from "Llojet e Faturave" in Settings. */
+export function useDocumentTypes() {
+  const [documentTypes, setDocumentTypes] = useState([]);
+
+  useEffect(() => {
+    getAll(STORES.documentTypes).then(setDocumentTypes);
+  }, []);
+
+  return documentTypes;
+}

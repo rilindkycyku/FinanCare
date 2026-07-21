@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import "./Pages/Styles/PremiumTheme.css";
 import "./Pages/Styles/DizajniPergjithshem.css";
 import Dashboard from "./Pages/Dashboard";
+import Statistika from "./Pages/Statistika";
 import TeDhenatBiznesit from "./Pages/TeDhenatBiznesit";
 import Klientet from "./Pages/Klientet";
 import Produktet from "./Pages/Produktet";
@@ -27,6 +28,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
+      <Route path="/statistikat" element={<Statistika />} />
       <Route path="/te-dhenat-biznesit" element={<TeDhenatBiznesit />} />
       <Route path="/klientet" element={<Klientet />} />
       <Route path="/produktet" element={<Produktet />} />
@@ -35,6 +37,7 @@ function App() {
       <Route path="/faturat" element={<ListaFaturave />} />
       <Route path="/kartela-analitike" element={<KartelaAnalitike />} />
       <Route path="/faturat/re" element={<KrijoFaturen />} />
+      <Route path="/faturat/:id/edit" element={<KrijoFaturen />} />
       <Route path="/faturat/:id" element={<FaturaView />} />
     </Routes>
   );

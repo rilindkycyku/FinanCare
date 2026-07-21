@@ -1,157 +1,139 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
-import { FileText, Users, Package, Wallet, Plus, ArrowUpRight } from "lucide-react";
+import { Container, Row, Col } from "react-bootstrap";
+import {
+  LayoutDashboard, Building2, Users, Package, FileText,
+  ClipboardList, Settings, DatabaseBackup, PlusCircle,
+  BarChart3, Hash, Receipt, Mail, MapPin, Phone, Tag, UserCircle,
+} from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
-import { getAll, getBusinessDetails, STORES } from "../lib/db";
-import { calcInvoiceTotals } from "../lib/invoiceCalc";
-import { DOCUMENT_TYPES } from "../lib/options";
+import Footer from "../Components/Footer";
+import { getBusinessDetails } from "../lib/db";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
+import "./Styles/Dashboard.css";
+
+const QUICK_ACTIONS = [
+  { to: "/te-dhenat-biznesit", label: "Të Dhënat e Biznesit", icon: Building2 },
+  { to: "/statistikat", label: "Statistikat", icon: BarChart3 },
+  { to: "/klientet", label: "Klientët", icon: Users },
+  { to: "/produktet", label: "Produktet", icon: Package },
+  { to: "/faturat", label: "Faturat", icon: FileText },
+  { to: "/kartela-analitike", label: "Kartela Analitike", icon: ClipboardList },
+  { to: "/cilesimet", label: "Cilësimet", icon: Settings },
+  { to: "/te-dhena", label: "Eksporto / Importo", icon: DatabaseBackup },
+];
+
+const BIZ_FIELDS = [
+  { key: "emriIBiznesit", label: "Emri i Biznesit", icon: Building2 },
+  { key: "shkurtesaEmritBiznesit", label: "Shkurtesa", icon: Tag },
+  { key: "menaxheri", label: "Menaxheri / Personi i Autorizuar", icon: UserCircle },
+  { key: "nui", label: "NUI", icon: Hash },
+  { key: "nf", label: "Numri Fiskal (NF)", icon: Hash },
+  { key: "nrTVSH", label: "Numri TVSH", icon: Receipt },
+  { key: "email", label: "Email", icon: Mail },
+  { key: "adresa", label: "Adresa", icon: MapPin },
+  { key: "nrKontaktit", label: "Numri i Kontaktit", icon: Phone },
+];
+
+const DataItem = ({ label, value, icon }) => {
+  const Icon = icon;
+  return (
+    <Col md={6} lg={3} className="mb-4">
+      <div className="data-group">
+        <div className="data-label">
+          <Icon size={14} className="text-primary" />
+          {label}
+        </div>
+        <div className="data-value">{value || "-"}</div>
+      </div>
+    </Col>
+  );
+};
 
 function Dashboard() {
-  const [stats, setStats] = useState({ invoices: 0, clients: 0, products: 0, total: 0 });
-  const [businessName, setBusinessName] = useState("");
-  const [recent, setRecent] = useState([]);
+  const [businessDetails, setBusinessDetails] = useState({});
 
   useEffect(() => {
-    Promise.all([getAll(STORES.invoices), getAll(STORES.clients), getAll(STORES.products), getBusinessDetails()]).then(
-      ([invoices, clients, products, biz]) => {
-        const total = invoices.reduce((sum, inv) => sum + calcInvoiceTotals(inv.items, inv.transporti).totaliFinal, 0);
-        setStats({ invoices: invoices.length, clients: clients.length, products: products.length, total });
-        setBusinessName(biz?.emriIBiznesit || "");
-        setRecent(invoices.sort((a, b) => (b.dataRegjistrimit || "").localeCompare(a.dataRegjistrimit || "")).slice(0, 5));
-      }
-    );
+    getBusinessDetails().then((biz) => {
+      setBusinessDetails(biz || {});
+    });
+  }, []);
+
+  const businessName = businessDetails.emriIBiznesit || "";
+  const pershendetja = businessDetails.menaxheri || businessName || "FinanCareLite";
+
+  const dataAktuale = useMemo(() => {
+    const d = new Date();
+    const days = ["e diel", "e hënë", "e martë", "e mërkurë", "e enjte", "e premte", "e shtunë"];
+    const months = ["janar", "shkurt", "mars", "prill", "maj", "qershor", "korrik", "gusht", "shtator", "tetor", "nëntor", "dhjetor"];
+    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   }, []);
 
   return (
-    <>
+    <div className="dashboard-wrapper">
       <PageTitle title="Paneli" />
       <NavBar />
 
-      <div className="fclite-hero">
-        <div>
-          <h1 className="mb-1">{businessName || "FinanCareLite"}</h1>
-          <p className="mb-0">Gjeneratori i faturave, lokalisht në shfletuesin tuaj.</p>
-        </div>
-        <Link to="/faturat/re">
-          <Button className="btn-primary">
-            <Plus size={16} className="me-1" /> Faturë e Re
-          </Button>
-        </Link>
+      <div className="welcome-hero">
+        <Container>
+          <Row className="align-items-center justify-content-between g-3">
+            <Col xs="auto">
+              <h1 className="fw-bold mb-2">Mirësevini, {pershendetja} 👋</h1>
+              <p className="opacity-75 mb-0 text-capitalize">
+                {businessName && businessName !== pershendetja ? `${businessName} · ` : ""}
+                {dataAktuale}.
+              </p>
+            </Col>
+            <Col xs="auto">
+              <Link to="/faturat/re" className="hero-cta">
+                <PlusCircle size={18} /> Faturë e Re
+              </Link>
+            </Col>
+          </Row>
+        </Container>
       </div>
 
-      <div className="containerDashboardP">
-        <div className="fclite-stat-grid mb-4">
-          {[
-            { icon: FileText, label: "Fatura", value: stats.invoices, to: "/faturat" },
-            { icon: Users, label: "Klientë", value: stats.clients, to: "/klientet" },
-            { icon: Package, label: "Produkte", value: stats.products, to: "/produktet" },
-            { icon: Wallet, label: "Totali i Shitjeve €", value: stats.total.toFixed(2), to: "/faturat" },
-          ].map((card) => {
-            const Icon = card.icon;
-            return (
-              <Link to={card.to} className="fclite-stat-card" key={card.label}>
-                <div className="fclite-stat-icon">
-                  <Icon size={20} />
-                </div>
-                <div>
-                  <div className="fclite-stat-value">{card.value}</div>
-                  <div className="fclite-stat-label">{card.label}</div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        <h5 className="mb-3">Faturat e Fundit</h5>
-        {recent.length === 0 ? (
-          <p className="text-muted">Nuk keni krijuar ende asnjë faturë.</p>
-        ) : (
-          <div className="fclite-recent-list">
-            {recent.map((inv) => {
-              const dokumenti = DOCUMENT_TYPES.find((d) => d.value === inv.llojiDokumentit) || DOCUMENT_TYPES[0];
+      <Container>
+        <section className="mb-5">
+          <h4 className="section-title">
+            <LayoutDashboard size={24} className="text-primary" />
+            Veprimet e Shpejta
+          </h4>
+          <div className="quick-actions-grid">
+            {QUICK_ACTIONS.map((action) => {
+              const Icon = action.icon;
               return (
-                <Link to={`/faturat/${inv.id}`} className="fclite-recent-row" key={inv.id}>
-                  <div>
-                    <div className="fw-bold">{inv.nrFatures}</div>
-                    <div className="text-muted small">
-                      {inv.klienti?.emriBiznesit} · {dokumenti.label}
-                    </div>
+                <Link to={action.to} className="quick-action-card" key={action.to}>
+                  <div className="icon-wrapper">
+                    <Icon size={22} />
                   </div>
-                  <ArrowUpRight size={16} className="text-muted" />
+                  <span>{action.label}</span>
                 </Link>
               );
             })}
           </div>
-        )}
-      </div>
+        </section>
 
-      <style>{`
-        .fclite-hero {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-          background: linear-gradient(135deg, var(--sp-surface-2) 0%, var(--sp-bg) 100%);
-          border-bottom: 1px solid var(--sp-border);
-          padding: 2.5rem 1.75rem;
-        }
-        .fclite-hero h1 { font-weight: 900; letter-spacing: -0.03em; color: var(--sp-text); }
-        .fclite-hero p { color: var(--sp-text-muted); }
-        .fclite-stat-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-        }
-        .fclite-stat-card {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          background: var(--sp-surface-2);
-          border: 1px solid var(--sp-border);
-          border-radius: 16px;
-          padding: 1.25rem;
-          text-decoration: none !important;
-          transition: all 0.2s ease;
-        }
-        .fclite-stat-card:hover {
-          transform: translateY(-2px);
-          border-color: var(--sp-emerald);
-          box-shadow: 0 6px 18px var(--sp-emerald-glow);
-        }
-        .fclite-stat-icon {
-          width: 44px;
-          height: 44px;
-          flex-shrink: 0;
-          border-radius: 12px;
-          background: var(--sp-surface-3);
-          color: var(--sp-emerald);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .fclite-stat-value { font-size: 1.4rem; font-weight: 800; color: var(--sp-text); }
-        .fclite-stat-label { font-size: 0.8rem; color: var(--sp-text-muted); }
-        .fclite-recent-list { display: flex; flex-direction: column; gap: 0.6rem; }
-        .fclite-recent-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: var(--sp-surface-2);
-          border: 1px solid var(--sp-border);
-          border-radius: 12px;
-          padding: 0.85rem 1.1rem;
-          text-decoration: none !important;
-          color: var(--sp-text);
-          transition: all 0.2s ease;
-        }
-        .fclite-recent-row:hover { border-color: var(--sp-emerald); background: var(--sp-surface-3); }
-      `}</style>
-    </>
+        <section className="mb-5">
+          <h4 className="section-title">
+            <Building2 size={24} className="text-primary" />
+            Të Dhënat e Biznesit
+          </h4>
+          <Row>
+            {BIZ_FIELDS.map((f) => (
+              <DataItem key={f.key} icon={f.icon} label={f.label} value={businessDetails[f.key]} />
+            ))}
+          </Row>
+          <Link to="/te-dhenat-biznesit" className="hero-cta" style={{ display: "inline-flex" }}>
+            Ndrysho të Dhënat e Biznesit
+          </Link>
+        </section>
+      </Container>
+
+      <Footer />
+    </div>
   );
 }
 
