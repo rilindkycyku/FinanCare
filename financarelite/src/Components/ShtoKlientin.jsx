@@ -145,10 +145,6 @@ function ShtoKlientin({ show, onHide, onSaved, initial }) {
         <Modal.Header closeButton>
           <div className="d-flex align-items-center w-100 justify-content-between">
             <Modal.Title>{initial ? "Ndrysho Klientin" : "Shto Klientin e Ri"}</Modal.Title>
-            <Button variant="outline-info" size="sm" onClick={() => setShowArbkModal(true)} className="rounded-pill px-3 me-3 fw-bold">
-              <Search size={14} className="me-2" />
-              Importo nga ARBK
-            </Button>
           </div>
         </Modal.Header>
         <Modal.Body>
