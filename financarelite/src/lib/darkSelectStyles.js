@@ -7,14 +7,16 @@
 export const darkSelectStyles = {
   control: (base, state) => ({
     ...base,
-    minHeight: "42px",
+    minHeight: "36px",
     background: "var(--sp-surface-2)",
     borderColor: state.isFocused ? "var(--sp-emerald)" : "var(--sp-border)",
     boxShadow: state.isFocused ? "0 0 0 3px var(--sp-emerald-glow)" : "none",
     borderRadius: "8px",
+    fontSize: "0.85rem",
     "&:hover": { borderColor: "var(--sp-emerald)" },
   }),
-  input: (base) => ({ ...base, color: "var(--sp-text)" }),
+  valueContainer: (base) => ({ ...base, padding: "2px 10px" }),
+  input: (base) => ({ ...base, color: "var(--sp-text)", margin: "0", padding: "0" }),
   placeholder: (base) => ({ ...base, color: "var(--sp-text-muted)" }),
   singleValue: (base) => ({ ...base, color: "var(--sp-text)" }),
   multiValue: (base) => ({ ...base, background: "var(--sp-surface-3)" }),
@@ -39,7 +41,8 @@ export const darkSelectStyles = {
     color: isSelected ? "#fff" : "var(--sp-text)",
     cursor: "pointer",
     borderRadius: "6px",
-    padding: "0.6rem 1rem",
+    fontSize: "0.85rem",
+    padding: "0.45rem 0.75rem",
   }),
   groupHeading: (base) => ({
     ...base,

@@ -25,6 +25,14 @@ body {
   font-size: 2rem;
 }
 
+.titulliPerditeso {
+  font-weight: 900;
+  color: var(--sp-text);
+  letter-spacing: -0.02em;
+  font-size: 1.4rem;
+  margin-bottom: 0.35rem;
+}
+
 /* Legacy Table Layout Overrides - Ideally use Tabela.jsx component */
 .containerDashboardP table {
   width: 100%;
@@ -89,13 +97,35 @@ body {
 .form-control, .form-select {
   background: var(--sp-surface-3) !important;
   color: var(--sp-text) !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   border: 1px solid var(--sp-border) !important;
-  padding: 0.75rem 1.2rem !important;
-  font-size: 0.9rem !important;
+  padding: 0.5rem 0.85rem !important;
+  font-size: 0.85rem !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
   box-shadow: none !important;
+}
+
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sp-text-soft);
+  margin-bottom: 0.35rem;
+}
+
+/* Plain Bootstrap Cards dropped into a dashboard container (e.g. KrijoFaturen's
+   "Lloji i Dokumentit" / "Të Dhënat e Klientit" sections) otherwise keep Bootstrap's
+   default white background, which swallows the app's light-on-dark label/text colors. */
+.containerDashboardP .card {
+  background: var(--sp-surface-2) !important;
+  border: 1px solid var(--sp-border) !important;
+  color: var(--sp-text) !important;
+}
+
+.containerDashboardP .card-header {
+  background: var(--sp-surface-3) !important;
+  border-bottom: 1px solid var(--sp-border) !important;
+  color: var(--sp-text) !important;
 }
 
 .form-control:focus, .form-select:focus {
@@ -115,9 +145,10 @@ body {
 
 /* Premium Buttons */
 .btn {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   font-weight: 700 !important;
-  padding: 0.75rem 1.5rem !important;
+  font-size: 0.85rem !important;
+  padding: 0.5rem 1.1rem !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
@@ -137,9 +168,22 @@ body {
 @media (max-width: 768px) {
   .containerDashboardP {
     width: 100%;
-    margin: 1rem 0;
-    padding: 1rem;
+    margin: 0.75rem 0;
+    padding: 0.85rem;
     border-radius: 0;
+  }
+
+  .titulliPerditeso {
+    font-size: 1.15rem;
+  }
+
+  .containerDashboardP .card-header {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  .containerDashboardP .card-body {
+    padding: 0.85rem;
   }
 
   .DataPerFiltrim {
