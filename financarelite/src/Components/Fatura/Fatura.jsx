@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Styles/FaturaModern.css";
 import { Document, Page, pdf, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import { Button, Spinner } from "react-bootstrap";
@@ -41,6 +41,36 @@ function Fatura({
   const { produktet = [], teDhenatFat = {}, teDhenatBiznesit = {}, bankat = [], currencies = [] } = data || {};
   const [saving, setSaving] = useState(false);
   const [autoDownloaded, setAutoDownloaded] = useState(false);
+
+  // Keeps the on-screen invoice at its real A4 proportions on every screen size instead of
+  // restacking into a squished mobile layout: the paper itself never reflows, it's scaled
+  // down as one image-like unit to fit narrow viewports, then the wrapper's height is set
+  // to the scaled-down height so it doesn't leave a tall blank gap below it.
+  const paperWrapperRef = useRef(null);
+  const paperRef = useRef(null);
+  const [paperScale, setPaperScale] = useState(1);
+  const [paperHeight, setPaperHeight] = useState(null);
+
+  useLayoutEffect(() => {
+    const wrapper = paperWrapperRef.current;
+    const paper = paperRef.current;
+    if (!wrapper || !paper) return;
+
+    const recalc = () => {
+      const availableWidth = wrapper.offsetWidth;
+      const naturalWidth = paper.offsetWidth;
+      const naturalHeight = paper.offsetHeight;
+      const nextScale = naturalWidth ? Math.min(1, availableWidth / naturalWidth) : 1;
+      setPaperScale(nextScale);
+      setPaperHeight(naturalHeight * nextScale);
+    };
+
+    recalc();
+    const resizeObserver = new ResizeObserver(recalc);
+    resizeObserver.observe(wrapper);
+    resizeObserver.observe(paper);
+    return () => resizeObserver.disconnect();
+  }, [produktet.length, qrCodeDataUrl]);
 
   const dataPorosise = new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now());
   const dita = dataPorosise.getDate().toString().padStart(2, "0");
@@ -204,12 +234,19 @@ function Fatura({
         </div>
       </div>
 
-      <div className="invoice-paper" id="invoice-capture">
-        <HeaderFatura Barkodi={barkodi} NrFaqes={1} NrFaqeve={estimatedPages} isPDF={false} data={{ teDhenatFat, teDhenatBiznesit }} />
-        <hr className="invoice-hr" />
-        <TeDhenatFatura ProduktiPare={0} ProduktiFundit={produktet.length} isPDF={false} data={{ produktet }} />
-        <hr className="invoice-hr" />
-        <FooterFatura Barkodi={barkodi} isPDF={false} data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
+      <div className="invoice-paper-scale-wrapper" ref={paperWrapperRef} style={{ height: paperHeight ?? undefined }}>
+        <div
+          className="invoice-paper"
+          id="invoice-capture"
+          ref={paperRef}
+          style={{ transform: `scale(${paperScale})` }}
+        >
+          <HeaderFatura Barkodi={barkodi} NrFaqes={1} NrFaqeve={estimatedPages} isPDF={false} data={{ teDhenatFat, teDhenatBiznesit }} />
+          <hr className="invoice-hr" />
+          <TeDhenatFatura ProduktiPare={0} ProduktiFundit={produktet.length} isPDF={false} data={{ produktet }} />
+          <hr className="invoice-hr" />
+          <FooterFatura Barkodi={barkodi} isPDF={false} data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
+        </div>
       </div>
     </div>
   );

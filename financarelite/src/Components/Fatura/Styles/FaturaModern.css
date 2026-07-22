@@ -14,8 +14,26 @@
   overflow-x: hidden;
 }
 
+/* Keeps `.invoice-paper` centered and clips it to its scaled-down visual size — without
+ * this, a scaled child still reserves its full pre-scale footprint and reintroduces the
+ * horizontal overflow/blank space the scaling is meant to avoid. Its height is set inline
+ * (natural height × scale) by Fatura.jsx once it measures the unscaled paper. */
+.invoice-paper-scale-wrapper {
+  width: 100%;
+  max-width: 210mm;
+  margin: 0 auto;
+  overflow: hidden;
+  /* flex (not block) centering: a block-level auto-margin collapses to 0 (left-aligns)
+   * once the child is wider than this wrapper, which throws off `.invoice-paper`'s
+   * `transform-origin: top center` and clips the scaled-down result off-screen. Flex
+   * keeps an oversized item symmetrically centered instead, so the shrink stays centered. */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
 .invoice-paper {
-  width: 210mm; /* A4 Width */
+  width: 210mm; /* A4 Width, always — never reflows, only ever scales down as a whole */
   margin: 0 auto;
   background: white !important;
   color: var(--invoice-text) !important;
@@ -24,6 +42,7 @@
   border-radius: 12px;
   position: relative;
   border: 1px solid var(--invoice-border);
+  transform-origin: top center;
 }
 
 /* Force dark text for all elements inside the invoice paper to prevent dark-mode invisible text */
@@ -137,16 +156,22 @@
   .invoice-toolbar {
     display: none;
   }
+  .invoice-paper-scale-wrapper {
+    max-width: none;
+    height: auto !important;
+    overflow: visible;
+  }
   .invoice-paper {
     box-shadow: none;
     border: none;
     padding: 0;
     width: 100%;
+    transform: none !important;
   }
 }
 
 @media (max-width: 210mm) {
-  .invoice-paper, .invoice-toolbar {
+  .invoice-toolbar {
     width: 95%;
   }
 }
@@ -163,9 +188,5 @@
 
   .invoice-page-hint {
     margin-right: 0;
-  }
-
-  .invoice-paper {
-    padding: 1.25rem;
   }
 }
