@@ -92,6 +92,12 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
           <Text style={styles.bold}>Kontakti: </Text>
           {teDhenatBiznesit?.nrKontaktit || ""} - {teDhenatBiznesit?.email || ""}
         </Text>
+        {teDhenatBiznesit?.website ? (
+          <Text style={styles.text}>
+            <Text style={styles.bold}>Uebfaqja: </Text>
+            {teDhenatBiznesit.website}
+          </Text>
+        ) : null}
         <Text style={styles.text}>
           <Text style={styles.bold}>Data e Faturës: </Text>
           {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}

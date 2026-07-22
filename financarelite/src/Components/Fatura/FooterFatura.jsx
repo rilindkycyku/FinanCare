@@ -1,7 +1,8 @@
 import { View, Text, Link, Image, StyleSheet, Font } from "@react-pdf/renderer";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 
-const FINANCARELITE_URL = "https://rilindkycyku.com";
+const FINANCARELITE_DOMAIN = "financarelite.rilindkycyku.dev";
+const FINANCARELITE_URL = `https://${FINANCARELITE_DOMAIN}`;
 
 Font.register({
   family: "Quicksand",
@@ -133,7 +134,8 @@ function FooterFatura({ Barkodi, data }) {
           <Text>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</Text>
           <Text>(Personi Përgjegjës)</Text>
           <Text style={styles.bold}>
-            © 2023 - {new Date().getFullYear()} <Link src={FINANCARELITE_URL} style={styles.link}>FinanCareLite</Link>
+            © 2023 - {new Date().getFullYear()} FinanCareLite —{" "}
+            <Link src={FINANCARELITE_URL} style={styles.link}>{FINANCARELITE_DOMAIN}</Link>
           </Text>
         </View>
         <View style={styles.signature}>
