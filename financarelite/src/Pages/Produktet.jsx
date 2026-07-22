@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import NavBar from "../Components/NavBar";
+import Footer from "../Components/Footer";
 import PageTitle from "../Components/PageTitle";
 import ShtoProduktin from "../Components/ShtoProduktin";
 import Tabela from "../Components/Tabela/Tabela";
@@ -75,6 +76,8 @@ function Produktet() {
         onSaved={onSaved}
         initial={editing}
       />
+
+      <Footer />
     </>
   );
 }

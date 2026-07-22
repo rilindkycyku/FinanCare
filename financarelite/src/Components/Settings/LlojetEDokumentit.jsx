@@ -55,11 +55,10 @@ function LlojetEDokumentit({ embedded }) {
     <div className={embedded ? "pt-3" : "containerDashboardP"}>
       {!embedded && <h1 className="titulliPerditeso">Llojet e Faturave</h1>}
       <p className="settings-list-intro">
-        Krijoni lloje faturash sipas nevojës suaj, përveç llojeve bazë të para-ngarkuara (shihni listën më poshtë:
-        Faturë Shitëse, Porosi, Fletëkthim, Ofertë, Parafaturë, Fletëdërgesë, Notë Debiti, Faturë POS, Porosi Online,
-        Faturë Bankare, Faturë Kesh, Kupon Fiskal, Bilanci Fillestar). Çdo lloj i ri ka një emër, një prefiks të
-        shkurtër për numërimin (p.sh. "OFR"), dhe mund të shënohet që shumat e tij të shfaqen negative — njësoj si te
-        Fletëkthimi — për dokumente të tjera kthimi/krediti.
+        Shtoni lloje faturash sipas nevojës, përveç atyre bazë (Faturë Shitëse, Porosi, Fletëkthim, Ofertë,
+        Parafaturë, Fletëdërgesë, Notë Debiti, Faturë POS, Porosi Online, Faturë Bankare, Faturë Kesh, Kupon Fiskal,
+        Bilanci Fillestar). Çdo lloj ka emër, prefiks numërimi (p.sh. "OFR") dhe mund të shënohet me shuma negative
+        — si Fletëkthimi — për dokumente kthimi/krediti.
       </p>
 
       <div className="settings-add-bar">
@@ -112,13 +111,13 @@ function LlojetEDokumentit({ embedded }) {
                 <td data-label="Emri">
                   <Form.Control value={t.label} onChange={(e) => updateDocType(t.id, "label", e.target.value)} />
                 </td>
-                <td data-label="Prefiksi" style={{ maxWidth: 140 }}>
+                <td data-label="Prefiksi" className="settings-col-narrow">
                   <Form.Control
                     value={t.value}
                     onChange={(e) => updateDocType(t.id, "value", e.target.value.toUpperCase())}
                   />
                 </td>
-                <td data-label="Shumat" style={{ maxWidth: 200 }}>
+                <td data-label="Shumat" className="settings-col-medium">
                   <Form.Select
                     value={t.negateAmounts ? "negative" : "positive"}
                     onChange={(e) => updateDocType(t.id, "negateAmounts", e.target.value === "negative")}

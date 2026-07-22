@@ -3,6 +3,7 @@ import { Form, Row, Col, Button, Table, Modal, Alert } from "react-bootstrap";
 import Select from "react-select";
 import { Trash2, Plus, Info } from "lucide-react";
 import NavBar from "../Components/NavBar";
+import Footer from "../Components/Footer";
 import PageTitle from "../Components/PageTitle";
 import { getBusinessDetails, putBusinessDetails, getAll, put, remove, makeId, STORES } from "../lib/db";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
@@ -475,6 +476,8 @@ function TeDhenatBiznesit() {
           )}
         </Modal.Footer>
       </Modal>
+
+      <Footer />
     </>
   );
 }

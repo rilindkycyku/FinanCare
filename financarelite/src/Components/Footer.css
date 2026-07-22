@@ -1,0 +1,62 @@
+/* Shared site footer, shown at the bottom of every page. */
+
+.fclite-footer {
+  margin-top: 2rem;
+  border-top: 1px solid var(--sp-border);
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.fclite-footer-logo {
+  height: 30px;
+  width: auto;
+  opacity: 0.85;
+}
+
+.fclite-footer-text {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--sp-text-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.fclite-footer-text a {
+  color: var(--sp-emerald);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.fclite-footer-version {
+  font-size: 0.62rem;
+  color: var(--sp-text-muted);
+  background: var(--sp-surface-3);
+  border-radius: 6px;
+  padding: 0.16rem 0.5rem;
+  font-family: monospace;
+}
+
+@media (max-width: 640px) {
+  .fclite-footer {
+    padding: 0.65rem 1rem;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  .fclite-footer-logo {
+    height: 22px;
+  }
+
+  .fclite-footer-text {
+    font-size: 0.58rem;
+    max-width: 100%;
+  }
+
+  .fclite-footer-version {
+    font-size: 0.58rem;
+  }
+}

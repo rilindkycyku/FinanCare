@@ -20,6 +20,9 @@ const styles = StyleSheet.create({
   hr: { borderBottomWidth: 1, borderColor: "black", marginVertical: 5 },
   signatures: { flexDirection: "row", justifyContent: "space-around", marginTop: 10 },
   signature: { textAlign: "center", fontSize: 7, marginTop: 20 },
+  brandRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
+  brandText: { fontSize: 6, color: "#666" },
+  brandDomain: { fontSize: 6.5, fontWeight: "bold", letterSpacing: 0.5 },
   qrSection: { width: "16%", alignItems: "center", fontSize: 6 },
   qrBlock: { textAlign: "center", fontSize: 7, alignItems: "center" },
   qrImage: { width: 85, height: 85, marginBottom: 4 },
@@ -133,17 +136,20 @@ function FooterFatura({ Barkodi, data }) {
           <Text>_________________________________________________</Text>
           <Text>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</Text>
           <Text>(Personi Përgjegjës)</Text>
-          <Text style={styles.bold}>
-            © 2023 - {new Date().getFullYear()} FinanCareLite - Versioni Bazë i FinanCare, për Faturat, Klientët &amp;
-            Produktet —{" "}
-            <Link src={FINANCARELITE_URL} style={styles.link}>{FINANCARELITE_DOMAIN}</Link>
-          </Text>
         </View>
         <View style={styles.signature}>
           <Text>_________________________________________________</Text>
           <Text>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</Text>
           <Text>(Klienti)</Text>
         </View>
+      </View>
+      <View style={styles.brandRow}>
+        <Text style={styles.brandText}>
+          © 2023 - {new Date().getFullYear()} FinanCareLite - Versioni Bazë i FinanCare, për Faturat, Klientët &amp; Produktet
+        </Text>
+        <Link src={FINANCARELITE_URL} style={[styles.link, styles.brandDomain]}>
+          {FINANCARELITE_DOMAIN.toUpperCase()}
+        </Link>
       </View>
     </View>
   );

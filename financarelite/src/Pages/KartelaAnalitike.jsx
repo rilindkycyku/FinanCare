@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { TrendingUp, TrendingDown, Wallet, Lightbulb, X, Building2, Printer, Download, Loader2, CreditCard } from "lucide-react";
 import NavBar from "../Components/NavBar";
+import Footer from "../Components/Footer";
 import PageTitle from "../Components/PageTitle";
 import Tabela from "../Components/Tabela/Tabela";
 import PagesaModal from "../Components/PagesaModal";
@@ -305,6 +306,8 @@ function KartelaAnalitike() {
         klienti={selectedClient}
         onSaved={(record) => setPayments((prev) => [...prev, record])}
       />
+
+      <Footer />
 
       <style>{`
         .ka-tip {

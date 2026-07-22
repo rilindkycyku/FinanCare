@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tabs, Tab, Card } from "react-bootstrap";
 import { Settings } from "lucide-react";
 import NavBar from "../Components/NavBar";
+import Footer from "../Components/Footer";
 import PageTitle from "../Components/PageTitle";
 import KursetEKembimit from "../Components/Settings/KursetEKembimit";
 import LlojetETVSH from "../Components/Settings/LlojetETVSH";
@@ -45,6 +46,8 @@ function Cilesimet() {
           </Tabs>
         </Card>
       </div>
+
+      <Footer />
     </>
   );
 }

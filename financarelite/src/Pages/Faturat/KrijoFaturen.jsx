@@ -5,6 +5,7 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { Plus, ArrowLeft, Camera } from "lucide-react";
 import NavBar from "../../Components/NavBar";
+import Footer from "../../Components/Footer";
 import PageTitle from "../../Components/PageTitle";
 import BarcodeScannerModal from "../../Components/BarcodeScannerModal";
 import Tabela from "../../Components/Tabela/Tabela";
@@ -948,6 +949,8 @@ function KrijoFaturen() {
         )}
       </div>
       <BarcodeScannerModal show={showScanner} onHide={() => setShowScanner(false)} onScan={handleScanResult} />
+
+      <Footer />
     </>
   );
 }

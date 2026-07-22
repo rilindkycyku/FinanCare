@@ -72,41 +72,71 @@
   border-color: var(--sp-border-glow);
 }
 
+@media (max-width: 640px) {
+  .profile-card {
+    border-radius: 16px;
+    padding: 1.1rem !important;
+  }
+}
+
 .modern-tabs .nav-tabs {
-  border-bottom: 1px solid var(--sp-border);
-  gap: 2rem;
-  margin-bottom: 2.5rem;
-  flex-wrap: nowrap;
+  border-bottom: none;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  background: var(--sp-surface-2);
+  border: 1px solid var(--sp-border);
+  border-radius: 14px;
+  padding: 0.4rem;
 }
 
 .modern-tabs .nav-item {
-  margin-right: 2rem;
-}
-
-.modern-tabs .nav-item:last-child {
   margin-right: 0;
+  flex: 1 1 auto;
 }
 
 .modern-tabs .nav-link {
   border: none !important;
   color: var(--sp-text-muted);
   font-weight: 800;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.75rem 0;
+  letter-spacing: 0.05em;
+  text-align: center;
+  white-space: nowrap;
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px !important;
   background: transparent !important;
-  border-bottom: 3px solid transparent !important;
   transition: all 0.2s ease;
 }
 
 .modern-tabs .nav-link.active {
-  color: var(--sp-emerald) !important;
-  border-bottom-color: var(--sp-emerald) !important;
+  color: #06281d !important;
+  background: var(--sp-emerald) !important;
+  box-shadow: 0 4px 14px var(--sp-emerald-glow);
 }
 
 .modern-tabs .nav-link:hover:not(.active) {
   color: var(--sp-text);
+  background: var(--sp-surface-3) !important;
+}
+
+@media (max-width: 640px) {
+  .modern-tabs .nav-tabs {
+    gap: 0.3rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .modern-tabs .nav-item {
+    flex: 1 1 calc(50% - 0.3rem);
+  }
+
+  .modern-tabs .nav-link {
+    font-size: 0.62rem;
+    letter-spacing: 0.02em;
+    padding: 0.55rem 0.4rem;
+    white-space: normal;
+  }
 }
 
 .section-title {
@@ -356,6 +386,7 @@ body.light-mode .profile-card:hover {
 
 /* Tab navigation */
 body.light-mode .modern-tabs .nav-tabs {
+  background: #f1f5f9;
   border-color: rgba(0, 0, 0, 0.08);
 }
 
@@ -364,12 +395,13 @@ body.light-mode .modern-tabs .nav-link {
 }
 
 body.light-mode .modern-tabs .nav-link.active {
-  color: #059669 !important;
-  border-bottom-color: #059669 !important;
+  color: #ffffff !important;
+  background: #059669 !important;
 }
 
 body.light-mode .modern-tabs .nav-link:hover:not(.active) {
   color: #0f172a;
+  background: rgba(0, 0, 0, 0.05) !important;
 }
 
 /* Quick action cards */

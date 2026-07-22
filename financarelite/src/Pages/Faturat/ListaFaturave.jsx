@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../Components/NavBar";
+import Footer from "../../Components/Footer";
 import PageTitle from "../../Components/PageTitle";
 import Tabela from "../../Components/Tabela/Tabela";
 import { getAll, put, remove, STORES } from "../../lib/db";
@@ -91,6 +92,8 @@ function ListaFaturave() {
         filterField="Lloji"
         mosShfaqID
       />
+
+      <Footer />
     </>
   );
 }
