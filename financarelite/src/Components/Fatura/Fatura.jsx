@@ -1,11 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./Styles/FaturaModern.css";
-import { Document, Page, pdf, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
+import { Document, Page, pdf, PDFViewer, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import { Button, Spinner } from "react-bootstrap";
 import { Download, ArrowLeft, FileText, Share2, Pencil, Lock, Unlock, CreditCard } from "lucide-react";
 import DetajeFatura from "./DetajeFatura";
 import HeaderFatura from "./HeaderFatura";
-import TeDhenatFatura from "./TeDhenatFatura";
 import FooterFatura from "./FooterFatura";
 
 Font.register({
@@ -25,7 +24,10 @@ const styles = StyleSheet.create({
 
 /** Renders one invoice, on-screen and as a downloadable PDF. `data` = { produktet, teDhenatFat, teDhenatBiznesit, bankat }.
  * `qrCodeDataUrl`, once available, is embedded directly on the invoice footer (on-screen and in
- * the PDF) so a printed/exported copy carries a working "scan to reopen" code on its own. */
+ * the PDF) so a printed/exported copy carries a working "scan to reopen" code on its own.
+ * The on-screen preview is the literal PDF (via `PDFViewer`, the browser's native PDF plugin)
+ * rather than a parallel HTML re-implementation — one always matches what gets printed/downloaded,
+ * and the native viewer gives real pinch-zoom/pan on mobile instead of a squished layout. */
 function Fatura({
   data,
   qrCodeDataUrl,
@@ -41,36 +43,6 @@ function Fatura({
   const { produktet = [], teDhenatFat = {}, teDhenatBiznesit = {}, bankat = [], currencies = [] } = data || {};
   const [saving, setSaving] = useState(false);
   const [autoDownloaded, setAutoDownloaded] = useState(false);
-
-  // Keeps the on-screen invoice at its real A4 proportions on every screen size instead of
-  // restacking into a squished mobile layout: the paper itself never reflows, it's scaled
-  // down as one image-like unit to fit narrow viewports, then the wrapper's height is set
-  // to the scaled-down height so it doesn't leave a tall blank gap below it.
-  const paperWrapperRef = useRef(null);
-  const paperRef = useRef(null);
-  const [paperScale, setPaperScale] = useState(1);
-  const [paperHeight, setPaperHeight] = useState(null);
-
-  useLayoutEffect(() => {
-    const wrapper = paperWrapperRef.current;
-    const paper = paperRef.current;
-    if (!wrapper || !paper) return;
-
-    const recalc = () => {
-      const availableWidth = wrapper.offsetWidth;
-      const naturalWidth = paper.offsetWidth;
-      const naturalHeight = paper.offsetHeight;
-      const nextScale = naturalWidth ? Math.min(1, availableWidth / naturalWidth) : 1;
-      setPaperScale(nextScale);
-      setPaperHeight(naturalHeight * nextScale);
-    };
-
-    recalc();
-    const resizeObserver = new ResizeObserver(recalc);
-    resizeObserver.observe(wrapper);
-    resizeObserver.observe(paper);
-    return () => resizeObserver.disconnect();
-  }, [produktet.length, qrCodeDataUrl]);
 
   const dataPorosise = new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now());
   const dita = dataPorosise.getDate().toString().padStart(2, "0");
@@ -92,13 +64,10 @@ function Fatura({
     return remainder > 0 ? (remainder <= 14 ? fullPages + 1 : fullPages + 2) : Math.max(fullPages, 1);
   }, [produktet.length]);
 
-  const InvoicePDF = () => {
-    const itemsPerFullPage = 24;
-    const maxItemsLastPage = 14;
-    const pages = [];
-    let currentStart = 0;
-    let pageNumber = 1;
-
+  // Built once per actual data change (not on every render) — passed as-is to both the
+  // download button and the on-screen `PDFViewer`, so they're always in sync and the
+  // viewer doesn't regenerate/reload its PDF on unrelated re-renders (e.g. opening a modal).
+  const invoiceDocument = useMemo(() => {
     if (produktet.length === 0) {
       return (
         <Document>
@@ -108,6 +77,12 @@ function Fatura({
         </Document>
       );
     }
+
+    const itemsPerFullPage = 24;
+    const maxItemsLastPage = 14;
+    const pages = [];
+    let currentStart = 0;
+    let pageNumber = 1;
 
     while (currentStart < produktet.length) {
       let itemsPerPage = itemsPerFullPage;
@@ -131,7 +106,6 @@ function Fatura({
             LargoFooter={forceFooterNewPage || end < produktet.length}
             NrFaqes={pageNumber}
             NrFaqeve={estimatedPages}
-            isPDF
             data={{ produktet, teDhenatFat, teDhenatBiznesit, bankat, currencies, qrCodeDataUrl }}
             forceFooterNewPage={forceFooterNewPage}
           />
@@ -142,9 +116,9 @@ function Fatura({
         pages.push(
           <Page size={{ width: 595, height: 842 }} key={pageNumber + 1}>
             <View style={{ padding: 20, fontSize: 11 }}>
-              <HeaderFatura Barkodi={barkodi} NrFaqes={pageNumber + 1} NrFaqeve={estimatedPages} isPDF data={{ teDhenatFat, teDhenatBiznesit }} />
+              <HeaderFatura Barkodi={barkodi} NrFaqes={pageNumber + 1} NrFaqeve={estimatedPages} data={{ teDhenatFat, teDhenatBiznesit }} />
               <View style={styles.hr} />
-              <FooterFatura Barkodi={barkodi} isPDF data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
+              <FooterFatura Barkodi={barkodi} data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
             </View>
           </Page>
         );
@@ -156,12 +130,12 @@ function Fatura({
     }
 
     return <Document>{pages}</Document>;
-  };
+  }, [produktet, teDhenatFat, teDhenatBiznesit, bankat, currencies, qrCodeDataUrl, barkodi, estimatedPages]);
 
   async function ruajFaturen() {
     try {
       setSaving(true);
-      const blob = await pdf(<InvoicePDF />).toBlob();
+      const blob = await pdf(invoiceDocument).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -234,19 +208,10 @@ function Fatura({
         </div>
       </div>
 
-      <div className="invoice-paper-scale-wrapper" ref={paperWrapperRef} style={{ height: paperHeight ?? undefined }}>
-        <div
-          className="invoice-paper"
-          id="invoice-capture"
-          ref={paperRef}
-          style={{ transform: `scale(${paperScale})` }}
-        >
-          <HeaderFatura Barkodi={barkodi} NrFaqes={1} NrFaqeve={estimatedPages} isPDF={false} data={{ teDhenatFat, teDhenatBiznesit }} />
-          <hr className="invoice-hr" />
-          <TeDhenatFatura ProduktiPare={0} ProduktiFundit={produktet.length} isPDF={false} data={{ produktet }} />
-          <hr className="invoice-hr" />
-          <FooterFatura Barkodi={barkodi} isPDF={false} data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
-        </div>
+      <div className="invoice-pdf-shell">
+        <PDFViewer className="invoice-pdf-viewer" showToolbar={false}>
+          {invoiceDocument}
+        </PDFViewer>
       </div>
     </div>
   );
