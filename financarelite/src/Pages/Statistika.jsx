@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import {
   BarChart3, TrendingUp, TrendingDown, DollarSign, Users, Package,
-  FileText, Receipt, ShoppingCart, ArrowUpRight,
+  FileText, Receipt, ArrowUpRight,
 } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import Footer from "../Components/Footer";
 import { getAll, STORES } from "../lib/db";
 import { calcInvoiceTotals } from "../lib/invoiceCalc";
+import { useDocumentTypes } from "../lib/useConfigLists";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
@@ -18,7 +19,7 @@ const MUAJT = ["Jan", "Shk", "Mar", "Pri", "Maj", "Qer", "Kor", "Gus", "Sht", "T
 const KpiCard = ({ label, value, icon, color }) => {
   const Icon = icon;
   return (
-    <Col md={6} lg={3} className="mb-4">
+    <Col xs={6} md={4} lg={3} className="st-kpi-col">
       <div className={`st-kpi-card st-kpi-${color}`}>
         <div className="st-kpi-icon">
           <Icon size={20} />
@@ -52,6 +53,7 @@ function Statistika() {
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const documentTypes = useDocumentTypes();
 
   useEffect(() => {
     Promise.all([getAll(STORES.invoices), getAll(STORES.clients), getAll(STORES.products)]).then(
@@ -65,14 +67,21 @@ function Statistika() {
   }, []);
 
   const stats = useMemo(() => {
+    // Real sales invoices only — used for the client/product rankings and monthly trend below.
     const faturat = invoices.filter((inv) => inv.llojiDokumentit === "FAT");
-    const fletekthimet = invoices.filter((inv) => inv.llojiDokumentit === "KTHIM");
-    const porosite = invoices.filter((inv) => inv.llojiDokumentit === "POR");
-
     const totali = (list) => list.reduce((sum, inv) => sum + calcInvoiceTotals(inv.items, inv.transporti).totaliFinal, 0);
     const totaliFaturave = totali(faturat);
-    const totaliFletekthimeve = Math.abs(totali(fletekthimet));
-    const totaliNeto = totaliFaturave - totaliFletekthimeve;
+
+    // Dashboard KPI totals: the business can add as many document types as it wants (Cilësimet →
+    // Llojet e Faturave), so instead of a card per type, every type reduces to positive or
+    // negative via its own negateAmounts flag — the same flag already used to flip invoice
+    // amounts when saving. This way custom types are always reflected, not just FAT/KTHIM/POR.
+    const negatedTypes = new Set(documentTypes.filter((dt) => dt.negateAmounts).map((dt) => dt.value));
+    const pozitivet = invoices.filter((inv) => !negatedTypes.has(inv.llojiDokumentit));
+    const negativet = invoices.filter((inv) => negatedTypes.has(inv.llojiDokumentit));
+    const totaliPozitiv = totali(pozitivet);
+    const totaliNegativ = Math.abs(totali(negativet));
+    const totaliNeto = totaliPozitiv - totaliNegativ;
 
     const byClient = new Map();
     faturat.forEach((inv) => {
@@ -116,11 +125,11 @@ function Statistika() {
     });
 
     return {
-      totaliFaturave, totaliFletekthimeve, totaliNeto,
-      nrFaturash: faturat.length, nrFletekthimesh: fletekthimet.length, nrPorosive: porosite.length,
+      totaliFaturave, totaliPozitiv, totaliNegativ, totaliNeto,
+      nrPozitive: pozitivet.length, nrNegative: negativet.length,
       topKlientet, topProduktet, trendiMujor,
     };
-  }, [invoices]);
+  }, [invoices, documentTypes]);
 
   if (loading) {
     return (
@@ -149,18 +158,14 @@ function Statistika() {
           </div>
         </div>
 
-        <Row>
+        <Row className="g-2 g-md-4">
           <KpiCard label="Shitjet Neto" value={`${stats.totaliNeto.toFixed(2)} €`} icon={DollarSign} color="emerald" />
-          <KpiCard label="Fatura Shitëse" value={stats.nrFaturash} icon={FileText} color="info" />
-          <KpiCard label="Fletëkthime" value={stats.nrFletekthimesh} icon={Receipt} color="danger" />
-          <KpiCard label="Porosi" value={stats.nrPorosive} icon={ShoppingCart} color="warning" />
-        </Row>
-
-        <Row>
+          <KpiCard label="Dokumente Pozitive" value={stats.nrPozitive} icon={FileText} color="info" />
+          <KpiCard label="Dokumente Negative" value={stats.nrNegative} icon={Receipt} color="danger" />
           <KpiCard label="Klientë Gjithsej" value={clients.length} icon={Users} color="info" />
           <KpiCard label="Produkte Gjithsej" value={products.length} icon={Package} color="emerald" />
-          <KpiCard label="Totali i Faturuar" value={`${stats.totaliFaturave.toFixed(2)} €`} icon={TrendingUp} color="emerald" />
-          <KpiCard label="Totali i Kthyer" value={`${stats.totaliFletekthimeve.toFixed(2)} €`} icon={TrendingDown} color="danger" />
+          <KpiCard label="Totali Pozitiv" value={`${stats.totaliPozitiv.toFixed(2)} €`} icon={TrendingUp} color="emerald" />
+          <KpiCard label="Totali Negativ" value={`${stats.totaliNegativ.toFixed(2)} €`} icon={TrendingDown} color="danger" />
         </Row>
 
         <Row className="g-4 mt-1">
@@ -282,7 +287,6 @@ function Statistika() {
         .st-kpi-emerald { border-top-color: var(--sp-emerald); }
         .st-kpi-info { border-top-color: var(--sp-cyan, #06b6d4); }
         .st-kpi-danger { border-top-color: var(--sp-red, #ef4444); }
-        .st-kpi-warning { border-top-color: #f59e0b; }
         .st-kpi-icon {
           width: 38px; height: 38px; border-radius: 10px;
           display: flex; align-items: center; justify-content: center;
@@ -293,6 +297,17 @@ function Statistika() {
           letter-spacing: 0.06em; color: var(--sp-text-muted); margin-bottom: 0.35rem;
         }
         .st-kpi-value { font-size: 1.4rem; font-weight: 700; color: var(--sp-text); }
+        .st-kpi-col { margin-bottom: 1rem; }
+        @media (max-width: 575.98px) {
+          .st-kpi-col { margin-bottom: 0.5rem; }
+          .st-kpi-card { padding: 0.75rem 0.85rem; border-radius: 12px; border-top-width: 2px; }
+          .st-kpi-icon {
+            width: 28px; height: 28px; border-radius: 8px; margin-bottom: 0.5rem;
+          }
+          .st-kpi-icon svg { width: 15px; height: 15px; }
+          .st-kpi-label { font-size: 0.58rem; margin-bottom: 0.2rem; }
+          .st-kpi-value { font-size: 1rem; }
+        }
         .st-panel {
           background: var(--sp-surface-2);
           border: 1px solid var(--sp-border);
