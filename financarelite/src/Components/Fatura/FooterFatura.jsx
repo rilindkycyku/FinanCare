@@ -134,7 +134,8 @@ function FooterFatura({ Barkodi, data }) {
           <Text>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</Text>
           <Text>(Personi Përgjegjës)</Text>
           <Text style={styles.bold}>
-            © 2023 - {new Date().getFullYear()} FinanCareLite —{" "}
+            © 2023 - {new Date().getFullYear()} FinanCareLite - Versioni Bazë i FinanCare, për Faturat, Klientët &amp;
+            Produktet —{" "}
             <Link src={FINANCARELITE_URL} style={styles.link}>{FINANCARELITE_DOMAIN}</Link>
           </Text>
         </View>
