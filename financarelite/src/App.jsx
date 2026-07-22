@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import "./Pages/Styles/PremiumTheme.css";
 import "./Pages/Styles/DizajniPergjithshem.css";
 import Dashboard from "./Pages/Dashboard";
@@ -22,24 +23,32 @@ function App() {
   const [sharePayload] = useState(() => readSharePayload());
 
   if (sharePayload) {
-    return <SharedFatura encoded={sharePayload} />;
+    return (
+      <>
+        <SharedFatura encoded={sharePayload} />
+        <Analytics />
+      </>
+    );
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/statistikat" element={<Statistika />} />
-      <Route path="/te-dhenat-biznesit" element={<TeDhenatBiznesit />} />
-      <Route path="/klientet" element={<Klientet />} />
-      <Route path="/produktet" element={<Produktet />} />
-      <Route path="/te-dhena" element={<TeDhena />} />
-      <Route path="/cilesimet" element={<Cilesimet />} />
-      <Route path="/faturat" element={<ListaFaturave />} />
-      <Route path="/kartela-analitike" element={<KartelaAnalitike />} />
-      <Route path="/faturat/re" element={<KrijoFaturen />} />
-      <Route path="/faturat/:id/edit" element={<KrijoFaturen />} />
-      <Route path="/faturat/:id" element={<FaturaView />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/statistikat" element={<Statistika />} />
+        <Route path="/te-dhenat-biznesit" element={<TeDhenatBiznesit />} />
+        <Route path="/klientet" element={<Klientet />} />
+        <Route path="/produktet" element={<Produktet />} />
+        <Route path="/te-dhena" element={<TeDhena />} />
+        <Route path="/cilesimet" element={<Cilesimet />} />
+        <Route path="/faturat" element={<ListaFaturave />} />
+        <Route path="/kartela-analitike" element={<KartelaAnalitike />} />
+        <Route path="/faturat/re" element={<KrijoFaturen />} />
+        <Route path="/faturat/:id/edit" element={<KrijoFaturen />} />
+        <Route path="/faturat/:id" element={<FaturaView />} />
+      </Routes>
+      <Analytics />
+    </>
   );
 }
 
