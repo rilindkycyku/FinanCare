@@ -7,7 +7,7 @@ import "./SettingsList.css";
 const BLANK_DOCTYPE = { label: "", value: "", negateAmounts: false };
 
 /** "Llojet e Faturave" — the business's own set of invoice/document types, in addition to the
- * 3 built-in ones (Faturë Shitëse, Porosi, Fletëkthim). Each type is just a label + a short
+ * built-in ones (see DEFAULT_DOCUMENT_TYPES in lib/options.js). Each type is just a label + a short
  * numbering prefix, plus a flag for whether amounts on that type should show as negative
  * (same as Fletëkthim does), for things like custom credit/return documents. Used everywhere a
  * document type is picked (KrijoFaturen's "Lloji i Dokumentit" select). */
@@ -55,7 +55,8 @@ function LlojetEDokumentit({ embedded }) {
     <div className={embedded ? "pt-3" : "containerDashboardP"}>
       {!embedded && <h1 className="titulliPerditeso">Llojet e Faturave</h1>}
       <p className="settings-list-intro">
-        Krijoni lloje faturash sipas nevojës suaj, përveç 3 llojeve bazë (Faturë Shitëse, Porosi, Fletëkthim). Çdo
+        Krijoni lloje faturash sipas nevojës suaj, përveç llojeve bazë (Faturë Shitëse, Porosi, Fletëkthim, Ofertë,
+        Parafaturë, Fletëdërgesë, Notë Debiti). Çdo
         lloj i ri ka një emër, një prefiks të shkurtër për numërimin (p.sh. "OFR"), dhe mund të shënohet që shumat e
         tij të shfaqen negative — njësoj si te Fletëkthimi — për dokumente të tjera kthimi/krediti.
       </p>

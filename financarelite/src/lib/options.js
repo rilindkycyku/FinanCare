@@ -23,6 +23,10 @@ export const DEFAULT_DOCUMENT_TYPES = [
   { id: "doctype_default_fat", value: "FAT", label: "Faturë Shitëse", titleLabel: "FATURË SHITËSE", negateAmounts: false },
   { id: "doctype_default_por", value: "POR", label: "Porosi", titleLabel: "POROSI", negateAmounts: false },
   { id: "doctype_default_kthim", value: "KTHIM", label: "Fletëkthim (Kredit Notë)", titleLabel: "FLETËKTHIM", negateAmounts: true },
+  { id: "doctype_default_ofr", value: "OFR", label: "Ofertë", titleLabel: "OFERTË", negateAmounts: false },
+  { id: "doctype_default_prf", value: "PRF", label: "Parafaturë (Proforma)", titleLabel: "PARAFATURË", negateAmounts: false },
+  { id: "doctype_default_fld", value: "FLD", label: "Fletëdërgesë", titleLabel: "FLETËDËRGESË", negateAmounts: false },
+  { id: "doctype_default_nd", value: "ND", label: "Notë Debiti", titleLabel: "NOTË DEBITI", negateAmounts: false },
 ];
 
 export const DEFAULT_UNITS = [

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAll, STORES } from "./db";
+import { getAll, ensureDefaultDocumentTypes, STORES } from "./db";
 
 /** The business-configured VAT rates (see "Llojet e TVSH" in Settings) — sorted low to high so
  * they list the same way everywhere they're picked from. */
@@ -26,13 +26,14 @@ export function useUnits() {
   return units;
 }
 
-/** The business-configured invoice document types — the 3 built-in ones (Faturë Shitëse,
- * Porosi, Fletëkthim) plus any custom types added from "Llojet e Faturave" in Settings. */
+/** The business-configured invoice document types — the built-in ones (see
+ * DEFAULT_DOCUMENT_TYPES in lib/options.js) plus any custom types added from "Llojet e
+ * Faturave" in Settings. Tops up any newly-added defaults an existing database predates. */
 export function useDocumentTypes() {
   const [documentTypes, setDocumentTypes] = useState([]);
 
   useEffect(() => {
-    getAll(STORES.documentTypes).then(setDocumentTypes);
+    ensureDefaultDocumentTypes().then(setDocumentTypes);
   }, []);
 
   return documentTypes;

@@ -132,6 +132,20 @@ export function clearStore(store) {
   return withStore(store, "readwrite", (s) => s.clear()).then(() => undefined);
 }
 
+// Document types are seeded once when the store is first created (see openDb above), so a
+// browser whose database already existed before new entries were added to
+// DEFAULT_DOCUMENT_TYPES would never see them. This tops the store up with whichever defaults
+// are still missing (matched by id, so it never touches a type the business already
+// edited/renamed) — safe to call on every load.
+export async function ensureDefaultDocumentTypes() {
+  const existing = await getAll(STORES.documentTypes);
+  const existingIds = new Set(existing.map((t) => t.id));
+  const missing = DEFAULT_DOCUMENT_TYPES.filter((t) => !existingIds.has(t.id));
+  if (missing.length === 0) return existing;
+  await Promise.all(missing.map((t) => put(STORES.documentTypes, t)));
+  return [...existing, ...missing];
+}
+
 // ---- business details: single record keyed by a constant ----
 
 export function getBusinessDetails() {

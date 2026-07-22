@@ -30,6 +30,7 @@ function Tabela({
   funksionButonEdit,
   funksionButonFshij,
   funksionNdryshoStatusin,
+  funksionEshteEditimDisabled,
   dateField,
   mosShfaqID,
   mosShfaqKerkimin,
@@ -177,7 +178,13 @@ function Tabela({
                               </button>
                             )}
                             {funksionButonEdit && (
-                              <button type="button" className="btn-action edit" onClick={() => funksionButonEdit(item.ID)} title="Ndrysho">
+                              <button
+                                type="button"
+                                className="btn-action edit"
+                                onClick={() => funksionButonEdit(item.ID)}
+                                disabled={funksionEshteEditimDisabled?.(item.ID)}
+                                title={funksionEshteEditimDisabled?.(item.ID) ? "Fatura është e mbyllur" : "Ndrysho"}
+                              >
                                 <Edit3 size={16} />
                               </button>
                             )}
@@ -362,6 +369,7 @@ function Tabela({
         .btn-action.delete { color: var(--sp-red); }
         .btn-action.status { color: #f59e0b; }
         .btn-action:hover { transform: translateY(-2px); background: var(--sp-surface-2); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-action:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
         .premium-pagination-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; color: var(--sp-text-muted); font-size: 0.8rem; }
         .premium-pagination .page-item .page-link {
           background: var(--sp-surface-2) !important; border: 1px solid var(--sp-border) !important; border-radius: 8px !important;
