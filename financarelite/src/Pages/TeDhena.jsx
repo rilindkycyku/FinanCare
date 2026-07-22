@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Button, Alert } from "react-bootstrap";
 import { Download, Upload } from "lucide-react";
 import NavBar from "../Components/NavBar";
+import Footer from "../Components/Footer";
 import PageTitle from "../Components/PageTitle";
 import { exportAllData, importAllData } from "../lib/db";
 import { useDialog } from "../Context/DialogContext";
@@ -73,6 +74,8 @@ function TeDhena() {
           <input ref={fileInputRef} type="file" accept="application/json" hidden onChange={handleImportFile} />
         </div>
       </div>
+
+      <Footer />
     </>
   );
 }

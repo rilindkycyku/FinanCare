@@ -96,7 +96,7 @@ function LlojetETVSH({ embedded }) {
                 <td data-label="Emri">
                   <Form.Control value={t.emri} onChange={(e) => updateTvsh(t.id, "emri", e.target.value)} />
                 </td>
-                <td data-label="Përqindja" style={{ maxWidth: 160 }}>
+                <td data-label="Përqindja" className="settings-col-narrow">
                   <Form.Control
                     type="number"
                     step="0.01"

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import NavBar from "../Components/NavBar";
+import Footer from "../Components/Footer";
 import PageTitle from "../Components/PageTitle";
 import ShtoKlientin from "../Components/ShtoKlientin";
 import Tabela from "../Components/Tabela/Tabela";
@@ -75,6 +76,8 @@ function Klientet() {
         onSaved={onSaved}
         initial={editing}
       />
+
+      <Footer />
     </>
   );
 }

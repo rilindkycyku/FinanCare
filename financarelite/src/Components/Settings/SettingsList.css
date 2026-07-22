@@ -1,9 +1,12 @@
 /* Shared look for the small "settings list" sections (Kurset e Këmbimit, Llojet e TVSH,
-   Njësitë Matëse) — a read-only table of existing rows plus an "add new" bar underneath. */
+   Njësitë Matëse, Llojet e Faturave) — a read-only table of existing rows plus an "add new"
+   bar underneath. */
 
 .settings-list-intro {
   color: var(--sp-text-muted);
   margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .settings-add-bar {
@@ -38,17 +41,49 @@
   opacity: 0.8 !important;
 }
 
-/* Desktop: plain table. */
+/* Every input across the add bar and the table below shares the same height/font so the
+   whole section reads as one consistent grid instead of a mix of different-sized fields. */
+.settings-add-bar .form-control,
+.settings-add-bar .form-select,
+.settings-table .form-control,
+.settings-table .form-select {
+  height: 40px;
+  font-size: 0.9rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* Desktop: plain table. The narrow-column widths only make sense once each cell sits in a
+   fixed-width table column — on mobile these become full-width labeled rows instead (below),
+   where a maxWidth would just clip the value, so it's scoped to this breakpoint only. */
 .settings-table td,
 .settings-table th {
   vertical-align: middle;
 }
 
+@media (min-width: 641px) {
+  .settings-table td.settings-col-narrow {
+    max-width: 160px;
+  }
+
+  .settings-table td.settings-col-medium {
+    max-width: 220px;
+  }
+}
+
 /* Mobile: each row becomes a labeled card instead of a squeezed table row, so long
-   placeholders/inputs never get clipped. */
+   placeholders/inputs never get clipped, and everything is sized down to fit comfortably. */
 @media (max-width: 640px) {
+  .settings-list-intro {
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
   .settings-add-bar {
     grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
 
   .settings-table thead {
@@ -65,33 +100,51 @@
 
   .settings-table tr {
     border: 1px solid var(--sp-border);
-    border-radius: 12px;
-    margin-bottom: 0.75rem;
-    padding: 0.35rem 0.25rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem;
   }
 
   .settings-table td {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.75rem !important;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem !important;
     border: none !important;
     background: transparent !important;
+    max-width: none !important;
   }
 
   .settings-table td[data-label]::before {
     content: attr(data-label);
     flex: 0 0 auto;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     color: var(--sp-text-muted);
-    min-width: 64px;
+    min-width: 52px;
   }
 
   .settings-table td > * {
     flex: 1 1 auto;
     min-width: 0;
+  }
+
+  .settings-add-bar .form-control,
+  .settings-add-bar .form-select,
+  .settings-table .form-control,
+  .settings-table .form-select {
+    height: 36px;
+    font-size: 0.82rem;
+  }
+
+  /* The delete button's own column: a compact icon-only button instead of a full-width bar. */
+  .settings-table td:last-child {
+    justify-content: flex-end;
+  }
+
+  .settings-table td:last-child > * {
+    flex: 0 0 auto;
   }
 }

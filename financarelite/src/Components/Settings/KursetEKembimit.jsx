@@ -86,7 +86,7 @@ function KursetEKembimit({ embedded }) {
             {currencies.map((c) => (
               <tr key={c.id}>
                 <td data-label="Kodi">{c.code}</td>
-                <td data-label="Kursi" style={{ maxWidth: 160 }}>
+                <td data-label="Kursi" className="settings-col-narrow">
                   <Form.Control
                     type="number"
                     step="0.0001"
