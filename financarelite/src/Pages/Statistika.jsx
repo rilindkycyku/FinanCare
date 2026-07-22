@@ -299,14 +299,14 @@ function Statistika() {
         .st-kpi-value { font-size: 1.4rem; font-weight: 700; color: var(--sp-text); }
         .st-kpi-col { margin-bottom: 1rem; }
         @media (max-width: 575.98px) {
-          .st-kpi-col { margin-bottom: 0.5rem; }
-          .st-kpi-card { padding: 0.75rem 0.85rem; border-radius: 12px; border-top-width: 2px; }
+          .st-kpi-col { margin-bottom: 0.4rem; }
+          .st-kpi-card { padding: 0.6rem 0.65rem; border-radius: 10px; border-top-width: 2px; }
           .st-kpi-icon {
-            width: 28px; height: 28px; border-radius: 8px; margin-bottom: 0.5rem;
+            width: 22px; height: 22px; border-radius: 6px; margin-bottom: 0.35rem;
           }
-          .st-kpi-icon svg { width: 15px; height: 15px; }
-          .st-kpi-label { font-size: 0.58rem; margin-bottom: 0.2rem; }
-          .st-kpi-value { font-size: 1rem; }
+          .st-kpi-icon svg { width: 12px; height: 12px; }
+          .st-kpi-label { font-size: 0.5rem; margin-bottom: 0.15rem; }
+          .st-kpi-value { font-size: 0.85rem; }
         }
         .st-panel {
           background: var(--sp-surface-2);
