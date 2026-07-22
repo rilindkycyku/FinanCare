@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../Components/NavBar";
 import PageTitle from "../../Components/PageTitle";
@@ -58,6 +58,14 @@ function FaturaView() {
 
   const mbyllur = invoice ? invoice.mbyllur !== false : true;
 
+  // Memoized so `Fatura` (and the PDF it builds for the on-screen preview) doesn't regenerate
+  // every time unrelated state changes here (opening a modal, etc.) — only when the underlying
+  // invoice/business/bank/currency data actually changes.
+  const faturaData = useMemo(
+    () => (invoice ? buildFaturaData({ invoice, teDhenatBiznesit, banks, currencies }) : null),
+    [invoice, teDhenatBiznesit, banks, currencies]
+  );
+
   const onToggleStatus = async () => {
     if (!invoice) return;
     const mesazhi = mbyllur
@@ -82,7 +90,7 @@ function FaturaView() {
       ) : (
         <>
           <Fatura
-            data={buildFaturaData({ invoice, teDhenatBiznesit, banks, currencies })}
+            data={faturaData}
             qrCodeDataUrl={shareQr.status === "ready" ? shareQr.dataUrl : undefined}
             onBack={() => navigate("/faturat")}
             onShare={() => setShowShare(true)}

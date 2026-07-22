@@ -40,7 +40,7 @@ const BIZ_FIELDS = [
 const DataItem = ({ label, value, icon }) => {
   const Icon = icon;
   return (
-    <Col md={6} lg={3} className="mb-4">
+    <Col xs={6} md={6} lg={3} className="mb-3">
       <div className="data-group">
         <div className="data-label">
           <Icon size={14} className="text-primary" />

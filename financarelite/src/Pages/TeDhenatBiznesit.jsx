@@ -22,6 +22,7 @@ const BUZ_FIELDS = [
   { name: "email", label: "Email", md: 4 },
   { name: "adresa", label: "Adresa", md: 4 },
   { name: "nrKontaktit", label: "Numri i Kontaktit", md: 4 },
+  { name: "website", label: "Uebfaqja (Website)", md: 4 },
 ];
 
 const BLANK_BANK = { emriBankes: "", numriLlogaris: "", valuta: "EUR" };

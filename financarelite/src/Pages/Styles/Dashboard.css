@@ -242,6 +242,23 @@
   .quick-action-card span {
     font-size: 0.75rem !important;
   }
+
+  .data-group {
+    padding: 0.6rem 0.7rem;
+    border-radius: 10px;
+  }
+
+  .data-label {
+    font-size: 0.58rem;
+    gap: 6px;
+    margin-bottom: 0.3rem;
+    align-items: flex-start;
+  }
+
+  .data-value {
+    font-size: 0.78rem;
+    word-break: break-word;
+  }
 }
 
 @media (max-width: 480px) {

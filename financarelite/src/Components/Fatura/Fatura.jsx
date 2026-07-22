@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Styles/FaturaModern.css";
-import { Document, Page, pdf, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
+import { Document, Page, pdf, PDFViewer, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import { Button, Spinner } from "react-bootstrap";
 import { Download, ArrowLeft, FileText, Share2, Pencil, Lock, Unlock, CreditCard } from "lucide-react";
 import DetajeFatura from "./DetajeFatura";
 import HeaderFatura from "./HeaderFatura";
-import TeDhenatFatura from "./TeDhenatFatura";
 import FooterFatura from "./FooterFatura";
 
 Font.register({
@@ -25,7 +24,10 @@ const styles = StyleSheet.create({
 
 /** Renders one invoice, on-screen and as a downloadable PDF. `data` = { produktet, teDhenatFat, teDhenatBiznesit, bankat }.
  * `qrCodeDataUrl`, once available, is embedded directly on the invoice footer (on-screen and in
- * the PDF) so a printed/exported copy carries a working "scan to reopen" code on its own. */
+ * the PDF) so a printed/exported copy carries a working "scan to reopen" code on its own.
+ * The on-screen preview is the literal PDF (via `PDFViewer`, the browser's native PDF plugin)
+ * rather than a parallel HTML re-implementation — one always matches what gets printed/downloaded,
+ * and the native viewer gives real pinch-zoom/pan on mobile instead of a squished layout. */
 function Fatura({
   data,
   qrCodeDataUrl,
@@ -41,6 +43,38 @@ function Fatura({
   const { produktet = [], teDhenatFat = {}, teDhenatBiznesit = {}, bankat = [], currencies = [] } = data || {};
   const [saving, setSaving] = useState(false);
   const [autoDownloaded, setAutoDownloaded] = useState(false);
+
+  // The toolbar used to be `position: sticky` so it stayed visible while the (long, HTML)
+  // invoice scrolled underneath it — but with the invoice now a native PDF viewer (which
+  // scrolls/zooms internally on its own), a sticky toolbar just sits on top of it as the
+  // outer page scrolls, covering the invoice header instead of stopping above it. Sizing the
+  // PDF viewer to exactly fill the remaining viewport height means the outer page never
+  // scrolls at all, so the toolbar and the invoice never overlap in the first place.
+  const containerRef = useRef(null);
+  const shellRef = useRef(null);
+  const [shellHeight, setShellHeight] = useState(null);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const shell = shellRef.current;
+    if (!container || !shell) return;
+
+    const recalc = () => {
+      const shellTop = shell.getBoundingClientRect().top;
+      const containerBottomPadding = parseFloat(getComputedStyle(container).paddingBottom) || 0;
+      const available = window.innerHeight - shellTop - containerBottomPadding;
+      setShellHeight(Math.max(available, 400));
+    };
+
+    recalc();
+    window.addEventListener("resize", recalc);
+    const resizeObserver = new ResizeObserver(recalc);
+    resizeObserver.observe(container);
+    return () => {
+      window.removeEventListener("resize", recalc);
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const dataPorosise = new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now());
   const dita = dataPorosise.getDate().toString().padStart(2, "0");
@@ -62,13 +96,10 @@ function Fatura({
     return remainder > 0 ? (remainder <= 14 ? fullPages + 1 : fullPages + 2) : Math.max(fullPages, 1);
   }, [produktet.length]);
 
-  const InvoicePDF = () => {
-    const itemsPerFullPage = 24;
-    const maxItemsLastPage = 14;
-    const pages = [];
-    let currentStart = 0;
-    let pageNumber = 1;
-
+  // Built once per actual data change (not on every render) — passed as-is to both the
+  // download button and the on-screen `PDFViewer`, so they're always in sync and the
+  // viewer doesn't regenerate/reload its PDF on unrelated re-renders (e.g. opening a modal).
+  const invoiceDocument = useMemo(() => {
     if (produktet.length === 0) {
       return (
         <Document>
@@ -78,6 +109,12 @@ function Fatura({
         </Document>
       );
     }
+
+    const itemsPerFullPage = 24;
+    const maxItemsLastPage = 14;
+    const pages = [];
+    let currentStart = 0;
+    let pageNumber = 1;
 
     while (currentStart < produktet.length) {
       let itemsPerPage = itemsPerFullPage;
@@ -101,7 +138,6 @@ function Fatura({
             LargoFooter={forceFooterNewPage || end < produktet.length}
             NrFaqes={pageNumber}
             NrFaqeve={estimatedPages}
-            isPDF
             data={{ produktet, teDhenatFat, teDhenatBiznesit, bankat, currencies, qrCodeDataUrl }}
             forceFooterNewPage={forceFooterNewPage}
           />
@@ -112,9 +148,9 @@ function Fatura({
         pages.push(
           <Page size={{ width: 595, height: 842 }} key={pageNumber + 1}>
             <View style={{ padding: 20, fontSize: 11 }}>
-              <HeaderFatura Barkodi={barkodi} NrFaqes={pageNumber + 1} NrFaqeve={estimatedPages} isPDF data={{ teDhenatFat, teDhenatBiznesit }} />
+              <HeaderFatura Barkodi={barkodi} NrFaqes={pageNumber + 1} NrFaqeve={estimatedPages} data={{ teDhenatFat, teDhenatBiznesit }} />
               <View style={styles.hr} />
-              <FooterFatura Barkodi={barkodi} isPDF data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
+              <FooterFatura Barkodi={barkodi} data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
             </View>
           </Page>
         );
@@ -126,12 +162,12 @@ function Fatura({
     }
 
     return <Document>{pages}</Document>;
-  };
+  }, [produktet, teDhenatFat, teDhenatBiznesit, bankat, currencies, qrCodeDataUrl, barkodi, estimatedPages]);
 
   async function ruajFaturen() {
     try {
       setSaving(true);
-      const blob = await pdf(<InvoicePDF />).toBlob();
+      const blob = await pdf(invoiceDocument).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -154,44 +190,44 @@ function Fatura({
   }, [autoDownload]);
 
   return (
-    <div className="invoice-viewer-container">
+    <div className="invoice-viewer-container" ref={containerRef}>
       <div className="invoice-toolbar shadow-sm">
         <div className="d-flex align-items-center">
           <FileText size={24} className="text-primary me-3" />
           <h1 className="invoice-title-main mb-0">{barkodi}</h1>
         </div>
 
-        <div className="d-flex align-items-center">
+        <div className="invoice-toolbar-actions">
           <span className="invoice-page-hint d-none d-md-inline">
             Fatura ndahet në: <strong>{estimatedPages} faqe</strong>
           </span>
 
           {onShare && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onShare}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onShare}>
               <Share2 size={18} /> QR / Shpërndaj
             </Button>
           )}
 
           {onAddPayment && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onAddPayment}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onAddPayment}>
               <CreditCard size={18} /> Shto Pagesë
             </Button>
           )}
 
           {onToggleStatus && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onToggleStatus}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onToggleStatus}>
               {mbyllur ? <Unlock size={18} /> : <Lock size={18} />}
               {mbyllur ? "Hap Faturën" : "Mbyll Faturën"}
             </Button>
           )}
 
           {onEdit && !mbyllur && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onEdit}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onEdit}>
               <Pencil size={18} /> Ndrysho
             </Button>
           )}
 
-          <Button className="btn-invoice-action btn-invoice-save me-3" onClick={ruajFaturen} disabled={saving}>
+          <Button className="btn-invoice-action btn-invoice-save" onClick={ruajFaturen} disabled={saving}>
             {saving ? <Spinner size="sm" /> : <Download size={18} />}
             {saving ? "Duke Ruajtur..." : "Ruaj Faturën"}
           </Button>
@@ -204,12 +240,10 @@ function Fatura({
         </div>
       </div>
 
-      <div className="invoice-paper" id="invoice-capture">
-        <HeaderFatura Barkodi={barkodi} NrFaqes={1} NrFaqeve={estimatedPages} isPDF={false} data={{ teDhenatFat, teDhenatBiznesit }} />
-        <hr className="invoice-hr" />
-        <TeDhenatFatura ProduktiPare={0} ProduktiFundit={produktet.length} isPDF={false} data={{ produktet }} />
-        <hr className="invoice-hr" />
-        <FooterFatura Barkodi={barkodi} isPDF={false} data={{ teDhenatFat, produktet, bankat, currencies, qrCodeDataUrl }} />
+      <div className="invoice-pdf-shell" ref={shellRef} style={{ height: shellHeight ?? undefined }}>
+        <PDFViewer className="invoice-pdf-viewer" showToolbar={false}>
+          {invoiceDocument}
+        </PDFViewer>
       </div>
     </div>
   );
