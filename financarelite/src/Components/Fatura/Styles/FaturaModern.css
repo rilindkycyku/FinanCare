@@ -9,20 +9,21 @@
 
 .invoice-viewer-container {
   background-color: #f8fafc;
-  min-height: 100vh;
   padding: 2rem 0;
   overflow-x: hidden;
 }
 
-/* Houses the native PDF viewer (an iframe under the hood) at a fixed aspect ratio, so the
- * invoice keeps its real A4 proportions and page count at every screen width — the browser's
- * own PDF plugin handles zoom/pan/pagination instead of a squished, restacked HTML layout. */
+/* Houses the native PDF viewer (an iframe under the hood), sized by Fatura.jsx to exactly
+ * fill the remaining viewport below the toolbar — the invoice keeps its real A4 proportions
+ * and page count at every screen width (the browser's own PDF plugin handles zoom/pan/
+ * pagination instead of a squished, restacked HTML layout), and the outer page never scrolls,
+ * so the toolbar above it never ends up overlapping the invoice. `min-height` is only a
+ * fallback for the first paint, before JS has measured the available space. */
 .invoice-pdf-shell {
   width: 95%;
   max-width: 1000px;
   margin: 0 auto;
-  height: 85vh;
-  min-height: 500px;
+  min-height: 400px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -36,16 +37,12 @@
 }
 
 .invoice-toolbar {
-  position: sticky;
-  top: 4.5rem; /* Keeps it under the FinanCareLite navbar */
-  z-index: 90;
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
+  background: #fff;
   padding: 1rem 2rem;
   border-radius: 16px;
   border: 1px solid rgba(226, 232, 240, 0.8);
@@ -152,9 +149,5 @@
 
   .invoice-page-hint {
     margin-right: 0;
-  }
-
-  .invoice-pdf-shell {
-    height: 75vh;
   }
 }

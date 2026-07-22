@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Styles/FaturaModern.css";
 import { Document, Page, pdf, PDFViewer, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import { Button, Spinner } from "react-bootstrap";
@@ -43,6 +43,38 @@ function Fatura({
   const { produktet = [], teDhenatFat = {}, teDhenatBiznesit = {}, bankat = [], currencies = [] } = data || {};
   const [saving, setSaving] = useState(false);
   const [autoDownloaded, setAutoDownloaded] = useState(false);
+
+  // The toolbar used to be `position: sticky` so it stayed visible while the (long, HTML)
+  // invoice scrolled underneath it — but with the invoice now a native PDF viewer (which
+  // scrolls/zooms internally on its own), a sticky toolbar just sits on top of it as the
+  // outer page scrolls, covering the invoice header instead of stopping above it. Sizing the
+  // PDF viewer to exactly fill the remaining viewport height means the outer page never
+  // scrolls at all, so the toolbar and the invoice never overlap in the first place.
+  const containerRef = useRef(null);
+  const shellRef = useRef(null);
+  const [shellHeight, setShellHeight] = useState(null);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const shell = shellRef.current;
+    if (!container || !shell) return;
+
+    const recalc = () => {
+      const shellTop = shell.getBoundingClientRect().top;
+      const containerBottomPadding = parseFloat(getComputedStyle(container).paddingBottom) || 0;
+      const available = window.innerHeight - shellTop - containerBottomPadding;
+      setShellHeight(Math.max(available, 400));
+    };
+
+    recalc();
+    window.addEventListener("resize", recalc);
+    const resizeObserver = new ResizeObserver(recalc);
+    resizeObserver.observe(container);
+    return () => {
+      window.removeEventListener("resize", recalc);
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const dataPorosise = new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now());
   const dita = dataPorosise.getDate().toString().padStart(2, "0");
@@ -158,7 +190,7 @@ function Fatura({
   }, [autoDownload]);
 
   return (
-    <div className="invoice-viewer-container">
+    <div className="invoice-viewer-container" ref={containerRef}>
       <div className="invoice-toolbar shadow-sm">
         <div className="d-flex align-items-center">
           <FileText size={24} className="text-primary me-3" />
@@ -208,7 +240,7 @@ function Fatura({
         </div>
       </div>
 
-      <div className="invoice-pdf-shell">
+      <div className="invoice-pdf-shell" ref={shellRef} style={{ height: shellHeight ?? undefined }}>
         <PDFViewer className="invoice-pdf-viewer" showToolbar={false}>
           {invoiceDocument}
         </PDFViewer>
