@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Styles/FaturaModern.css";
-import { Document, Page, pdf, PDFViewer, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
+import { Document, Page, pdf, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import { Button, Spinner } from "react-bootstrap";
 import { Download, ArrowLeft, FileText, Share2, Pencil, Lock, Unlock, CreditCard } from "lucide-react";
 import DetajeFatura from "./DetajeFatura";
 import HeaderFatura from "./HeaderFatura";
 import FooterFatura from "./FooterFatura";
+import PdfCanvasViewer from "./PdfCanvasViewer";
 
 Font.register({
   family: "Quicksand",
@@ -25,9 +26,11 @@ const styles = StyleSheet.create({
 /** Renders one invoice, on-screen and as a downloadable PDF. `data` = { produktet, teDhenatFat, teDhenatBiznesit, bankat }.
  * `qrCodeDataUrl`, once available, is embedded directly on the invoice footer (on-screen and in
  * the PDF) so a printed/exported copy carries a working "scan to reopen" code on its own.
- * The on-screen preview is the literal PDF (via `PDFViewer`, the browser's native PDF plugin)
- * rather than a parallel HTML re-implementation — one always matches what gets printed/downloaded,
- * and the native viewer gives real pinch-zoom/pan on mobile instead of a squished layout. */
+ * The on-screen preview rasterizes the literal PDF with pdf.js (`PdfCanvasViewer`) rather than a
+ * parallel HTML re-implementation, so it always matches what gets printed/downloaded. This used to
+ * embed the PDF via `<PDFViewer>` (the browser's native plugin inside an iframe), but mobile Chrome
+ * doesn't render that reliably — it falls back to a bare "Open" download prompt instead of showing
+ * the invoice — so the pages are drawn to canvas directly instead. */
 function Fatura({
   data,
   qrCodeDataUrl,
@@ -45,10 +48,10 @@ function Fatura({
   const [autoDownloaded, setAutoDownloaded] = useState(false);
 
   // The toolbar used to be `position: sticky` so it stayed visible while the (long, HTML)
-  // invoice scrolled underneath it — but with the invoice now a native PDF viewer (which
-  // scrolls/zooms internally on its own), a sticky toolbar just sits on top of it as the
-  // outer page scrolls, covering the invoice header instead of stopping above it. Sizing the
-  // PDF viewer to exactly fill the remaining viewport height means the outer page never
+  // invoice scrolled underneath it — but with the invoice now rendered as a PDF preview (which
+  // scrolls internally on its own, see `.invoice-pdf-viewer`), a sticky toolbar just sits on top
+  // of it as the outer page scrolls, covering the invoice header instead of stopping above it.
+  // Sizing the preview to exactly fill the remaining viewport height means the outer page never
   // scrolls at all, so the toolbar and the invoice never overlap in the first place.
   const containerRef = useRef(null);
   const shellRef = useRef(null);
@@ -97,8 +100,8 @@ function Fatura({
   }, [produktet.length]);
 
   // Built once per actual data change (not on every render) — passed as-is to both the
-  // download button and the on-screen `PDFViewer`, so they're always in sync and the
-  // viewer doesn't regenerate/reload its PDF on unrelated re-renders (e.g. opening a modal).
+  // download button and the on-screen preview, so they're always in sync and the preview
+  // doesn't regenerate/reload its PDF on unrelated re-renders (e.g. opening a modal).
   const invoiceDocument = useMemo(() => {
     if (produktet.length === 0) {
       return (
@@ -163,6 +166,23 @@ function Fatura({
 
     return <Document>{pages}</Document>;
   }, [produktet, teDhenatFat, teDhenatBiznesit, bankat, currencies, qrCodeDataUrl, barkodi, estimatedPages]);
+
+  // The on-screen preview needs the invoice as an actual PDF blob (to rasterize with pdf.js),
+  // built separately from `ruajFaturen`'s own blob so a slow render never blocks the download button.
+  const [previewBlob, setPreviewBlob] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    setPreviewBlob(null);
+    pdf(invoiceDocument)
+      .toBlob()
+      .then((blob) => {
+        if (!cancelled) setPreviewBlob(blob);
+      })
+      .catch((err) => console.error("Gabim gjatë përgatitjes së faturës:", err));
+    return () => {
+      cancelled = true;
+    };
+  }, [invoiceDocument]);
 
   async function ruajFaturen() {
     try {
@@ -241,9 +261,7 @@ function Fatura({
       </div>
 
       <div className="invoice-pdf-shell" ref={shellRef} style={{ height: shellHeight ?? undefined }}>
-        <PDFViewer className="invoice-pdf-viewer" showToolbar={false}>
-          {invoiceDocument}
-        </PDFViewer>
+        <PdfCanvasViewer className="invoice-pdf-viewer" blob={previewBlob} />
       </div>
     </div>
   );

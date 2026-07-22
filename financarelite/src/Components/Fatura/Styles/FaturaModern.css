@@ -13,12 +13,10 @@
   overflow-x: hidden;
 }
 
-/* Houses the native PDF viewer (an iframe under the hood), sized by Fatura.jsx to exactly
- * fill the remaining viewport below the toolbar — the invoice keeps its real A4 proportions
- * and page count at every screen width (the browser's own PDF plugin handles zoom/pan/
- * pagination instead of a squished, restacked HTML layout), and the outer page never scrolls,
- * so the toolbar above it never ends up overlapping the invoice. `min-height` is only a
- * fallback for the first paint, before JS has measured the available space. */
+/* Houses the PDF preview, sized by Fatura.jsx to exactly fill the remaining viewport below the
+ * toolbar — the invoice keeps its real A4 proportions and page count at every screen width, and
+ * the outer page never scrolls, so the toolbar above it never ends up overlapping the invoice.
+ * `min-height` is only a fallback for the first paint, before JS has measured the available space. */
 .invoice-pdf-shell {
   width: 95%;
   max-width: 1000px;
@@ -28,12 +26,49 @@
   overflow: hidden;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   border: 1px solid var(--invoice-border);
+  background: #525659;
 }
 
+/* Each page is rasterized to its own `<canvas>` (see PdfCanvasViewer) and stacked here — this
+ * scrolls internally (native touch/pinch works fine over it) rather than relying on the browser's
+ * own PDF plugin inside an iframe, which mobile Chrome doesn't render reliably (it falls back to
+ * a plain "Open" download prompt instead of showing the invoice). */
 .invoice-pdf-viewer {
   width: 100%;
   height: 100%;
-  border: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.invoice-pdf-viewer .invoice-pdf-page {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  background: #fff;
+}
+
+.invoice-pdf-loading,
+.invoice-pdf-error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--invoice-muted);
+  padding: 2rem;
+  text-align: center;
+}
+
+.invoice-pdf-error {
+  color: #b91c1c;
+  font-weight: 600;
 }
 
 .invoice-toolbar {
@@ -119,9 +154,8 @@
 }
 
 @media print {
-  /* The invoice itself is a real PDF (native browser plugin inside an iframe) rather than an
-   * HTML approximation — use "Ruaj Faturën" to get a print-ready copy instead of printing
-   * this page, since nested PDF-plugin content doesn't print reliably through Ctrl+P. */
+  /* The invoice preview is a rasterized copy of the real PDF, capped to screen resolution —
+   * use "Ruaj Faturën" to get a full-quality, print-ready copy instead of printing this page. */
   .invoice-viewer-container {
     background: white;
     padding: 0;
