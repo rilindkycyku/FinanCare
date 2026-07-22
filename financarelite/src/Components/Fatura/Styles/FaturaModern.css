@@ -184,4 +184,13 @@
   .invoice-page-hint {
     margin-right: 0;
   }
+
+  .invoice-title-main {
+    font-size: 1rem;
+  }
+
+  .btn-invoice-action {
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.8rem !important;
+  }
 }

@@ -432,7 +432,21 @@ function KartelaAnalitike() {
           color: var(--sp-text-muted);
           margin-bottom: 0.25rem;
         }
-        .ka-partner-value { font-weight: 600; color: var(--sp-text); }
+        .ka-partner-value { font-weight: 600; color: var(--sp-text); font-size: 0.85rem; }
+        @media (max-width: 575.98px) {
+          .ka-action-btn { padding: 0.5rem 0.8rem; font-size: 0.75rem; }
+          .ka-stat-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+          .ka-stat-card { padding: 0.65rem 0.7rem; border-radius: 10px; border-top-width: 2px; }
+          .ka-stat-icon { width: 24px; height: 24px; border-radius: 7px; margin-bottom: 0.35rem; }
+          .ka-stat-icon svg { width: 13px; height: 13px; }
+          .ka-stat-label { font-size: 0.52rem; margin-bottom: 0.2rem; }
+          .ka-stat-value { font-size: 1rem; }
+          .ka-stat-unit { font-size: 0.6rem; }
+          .ka-partner-header { padding: 0.6rem 0.75rem; font-size: 0.65rem; }
+          .ka-partner-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding: 0.75rem; }
+          .ka-partner-label { font-size: 0.58rem; }
+          .ka-partner-value { font-size: 0.75rem; }
+        }
       `}</style>
     </>
   );

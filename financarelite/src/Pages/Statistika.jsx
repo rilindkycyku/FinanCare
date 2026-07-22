@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import {
   BarChart3, TrendingUp, TrendingDown, DollarSign, Users, Package,
-  FileText, Receipt, ShoppingCart, ArrowUpRight,
+  FileText, Receipt, ArrowUpRight,
 } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import Footer from "../Components/Footer";
 import { getAll, STORES } from "../lib/db";
 import { calcInvoiceTotals } from "../lib/invoiceCalc";
+import { useDocumentTypes } from "../lib/useConfigLists";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
@@ -18,7 +19,7 @@ const MUAJT = ["Jan", "Shk", "Mar", "Pri", "Maj", "Qer", "Kor", "Gus", "Sht", "T
 const KpiCard = ({ label, value, icon, color }) => {
   const Icon = icon;
   return (
-    <Col md={6} lg={3} className="mb-4">
+    <Col xs={6} md={4} lg={3} className="st-kpi-col">
       <div className={`st-kpi-card st-kpi-${color}`}>
         <div className="st-kpi-icon">
           <Icon size={20} />
@@ -31,19 +32,19 @@ const KpiCard = ({ label, value, icon, color }) => {
 };
 
 const RankedRow = ({ rank, name, sub, value, barWidth, shareText }) => (
-  <div className="d-flex align-items-center gap-2 mb-2 py-1">
+  <div className="st-ranked-row d-flex align-items-center py-1">
     <span className="st-rank">#{rank}</span>
     <div className="flex-grow-1 min-w-0">
-      <div className="fw-semibold text-truncate" style={{ fontSize: "0.85rem" }}>{name}</div>
-      {sub && <div className="text-muted" style={{ fontSize: "0.7rem" }}>{sub}</div>}
+      <div className="st-rank-name fw-semibold text-truncate">{name}</div>
+      {sub && <div className="st-rank-sub text-muted">{sub}</div>}
     </div>
     <span className="st-rank-value">{value}</span>
-    <div style={{ minWidth: 55 }}>
+    <div className="st-rank-bar-wrap">
       <div className="st-bar-track">
         <div className="st-bar-fill" style={{ width: `${barWidth}%` }} />
       </div>
     </div>
-    <span className="text-muted" style={{ fontSize: "0.7rem", minWidth: 32 }}>{shareText.toFixed(1)}%</span>
+    <span className="st-rank-share text-muted">{shareText.toFixed(1)}%</span>
   </div>
 );
 
@@ -52,6 +53,7 @@ function Statistika() {
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const documentTypes = useDocumentTypes();
 
   useEffect(() => {
     Promise.all([getAll(STORES.invoices), getAll(STORES.clients), getAll(STORES.products)]).then(
@@ -65,14 +67,21 @@ function Statistika() {
   }, []);
 
   const stats = useMemo(() => {
+    // Real sales invoices only — used for the client/product rankings and monthly trend below.
     const faturat = invoices.filter((inv) => inv.llojiDokumentit === "FAT");
-    const fletekthimet = invoices.filter((inv) => inv.llojiDokumentit === "KTHIM");
-    const porosite = invoices.filter((inv) => inv.llojiDokumentit === "POR");
-
     const totali = (list) => list.reduce((sum, inv) => sum + calcInvoiceTotals(inv.items, inv.transporti).totaliFinal, 0);
     const totaliFaturave = totali(faturat);
-    const totaliFletekthimeve = Math.abs(totali(fletekthimet));
-    const totaliNeto = totaliFaturave - totaliFletekthimeve;
+
+    // Dashboard KPI totals: the business can add as many document types as it wants (Cilësimet →
+    // Llojet e Faturave), so instead of a card per type, every type reduces to positive or
+    // negative via its own negateAmounts flag — the same flag already used to flip invoice
+    // amounts when saving. This way custom types are always reflected, not just FAT/KTHIM/POR.
+    const negatedTypes = new Set(documentTypes.filter((dt) => dt.negateAmounts).map((dt) => dt.value));
+    const pozitivet = invoices.filter((inv) => !negatedTypes.has(inv.llojiDokumentit));
+    const negativet = invoices.filter((inv) => negatedTypes.has(inv.llojiDokumentit));
+    const totaliPozitiv = totali(pozitivet);
+    const totaliNegativ = Math.abs(totali(negativet));
+    const totaliNeto = totaliPozitiv - totaliNegativ;
 
     const byClient = new Map();
     faturat.forEach((inv) => {
@@ -116,11 +125,11 @@ function Statistika() {
     });
 
     return {
-      totaliFaturave, totaliFletekthimeve, totaliNeto,
-      nrFaturash: faturat.length, nrFletekthimesh: fletekthimet.length, nrPorosive: porosite.length,
+      totaliFaturave, totaliPozitiv, totaliNegativ, totaliNeto,
+      nrPozitive: pozitivet.length, nrNegative: negativet.length,
       topKlientet, topProduktet, trendiMujor,
     };
-  }, [invoices]);
+  }, [invoices, documentTypes]);
 
   if (loading) {
     return (
@@ -149,21 +158,17 @@ function Statistika() {
           </div>
         </div>
 
-        <Row>
+        <Row className="g-2 g-md-4">
           <KpiCard label="Shitjet Neto" value={`${stats.totaliNeto.toFixed(2)} €`} icon={DollarSign} color="emerald" />
-          <KpiCard label="Fatura Shitëse" value={stats.nrFaturash} icon={FileText} color="info" />
-          <KpiCard label="Fletëkthime" value={stats.nrFletekthimesh} icon={Receipt} color="danger" />
-          <KpiCard label="Porosi" value={stats.nrPorosive} icon={ShoppingCart} color="warning" />
-        </Row>
-
-        <Row>
+          <KpiCard label="Dokumente Pozitive" value={stats.nrPozitive} icon={FileText} color="info" />
+          <KpiCard label="Dokumente Negative" value={stats.nrNegative} icon={Receipt} color="danger" />
           <KpiCard label="Klientë Gjithsej" value={clients.length} icon={Users} color="info" />
           <KpiCard label="Produkte Gjithsej" value={products.length} icon={Package} color="emerald" />
-          <KpiCard label="Totali i Faturuar" value={`${stats.totaliFaturave.toFixed(2)} €`} icon={TrendingUp} color="emerald" />
-          <KpiCard label="Totali i Kthyer" value={`${stats.totaliFletekthimeve.toFixed(2)} €`} icon={TrendingDown} color="danger" />
+          <KpiCard label="Totali Pozitiv" value={`${stats.totaliPozitiv.toFixed(2)} €`} icon={TrendingUp} color="emerald" />
+          <KpiCard label="Totali Negativ" value={`${stats.totaliNegativ.toFixed(2)} €`} icon={TrendingDown} color="danger" />
         </Row>
 
-        <Row className="g-4 mt-1">
+        <Row className="g-3 g-md-4 mt-1">
           <Col xl={6}>
             <div className="st-panel h-100">
               <div className="st-panel-header">
@@ -176,12 +181,12 @@ function Statistika() {
                 ) : (
                   <div className="d-flex flex-column gap-2">
                     {stats.trendiMujor.map((m, i) => (
-                      <div key={i} className="d-flex align-items-center gap-3">
-                        <span className="text-muted" style={{ minWidth: 34, fontSize: "0.78rem" }}>{m.label}</span>
-                        <div className="flex-grow-1 st-bar-track" style={{ height: 8 }}>
-                          <div className="st-bar-fill" style={{ width: `${(m.vlera / maxTrend) * 100}%`, height: 8 }} />
+                      <div key={i} className="st-trend-row d-flex align-items-center">
+                        <span className="st-trend-label text-muted">{m.label}</span>
+                        <div className="flex-grow-1 st-bar-track st-bar-track-lg">
+                          <div className="st-bar-fill" style={{ width: `${(m.vlera / maxTrend) * 100}%` }} />
                         </div>
-                        <span className="fw-bold text-emerald" style={{ minWidth: 90, fontSize: "0.8rem", textAlign: "right" }}>
+                        <span className="st-trend-value fw-bold text-emerald">
                           {m.vlera.toFixed(2)} €
                         </span>
                       </div>
@@ -282,7 +287,6 @@ function Statistika() {
         .st-kpi-emerald { border-top-color: var(--sp-emerald); }
         .st-kpi-info { border-top-color: var(--sp-cyan, #06b6d4); }
         .st-kpi-danger { border-top-color: var(--sp-red, #ef4444); }
-        .st-kpi-warning { border-top-color: #f59e0b; }
         .st-kpi-icon {
           width: 38px; height: 38px; border-radius: 10px;
           display: flex; align-items: center; justify-content: center;
@@ -293,6 +297,17 @@ function Statistika() {
           letter-spacing: 0.06em; color: var(--sp-text-muted); margin-bottom: 0.35rem;
         }
         .st-kpi-value { font-size: 1.4rem; font-weight: 700; color: var(--sp-text); }
+        .st-kpi-col { margin-bottom: 1rem; }
+        @media (max-width: 575.98px) {
+          .st-kpi-col { margin-bottom: 0.4rem; }
+          .st-kpi-card { padding: 0.6rem 0.65rem; border-radius: 10px; border-top-width: 2px; }
+          .st-kpi-icon {
+            width: 22px; height: 22px; border-radius: 6px; margin-bottom: 0.35rem;
+          }
+          .st-kpi-icon svg { width: 12px; height: 12px; }
+          .st-kpi-label { font-size: 0.5rem; margin-bottom: 0.15rem; }
+          .st-kpi-value { font-size: 0.85rem; }
+        }
         .st-panel {
           background: var(--sp-surface-2);
           border: 1px solid var(--sp-border);
@@ -307,11 +322,20 @@ function Statistika() {
           font-size: 0.85rem; font-weight: 800;
         }
         .st-panel-body { padding: 1.25rem; }
+        .st-ranked-row { gap: 0.5rem; margin-bottom: 0.5rem; }
         .st-rank { color: var(--sp-text-muted); font-weight: 700; min-width: 22px; font-size: 0.8rem; }
+        .st-rank-name { font-size: 0.85rem; }
+        .st-rank-sub { font-size: 0.7rem; }
         .st-rank-value { font-weight: 700; color: var(--sp-cyan, #06b6d4); font-size: 0.85rem; min-width: 85px; text-align: right; }
+        .st-rank-bar-wrap { min-width: 55px; }
+        .st-rank-share { font-size: 0.7rem; min-width: 32px; }
+        .st-trend-row { gap: 0.75rem; }
+        .st-trend-label { min-width: 34px; font-size: 0.78rem; }
+        .st-trend-value { min-width: 90px; font-size: 0.8rem; text-align: right; }
         .st-bar-track {
           height: 5px; border-radius: 999px; background: var(--sp-surface-3); overflow: hidden;
         }
+        .st-bar-track-lg { height: 8px; }
         .st-bar-fill {
           height: 100%; border-radius: 999px;
           background: linear-gradient(90deg, var(--sp-emerald), var(--sp-emerald));
@@ -325,6 +349,26 @@ function Statistika() {
           transition: all 0.2s ease;
         }
         .st-action-link:hover { border-color: var(--sp-emerald); color: var(--sp-emerald); }
+        @media (max-width: 575.98px) {
+          .st-panel { border-radius: 12px; }
+          .st-panel-header {
+            padding: 0.6rem 0.75rem; gap: 6px; font-size: 0.72rem;
+          }
+          .st-panel-header svg { width: 14px; height: 14px; }
+          .st-panel-body { padding: 0.7rem 0.75rem; }
+          .st-ranked-row { gap: 0.4rem; margin-bottom: 0.35rem; }
+          .st-rank { min-width: 16px; font-size: 0.68rem; }
+          .st-rank-name { font-size: 0.74rem; }
+          .st-rank-sub { font-size: 0.62rem; }
+          .st-rank-value { font-size: 0.7rem; min-width: 58px; }
+          .st-rank-bar-wrap { min-width: 32px; }
+          .st-rank-share { font-size: 0.62rem; min-width: 26px; }
+          .st-trend-row { gap: 0.4rem; }
+          .st-trend-label { min-width: 24px; font-size: 0.68rem; }
+          .st-trend-value { min-width: 62px; font-size: 0.7rem; }
+          .st-bar-track-lg { height: 6px; }
+          .st-action-link { padding: 0.6rem 0.75rem; font-size: 0.78rem; border-radius: 10px; }
+        }
       `}</style>
     </div>
   );
