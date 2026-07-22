@@ -157,6 +157,9 @@ function TeDhenatBiznesit() {
     // Defensive: this form has been seen to receive a spurious native submit event immediately
     // following the "Ndrysho të dhënat" button's click even with type="button" set, which would
     // otherwise silently save + immediately re-disable the fields the moment edit mode turns on.
+    // The guard only needs to catch that same-tick phantom submit — left armed indefinitely, it
+    // instead ate the user's next real "Ruaj" click (whichever submit happened to arrive first),
+    // so the very first save after entering edit mode silently no-opped.
     if (suppressNextSubmit.current) {
       suppressNextSubmit.current = false;
       return;
@@ -244,6 +247,12 @@ function TeDhenatBiznesit() {
                       e.stopPropagation();
                       suppressNextSubmit.current = true;
                       setEdito(true);
+                      // Disarm right after this tick: only a submit that fires as an immediate
+                      // side effect of *this* click should be swallowed. Anything later — like
+                      // the user's actual "Ruaj" click a moment afterwards — must always save.
+                      setTimeout(() => {
+                        suppressNextSubmit.current = false;
+                      }, 0);
                     }}
                   >
                     Ndrysho të dhënat
@@ -267,62 +276,124 @@ function TeDhenatBiznesit() {
         <h1 className="titulliPerditeso">Llogaritë Bankare</h1>
         <p className="text-muted mb-4">Shfaqen te fusnota e faturës si mundësi pagese.</p>
 
-        <Table responsive className="align-middle" style={{ minWidth: 520 }}>
-          <thead>
-            <tr>
-              <th>Emri i Bankës</th>
-              <th>Numri i Llogarisë</th>
-              <th>Valuta</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {banks.map((b) => (
-              <tr key={b.id}>
-                <td>{b.emriBankes}</td>
-                <td>{b.numriLlogaris}</td>
-                <td>{b.valuta}</td>
+        {/* Table layout for tablet/desktop, where there's room for all columns side by side. */}
+        <div className="bank-table-wrap d-none d-md-block">
+          <Table responsive className="align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Emri i Bankës</th>
+                <th>Numri i Llogarisë</th>
+                <th>Valuta</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {banks.map((b) => (
+                <tr key={b.id}>
+                  <td>{b.emriBankes}</td>
+                  <td>{b.numriLlogaris}</td>
+                  <td>{b.valuta}</td>
+                  <td>
+                    <Button variant="outline-danger" size="sm" onClick={() => removeBank(b.id)}>
+                      <Trash2 size={14} />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+              <tr>
+                <td style={{ minWidth: 160 }}>
+                  <Form.Control
+                    size="sm"
+                    placeholder="Emri i bankës"
+                    value={newBank.emriBankes}
+                    onChange={(e) => setNewBank({ ...newBank, emriBankes: e.target.value })}
+                  />
+                </td>
+                <td style={{ minWidth: 160 }}>
+                  <Form.Control
+                    size="sm"
+                    placeholder="IBAN / Nr. llogarie"
+                    value={newBank.numriLlogaris}
+                    onChange={(e) => setNewBank({ ...newBank, numriLlogaris: e.target.value })}
+                  />
+                </td>
+                <td style={{ minWidth: 130 }}>
+                  <Select
+                    styles={darkSelectStyles}
+                    classNamePrefix="react-select"
+                    options={CURRENCY_OPTIONS}
+                    value={CURRENCY_OPTIONS.find((o) => o.value === newBank.valuta)}
+                    onChange={(opt) => setNewBank({ ...newBank, valuta: opt.value })}
+                  />
+                </td>
                 <td>
-                  <Button variant="outline-danger" size="sm" onClick={() => removeBank(b.id)}>
-                    <Trash2 size={14} />
+                  <Button variant="outline-success" size="sm" onClick={addBank}>
+                    <Plus size={14} />
                   </Button>
                 </td>
               </tr>
-            ))}
-            <tr>
-              <td style={{ minWidth: 160 }}>
-                <Form.Control
-                  size="sm"
-                  placeholder="Emri i bankës"
-                  value={newBank.emriBankes}
-                  onChange={(e) => setNewBank({ ...newBank, emriBankes: e.target.value })}
-                />
-              </td>
-              <td style={{ minWidth: 160 }}>
-                <Form.Control
-                  size="sm"
-                  placeholder="IBAN / Nr. llogarie"
-                  value={newBank.numriLlogaris}
-                  onChange={(e) => setNewBank({ ...newBank, numriLlogaris: e.target.value })}
-                />
-              </td>
-              <td style={{ minWidth: 130 }}>
-                <Select
-                  styles={darkSelectStyles}
-                  classNamePrefix="react-select"
-                  options={CURRENCY_OPTIONS}
-                  value={CURRENCY_OPTIONS.find((o) => o.value === newBank.valuta)}
-                  onChange={(opt) => setNewBank({ ...newBank, valuta: opt.value })}
-                />
-              </td>
-              <td>
-                <Button variant="outline-success" size="sm" onClick={addBank}>
-                  <Plus size={14} />
-                </Button>
-              </td>
-            </tr>
-          </tbody>
-        </Table>
+            </tbody>
+          </Table>
+        </div>
+
+        {/* Stacked card layout for phones — a fixed-width table forces horizontal scrolling and
+         * truncates every column, so each bank (and the "add new" row) gets its own full-width card
+         * with labeled fields instead. */}
+        <div className="bank-cards d-md-none">
+          {banks.map((b) => (
+            <div className="bank-card" key={b.id}>
+              <div className="bank-card-row">
+                <span className="bank-card-label">Emri i Bankës</span>
+                <span className="bank-card-value">{b.emriBankes}</span>
+              </div>
+              <div className="bank-card-row">
+                <span className="bank-card-label">Numri i Llogarisë</span>
+                <span className="bank-card-value">{b.numriLlogaris}</span>
+              </div>
+              <div className="bank-card-row">
+                <span className="bank-card-label">Valuta</span>
+                <span className="bank-card-value">{b.valuta}</span>
+              </div>
+              <Button variant="outline-danger" size="sm" className="w-100 mt-2" onClick={() => removeBank(b.id)}>
+                <Trash2 size={14} className="me-1" /> Fshij
+              </Button>
+            </div>
+          ))}
+
+          <div className="bank-card bank-card-new">
+            <Form.Group className="mb-2">
+              <Form.Label className="bank-card-label">Emri i Bankës</Form.Label>
+              <Form.Control
+                size="sm"
+                placeholder="Emri i bankës"
+                value={newBank.emriBankes}
+                onChange={(e) => setNewBank({ ...newBank, emriBankes: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label className="bank-card-label">Numri i Llogarisë</Form.Label>
+              <Form.Control
+                size="sm"
+                placeholder="IBAN / Nr. llogarie"
+                value={newBank.numriLlogaris}
+                onChange={(e) => setNewBank({ ...newBank, numriLlogaris: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label className="bank-card-label">Valuta</Form.Label>
+              <Select
+                styles={darkSelectStyles}
+                classNamePrefix="react-select"
+                options={CURRENCY_OPTIONS}
+                value={CURRENCY_OPTIONS.find((o) => o.value === newBank.valuta)}
+                onChange={(opt) => setNewBank({ ...newBank, valuta: opt.value })}
+              />
+            </Form.Group>
+            <Button variant="outline-success" className="w-100" onClick={addBank}>
+              <Plus size={14} className="me-1" /> Shto Llogarinë
+            </Button>
+          </div>
+        </div>
       </div>
 
       <Modal

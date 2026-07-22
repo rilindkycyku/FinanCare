@@ -4,7 +4,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import {
   LayoutDashboard, Building2, Users, Package, FileText,
   ClipboardList, Settings, DatabaseBackup, PlusCircle,
-  BarChart3, Hash, Receipt, Mail, MapPin, Phone, Tag, UserCircle,
+  BarChart3, Hash, Receipt, Mail, MapPin, Phone, Tag, UserCircle, Globe,
 } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
@@ -35,10 +35,12 @@ const BIZ_FIELDS = [
   { key: "email", label: "Email", icon: Mail },
   { key: "adresa", label: "Adresa", icon: MapPin },
   { key: "nrKontaktit", label: "Numri i Kontaktit", icon: Phone },
+  { key: "website", label: "Uebfaqja (Website)", icon: Globe },
 ];
 
 const DataItem = ({ label, value, icon }) => {
   const Icon = icon;
+  const isWebsite = /^https?:\/\//i.test(value || "");
   return (
     <Col xs={6} md={6} lg={3} className="mb-3">
       <div className="data-group">
@@ -46,7 +48,15 @@ const DataItem = ({ label, value, icon }) => {
           <Icon size={14} className="text-primary" />
           {label}
         </div>
-        <div className="data-value">{value || "-"}</div>
+        <div className="data-value">
+          {value && isWebsite ? (
+            <a href={value} target="_blank" rel="noopener noreferrer">
+              {value}
+            </a>
+          ) : (
+            value || "-"
+          )}
+        </div>
       </div>
     </Col>
   );

@@ -214,6 +214,16 @@
   color: var(--sp-text);
 }
 
+.data-value a {
+  color: var(--sp-emerald);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.data-value a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .welcome-hero {
     border-radius: 0 0 20px 20px;

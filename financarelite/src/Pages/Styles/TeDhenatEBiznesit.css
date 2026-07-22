@@ -10,3 +10,62 @@
   object-fit: contain;
   margin-bottom: 0.5em;
 }
+
+.bank-table-wrap {
+  overflow-x: auto;
+}
+
+.bank-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bank-card {
+  background: var(--sp-surface-2);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-md);
+  padding: 0.9rem 1rem;
+}
+
+.bank-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--sp-border);
+}
+
+.bank-card-row:last-of-type {
+  border-bottom: none;
+}
+
+.bank-card-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sp-text-muted);
+}
+
+.bank-card-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--sp-text);
+  text-align: right;
+  word-break: break-word;
+}
+
+.bank-card-new {
+  border-style: dashed;
+}
+
+body.light-mode .bank-card {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .bank-card-row {
+  border-color: rgba(0, 0, 0, 0.08);
+}
