@@ -11,6 +11,7 @@
   background-color: #f8fafc;
   min-height: 100vh;
   padding: 2rem 0;
+  overflow-x: hidden;
 }
 
 .invoice-paper {
@@ -78,6 +79,13 @@
   white-space: nowrap;
 }
 
+.invoice-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 /* Premium Buttons for Toolbar */
 .btn-invoice-action {
   border-radius: 12px !important;
@@ -140,5 +148,24 @@
 @media (max-width: 210mm) {
   .invoice-paper, .invoice-toolbar {
     width: 95%;
+  }
+}
+
+@media (max-width: 600px) {
+  .invoice-viewer-container {
+    padding: 1rem 0;
+  }
+
+  .invoice-toolbar {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .invoice-page-hint {
+    margin-right: 0;
+  }
+
+  .invoice-paper {
+    padding: 1.25rem;
   }
 }

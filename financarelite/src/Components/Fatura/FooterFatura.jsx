@@ -170,7 +170,7 @@ function FooterFatura({ Barkodi, isPDF, data }) {
   return (
     <div style={{ marginTop: "auto" }}>
       <div className="header" style={{ alignItems: "flex-start" }}>
-        <div className="teDhenatKompanis" style={qrCodeDataUrl ? { width: "40%" } : undefined}>
+        <div className={`teDhenatKompanis${qrCodeDataUrl ? " with-qr" : ""}`}>
           <p>
             Gjatë pagesës ju lutem të shkruani numrin e Faturës: <strong>{Barkodi}</strong>
           </p>
@@ -180,12 +180,12 @@ function FooterFatura({ Barkodi, isPDF, data }) {
           {bankTable(false)}
         </div>
         {qrCodeDataUrl && (
-          <div style={{ width: "16%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div className="footer-qr-block">
             <img src={qrCodeDataUrl} alt="QR e faturës" style={{ width: 90, height: 90, marginBottom: 4 }} />
             <span style={{ fontSize: "7pt", fontWeight: "bold", textAlign: "center" }}>Skano për ta hapur online</span>
           </div>
         )}
-        <div className="data" style={qrCodeDataUrl ? { width: "40%" } : undefined}>
+        <div className={`data${qrCodeDataUrl ? " with-qr" : ""}`}>
           <p>
             <strong>Nëntotali: </strong>
             {(totaliMeTVSH + rabati).toFixed(2)} €

@@ -161,37 +161,37 @@ function Fatura({
           <h1 className="invoice-title-main mb-0">{barkodi}</h1>
         </div>
 
-        <div className="d-flex align-items-center">
+        <div className="invoice-toolbar-actions">
           <span className="invoice-page-hint d-none d-md-inline">
             Fatura ndahet në: <strong>{estimatedPages} faqe</strong>
           </span>
 
           {onShare && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onShare}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onShare}>
               <Share2 size={18} /> QR / Shpërndaj
             </Button>
           )}
 
           {onAddPayment && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onAddPayment}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onAddPayment}>
               <CreditCard size={18} /> Shto Pagesë
             </Button>
           )}
 
           {onToggleStatus && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onToggleStatus}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onToggleStatus}>
               {mbyllur ? <Unlock size={18} /> : <Lock size={18} />}
               {mbyllur ? "Hap Faturën" : "Mbyll Faturën"}
             </Button>
           )}
 
           {onEdit && !mbyllur && (
-            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onEdit}>
+            <Button className="btn-invoice-action btn-invoice-close" onClick={onEdit}>
               <Pencil size={18} /> Ndrysho
             </Button>
           )}
 
-          <Button className="btn-invoice-action btn-invoice-save me-3" onClick={ruajFaturen} disabled={saving}>
+          <Button className="btn-invoice-action btn-invoice-save" onClick={ruajFaturen} disabled={saving}>
             {saving ? <Spinner size="sm" /> : <Download size={18} />}
             {saving ? "Duke Ruajtur..." : "Ruaj Faturën"}
           </Button>

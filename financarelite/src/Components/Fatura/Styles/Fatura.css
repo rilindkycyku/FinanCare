@@ -79,6 +79,18 @@
   align-items: flex-end;
 }
 
+/* Narrower company/totals columns when the footer also shows the share QR code */
+.with-qr {
+  width: 40%;
+}
+
+.footer-qr-block {
+  width: 16%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 /* Product table */
 .tabelaETeDhenaveProduktit {
   width: 100%;
@@ -280,13 +292,18 @@
   }
 
   .teDhenatKompanis,
-  .data {
+  .data,
+  .footer-qr-block {
     width: 100%;
   }
 
   .data {
     align-items: flex-start;
     margin-top: 0.5em;
+  }
+
+  .footer-qr-block {
+    margin: 0.8em 0;
   }
 
   .teDhenatKompanis img {
