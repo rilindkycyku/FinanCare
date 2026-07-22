@@ -4,6 +4,7 @@ import NavBar from "../../Components/NavBar";
 import PageTitle from "../../Components/PageTitle";
 import Fatura from "../../Components/Fatura/Fatura";
 import ShareQrModal from "../../Components/ShareQrModal";
+import PagesaModal from "../../Components/PagesaModal";
 import { getOne, getBusinessDetails, getAll, put, STORES } from "../../lib/db";
 import { buildFaturaData } from "../../lib/invoiceView";
 import { buildInvoiceShareQr } from "../../lib/invoiceQr";
@@ -19,6 +20,7 @@ function FaturaView() {
   const [currencies, setCurrencies] = useState([]);
   const [shareQr, setShareQr] = useState({ status: "loading", link: null, dataUrl: null });
   const [showShare, setShowShare] = useState(false);
+  const [showPagesaModal, setShowPagesaModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const dialog = useDialog();
 
@@ -84,6 +86,7 @@ function FaturaView() {
             qrCodeDataUrl={shareQr.status === "ready" ? shareQr.dataUrl : undefined}
             onBack={() => navigate("/faturat")}
             onShare={() => setShowShare(true)}
+            onAddPayment={invoice.klienti?.emriBiznesit ? () => setShowPagesaModal(true) : undefined}
             mbyllur={mbyllur}
             onToggleStatus={onToggleStatus}
             onEdit={!mbyllur ? () => navigate(`/faturat/${id}/edit`) : undefined}
@@ -94,6 +97,12 @@ function FaturaView() {
             status={shareQr.status}
             link={shareQr.link}
             dataUrl={shareQr.dataUrl}
+          />
+          <PagesaModal
+            show={showPagesaModal}
+            onHide={() => setShowPagesaModal(false)}
+            klienti={invoice.klienti}
+            defaultPershkrimi={`Pagesë për ${invoice.nrFatures}`}
           />
         </>
       )}

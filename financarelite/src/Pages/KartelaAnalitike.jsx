@@ -1,16 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
-import { TrendingUp, TrendingDown, Wallet, Lightbulb, X, Building2, Printer, Download, Loader2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Lightbulb, X, Building2, Printer, Download, Loader2, CreditCard } from "lucide-react";
 import NavBar from "../Components/NavBar";
 import PageTitle from "../Components/PageTitle";
 import Tabela from "../Components/Tabela/Tabela";
-import { getAll, getBusinessDetails, STORES } from "../lib/db";
+import PagesaModal from "../Components/PagesaModal";
+import { getAll, getBusinessDetails, remove, STORES } from "../lib/db";
 import { calcInvoiceTotals } from "../lib/invoiceCalc";
 import { DEFAULT_DOCUMENT_TYPES } from "../lib/options";
 import { useDocumentTypes } from "../lib/useConfigLists";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
 import { downloadKartelaAnalitikePDF, printKartelaAnalitikePDF } from "../Components/KartelaAnalitikePDF";
+import { useDialog } from "../Context/DialogContext";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
@@ -25,34 +27,42 @@ const PARTNER_FIELDS = [
   { key: "email", label: "Email" },
 ];
 
-/** A per-client invoice statement — every invoice issued to one client, with running totals.
- * Modeled visually on FinanCare's Kartela Financiare, but FinanCareLite has no payments-received
- * tracking, so this stays a statement of what's been invoiced rather than a true debit/credit
- * ledger: "Faturim €" (Faturë Shitëse) increases the balance, "Pagesë €" (Fletëkthim/Kredit
- * Notë) decreases it, and Porosi — not a completed sale — doesn't move the balance at all, same
- * as an order carries no financial weight in FinanCare's own ledger. Invoices only carry a
- * snapshot of the client's data (no foreign key back to the client record), so matching is done
- * by business name. */
+/** A per-client statement — every invoice issued to one client plus every payment recorded
+ * against them (see PagesaModal/"Shto Pagesë" below), with running totals. Modeled on
+ * FinanCare's Kartela Financiare: "Faturim €" (a positive document type, e.g. Faturë Shitëse)
+ * increases the balance, "Pagesë €" (a negative document type like Fletëkthim, or an actual
+ * recorded payment) decreases it, and Porosi — not a completed sale — doesn't move the balance
+ * at all, same as an order carries no financial weight in FinanCare's own ledger. A client who's
+ * paid every invoice in full nets to a 0 saldo instead of sitting at the full invoiced total
+ * forever. Invoices/payments only carry a snapshot of the client's data (no foreign key back to
+ * the client record), so matching is done by business name. */
 function KartelaAnalitike() {
   const navigate = useNavigate();
+  const dialog = useDialog();
   const [clients, setClients] = useState([]);
   const [invoices, setInvoices] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [showTip, setShowTip] = useState(true);
+  const [showPagesaModal, setShowPagesaModal] = useState(false);
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState({});
   const [savingPdf, setSavingPdf] = useState(false);
   const [printingPdf, setPrintingPdf] = useState(false);
   const documentTypesLoaded = useDocumentTypes();
   const documentTypes = documentTypesLoaded.length > 0 ? documentTypesLoaded : DEFAULT_DOCUMENT_TYPES;
 
-  useEffect(() => {
-    Promise.all([getAll(STORES.clients), getAll(STORES.invoices), getBusinessDetails()]).then(
-      ([clientList, invoiceList, biz]) => {
+  const loadData = () =>
+    Promise.all([getAll(STORES.clients), getAll(STORES.invoices), getAll(STORES.payments), getBusinessDetails()]).then(
+      ([clientList, invoiceList, paymentList, biz]) => {
         setClients(clientList);
         setInvoices(invoiceList);
+        setPayments(paymentList);
         setTeDhenatBiznesit(biz || {});
       }
     );
+
+  useEffect(() => {
+    loadData();
   }, []);
 
   const clientOptions = useMemo(() => clients.map((c) => ({ value: c.id, label: c.emriBiznesit })), [clients]);
@@ -61,14 +71,40 @@ function KartelaAnalitike() {
   const ledger = useMemo(() => {
     if (!selectedClient) return { rows: [], hyrje: 0, dalje: 0, saldo: 0 };
     const emri = (selectedClient.emriBiznesit || "").trim().toLowerCase();
-    const sorted = invoices
+
+    const invoiceEntries = invoices
       .filter((inv) => (inv.klienti?.emriBiznesit || "").trim().toLowerCase() === emri)
-      .sort((a, b) => (a.dataRegjistrimit || "").localeCompare(b.dataRegjistrimit || ""));
+      .map((inv) => ({ kind: "invoice", record: inv, date: inv.dataRegjistrimit }));
+    const paymentEntries = payments
+      .filter((p) => (p.klienti?.emriBiznesit || "").trim().toLowerCase() === emri)
+      .map((p) => ({ kind: "payment", record: p, date: p.dataRegjistrimit }));
+
+    const sorted = [...invoiceEntries, ...paymentEntries].sort((a, b) => (a.date || "").localeCompare(b.date || ""));
 
     let saldo = 0;
     let hyrje = 0;
     let dalje = 0;
-    const rows = sorted.map((inv, i) => {
+    const rows = sorted.map((entry, i) => {
+      if (entry.kind === "payment") {
+        const p = entry.record;
+        const pagese = Math.abs(parseFloat(p.shuma) || 0);
+        saldo -= pagese;
+        dalje += pagese;
+        const menyraLabel = p.menyra === "banke" ? "Bankë" : p.menyra === "tjeter" ? "Tjetër" : "Kesh";
+        return {
+          ID: p.id,
+          "NR.": i + 1,
+          Data: p.dataRegjistrimit,
+          Lloji: "PAGESË",
+          "Nr. Faturës": "-",
+          Përshkrimi: p.pershkrimi || `Pagesë (${menyraLabel})`,
+          "Faturim €": "-",
+          "Pagesë €": pagese.toFixed(2),
+          "Saldo €": saldo.toFixed(2),
+        };
+      }
+
+      const inv = entry.record;
       const dokumenti = documentTypes.find((d) => d.value === inv.llojiDokumentit) || documentTypes[0];
       const totali = calcInvoiceTotals(inv.items, inv.transporti).totaliFinal;
       // Porosi is just a pending order, not a completed sale — it lists here but doesn't touch
@@ -76,7 +112,9 @@ function KartelaAnalitike() {
       // debit/credit lists. Every other type — FAT, KTHIM, and any custom type added from
       // "Llojet e Faturave" — moves the balance based on its own Pozitive/Negative choice: a
       // positive type adds to what's owed (faturim), a negative one reduces it (pagese), so a
-      // brand-new custom type behaves correctly without needing its own special case here.
+      // brand-new custom type behaves correctly without needing its own special case here. Actual
+      // payments received (see PagesaModal/"Shto Pagesë" above) are the other, more common way
+      // the balance comes back down to 0 once a client has paid.
       let faturim = 0;
       let pagese = 0;
       if (dokumenti.value !== "POR") {
@@ -99,7 +137,7 @@ function KartelaAnalitike() {
       };
     });
     return { rows, hyrje, dalje, saldo };
-  }, [invoices, selectedClient, documentTypes]);
+  }, [invoices, payments, selectedClient, documentTypes]);
 
   const kartelaPdfArgs = () => ({
     rows: ledger.rows,
@@ -133,6 +171,12 @@ function KartelaAnalitike() {
     } finally {
       setSavingPdf(false);
     }
+  };
+
+  const handleDeletePayment = async (id) => {
+    if (!(await dialog.confirm("Ta fshij këtë pagesë?", { title: "Fshi Pagesën" }))) return;
+    await remove(STORES.payments, id);
+    setPayments((prev) => prev.filter((p) => p.id !== id));
   };
 
   return (
@@ -178,6 +222,10 @@ function KartelaAnalitike() {
 
           {selectedClient && (
             <div className="d-flex gap-2">
+              <button type="button" className="ka-action-btn ka-action-btn-primary" onClick={() => setShowPagesaModal(true)}>
+                <CreditCard size={14} />
+                Shto Pagesë
+              </button>
               <button type="button" className="ka-action-btn" onClick={handlePrint} disabled={printingPdf}>
                 {printingPdf ? <Loader2 size={14} className="ka-spin" /> : <Printer size={14} />}
                 {printingPdf ? "Duke përgatitur..." : "Printo"}
@@ -205,7 +253,7 @@ function KartelaAnalitike() {
                 <div className="ka-stat-icon">
                   <TrendingDown size={20} />
                 </div>
-                <div className="ka-stat-label">Totali i Fletëkthimeve</div>
+                <div className="ka-stat-label">Totali i Pagesave</div>
                 <div className="ka-stat-value">{ledger.dalje.toFixed(2)}</div>
                 <div className="ka-stat-unit">EUR €</div>
               </div>
@@ -242,11 +290,21 @@ function KartelaAnalitike() {
               dateField="Data"
               kaButona
               funksionShfaqFature={(id) => navigate(`/faturat/${id}`)}
+              funksionEshteShikimDisabled={(id) => id.startsWith("pay_")}
+              funksionButonFshij={(id) => handleDeletePayment(id)}
+              funksionEshteFshirjeDisabled={(id) => !id.startsWith("pay_")}
               mosShfaqID
             />
           </>
         )}
       </div>
+
+      <PagesaModal
+        show={showPagesaModal}
+        onHide={() => setShowPagesaModal(false)}
+        klienti={selectedClient}
+        onSaved={(record) => setPayments((prev) => [...prev, record])}
+      />
 
       <style>{`
         .ka-tip {
@@ -273,6 +331,12 @@ function KartelaAnalitike() {
         }
         .ka-action-btn:hover:not(:disabled) { border-color: var(--sp-emerald); color: var(--sp-emerald); background: var(--sp-surface-3); }
         .ka-action-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .ka-action-btn-primary {
+          background: var(--sp-emerald);
+          border-color: var(--sp-emerald);
+          color: #06281d;
+        }
+        .ka-action-btn-primary:hover:not(:disabled) { background: var(--sp-emerald); color: #06281d; filter: brightness(1.08); }
         .ka-spin { animation: ka-spin 0.8s linear infinite; }
         @keyframes ka-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .btn-close-ka {

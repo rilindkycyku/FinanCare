@@ -86,7 +86,9 @@ function ListaFaturave() {
         funksionButonEdit={onEdit}
         funksionButonFshij={onDelete}
         funksionNdryshoStatusin={onNdryshoStatusin}
+        funksionEshteEditimDisabled={(id) => esteMbyllur(invoices.find((i) => i.id === id) || {})}
         dateField="Data"
+        filterField="Lloji"
         mosShfaqID
       />
     </>

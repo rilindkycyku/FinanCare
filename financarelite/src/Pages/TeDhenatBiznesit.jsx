@@ -185,7 +185,7 @@ function TeDhenatBiznesit() {
       <NavBar />
       <div className="containerDashboardP">
         <h1 className="titulliPerditeso mb-0">Të Dhënat e Biznesit</h1>
-        <p className="text-muted mb-4">
+        <p className="text-muted mb-3">
           Këto të dhëna shfaqen në krye të çdo fature (emri, NUI, NF, TVSH, adresa, kontakti, logoja).
         </p>
 
@@ -193,7 +193,7 @@ function TeDhenatBiznesit() {
           <p>Duke ngarkuar...</p>
         ) : (
           <Form onSubmit={handleRuaj}>
-            <Row className="g-3">
+            <Row className="g-2">
               {BUZ_FIELDS.map((f) => (
                 <Col md={f.md} key={f.name}>
                   <Form.Group>
@@ -266,7 +266,7 @@ function TeDhenatBiznesit() {
         <h1 className="titulliPerditeso">Llogaritë Bankare</h1>
         <p className="text-muted mb-4">Shfaqen te fusnota e faturës si mundësi pagese.</p>
 
-        <Table responsive className="align-middle">
+        <Table responsive className="align-middle" style={{ minWidth: 520 }}>
           <thead>
             <tr>
               <th>Emri i Bankës</th>
@@ -289,7 +289,7 @@ function TeDhenatBiznesit() {
               </tr>
             ))}
             <tr>
-              <td>
+              <td style={{ minWidth: 160 }}>
                 <Form.Control
                   size="sm"
                   placeholder="Emri i bankës"
@@ -297,7 +297,7 @@ function TeDhenatBiznesit() {
                   onChange={(e) => setNewBank({ ...newBank, emriBankes: e.target.value })}
                 />
               </td>
-              <td>
+              <td style={{ minWidth: 160 }}>
                 <Form.Control
                   size="sm"
                   placeholder="IBAN / Nr. llogarie"

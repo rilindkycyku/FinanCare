@@ -23,6 +23,16 @@ export const DEFAULT_DOCUMENT_TYPES = [
   { id: "doctype_default_fat", value: "FAT", label: "Faturë Shitëse", titleLabel: "FATURË SHITËSE", negateAmounts: false },
   { id: "doctype_default_por", value: "POR", label: "Porosi", titleLabel: "POROSI", negateAmounts: false },
   { id: "doctype_default_kthim", value: "KTHIM", label: "Fletëkthim (Kredit Notë)", titleLabel: "FLETËKTHIM", negateAmounts: true },
+  { id: "doctype_default_ofr", value: "OFR", label: "Ofertë", titleLabel: "OFERTË", negateAmounts: false },
+  { id: "doctype_default_prf", value: "PRF", label: "Parafaturë (Proforma)", titleLabel: "PARAFATURË", negateAmounts: false },
+  { id: "doctype_default_fld", value: "FLD", label: "Fletëdërgesë", titleLabel: "FLETËDËRGESË", negateAmounts: false },
+  { id: "doctype_default_nd", value: "ND", label: "Notë Debiti", titleLabel: "NOTË DEBITI", negateAmounts: false },
+  { id: "doctype_default_pos", value: "POS", label: "Faturë POS", titleLabel: "FATURË POS", negateAmounts: false },
+  { id: "doctype_default_online", value: "ONL", label: "Porosi Online", titleLabel: "POROSI ONLINE", negateAmounts: false },
+  { id: "doctype_default_bank", value: "BANK", label: "Faturë Bankare", titleLabel: "FATURË BANKARE", negateAmounts: false },
+  { id: "doctype_default_kesh", value: "KESH", label: "Faturë Kesh", titleLabel: "FATURË KESH", negateAmounts: false },
+  { id: "doctype_default_kupon", value: "KUP", label: "Kupon Fiskal", titleLabel: "KUPON FISKAL", negateAmounts: false },
+  { id: "doctype_default_saldo", value: "SALDO", label: "Bilanci Fillestar", titleLabel: "BILANCI FILLESTAR", negateAmounts: false },
 ];
 
 export const DEFAULT_UNITS = [

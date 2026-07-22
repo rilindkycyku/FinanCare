@@ -382,12 +382,21 @@ function KrijoFaturen() {
   const draftMetaRef = useRef(null);
   const draftCreationPromiseRef = useRef(null);
 
+  // Each document type keeps its own running sequence (Faturë Shitëse #1, #2... Porosi #1,
+  // #2... independently), so nrFatures always reads e.g. "SHK-220726-POR-3" rather than
+  // sharing one counter across every type. `excludeId` keeps a reopened/in-progress invoice
+  // from counting itself when its own type changes.
+  const nextNrRendorFatures = async (llojiDokumentitValue, excludeId) => {
+    const allInvoices = await getAll(STORES.invoices);
+    const sameType = allInvoices.filter((inv) => inv.llojiDokumentit === llojiDokumentitValue && inv.id !== excludeId);
+    return sameType.length + 1;
+  };
+
   const ensureDraftInvoice = () => {
     if (draftMetaRef.current) return Promise.resolve(draftMetaRef.current);
     if (draftCreationPromiseRef.current) return draftCreationPromiseRef.current;
     draftCreationPromiseRef.current = (async () => {
-      const allInvoices = await getAll(STORES.invoices);
-      const nrRendorFatures = allInvoices.length + 1;
+      const nrRendorFatures = await nextNrRendorFatures(dokumentiZgjedhur.value);
       const nrFatures = generateNrFatures(
         teDhenatBiznesit.shkurtesaEmritBiznesit,
         nrRendorFatures,
@@ -451,6 +460,32 @@ function KrijoFaturen() {
     const record = buildInvoiceRecord(meta, itemsList, false);
     await put(STORES.invoices, record);
   };
+
+  // A draft's nrFatures/barcode is only assigned once (see ensureDraftInvoice) — if the user
+  // goes back to step 1 and picks a different "Lloji i Dokumentit" afterwards, regenerate it
+  // so the prefix and per-type sequence number (see nextNrRendorFatures) match the new type
+  // instead of silently keeping the old one. Skipped until a draft actually exists (nothing to
+  // regenerate before the first item is added) and on the initial mount.
+  const prevDocTypeRef = useRef(null);
+  useEffect(() => {
+    const val = dokumentiZgjedhur.value;
+    if (prevDocTypeRef.current === null) {
+      prevDocTypeRef.current = val;
+      return;
+    }
+    if (prevDocTypeRef.current === val || !draftMetaRef.current) {
+      prevDocTypeRef.current = val;
+      return;
+    }
+    prevDocTypeRef.current = val;
+    (async () => {
+      const nrRendorFatures = await nextNrRendorFatures(val, draftMetaRef.current.id);
+      const nrFatures = generateNrFatures(teDhenatBiznesit.shkurtesaEmritBiznesit, nrRendorFatures, new Date(dataRegjistrimit), val);
+      draftMetaRef.current = { ...draftMetaRef.current, nrFatures, nrRendorFatures };
+      await persistDraftInvoice(items);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dokumentiZgjedhur.value]);
 
   const handleSave = async (e) => {
     e.preventDefault();

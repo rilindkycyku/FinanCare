@@ -6,6 +6,11 @@ import EksportoTeDhenat from "./EksportoTeDhenat";
 import SortIcon from "./SortIcon";
 import useSortableData from "../../Context/useSortableData";
 
+// Cycled across whatever distinct values `filterField` finds, so each one gets a stable,
+// visually distinct color — mirrors the colored "Lloji" chip row on FinanCare's own Lista e
+// Faturave filter panel.
+const PILL_COLORS = ["#10b981", "#06b6d4", "#8b5cf6", "#f59e0b", "#f43f5e", "#ec4899", "#84cc16", "#3b82f6"];
+
 function formatDate(dateStr) {
   try {
     if (!dateStr) return "---";
@@ -30,7 +35,11 @@ function Tabela({
   funksionButonEdit,
   funksionButonFshij,
   funksionNdryshoStatusin,
+  funksionEshteEditimDisabled,
+  funksionEshteShikimDisabled,
+  funksionEshteFshirjeDisabled,
   dateField,
+  filterField,
   mosShfaqID,
   mosShfaqKerkimin,
   mosShfaqTitullin,
@@ -41,9 +50,15 @@ function Tabela({
   const [itemsPerPage, setItemsPerPage] = useState(mosShfaqPaginimin ? Math.max(data.length, 20) : 20);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+
+  // Distinct values of `filterField` present in the data (e.g. every "Lloji" that actually
+  // appears in the invoice list), so the dropdown never offers a choice with zero results.
+  const filterOptions = filterField ? [...new Set(data.map((d) => d[filterField]).filter(Boolean))].sort() : [];
+  const filteredData = filterField && filterValue ? data.filter((d) => d[filterField] === filterValue) : data;
 
   const { items, requestSort, sortConfig, currentPage, pageCount, goToPage } = useSortableData(
-    data,
+    filteredData,
     null,
     searchQuery,
     mosShfaqPaginimin ? Math.max(data.length, 20) : itemsPerPage,
@@ -58,10 +73,10 @@ function Tabela({
   const renderCellContent = (content) => <div dangerouslySetInnerHTML={{ __html: content ?? "" }} />;
 
   return (
-    <div className="tabela-premium-wrapper p-3">
+    <div className="tabela-premium-wrapper p-2">
       <Card className="premium-main-card">
-        <Card.Body className="p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <Card.Body className="p-3">
+          <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             {!mosShfaqTitullin && (
               <div>
                 <h4 className="premium-table-title mb-1">{tableName}</h4>
@@ -82,8 +97,8 @@ function Tabela({
           </div>
 
           {!mosShfaqKerkimin && (
-            <div className="premium-filter-bar mb-4">
-              <Row className="g-3 align-items-end">
+            <div className="premium-filter-bar mb-3">
+              <Row className="g-2 align-items-end">
                 <Col md={3} lg={3}>
                   <Form.Label className="premium-filter-label">
                     <Search size={14} className="me-1" /> Kërko
@@ -133,12 +148,46 @@ function Tabela({
                       goToPage(0);
                       setStartDate("");
                       setEndDate("");
+                      setFilterValue("");
                     }}
                   >
                     <Eraser size={16} className="me-2" /> Pastro Filtrat
                   </Button>
                 </Col>
               </Row>
+
+              {filterField && filterOptions.length > 0 && (
+                <div className="premium-filter-pills-wrap">
+                  <Form.Label className="premium-filter-label d-block mb-2">{filterField}:</Form.Label>
+                  <div className="premium-filter-pills">
+                    <button
+                      type="button"
+                      className={`premium-filter-pill${filterValue === "" ? " active" : ""}`}
+                      style={{ "--pill-color": "var(--sp-emerald)" }}
+                      onClick={() => {
+                        setFilterValue("");
+                        goToPage(0);
+                      }}
+                    >
+                      Të gjitha
+                    </button>
+                    {filterOptions.map((opt, i) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        className={`premium-filter-pill${filterValue === opt ? " active" : ""}`}
+                        style={{ "--pill-color": PILL_COLORS[i % PILL_COLORS.length] }}
+                        onClick={() => {
+                          setFilterValue(opt);
+                          goToPage(0);
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -172,17 +221,35 @@ function Tabela({
                         <td className="text-center premium-td">
                           <div className="d-flex justify-content-center gap-2">
                             {funksionShfaqFature && (
-                              <button type="button" className="btn-action info" onClick={() => funksionShfaqFature(item.ID)} title="Shiko">
+                              <button
+                                type="button"
+                                className="btn-action info"
+                                onClick={() => funksionShfaqFature(item.ID)}
+                                disabled={funksionEshteShikimDisabled?.(item.ID)}
+                                title="Shiko"
+                              >
                                 <Eye size={16} />
                               </button>
                             )}
                             {funksionButonEdit && (
-                              <button type="button" className="btn-action edit" onClick={() => funksionButonEdit(item.ID)} title="Ndrysho">
+                              <button
+                                type="button"
+                                className="btn-action edit"
+                                onClick={() => funksionButonEdit(item.ID)}
+                                disabled={funksionEshteEditimDisabled?.(item.ID)}
+                                title={funksionEshteEditimDisabled?.(item.ID) ? "Fatura është e mbyllur" : "Ndrysho"}
+                              >
                                 <Edit3 size={16} />
                               </button>
                             )}
                             {funksionButonFshij && (
-                              <button type="button" className="btn-action delete" onClick={() => funksionButonFshij(item.ID)} title="Fshij">
+                              <button
+                                type="button"
+                                className="btn-action delete"
+                                onClick={() => funksionButonFshij(item.ID)}
+                                disabled={funksionEshteFshirjeDisabled?.(item.ID)}
+                                title="Fshij"
+                              >
                                 <Trash2 size={16} />
                               </button>
                             )}
@@ -255,20 +322,21 @@ function Tabela({
 
       <style>{`
         .premium-main-card {
-          border-radius: 24px;
+          border-radius: 16px;
           border: 1px solid var(--sp-border) !important;
           box-shadow: 0 20px 50px rgba(0,0,0,0.3);
           background: var(--sp-surface) !important;
           overflow: visible !important;
         }
         .premium-main-card > .card-body { overflow: visible !important; }
-        .premium-table-title { font-weight: 900; color: var(--sp-text); letter-spacing: -0.02em; }
+        .premium-table-title { font-weight: 900; color: var(--sp-text); letter-spacing: -0.02em; font-size: 1.1rem; }
         .btn-premium-shto {
           background: linear-gradient(135deg, var(--sp-emerald) 0%, #059669 100%) !important;
           border: none !important;
-          border-radius: 12px !important;
+          border-radius: 10px !important;
           font-weight: 800 !important;
-          padding: 0.6rem 1.5rem !important;
+          font-size: 0.85rem !important;
+          padding: 0.5rem 1.1rem !important;
           box-shadow: 0 8px 15px var(--sp-emerald-glow) !important;
           transition: all 0.2s ease !important;
         }
@@ -277,31 +345,50 @@ function Tabela({
           border: 1px solid var(--sp-border) !important;
           color: var(--sp-text-soft) !important;
           background: var(--sp-surface-2) !important;
-          border-radius: 12px !important;
+          border-radius: 10px !important;
           font-weight: 700 !important;
-          padding: 0.6rem 1.25rem !important;
+          font-size: 0.85rem !important;
+          padding: 0.5rem 1rem !important;
           transition: all 0.2s ease !important;
         }
         .btn-premium-outline:hover { border-color: var(--sp-emerald) !important; color: var(--sp-emerald) !important; background: var(--sp-surface-3) !important; }
-        .premium-filter-bar { background: var(--sp-surface-2); padding: 1.5rem; border-radius: 18px; border: 1px solid var(--sp-border); }
-        .premium-filter-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--sp-text-muted); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+        .premium-filter-bar { background: var(--sp-surface-2); padding: 1rem; border-radius: 12px; border: 1px solid var(--sp-border); }
+        .premium-filter-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--sp-text-muted); margin-bottom: 0.4rem; letter-spacing: 0.05em; }
+        .premium-filter-pills-wrap { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--sp-border); }
+        .premium-filter-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .premium-filter-pill {
+          border: 1px solid var(--pill-color);
+          color: var(--pill-color);
+          background: transparent;
+          border-radius: 999px;
+          padding: 0.4rem 0.9rem;
+          font-size: 0.75rem;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          white-space: nowrap;
+        }
+        .premium-filter-pill:hover { background: rgba(255,255,255,0.08); }
+        .premium-filter-pill.active { background: var(--pill-color); color: #0b1220; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
         .premium-input-group .form-control, .premium-select {
           background: var(--sp-surface-3) !important;
           color: var(--sp-text) !important;
-          border-radius: 10px !important;
+          border-radius: 8px !important;
           border: 1px solid var(--sp-border) !important;
           font-weight: 600;
-          padding: 0.6rem 1rem !important;
+          font-size: 0.85rem !important;
+          padding: 0.45rem 0.75rem !important;
         }
         .premium-input-group .form-control::placeholder, .premium-select::placeholder { color: var(--sp-text-muted) !important; opacity: 0.8 !important; }
         .premium-input-group .form-control:focus, .premium-select:focus { border-color: var(--sp-emerald) !important; box-shadow: 0 0 0 4px var(--sp-emerald-glow) !important; }
         .btn-premium-pastro {
           background: var(--sp-surface-3) !important;
           border: 1px solid var(--sp-border) !important;
-          border-radius: 10px !important;
+          border-radius: 8px !important;
           font-weight: 800 !important;
+          font-size: 0.85rem !important;
           color: var(--sp-text-muted) !important;
-          padding: 0.6rem 1.25rem !important;
+          padding: 0.45rem 1rem !important;
           transition: all 0.2s ease;
         }
         .btn-premium-pastro:hover { color: var(--sp-red) !important; border-color: var(--sp-red) !important; }
@@ -325,11 +412,11 @@ function Tabela({
         }
         .premium-th, .premium-td { white-space: nowrap !important; }
         .premium-th {
-          padding: 1.25rem 1.5rem;
+          padding: 0.75rem 1rem;
           background: var(--sp-surface-2) !important;
           color: var(--sp-text-muted) !important;
           text-transform: uppercase;
-          font-size: 0.7rem;
+          font-size: 0.65rem;
           font-weight: 800;
           letter-spacing: 0.1em;
           cursor: pointer;
@@ -337,19 +424,19 @@ function Tabela({
           text-align: left;
         }
         .premium-td {
-          padding: 1.1rem 1.5rem !important;
-          font-size: 0.88rem !important;
+          padding: 0.7rem 1rem !important;
+          font-size: 0.8rem !important;
           font-weight: 500 !important;
           color: var(--sp-text) !important;
           border-top: 1px solid var(--sp-border) !important;
           background: var(--sp-surface) !important;
         }
         .premium-tr:hover .premium-td { background: var(--sp-surface-2) !important; }
-        .premium-empty-state { text-align: center; padding: 5rem 2rem; background: var(--sp-surface-2); border-radius: 20px; color: var(--sp-text-muted); }
-        .date-badge { background: var(--sp-surface-3); color: var(--sp-emerald); padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid var(--sp-border); }
-        .empty-icon-wrapper { color: var(--sp-surface-3); margin-bottom: 1.5rem; }
+        .premium-empty-state { text-align: center; padding: 3rem 1.5rem; background: var(--sp-surface-2); border-radius: 16px; color: var(--sp-text-muted); }
+        .date-badge { background: var(--sp-surface-3); color: var(--sp-emerald); padding: 0.25rem 0.55rem; border-radius: 6px; font-size: 0.7rem; font-weight: 800; border: 1px solid var(--sp-border); }
+        .empty-icon-wrapper { color: var(--sp-surface-3); margin-bottom: 1rem; }
         .btn-action {
-          width: 34px; height: 34px; border-radius: 10px; border: none;
+          width: 28px; height: 28px; border-radius: 8px; border: none;
           display: flex; align-items: center; justify-content: center;
           transition: all 0.2s ease; background: var(--sp-surface-3);
         }
@@ -358,11 +445,12 @@ function Tabela({
         .btn-action.delete { color: var(--sp-red); }
         .btn-action.status { color: #f59e0b; }
         .btn-action:hover { transform: translateY(-2px); background: var(--sp-surface-2); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .premium-pagination-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; color: var(--sp-text-muted); font-size: 0.85rem; }
+        .btn-action:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+        .premium-pagination-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; color: var(--sp-text-muted); font-size: 0.8rem; }
         .premium-pagination .page-item .page-link {
-          background: var(--sp-surface-2) !important; border: 1px solid var(--sp-border) !important; border-radius: 10px !important;
-          margin: 0 4px; font-weight: 800; color: var(--sp-text-muted) !important;
-          width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+          background: var(--sp-surface-2) !important; border: 1px solid var(--sp-border) !important; border-radius: 8px !important;
+          margin: 0 3px; font-weight: 800; color: var(--sp-text-muted) !important;
+          width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; font-size: 0.8rem;
         }
         .premium-pagination .page-item.active .page-link { background: var(--sp-emerald) !important; color: white !important; border-color: var(--sp-emerald) !important; box-shadow: 0 5px 15px var(--sp-emerald-glow); }
         .premium-pagination .page-item .page-link:hover:not(.active) { background: var(--sp-surface-3) !important; color: var(--sp-text) !important; border-color: var(--sp-emerald) !important; }

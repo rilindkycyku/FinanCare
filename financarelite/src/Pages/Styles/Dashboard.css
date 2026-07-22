@@ -7,9 +7,9 @@
 .welcome-hero {
   background: linear-gradient(135deg, var(--sp-surface-2) 0%, var(--sp-bg) 100%);
   color: white;
-  padding: 4rem 0;
-  border-radius: 0 0 40px 40px;
-  margin-bottom: 3rem;
+  padding: 2.5rem 0;
+  border-radius: 0 0 28px 28px;
+  margin-bottom: 2rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
@@ -31,7 +31,7 @@
 }
 
 .welcome-hero h1 {
-  font-size: 2.5rem;
+  font-size: 1.85rem;
   font-weight: 900;
   letter-spacing: -0.05em;
   color: white;
@@ -40,13 +40,13 @@
 .hero-cta {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background: var(--sp-emerald);
   color: white;
   font-weight: 800;
-  font-size: 0.95rem;
-  padding: 0.65rem 1.25rem;
-  border-radius: 12px;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
   text-decoration: none !important;
   box-shadow: 0 6px 18px var(--sp-emerald-glow);
   transition: all 0.2s ease;
@@ -111,12 +111,12 @@
 
 .section-title {
   font-weight: 900;
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   color: var(--sp-text);
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -124,15 +124,15 @@
 /* Quick Actions Grid */
 .quick-actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.15rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .quick-action-card {
   background: var(--sp-surface-2);
-  border-radius: 14px;
-  padding: 0.95rem 1.35rem;
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
   text-align: left;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -145,7 +145,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  gap: 1.15rem;
+  gap: 0.75rem;
 }
 
 .quick-action-card:hover {
@@ -157,10 +157,10 @@
 }
 
 .quick-action-card .icon-wrapper {
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   background: var(--sp-surface-3);
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,16 +176,16 @@
 }
 
 .quick-action-card span {
-  font-size: 1.08rem !important;
+  font-size: 0.85rem !important;
   font-weight: 800;
   line-height: 1.2;
 }
 
 /* Data Display */
 .data-group {
-  padding: 1.25rem;
+  padding: 0.9rem 1rem;
   background: var(--sp-surface-2);
-  border-radius: 16px;
+  border-radius: 12px;
   height: 100%;
   border: 1px solid var(--sp-border);
   transition: all 0.2s ease;
@@ -197,11 +197,11 @@
 }
 
 .data-label {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 800;
   text-transform: uppercase;
   color: var(--sp-text-muted);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -209,33 +209,48 @@
 }
 
 .data-value {
-  font-size: 1rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--sp-text);
 }
 
 @media (max-width: 768px) {
   .welcome-hero {
-    border-radius: 0 0 24px 24px;
-    padding: 2.5rem 0;
+    border-radius: 0 0 20px 20px;
+    padding: 1.75rem 0;
   }
 
   .welcome-hero h1 {
-    font-size: 1.75rem;
+    font-size: 1.4rem;
   }
 
   .quick-actions-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+
+  .quick-action-card {
+    padding: 0.6rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .quick-action-card .icon-wrapper {
+    width: 30px;
+    height: 30px;
+  }
+
+  .quick-action-card span {
+    font-size: 0.75rem !important;
   }
 }
 
 @media (max-width: 480px) {
   .quick-actions-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .quick-action-card {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.7rem;
   }
 }
 

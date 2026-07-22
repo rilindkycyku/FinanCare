@@ -1,6 +1,8 @@
 import "./Styles/Fatura.css";
-import { View, Text, Image, StyleSheet, Font } from "@react-pdf/renderer";
+import { View, Text, Link, Image, StyleSheet, Font } from "@react-pdf/renderer";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
+
+const FINANCARELITE_URL = "https://rilindkycyku.com";
 
 Font.register({
   family: "Quicksand",
@@ -30,6 +32,7 @@ const styles = StyleSheet.create({
   header: { backgroundColor: "#f0f0f0" },
   cell: { flex: 1, padding: 3, fontSize: 7, textAlign: "center" },
   boldT: { fontWeight: "bold" },
+  link: { color: "#10b981", textDecoration: "none" },
 });
 
 function FooterFatura({ Barkodi, isPDF, data }) {
@@ -150,7 +153,9 @@ function FooterFatura({ Barkodi, isPDF, data }) {
             <Text>_________________________________________________</Text>
             <Text>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</Text>
             <Text>(Personi Përgjegjës)</Text>
-            <Text style={styles.bold}>© 2023 - {new Date().getFullYear()} FinanCareLite</Text>
+            <Text style={styles.bold}>
+              © 2023 - {new Date().getFullYear()} <Link src={FINANCARELITE_URL} style={styles.link}>FinanCareLite</Link>
+            </Text>
           </View>
           <View style={styles.signature}>
             <Text>_________________________________________________</Text>
@@ -223,7 +228,12 @@ function FooterFatura({ Barkodi, isPDF, data }) {
           <span>(Emri, Mbiemri, Nënshkrimi &amp; Vula)</span>
           <span>(Personi Përgjegjës)</span>
           <br />
-          <strong>© 2023 - {new Date().getFullYear()} FinanCareLite</strong>
+          <strong>
+            © 2023 - {new Date().getFullYear()}{" "}
+            <a href={FINANCARELITE_URL} target="_blank" rel="noopener noreferrer" style={{ color: "#10b981", textDecoration: "none" }}>
+              FinanCareLite
+            </a>
+          </strong>
         </div>
         <div className="nenshkrimi">
           <span>_________________________________________________</span>

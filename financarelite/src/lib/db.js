@@ -7,7 +7,7 @@
 import { DEFAULT_TVSH_TYPES, DEFAULT_UNITS, DEFAULT_DOCUMENT_TYPES } from "./options";
 
 const DB_NAME = "financarelite";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 export const STORES = {
   businessDetails: "businessDetails",
@@ -19,6 +19,7 @@ export const STORES = {
   tvshTypes: "tvshTypes",
   units: "units",
   documentTypes: "documentTypes",
+  payments: "payments",
 };
 
 const BUSINESS_DETAILS_KEY = "main";
@@ -66,6 +67,9 @@ function openDb() {
       if (!db.objectStoreNames.contains(STORES.documentTypes)) {
         const store = db.createObjectStore(STORES.documentTypes, { keyPath: "id" });
         DEFAULT_DOCUMENT_TYPES.forEach((t) => store.add(t));
+      }
+      if (!db.objectStoreNames.contains(STORES.payments)) {
+        db.createObjectStore(STORES.payments, { keyPath: "id" });
       }
     };
     req.onsuccess = () => {
@@ -132,6 +136,20 @@ export function clearStore(store) {
   return withStore(store, "readwrite", (s) => s.clear()).then(() => undefined);
 }
 
+// Document types are seeded once when the store is first created (see openDb above), so a
+// browser whose database already existed before new entries were added to
+// DEFAULT_DOCUMENT_TYPES would never see them. This tops the store up with whichever defaults
+// are still missing (matched by id, so it never touches a type the business already
+// edited/renamed) — safe to call on every load.
+export async function ensureDefaultDocumentTypes() {
+  const existing = await getAll(STORES.documentTypes);
+  const existingIds = new Set(existing.map((t) => t.id));
+  const missing = DEFAULT_DOCUMENT_TYPES.filter((t) => !existingIds.has(t.id));
+  if (missing.length === 0) return existing;
+  await Promise.all(missing.map((t) => put(STORES.documentTypes, t)));
+  return [...existing, ...missing];
+}
+
 // ---- business details: single record keyed by a constant ----
 
 export function getBusinessDetails() {
@@ -147,7 +165,7 @@ export function putBusinessDetails(record) {
 // ---- whole-database export / import (JSON backup) ----
 
 export async function exportAllData() {
-  const [businessDetails, banks, clients, products, invoices, currencies, tvshTypes, units, documentTypes] =
+  const [businessDetails, banks, clients, products, invoices, currencies, tvshTypes, units, documentTypes, payments] =
     await Promise.all([
       getBusinessDetails(),
       getAll(STORES.banks),
@@ -158,6 +176,7 @@ export async function exportAllData() {
       getAll(STORES.tvshTypes),
       getAll(STORES.units),
       getAll(STORES.documentTypes),
+      getAll(STORES.payments),
     ]);
   return {
     app: "FinanCareLite",
@@ -172,6 +191,7 @@ export async function exportAllData() {
     tvshTypes,
     units,
     documentTypes,
+    payments,
   };
 }
 
@@ -188,6 +208,7 @@ export async function importAllData(data) {
     clearStore(STORES.tvshTypes),
     clearStore(STORES.units),
     clearStore(STORES.documentTypes),
+    clearStore(STORES.payments),
   ]);
   if (data.businessDetails) await putBusinessDetails(data.businessDetails);
   await Promise.all([
@@ -199,5 +220,6 @@ export async function importAllData(data) {
     ...(data.tvshTypes ?? []).map((t) => put(STORES.tvshTypes, t)),
     ...(data.units ?? []).map((u) => put(STORES.units, u)),
     ...(data.documentTypes ?? []).map((t) => put(STORES.documentTypes, t)),
+    ...(data.payments ?? []).map((p) => put(STORES.payments, p)),
   ]);
 }
