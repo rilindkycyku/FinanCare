@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./Styles/FaturaModern.css";
 import { Document, Page, pdf, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import { Button, Spinner } from "react-bootstrap";
-import { Download, ArrowLeft, FileText, Share2, Pencil, Lock, Unlock } from "lucide-react";
+import { Download, ArrowLeft, FileText, Share2, Pencil, Lock, Unlock, CreditCard } from "lucide-react";
 import DetajeFatura from "./DetajeFatura";
 import HeaderFatura from "./HeaderFatura";
 import TeDhenatFatura from "./TeDhenatFatura";
@@ -32,6 +32,7 @@ function Fatura({
   onBack,
   onShare,
   onEdit,
+  onAddPayment,
   mbyllur,
   onToggleStatus,
   autoDownload = false,
@@ -168,6 +169,12 @@ function Fatura({
           {onShare && (
             <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onShare}>
               <Share2 size={18} /> QR / Shpërndaj
+            </Button>
+          )}
+
+          {onAddPayment && (
+            <Button className="btn-invoice-action btn-invoice-close me-3" onClick={onAddPayment}>
+              <CreditCard size={18} /> Shto Pagesë
             </Button>
           )}
 

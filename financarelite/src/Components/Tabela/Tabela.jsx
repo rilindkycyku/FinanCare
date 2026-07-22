@@ -6,6 +6,11 @@ import EksportoTeDhenat from "./EksportoTeDhenat";
 import SortIcon from "./SortIcon";
 import useSortableData from "../../Context/useSortableData";
 
+// Cycled across whatever distinct values `filterField` finds, so each one gets a stable,
+// visually distinct color — mirrors the colored "Lloji" chip row on FinanCare's own Lista e
+// Faturave filter panel.
+const PILL_COLORS = ["#10b981", "#06b6d4", "#8b5cf6", "#f59e0b", "#f43f5e", "#ec4899", "#84cc16", "#3b82f6"];
+
 function formatDate(dateStr) {
   try {
     if (!dateStr) return "---";
@@ -31,7 +36,10 @@ function Tabela({
   funksionButonFshij,
   funksionNdryshoStatusin,
   funksionEshteEditimDisabled,
+  funksionEshteShikimDisabled,
+  funksionEshteFshirjeDisabled,
   dateField,
+  filterField,
   mosShfaqID,
   mosShfaqKerkimin,
   mosShfaqTitullin,
@@ -42,9 +50,15 @@ function Tabela({
   const [itemsPerPage, setItemsPerPage] = useState(mosShfaqPaginimin ? Math.max(data.length, 20) : 20);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+
+  // Distinct values of `filterField` present in the data (e.g. every "Lloji" that actually
+  // appears in the invoice list), so the dropdown never offers a choice with zero results.
+  const filterOptions = filterField ? [...new Set(data.map((d) => d[filterField]).filter(Boolean))].sort() : [];
+  const filteredData = filterField && filterValue ? data.filter((d) => d[filterField] === filterValue) : data;
 
   const { items, requestSort, sortConfig, currentPage, pageCount, goToPage } = useSortableData(
-    data,
+    filteredData,
     null,
     searchQuery,
     mosShfaqPaginimin ? Math.max(data.length, 20) : itemsPerPage,
@@ -134,12 +148,46 @@ function Tabela({
                       goToPage(0);
                       setStartDate("");
                       setEndDate("");
+                      setFilterValue("");
                     }}
                   >
                     <Eraser size={16} className="me-2" /> Pastro Filtrat
                   </Button>
                 </Col>
               </Row>
+
+              {filterField && filterOptions.length > 0 && (
+                <div className="premium-filter-pills-wrap">
+                  <Form.Label className="premium-filter-label d-block mb-2">{filterField}:</Form.Label>
+                  <div className="premium-filter-pills">
+                    <button
+                      type="button"
+                      className={`premium-filter-pill${filterValue === "" ? " active" : ""}`}
+                      style={{ "--pill-color": "var(--sp-emerald)" }}
+                      onClick={() => {
+                        setFilterValue("");
+                        goToPage(0);
+                      }}
+                    >
+                      Të gjitha
+                    </button>
+                    {filterOptions.map((opt, i) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        className={`premium-filter-pill${filterValue === opt ? " active" : ""}`}
+                        style={{ "--pill-color": PILL_COLORS[i % PILL_COLORS.length] }}
+                        onClick={() => {
+                          setFilterValue(opt);
+                          goToPage(0);
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -173,7 +221,13 @@ function Tabela({
                         <td className="text-center premium-td">
                           <div className="d-flex justify-content-center gap-2">
                             {funksionShfaqFature && (
-                              <button type="button" className="btn-action info" onClick={() => funksionShfaqFature(item.ID)} title="Shiko">
+                              <button
+                                type="button"
+                                className="btn-action info"
+                                onClick={() => funksionShfaqFature(item.ID)}
+                                disabled={funksionEshteShikimDisabled?.(item.ID)}
+                                title="Shiko"
+                              >
                                 <Eye size={16} />
                               </button>
                             )}
@@ -189,7 +243,13 @@ function Tabela({
                               </button>
                             )}
                             {funksionButonFshij && (
-                              <button type="button" className="btn-action delete" onClick={() => funksionButonFshij(item.ID)} title="Fshij">
+                              <button
+                                type="button"
+                                className="btn-action delete"
+                                onClick={() => funksionButonFshij(item.ID)}
+                                disabled={funksionEshteFshirjeDisabled?.(item.ID)}
+                                title="Fshij"
+                              >
                                 <Trash2 size={16} />
                               </button>
                             )}
@@ -294,6 +354,22 @@ function Tabela({
         .btn-premium-outline:hover { border-color: var(--sp-emerald) !important; color: var(--sp-emerald) !important; background: var(--sp-surface-3) !important; }
         .premium-filter-bar { background: var(--sp-surface-2); padding: 1rem; border-radius: 12px; border: 1px solid var(--sp-border); }
         .premium-filter-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--sp-text-muted); margin-bottom: 0.4rem; letter-spacing: 0.05em; }
+        .premium-filter-pills-wrap { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--sp-border); }
+        .premium-filter-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .premium-filter-pill {
+          border: 1px solid var(--pill-color);
+          color: var(--pill-color);
+          background: transparent;
+          border-radius: 999px;
+          padding: 0.4rem 0.9rem;
+          font-size: 0.75rem;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          white-space: nowrap;
+        }
+        .premium-filter-pill:hover { background: rgba(255,255,255,0.08); }
+        .premium-filter-pill.active { background: var(--pill-color); color: #0b1220; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
         .premium-input-group .form-control, .premium-select {
           background: var(--sp-surface-3) !important;
           color: var(--sp-text) !important;
