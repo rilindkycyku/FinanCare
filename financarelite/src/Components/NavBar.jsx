@@ -76,7 +76,7 @@ function NavBar() {
 
       <div className="fclite-navbar-links">
         <NavLink to={HOME_LINK.to} end={HOME_LINK.end} className={({ isActive }) => `fclite-navlink${isActive ? " active" : ""}`}>
-          <HOME_LINK.icon size={16} />
+          <HOME_LINK.icon size={14} />
           <span>{HOME_LINK.label}</span>
         </NavLink>
 
@@ -86,9 +86,9 @@ function NavBar() {
           return (
             <Dropdown key={category.label}>
               <Dropdown.Toggle as="button" className={`fclite-navlink fclite-navdropdown-toggle${isActiveCategory ? " active" : ""}`}>
-                <CategoryIcon size={16} />
+                <CategoryIcon size={14} />
                 <span>{category.label}</span>
-                <ChevronDown size={14} className="fclite-navdropdown-caret" />
+                <ChevronDown size={12} className="fclite-navdropdown-caret" />
               </Dropdown.Toggle>
               <Dropdown.Menu className="fclite-navdropdown-menu">
                 {category.links.map((link) => {
@@ -101,7 +101,7 @@ function NavBar() {
                       to={link.to}
                       className={`fclite-navdropdown-item${isActive ? " active" : ""}`}
                     >
-                      <Icon size={16} />
+                      <Icon size={14} />
                       <span>{link.label}</span>
                     </Dropdown.Item>
                   );
@@ -118,7 +118,7 @@ function NavBar() {
           title={theme === "dark" ? "Kalo në temën e bardhë" : "Kalo në temën e errët"}
           aria-label="Ndrysho temën"
         >
-          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
         </button>
       </div>
 
@@ -130,7 +130,7 @@ function NavBar() {
           title={theme === "dark" ? "Kalo në temën e bardhë" : "Kalo në temën e errët"}
           aria-label="Ndrysho temën"
         >
-          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
         </button>
         <button
           type="button"
@@ -139,7 +139,7 @@ function NavBar() {
           aria-label={mobileOpen ? "Mbyll menynë" : "Hap menynë"}
           aria-expanded={mobileOpen}
         >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          {mobileOpen ? <X size={17} /> : <Menu size={17} />}
         </button>
       </div>
 
@@ -153,7 +153,7 @@ function NavBar() {
 
       <div className={`fclite-mobile-menu${mobileOpen ? " open" : ""}`}>
         <NavLink to={HOME_LINK.to} end={HOME_LINK.end} className={({ isActive }) => `fclite-mobile-navlink${isActive ? " active" : ""}`}>
-          <HOME_LINK.icon size={18} />
+          <HOME_LINK.icon size={16} />
           <span>{HOME_LINK.label}</span>
         </NavLink>
 
@@ -162,7 +162,7 @@ function NavBar() {
           return (
             <div className="fclite-mobile-group" key={category.label}>
               <div className="fclite-mobile-group-label">
-                <CategoryIcon size={14} />
+                <CategoryIcon size={13} />
                 <span>{category.label}</span>
               </div>
               {category.links.map((link) => {
@@ -174,7 +174,7 @@ function NavBar() {
                     to={link.to}
                     className={`fclite-mobile-navlink${isActive ? " active" : ""}`}
                   >
-                    <Icon size={18} />
+                    <Icon size={16} />
                     <span>{link.label}</span>
                   </NavLink>
                 );

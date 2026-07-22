@@ -5,8 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0.85rem 2rem;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem;
   background: var(--sp-surface, #0f1827);
   border-bottom: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
   flex-wrap: wrap;
@@ -18,24 +18,24 @@
 }
 
 .fclite-brand-logo {
-  height: 34px;
+  height: 26px;
   width: auto;
 }
 
 .fclite-navbar-links {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.2rem;
   flex-wrap: wrap;
 }
 
 .fclite-navlink {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 10px;
-  font-size: 0.85rem;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--sp-text-muted, #94a3b8);
   text-decoration: none;
@@ -71,19 +71,19 @@
 .fclite-navdropdown-menu {
   background: var(--sp-surface-2, #162033) !important;
   border: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1)) !important;
-  border-radius: 12px !important;
-  padding: 0.4rem !important;
+  border-radius: 10px !important;
+  padding: 0.35rem !important;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-  min-width: 220px;
+  min-width: 200px;
 }
 
 .fclite-navdropdown-item {
   display: flex !important;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.55rem 0.75rem !important;
-  border-radius: 8px !important;
-  font-size: 0.85rem;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem !important;
+  border-radius: 7px !important;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--sp-text, #f1f5f9) !important;
   background: transparent !important;
@@ -103,11 +103,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-left: 0.35rem;
+  width: 30px;
+  height: 30px;
+  margin-left: 0.25rem;
   padding: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
   background: var(--sp-surface-2, #162033);
   color: var(--sp-text-muted, #94a3b8);
@@ -132,10 +132,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
   background: var(--sp-surface-2, #162033);
   color: var(--sp-text, #f1f5f9);
@@ -153,7 +153,11 @@
 @media (max-width: 768px) {
   .fclite-navbar {
     flex-wrap: nowrap;
-    padding: 0.75rem 1rem;
+    padding: 0.45rem 0.85rem;
+  }
+
+  .fclite-brand-logo {
+    height: 22px;
   }
 
   .fclite-navbar-links {
@@ -176,16 +180,16 @@
   .fclite-mobile-menu {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.15rem;
     position: fixed;
     top: 0;
     right: 0;
     z-index: 200;
-    width: min(300px, 82vw);
+    width: min(260px, 78vw);
     height: 100vh;
     height: 100dvh;
     overflow-y: auto;
-    padding: 4.5rem 1rem 2rem;
+    padding: 3.5rem 0.75rem 1.5rem;
     background: var(--sp-surface, #0f1827);
     border-left: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
     box-shadow: -12px 0 30px rgba(0, 0, 0, 0.35);
@@ -210,10 +214,10 @@
 .fclite-mobile-navlink {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.7rem 0.75rem;
-  border-radius: 10px;
-  font-size: 0.95rem;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--sp-text-muted, #94a3b8);
   text-decoration: none;
@@ -231,17 +235,17 @@
 }
 
 .fclite-mobile-group {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
   border-top: 1px solid var(--sp-border, rgba(255, 255, 255, 0.08));
 }
 
 .fclite-mobile-group-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.72rem;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
