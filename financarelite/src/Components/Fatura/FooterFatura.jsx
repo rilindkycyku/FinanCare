@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 });
 
 function FooterFatura({ Barkodi, data }) {
-  const { produktet, banks, teDhenatFat, currencies, qrCodeDataUrl } = data || {};
+  const { produktet, bankat, teDhenatFat, currencies, qrCodeDataUrl } = data || {};
   // No hardcoded rates/API — the business configures its own currencies (and rates) in
   // Settings; an empty list simply means the invoice shows only the € total.
   const activeCurrencies = (currencies || []).filter((c) => c.code && parseFloat(c.rate) > 0);
@@ -47,7 +47,7 @@ function FooterFatura({ Barkodi, data }) {
   const transporti = parseFloat(teDhenatFat?.regjistrimet?.transporti) || 0;
   const { totaliMeTVSH, totaliPaTVSH, tvshBreakdown, rabati, totaliFinal } = calcInvoiceTotals(produktet, transporti);
 
-  const activeBanks = (banks || []).filter((b) => b.emriBankes);
+  const activeBanks = (bankat || []).filter((b) => b.emriBankes);
 
   const bankTable = () => {
     if (activeBanks.length === 0) {
