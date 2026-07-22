@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import {
   LayoutDashboard, Building2, Users, Package, FileText, ClipboardList,
@@ -70,9 +70,9 @@ function NavBar() {
 
   return (
     <nav className="fclite-navbar">
-      <div className="fclite-navbar-brand">
+      <Link to="/" className="fclite-navbar-brand" aria-label="Shko te Paneli">
         <img src={theme === "light" ? "/img/web/LogoBlack.svg" : "/img/web/LogoWhite.svg"} alt="FinanCare" className="fclite-brand-logo" />
-      </div>
+      </Link>
 
       <div className="fclite-navbar-links">
         <NavLink to={HOME_LINK.to} end={HOME_LINK.end} className={({ isActive }) => `fclite-navlink${isActive ? " active" : ""}`}>
@@ -152,6 +152,10 @@ function NavBar() {
       )}
 
       <div className={`fclite-mobile-menu${mobileOpen ? " open" : ""}`}>
+        <Link to="/" className="fclite-mobile-brand" aria-label="Shko te Paneli">
+          <img src={theme === "light" ? "/img/web/LogoBlack.svg" : "/img/web/LogoWhite.svg"} alt="FinanCare" className="fclite-mobile-brand-logo" />
+        </Link>
+
         <NavLink to={HOME_LINK.to} end={HOME_LINK.end} className={({ isActive }) => `fclite-mobile-navlink${isActive ? " active" : ""}`}>
           <HOME_LINK.icon size={16} />
           <span>{HOME_LINK.label}</span>

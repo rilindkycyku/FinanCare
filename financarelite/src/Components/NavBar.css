@@ -15,6 +15,7 @@
 .fclite-navbar-brand {
   display: flex;
   align-items: center;
+  text-decoration: none;
 }
 
 .fclite-brand-logo {
@@ -200,6 +201,20 @@
   .fclite-mobile-menu.open {
     transform: translateX(0);
   }
+}
+
+.fclite-mobile-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 0 0.6rem 0.75rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--sp-border, rgba(255, 255, 255, 0.08));
+}
+
+.fclite-mobile-brand-logo {
+  height: 22px;
+  width: auto;
 }
 
 @keyframes fclite-fade-in {
