@@ -32,19 +32,19 @@ const KpiCard = ({ label, value, icon, color }) => {
 };
 
 const RankedRow = ({ rank, name, sub, value, barWidth, shareText }) => (
-  <div className="d-flex align-items-center gap-2 mb-2 py-1">
+  <div className="st-ranked-row d-flex align-items-center py-1">
     <span className="st-rank">#{rank}</span>
     <div className="flex-grow-1 min-w-0">
-      <div className="fw-semibold text-truncate" style={{ fontSize: "0.85rem" }}>{name}</div>
-      {sub && <div className="text-muted" style={{ fontSize: "0.7rem" }}>{sub}</div>}
+      <div className="st-rank-name fw-semibold text-truncate">{name}</div>
+      {sub && <div className="st-rank-sub text-muted">{sub}</div>}
     </div>
     <span className="st-rank-value">{value}</span>
-    <div style={{ minWidth: 55 }}>
+    <div className="st-rank-bar-wrap">
       <div className="st-bar-track">
         <div className="st-bar-fill" style={{ width: `${barWidth}%` }} />
       </div>
     </div>
-    <span className="text-muted" style={{ fontSize: "0.7rem", minWidth: 32 }}>{shareText.toFixed(1)}%</span>
+    <span className="st-rank-share text-muted">{shareText.toFixed(1)}%</span>
   </div>
 );
 
@@ -168,7 +168,7 @@ function Statistika() {
           <KpiCard label="Totali Negativ" value={`${stats.totaliNegativ.toFixed(2)} €`} icon={TrendingDown} color="danger" />
         </Row>
 
-        <Row className="g-4 mt-1">
+        <Row className="g-3 g-md-4 mt-1">
           <Col xl={6}>
             <div className="st-panel h-100">
               <div className="st-panel-header">
@@ -181,12 +181,12 @@ function Statistika() {
                 ) : (
                   <div className="d-flex flex-column gap-2">
                     {stats.trendiMujor.map((m, i) => (
-                      <div key={i} className="d-flex align-items-center gap-3">
-                        <span className="text-muted" style={{ minWidth: 34, fontSize: "0.78rem" }}>{m.label}</span>
-                        <div className="flex-grow-1 st-bar-track" style={{ height: 8 }}>
-                          <div className="st-bar-fill" style={{ width: `${(m.vlera / maxTrend) * 100}%`, height: 8 }} />
+                      <div key={i} className="st-trend-row d-flex align-items-center">
+                        <span className="st-trend-label text-muted">{m.label}</span>
+                        <div className="flex-grow-1 st-bar-track st-bar-track-lg">
+                          <div className="st-bar-fill" style={{ width: `${(m.vlera / maxTrend) * 100}%` }} />
                         </div>
-                        <span className="fw-bold text-emerald" style={{ minWidth: 90, fontSize: "0.8rem", textAlign: "right" }}>
+                        <span className="st-trend-value fw-bold text-emerald">
                           {m.vlera.toFixed(2)} €
                         </span>
                       </div>
@@ -322,11 +322,20 @@ function Statistika() {
           font-size: 0.85rem; font-weight: 800;
         }
         .st-panel-body { padding: 1.25rem; }
+        .st-ranked-row { gap: 0.5rem; margin-bottom: 0.5rem; }
         .st-rank { color: var(--sp-text-muted); font-weight: 700; min-width: 22px; font-size: 0.8rem; }
+        .st-rank-name { font-size: 0.85rem; }
+        .st-rank-sub { font-size: 0.7rem; }
         .st-rank-value { font-weight: 700; color: var(--sp-cyan, #06b6d4); font-size: 0.85rem; min-width: 85px; text-align: right; }
+        .st-rank-bar-wrap { min-width: 55px; }
+        .st-rank-share { font-size: 0.7rem; min-width: 32px; }
+        .st-trend-row { gap: 0.75rem; }
+        .st-trend-label { min-width: 34px; font-size: 0.78rem; }
+        .st-trend-value { min-width: 90px; font-size: 0.8rem; text-align: right; }
         .st-bar-track {
           height: 5px; border-radius: 999px; background: var(--sp-surface-3); overflow: hidden;
         }
+        .st-bar-track-lg { height: 8px; }
         .st-bar-fill {
           height: 100%; border-radius: 999px;
           background: linear-gradient(90deg, var(--sp-emerald), var(--sp-emerald));
@@ -340,6 +349,26 @@ function Statistika() {
           transition: all 0.2s ease;
         }
         .st-action-link:hover { border-color: var(--sp-emerald); color: var(--sp-emerald); }
+        @media (max-width: 575.98px) {
+          .st-panel { border-radius: 12px; }
+          .st-panel-header {
+            padding: 0.6rem 0.75rem; gap: 6px; font-size: 0.72rem;
+          }
+          .st-panel-header svg { width: 14px; height: 14px; }
+          .st-panel-body { padding: 0.7rem 0.75rem; }
+          .st-ranked-row { gap: 0.4rem; margin-bottom: 0.35rem; }
+          .st-rank { min-width: 16px; font-size: 0.68rem; }
+          .st-rank-name { font-size: 0.74rem; }
+          .st-rank-sub { font-size: 0.62rem; }
+          .st-rank-value { font-size: 0.7rem; min-width: 58px; }
+          .st-rank-bar-wrap { min-width: 32px; }
+          .st-rank-share { font-size: 0.62rem; min-width: 26px; }
+          .st-trend-row { gap: 0.4rem; }
+          .st-trend-label { min-width: 24px; font-size: 0.68rem; }
+          .st-trend-value { min-width: 62px; font-size: 0.7rem; }
+          .st-bar-track-lg { height: 6px; }
+          .st-action-link { padding: 0.6rem 0.75rem; font-size: 0.78rem; border-radius: 10px; }
+        }
       `}</style>
     </div>
   );
