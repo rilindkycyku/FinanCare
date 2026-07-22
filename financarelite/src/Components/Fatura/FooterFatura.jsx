@@ -1,7 +1,7 @@
 import { View, Text, Link, Image, StyleSheet, Font } from "@react-pdf/renderer";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 
-const FINANCARELITE_DOMAIN = "financarelite.rilindkycyku.dev";
+const FINANCARELITE_DOMAIN = "lite.financare.rilindkycyku.dev";
 const FINANCARELITE_URL = `https://${FINANCARELITE_DOMAIN}`;
 
 Font.register({
