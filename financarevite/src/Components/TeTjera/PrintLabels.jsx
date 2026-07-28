@@ -4,9 +4,11 @@ import JsBarcode from "jsbarcode";
 import { Button, Modal, Table, Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint, faListCheck, faFilePdf, faXmark } from "@fortawesome/free-solid-svg-icons";
+import PdfViewerModal from "./PdfViewerModal";
 
 const PrintLabels = ({ storeName, products }) => {
   const [showModal, setShowModal] = useState(false);
+  const [pdf, setPdf] = useState(null);
 
   const generatePDF = () => {
     const doc = new jsPDF("p", "mm", "a4");
@@ -169,7 +171,9 @@ const PrintLabels = ({ storeName, products }) => {
       }
     });
 
-    doc.save("Qmimorja.pdf");
+    // Shown in the viewer first: labels are checked against the shelf before a sheet is printed,
+    // and the file is saved only from there.
+    setPdf({ blob: doc.output("blob"), filename: "Qmimorja.pdf" });
   };
 
   return (
@@ -259,6 +263,14 @@ const PrintLabels = ({ storeName, products }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <PdfViewerModal
+        show={Boolean(pdf)}
+        blob={pdf?.blob}
+        filename={pdf?.filename}
+        title="Çmimorja"
+        onHide={() => setPdf(null)}
+      />
     </>
   );
 };

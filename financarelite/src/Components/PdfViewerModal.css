@@ -1,0 +1,109 @@
+/* The in-app PDF preview: a scrolling stack of rasterized pages on a neutral backdrop, so the
+   sheet reads like paper regardless of the app's theme. */
+
+.fcl-pdf-modal .modal-content {
+  background: var(--sp-surface-2, #162033);
+  border: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
+  color: var(--sp-text, #f1f5f9);
+}
+
+.fcl-pdf-modal .modal-header,
+.fcl-pdf-modal .modal-footer {
+  border-color: var(--sp-border, rgba(255, 255, 255, 0.1));
+}
+
+.fcl-pdf-body {
+  background: var(--sp-bg, #080f1a);
+  padding: 0.75rem;
+  max-height: 78vh;
+  overflow: auto;
+}
+
+.fcl-pdf-zoom {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: fit-content;
+  margin: 0 auto 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
+  background: var(--sp-surface-2, #162033);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--sp-text-muted, #94a3b8);
+}
+
+.fcl-pdf-zoom button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
+  background: var(--sp-surface, #0f1827);
+  color: var(--sp-text, #f1f5f9);
+  cursor: pointer;
+}
+
+.fcl-pdf-zoom button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.fcl-pdf-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* A centred flex child wider than its container cannot be scrolled back to its left edge, so a
+   zoomed page is laid out from the start edge instead and panned from there. */
+.fcl-pdf-pages.zoomuar {
+  align-items: flex-start;
+}
+
+.fcl-pdf-page {
+  width: calc(100% * var(--pdf-zoom, 1));
+  max-width: calc(900px * var(--pdf-zoom, 1));
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid var(--sp-border, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  background: #fff;
+}
+
+.fcl-pdf-name {
+  font-size: 0.78rem;
+  color: var(--sp-text-muted, #94a3b8);
+  max-width: 45%;
+}
+
+.fcl-pdf-footer .btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 575.98px) {
+  .fcl-pdf-body {
+    padding: 0.5rem;
+    max-height: none;
+  }
+
+  /* Three buttons plus the filename never fit one phone row; the name gets its own line. */
+  .fcl-pdf-footer {
+    flex-wrap: wrap;
+  }
+
+  .fcl-pdf-name {
+    width: 100%;
+    max-width: none;
+    margin-bottom: 0.35rem;
+  }
+}

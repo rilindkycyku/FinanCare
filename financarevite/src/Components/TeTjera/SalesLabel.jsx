@@ -2,6 +2,7 @@ import { useState } from "react";
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
 import { Button, Modal, Form } from "react-bootstrap";
+import PdfViewerModal from "./PdfViewerModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTags,
@@ -287,13 +288,15 @@ const generatePDF = (storeName, products) => {
     }
   });
 
-  doc.save("EtiketatZbritjes.pdf");
+  // Returned rather than saved — the caller previews it and the user decides whether to keep it.
+  return doc.output("blob");
 };
 
 /* ─── Component ─────────────────────────────────────────────────── */
 const SalesLabel = ({ storeName, products }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedDateFilter, setSelectedDateFilter] = useState("ALL");
+  const [pdf, setPdf] = useState(null);
 
   const uniqueDates = [...new Set((products || []).map(p => `${p.dataZbritjes} -> ${p.dataSkadimit}`))].filter(Boolean).sort();
 
@@ -462,7 +465,10 @@ const SalesLabel = ({ storeName, products }) => {
             </Button>
             <Button
               disabled={total === 0}
-              onClick={() => { generatePDF(storeName, filteredProducts); setShowModal(false); }}
+              onClick={() => {
+                setPdf({ blob: generatePDF(storeName, filteredProducts), filename: "EtiketatZbritjes.pdf" });
+                setShowModal(false);
+              }}
               style={{
                 background: total === 0 ? "rgba(239,68,68,0.3)" : "linear-gradient(135deg,#ef4444,#dc2626)",
                 border: "none", color: "#fff", fontWeight: 800, borderRadius: 10,
@@ -479,6 +485,14 @@ const SalesLabel = ({ storeName, products }) => {
           </div>
         </Modal.Footer>
       </Modal>
+
+      <PdfViewerModal
+        show={Boolean(pdf)}
+        blob={pdf?.blob}
+        filename={pdf?.filename}
+        title="Etiketat e Zbritjes"
+        onHide={() => setPdf(null)}
+      />
     </>
   );
 };

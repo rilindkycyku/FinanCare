@@ -277,7 +277,7 @@ function sanitizeFilename(name = "") {
     .replace(/^_|_$/g, "");
 }
 
-async function buildKartelaAnalitikePDFBlob({ rows, client, teDhenatBiznesit, hyrje, dalje, saldo, clientName }) {
+export async function buildKartelaAnalitikePDFBlob({ rows, client, teDhenatBiznesit, hyrje, dalje, saldo, clientName }) {
   return pdf(
     <KartelaAnalitikePDFDoc rows={rows} client={client} teDhenatBiznesit={teDhenatBiznesit} hyrje={hyrje} dalje={dalje} saldo={saldo} clientName={clientName} />
   ).toBlob();
@@ -310,9 +310,13 @@ export async function printKartelaAnalitikePDF(args) {
   }, 60000);
 }
 
+/** `Kartela_Klienti_28-07-2026.pdf` */
+export function kartelaAnalitikeFilename(clientName) {
+  const date = new Date().toLocaleDateString("sq-AL").replace(/[./]/g, "-");
+  return `Kartela_${sanitizeFilename(clientName)}_${date}.pdf`;
+}
+
 export async function downloadKartelaAnalitikePDF(args) {
   const blob = await buildKartelaAnalitikePDFBlob(args);
-  const { clientName } = args;
-  const date = new Date().toLocaleDateString("sq-AL").replace(/\./g, "-");
-  saveAs(blob, `Kartela_${sanitizeFilename(clientName)}_${date}.pdf`);
+  saveAs(blob, kartelaAnalitikeFilename(args.clientName));
 }

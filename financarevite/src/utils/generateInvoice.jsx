@@ -15,6 +15,10 @@ function loadImage(url) {
  *
  * @param {object} data - { invoiceNumber, date, salesUsername, items, totalWithoutVAT, vat, rabati }
  * @param {object} opts - { teDhenatBiznesit, baseUrl, llojiPageses, action: "download" | "print" | "none" }
+ *
+ * "print" still goes straight to the printer — at the till that is the whole point. Anything that
+ * wants the receipt on screen first should use `buildInvoiceReceiptBlob` below and hand the blob to
+ * `PdfViewerModal`, which is far more reliable on a phone than opening a blob URL in a new tab.
  */
 export async function generateInvoiceReceipt(data, opts = {}) {
   const { teDhenatBiznesit, baseUrl = "", llojiPageses = "Cash", action = "none" } = opts;
@@ -207,6 +211,12 @@ export async function generateInvoiceReceipt(data, opts = {}) {
   }
 
   return doc;
+}
+
+/** The same receipt as a blob, for previewing before printing or saving. */
+export async function buildInvoiceReceiptBlob(data, opts = {}) {
+  const doc = await generateInvoiceReceipt(data, { ...opts, action: "none" });
+  return doc.output("blob");
 }
 
 export default generateInvoiceReceipt;

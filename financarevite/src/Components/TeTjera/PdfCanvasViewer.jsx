@@ -10,7 +10,7 @@ const RENDER_WIDTH = 900;
 /** Renders a PDF blob as a stack of full-width `<canvas>` pages instead of relying on the
  * browser's own PDF plugin (via `<iframe>`/`<object>`). Mobile Chrome doesn't render a plugin
  * inside an iframe reliably — it falls back to a bare "Open" download prompt — so this rasterizes
- * every page itself with pdf.js, which works the same everywhere. */
+ * every page itself with pdf.js, which works the same everywhere. Ported from FinanCareLite. */
 function PdfCanvasViewer({ blob, className, zoom = 1, emriKlases = "invoice-pdf-page" }) {
   const containerRef = useRef(null);
   const [error, setError] = useState(null);
@@ -47,7 +47,7 @@ function PdfCanvasViewer({ blob, className, zoom = 1, emriKlases = "invoice-pdf-
         }
       } catch (err) {
         if (!cancelled) {
-          console.error("Gabim gjatë shfaqjes së faturës:", err);
+          console.error("Gabim gjatë shfaqjes së PDF-së:", err);
           setError(err);
         }
       }
@@ -62,7 +62,7 @@ function PdfCanvasViewer({ blob, className, zoom = 1, emriKlases = "invoice-pdf-
   if (error) {
     return (
       <div className="invoice-pdf-error">
-        Faturën nuk mundëm ta shfaqim këtu. Përdorni "Ruaj Faturën" për ta shkarkuar dhe hapur.
+        PDF-në nuk mundëm ta shfaqim këtu. Përdorni "Shkarko PDF" për ta ruajtur dhe hapur.
       </div>
     );
   }
@@ -70,7 +70,7 @@ function PdfCanvasViewer({ blob, className, zoom = 1, emriKlases = "invoice-pdf-
   if (!blob) {
     return (
       <div className="invoice-pdf-loading">
-        <Spinner animation="border" size="sm" className="me-2" /> Duke përgatitur faturën...
+        <Spinner animation="border" size="sm" className="me-2" /> Duke përgatitur dokumentin...
       </div>
     );
   }

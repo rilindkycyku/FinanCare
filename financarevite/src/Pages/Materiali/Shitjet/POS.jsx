@@ -44,7 +44,8 @@ import { useTheme } from "../../../Context/ThemeContext";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import NukEshteEOptimizuarPerMobile from "../../../Components/TeTjera/layout/NukEshteEOptimizuarPerMobile";
 import BarcodeScannerModal from "../../../Components/TeTjera/BarcodeScannerModal";
-import { generateInvoiceReceipt } from "../../../utils/generateInvoice";
+import { generateInvoiceReceipt, buildInvoiceReceiptBlob } from "../../../utils/generateInvoice";
+import PdfViewerModal from "../../../Components/TeTjera/PdfViewerModal";
 
 function POS(props) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -110,6 +111,7 @@ function POS(props) {
   const [apiInvoices, setApiInvoices] = useState([]);
   const [isLoadingFaturat, setIsLoadingFaturat] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [pdfParagoni, setPdfParagoni] = useState(null);
 
   const navigate = useNavigate();
 
@@ -336,7 +338,14 @@ function POS(props) {
         rabati: parseFloat(r.data.rabati ?? 0).toFixed(2),
       };
       
-      await generateInvoice(pdfData, "print");
+      // Shown in the viewer instead of being pushed at a new tab's PDF plugin (which on a phone
+      // degrades to a bare download prompt); printing and saving both live inside the viewer.
+      const blob = await buildInvoiceReceiptBlob(pdfData, {
+        teDhenatBiznesit,
+        baseUrl: BASE_URL,
+        llojiPageses,
+      });
+      setPdfParagoni({ blob, filename: `Paragon #${pdfData.invoiceNumber}.pdf` });
     } catch (err) {
       console.error("Error generating PDF from API data", err);
     } finally {
@@ -1746,6 +1755,13 @@ function POS(props) {
           show={showScanner} 
           onHide={() => setShowScanner(false)} 
           onScan={handleScanResult} 
+        />
+        <PdfViewerModal
+          show={Boolean(pdfParagoni)}
+          blob={pdfParagoni?.blob}
+          filename={pdfParagoni?.filename}
+          title="Paragoni"
+          onHide={() => setPdfParagoni(null)}
         />
       </div>
     </div>
