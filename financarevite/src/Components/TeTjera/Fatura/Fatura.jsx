@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Styles/FaturaModern.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -21,9 +21,9 @@ import {
 } from "lucide-react";
 import DetajeFatura from "./DetajeFatura";
 import HeaderFatura from "./HeaderFatura";
-import TeDhenatFatura from "./TeDhenatFatura";
 import FooterFatura from "./FooterFatura";
 import Titulli from "../Titulli";
+import PdfCanvasViewer from "../PdfCanvasViewer";
 
 // Register fonts for PDF generation
 Font.register({
@@ -210,6 +210,52 @@ function Fatura({ nrFatures, mbyllFaturen }) {
     return <Document>{pages}</Document>;
   };
 
+  // The preview shows the literal PDF, so it can never drift from what gets saved or printed.
+  // Built separately from `ruajFaturen`'s own blob, so a slow render never blocks the save button.
+  const [previewBlob, setPreviewBlob] = useState(null);
+  useEffect(() => {
+    if (loading || !teDhenatFat?.regjistrimet) return undefined;
+    let cancelled = false;
+    setPreviewBlob(null);
+    pdf(<InvoicePDF />)
+      .toBlob()
+      .then((blob) => {
+        if (!cancelled) setPreviewBlob(blob);
+      })
+      .catch((err) => console.error("Gabim gjatë përgatitjes së faturës:", err));
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, produktet, teDhenatFat, teDhenatBiznesit, bankat, barkodi, estimatedPages]);
+
+  // The toolbar used to sit above an HTML invoice that scrolled with the page. The PDF preview
+  // scrolls internally instead, so the shell is sized to exactly fill the space left under the
+  // toolbar and the outer page never scrolls the two over each other.
+  const containerRef = useRef(null);
+  const shellRef = useRef(null);
+  const [shellHeight, setShellHeight] = useState(null);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const shell = shellRef.current;
+    if (!container || !shell) return undefined;
+
+    const recalc = () => {
+      const shellTop = shell.getBoundingClientRect().top;
+      const containerBottomPadding = parseFloat(getComputedStyle(container).paddingBottom) || 0;
+      setShellHeight(Math.max(window.innerHeight - shellTop - containerBottomPadding, 400));
+    };
+
+    recalc();
+    window.addEventListener("resize", recalc);
+    const resizeObserver = new ResizeObserver(recalc);
+    resizeObserver.observe(container);
+    return () => {
+      window.removeEventListener("resize", recalc);
+      resizeObserver.disconnect();
+    };
+  }, [loading]);
+
   const ruajFaturen = async () => {
     try {
       setSaving(true);
@@ -249,7 +295,7 @@ function Fatura({ nrFatures, mbyllFaturen }) {
   }
 
   return (
-    <div className="invoice-viewer-container">
+    <div className="invoice-viewer-container" ref={containerRef}>
       <Titulli titulli={`Fatura: ${barkodi}`} />
 
       {/* Modern Toolbar */}
@@ -282,31 +328,9 @@ function Fatura({ nrFatures, mbyllFaturen }) {
         </div>
       </div>
 
-      {/* Invoice Paper */}
-      <div className="invoice-paper" id="invoice-capture">
-        <HeaderFatura
-          faturaID={nrFatures}
-          Barkodi={barkodi}
-          NrFaqes={1}
-          NrFaqeve={estimatedPages}
-          isPDF={false}
-          data={{ teDhenatFat, teDhenatBiznesit }}
-        />
-        <hr className="invoice-hr" />
-        <TeDhenatFatura
-          faturaID={nrFatures}
-          ProduktiPare={0}
-          ProduktiFundit={produktet.length}
-          isPDF={false}
-          data={{ produktet }}
-        />
-        <hr className="invoice-hr" />
-        <FooterFatura
-          faturaID={nrFatures}
-          Barkodi={barkodi}
-          isPDF={false}
-          data={{ teDhenatFat, produktet, bankat }}
-        />
+      {/* The invoice itself — the real PDF, rasterized page by page, not an HTML lookalike. */}
+      <div className="invoice-pdf-shell" ref={shellRef} style={{ height: shellHeight ?? undefined }}>
+        <PdfCanvasViewer className="invoice-pdf-viewer" blob={previewBlob} />
       </div>
     </div>
   );

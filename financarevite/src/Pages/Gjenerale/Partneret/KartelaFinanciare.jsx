@@ -7,7 +7,8 @@ import Tabela from "../../../Components/TeTjera/Tabela/Tabela";
 import KontrolloAksesinNeFaqe from "../../../Components/TeTjera/KontrolliAksesit/KontrolloAksesinNeFaqe";
 import { darkSelectStyles } from "@/utils/darkSelectStyles";
 import { exportKartelaExcel } from "@/utils/exportInvoiceExcel";
-import { downloadKartelaPDF } from "../../../Components/Gjenerale/Partneret/KartelaFinanciarePDF";
+import { buildKartelaPDFBlob, kartelaFilename } from "../../../Components/Gjenerale/Partneret/KartelaFinanciarePDF";
+import PdfViewerModal from "../../../Components/TeTjera/PdfViewerModal";
 import {
   Printer,
   Building2,
@@ -71,6 +72,7 @@ function KartelaFinanciare() {
   const [saving, setSaving] = useState(false);
   const [partnerId, setPartnerId] = useState(null);
   const [biznesit, setBiznesit] = useState(null);
+  const [pdf, setPdf] = useState(null);
 
   // Redirect if no session
   useEffect(() => { if (!getID) navigate("/login"); }, []);
@@ -126,12 +128,12 @@ function KartelaFinanciare() {
     if (!selected) { setKartela(null); setTableRows([]); }
   };
 
-  // PDF download
-  const handleDownloadPDF = async () => {
+  // The kartela opens in the viewer first; it is saved only from there.
+  const handleShikoPDF = async () => {
     if (!tableRows.length || saving) return;
     setSaving(true);
     try {
-      await downloadKartelaPDF({
+      const blob = await buildKartelaPDFBlob({
         rows: tableRows,
         partner: partner,
         biznesit: biznesit,
@@ -140,6 +142,7 @@ function KartelaFinanciare() {
         saldo: saldo,
         partnerName: optionsSelected?.label,
       });
+      setPdf({ blob, filename: kartelaFilename(optionsSelected?.label) });
     } catch (err) { console.error("PDF error:", err); }
     finally { setSaving(false); }
   };
@@ -207,9 +210,9 @@ function KartelaFinanciare() {
 
             {hasData && (
               <div className="kf-action-btns">
-                <button className="kf-btn-print" onClick={handleDownloadPDF} disabled={saving}>
+                <button className="kf-btn-print" onClick={handleShikoPDF} disabled={saving}>
                   {saving ? <Loader2 size={14} className="kf-spin" /> : <Printer size={14} />}
-                  {saving ? "Duke gjeneruar..." : "Shkarko PDF"}
+                  {saving ? "Duke gjeneruar..." : "Shiko PDF"}
                 </button>
                 <button className="kf-btn-excel" onClick={handleExportExcel}>
                   <FileSpreadsheet size={14} /> Eksporto Excel
@@ -321,6 +324,14 @@ function KartelaFinanciare() {
 
         </div>
       </div>
+
+      <PdfViewerModal
+        show={Boolean(pdf)}
+        blob={pdf?.blob}
+        filename={pdf?.filename}
+        title={`Kartela Financiare - ${optionsSelected?.label || ""}`}
+        onHide={() => setPdf(null)}
+      />
     </>
   );
 }

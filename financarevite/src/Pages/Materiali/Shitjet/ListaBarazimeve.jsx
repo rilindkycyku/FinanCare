@@ -8,7 +8,7 @@ import {
   Text,
   View,
   StyleSheet,
-  PDFDownloadLink,
+  pdf,
 } from "@react-pdf/renderer";
 import axios from "axios";
 import { TailSpin } from "react-loader-spinner";
@@ -17,6 +17,7 @@ import "../../Styles/DizajniPergjithshem.css";
 import "../../Styles/SugjerimiPorosise.css";
 import { Printer, Calendar, Search } from "lucide-react";
 import EksportoTeDhenat from "../../../Components/TeTjera/Tabela/EksportoTeDhenat";
+import PdfViewerModal from "../../../Components/TeTjera/PdfViewerModal";
 
 const pdfStyles = StyleSheet.create({
   page: { padding: 50, fontSize: 10, color: "#1e293b", backgroundColor: "#ffffff" },
@@ -111,6 +112,8 @@ function ListaBarazimeve() {
   const [toDate, setToDate] = useState("");
   const [selectedBarazim, setSelectedBarazim] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [pdfDuke, setPdfDuke] = useState(false);
+  const [pdfRaporti, setPdfRaporti] = useState(null);
 
   useEffect(() => {
     const fetchBarazimet = async () => {
@@ -142,6 +145,21 @@ function ListaBarazimeve() {
   const openDetails = (barazim) => {
     setSelectedBarazim(barazim);
     setShowModal(true);
+  };
+
+  /** The report is shown in the viewer first — it reaches the Downloads folder only from there. */
+  const shikoRaportinPDF = async () => {
+    if (!selectedBarazim || pdfDuke) return;
+    setPdfDuke(true);
+    try {
+      const blob = await pdf(<RaportiPDF barazim={selectedBarazim} />).toBlob();
+      const data = new Date(selectedBarazim.kohaBarazimit).toLocaleDateString("sq-AL").replace(/[./]/g, "-");
+      setPdfRaporti({ blob, filename: `Barazimi_${data}.pdf` });
+    } catch (err) {
+      console.error("Gabim gjatë krijimit të PDF-së:", err);
+    } finally {
+      setPdfDuke(false);
+    }
   };
 
   const RaportiPDF = ({ barazim }) => {
@@ -645,20 +663,23 @@ function ListaBarazimeve() {
             </Button>
 
             {selectedBarazim && (
-              <PDFDownloadLink
-                document={<RaportiPDF barazim={selectedBarazim} />}
-                fileName={`Barazimi_${new Date(selectedBarazim.kohaBarazimit)
-                  .toLocaleDateString("sq-AL")
-                  .replace(/\//g, "-")}.pdf`}>
-                {({ loading }) => (
-                  <Button className="btn-save px-4 d-flex align-items-center gap-2" disabled={loading}>
-                    {loading ? "Duke gjeneruar..." : <><Printer size={16} /> Shkarko PDF</>}
-                  </Button>
-                )}
-              </PDFDownloadLink>
+              <Button
+                className="btn-save px-4 d-flex align-items-center gap-2"
+                disabled={pdfDuke}
+                onClick={shikoRaportinPDF}>
+                {pdfDuke ? "Duke gjeneruar..." : <><Printer size={16} /> Shiko PDF</>}
+              </Button>
             )}
           </Modal.Footer>
         </Modal>
+
+        <PdfViewerModal
+          show={Boolean(pdfRaporti)}
+          blob={pdfRaporti?.blob}
+          filename={pdfRaporti?.filename}
+          title="Raporti i Barazimit"
+          onHide={() => setPdfRaporti(null)}
+        />
         </div>
       </div>
     </>

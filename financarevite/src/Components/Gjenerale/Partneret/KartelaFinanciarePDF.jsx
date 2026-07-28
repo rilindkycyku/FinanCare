@@ -368,8 +368,9 @@ function sanitizeFilename(name = "") {
     .replace(/^_|_$/g, "");                  // trim leading/trailing
 }
 
-export async function downloadKartelaPDF({ rows, partner, biznesit, totHyrje, totDalje, saldo, partnerName }) {
-  const blob = await pdf(
+/** The kartela as a blob, so it can be previewed before anything is written to disk. */
+export async function buildKartelaPDFBlob({ rows, partner, biznesit, totHyrje, totDalje, saldo, partnerName }) {
+  return pdf(
     <KartelaFinanciarePDFDoc
       rows={rows}
       partner={partner}
@@ -380,7 +381,16 @@ export async function downloadKartelaPDF({ rows, partner, biznesit, totHyrje, to
       partnerName={partnerName}
     />
   ).toBlob();
-  const date = new Date().toLocaleDateString("sq-AL").replace(/\./g, "-");
-  saveAs(blob, `Kartela_${sanitizeFilename(partnerName)}_${date}.pdf`);
+}
+
+/** `Kartela_Partneri_28-07-2026.pdf` */
+export function kartelaFilename(partnerName) {
+  const date = new Date().toLocaleDateString("sq-AL").replace(/[./]/g, "-");
+  return `Kartela_${sanitizeFilename(partnerName)}_${date}.pdf`;
+}
+
+export async function downloadKartelaPDF(args) {
+  const blob = await buildKartelaPDFBlob(args);
+  saveAs(blob, kartelaFilename(args.partnerName));
 }
 

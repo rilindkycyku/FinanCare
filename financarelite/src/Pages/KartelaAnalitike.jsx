@@ -12,7 +12,10 @@ import { calcInvoiceTotals } from "../lib/invoiceCalc";
 import { DEFAULT_DOCUMENT_TYPES } from "../lib/options";
 import { useDocumentTypes } from "../lib/useConfigLists";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
-import { downloadKartelaAnalitikePDF, printKartelaAnalitikePDF } from "../Components/KartelaAnalitikePDF";
+import {
+  buildKartelaAnalitikePDFBlob, kartelaAnalitikeFilename, printKartelaAnalitikePDF,
+} from "../Components/KartelaAnalitikePDF";
+import PdfViewerModal from "../Components/PdfViewerModal";
 import { useDialog } from "../Context/DialogContext";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
@@ -48,6 +51,7 @@ function KartelaAnalitike() {
   const [showPagesaModal, setShowPagesaModal] = useState(false);
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState({});
   const [savingPdf, setSavingPdf] = useState(false);
+  const [pdf, setPdf] = useState(null);
   const [printingPdf, setPrintingPdf] = useState(false);
   const documentTypesLoaded = useDocumentTypes();
   const documentTypes = documentTypesLoaded.length > 0 ? documentTypesLoaded : DEFAULT_DOCUMENT_TYPES;
@@ -162,11 +166,13 @@ function KartelaAnalitike() {
     }
   };
 
-  const handleDownloadPdf = async () => {
+  // The kartela opens in the viewer first — saving and printing both happen from there.
+  const handleShikoPdf = async () => {
     if (!selectedClient || savingPdf) return;
     setSavingPdf(true);
     try {
-      await downloadKartelaAnalitikePDF(kartelaPdfArgs());
+      const blob = await buildKartelaAnalitikePDFBlob(kartelaPdfArgs());
+      setPdf({ blob, filename: kartelaAnalitikeFilename(selectedClient.emriBiznesit) });
     } catch (err) {
       console.error("Gabim gjatë krijimit të PDF-së:", err);
     } finally {
@@ -231,9 +237,9 @@ function KartelaAnalitike() {
                 {printingPdf ? <Loader2 size={14} className="ka-spin" /> : <Printer size={14} />}
                 {printingPdf ? "Duke përgatitur..." : "Printo"}
               </button>
-              <button type="button" className="ka-action-btn" onClick={handleDownloadPdf} disabled={savingPdf}>
+              <button type="button" className="ka-action-btn" onClick={handleShikoPdf} disabled={savingPdf}>
                 {savingPdf ? <Loader2 size={14} className="ka-spin" /> : <Download size={14} />}
-                {savingPdf ? "Duke gjeneruar..." : "Shkarko PDF"}
+                {savingPdf ? "Duke gjeneruar..." : "Shiko PDF"}
               </button>
             </div>
           )}
@@ -448,6 +454,14 @@ function KartelaAnalitike() {
           .ka-partner-value { font-size: 0.75rem; }
         }
       `}</style>
+
+      <PdfViewerModal
+        show={Boolean(pdf)}
+        blob={pdf?.blob}
+        filename={pdf?.filename}
+        title={`Kartela Analitike - ${selectedClient?.emriBiznesit || ""}`}
+        onHide={() => setPdf(null)}
+      />
     </>
   );
 }
