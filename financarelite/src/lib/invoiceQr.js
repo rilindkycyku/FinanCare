@@ -2,9 +2,19 @@ import { buildInvoicePayload, encodeInvoiceToLink, toQrPayloadUrl } from "./shar
 import { qrDataUrl, qrVersionFor, shrinkLogoDataUrl, QrTooLargeError } from "./qr";
 
 const FALLBACK_QR_LOGO = "/img/web/apple-touch-icon.png";
-// Past roughly this QR version the modules get small enough that phone cameras start to
-// struggle, so a logo is only allowed to ride inside the payload while the code stays under it.
-const MAX_COMFORTABLE_QR_VERSION = 20;
+// A logo may ride inside the payload only while the printed code stays readable, and on paper
+// that's decided by how wide one module ends up being, not by the version number as such. The
+// invoice prints the QR at 105 pt ≈ 37 mm (see FooterFatura); version 27 is 125 modules across,
+// so ~0.30 mm each — the same physical module size the invoice already shipped with before, just
+// in a bigger square. Past that, the printed copy is the first thing to stop scanning.
+const MAX_COMFORTABLE_QR_VERSION = 27;
+
+// Two copies of the same logo. The link can afford a legible PNG with its transparency intact;
+// the QR is measured in hundreds of characters, so its copy is a tiny JPEG flattened onto white
+// — measured on a real logo, that's ~1.1k characters of payload instead of ~2.2k, which is the
+// difference between a scanned invoice carrying the business's mark and carrying nothing.
+const LINK_LOGO_SIZE = [120, 60];
+const QR_LOGO_SIZE = [48, 24];
 
 /** Builds the share link + QR PNG for one invoice, so it can both be embedded directly on the
  * invoice (header/footer, on-screen and PDF) and reused by the share modal — one computation,
@@ -21,8 +31,8 @@ const MAX_COMFORTABLE_QR_VERSION = 20;
 export async function buildInvoiceShareQr({ teDhenatBiznesit, banks, currencies, invoice }) {
   const payloadFor = (logo) => buildInvoicePayload({ teDhenatBiznesit, banks, currencies, invoice, logo });
   const [linkLogo, qrLogo] = await Promise.all([
-    shrinkLogoDataUrl(teDhenatBiznesit?.logo, 120, 60),
-    shrinkLogoDataUrl(teDhenatBiznesit?.logo, 56, 28),
+    shrinkLogoDataUrl(teDhenatBiznesit?.logo, ...LINK_LOGO_SIZE),
+    shrinkLogoDataUrl(teDhenatBiznesit?.logo, ...QR_LOGO_SIZE, { jpeg: true }),
   ]);
 
   const link = await encodeInvoiceToLink(payloadFor(linkLogo));

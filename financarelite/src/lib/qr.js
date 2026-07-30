@@ -120,11 +120,16 @@ export async function qrDataUrl(text, logoSrc, options) {
   return canvas.toDataURL("image/png");
 }
 
-/** Redraws a business logo (an arbitrarily large uploaded data URL) as a small PNG, so it can
- * ride inside a share link without bloating it. Transparency is preserved — logos are meant to
- * be used on the invoice's white background without a box around them. Returns null when there's
- * no logo, or when it can't be read. */
-export async function shrinkLogoDataUrl(dataUrl, maxWidth = 120, maxHeight = 60) {
+/** Redraws a business logo (an arbitrarily large uploaded data URL) at a small size, so it can
+ * ride inside a share link or a QR payload without bloating it. Returns null when there's no
+ * logo, or when it can't be read.
+ *
+ * `jpeg` trades transparency for size and it is not a small difference: a logo is antialiased
+ * artwork, which PNG stores badly — the same 48px-wide mark costs ~1.5 kB as PNG and ~0.7 kB as
+ * JPEG once compressed, and inside a QR that gap decides whether the logo fits at all. The lost
+ * transparency costs nothing here because the logo is only ever drawn on the invoice's white
+ * paper, which is exactly what it gets flattened onto. */
+export async function shrinkLogoDataUrl(dataUrl, maxWidth = 120, maxHeight = 60, { jpeg = false, quality = 0.6 } = {}) {
   if (!dataUrl) return null;
   try {
     const img = await loadImage(dataUrl);
@@ -132,10 +137,15 @@ export async function shrinkLogoDataUrl(dataUrl, maxWidth = 120, maxHeight = 60)
     const canvas = document.createElement("canvas");
     canvas.width = Math.max(1, Math.round(img.width * scale));
     canvas.height = Math.max(1, Math.round(img.height * scale));
-    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/png");
+    const ctx = canvas.getContext("2d");
+    if (jpeg) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return jpeg ? canvas.toDataURL("image/jpeg", quality) : canvas.toDataURL("image/png");
   } catch (err) {
-    console.warn("Logoja nuk u zvogëlua dot për lidhjen e ndarjes:", err);
+    console.warn("Logoja nuk u zvogëlua dot për ndarje:", err);
     return null;
   }
 }

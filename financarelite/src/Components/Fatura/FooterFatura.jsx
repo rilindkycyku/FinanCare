@@ -14,7 +14,7 @@ Font.register({
 
 const styles = StyleSheet.create({
   footer: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginTop: 10, fontFamily: "Quicksand" },
-  column: { width: "40%", fontSize: 9 },
+  column: { width: "38%", fontSize: 9 },
   text: { fontSize: 9 },
   bold: { fontWeight: "bold", marginTop: 6 },
   hr: { borderBottomWidth: 1, borderColor: "black", marginVertical: 5 },
@@ -23,9 +23,13 @@ const styles = StyleSheet.create({
   brandRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
   brandText: { fontSize: 6, color: "#666" },
   brandDomain: { fontSize: 6.5, fontWeight: "bold", letterSpacing: 0.5 },
-  qrSection: { width: "16%", alignItems: "center", fontSize: 6 },
+  qrSection: { width: "20%", alignItems: "center", fontSize: 6 },
   qrBlock: { textAlign: "center", fontSize: 7, alignItems: "center" },
-  qrImage: { width: 85, height: 85, marginBottom: 4 },
+  // Printed size matters more than screen size here: a full invoice is a dense, high-version
+  // code, and at 85pt (~30 mm) its modules land around a quarter of a millimetre — right at the
+  // edge of what a phone can pick off paper. 105pt buys back the margin, and buys the room for
+  // the payload to carry a logo without the printed copy becoming unscannable.
+  qrImage: { width: 105, height: 105, marginBottom: 4 },
   bankTable: { width: "100%", borderStyle: "solid", borderWidth: 1, borderColor: "#ccc", marginTop: 5 },
   bankRow: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" },
   bankHeader: { backgroundColor: "#f0f0f0" },
