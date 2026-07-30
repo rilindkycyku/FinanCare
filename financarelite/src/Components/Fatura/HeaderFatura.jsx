@@ -9,22 +9,33 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     fontFamily: "Quicksand",
   },
-  // Three columns instead of two: who's selling, who's buying, and what the document is. The
-  // invoice's own details (date, deadline, notes, page) used to sit under the seller, which made
-  // that column run far taller than the other one and left the right half half-empty. Widths are
-  // set so the seller's contact line and the barcode each still fit without wrapping.
+  // The two tall things — the logo and the title/barcode — sit together on a band across the
+  // top, so the three text columns below can start on the same line and end at roughly the same
+  // depth. Stacking the logo inside the seller's column instead made that column run long while
+  // the client's ended early, leaving an obvious hole under it.
+  band: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 6 },
+  bandLeft: { width: "40%", justifyContent: "flex-end" },
+  bandRight: { width: "58%", alignItems: "flex-end" },
+  // Three columns: who's selling, who's buying, and the invoice's own details. Widths are set so
+  // the seller's contact line fits without wrapping.
   colShitesi: { width: "34%" },
   colBleresi: { width: "32%" },
   colDokumenti: { width: "32%" },
   colHeading: { fontSize: 7, fontWeight: "bold", letterSpacing: 0.5, marginBottom: 2 },
   title: { fontSize: 16, textAlign: "left", marginTop: 2 },
   titleLong: { fontSize: 12 },
+  titleBand: { textAlign: "right", marginTop: 0 },
+  emriBiznesit: { fontSize: 14, marginTop: 0, marginBottom: 1 },
   text: { fontSize: 9, marginBottom: 1.5 },
   // The registry line (NUI / NF / TVSH) is three long numbers with three labels — the one line
   // that doesn't fit a third of the page at 9pt. A point smaller keeps it on one line, and these
   // are reference numbers to copy rather than anything read at a glance.
   textId: { fontSize: 8, marginBottom: 1.5 },
   bold: { fontWeight: "bold" },
+  // `contain`, so a wide wordmark isn't squashed to the box's shape — the box only caps how much
+  // room the logo may take, and at 80x36 that's most of the height back without the mark
+  // becoming unreadable.
+  logo: { width: 80, height: 36, objectFit: "contain", marginBottom: 2 },
   barcodeImage: { marginTop: 5 },
   barcodeContainer: { alignItems: "center" },
 });
@@ -47,7 +58,12 @@ const barcodeCache = new Map();
 // the settings form, where it's a prompt to upload one; on a finished invoice it's just a grey
 // box telling the recipient something they can't act on. It shows up most on invoices opened
 // from a share link, where the logo often can't travel inside the QR (see lib/invoiceQr.js).
+//
+// `shfaqLogonNeFature` is the business's own switch (Të Dhënat e Biznesit): off means print
+// plainly without having to delete the uploaded file. Undefined counts as on, so every database
+// that predates the switch keeps showing the logo it already had.
 function logoSrc(teDhenatBiznesit) {
+  if (teDhenatBiznesit?.shfaqLogonNeFature === false) return null;
   return teDhenatBiznesit?.logo || null;
 }
 
@@ -96,16 +112,27 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   const barcode = generateBarcodeImage();
 
   return (
-    <View style={styles.header}>
-      <View style={styles.colShitesi}>
-        {/* `contain`, so a wide wordmark isn't squashed into the box's 2:1 shape — the box only
-            caps how much room the logo may take. */}
-        {logoSrc(teDhenatBiznesit) ? (
-          <Image src={logoSrc(teDhenatBiznesit)} style={{ width: 100, height: 50, objectFit: "contain" }} />
-        ) : null}
-        <Text style={[styles.title, styles.bold]}>
-          {teDhenatBiznesit?.emriIBiznesit || ""}
-        </Text>
+    <View>
+      <View style={styles.band}>
+        <View style={styles.bandLeft}>
+          {logoSrc(teDhenatBiznesit) ? <Image src={logoSrc(teDhenatBiznesit)} style={styles.logo} /> : null}
+          <Text style={[styles.emriBiznesit, styles.bold]}>{teDhenatBiznesit?.emriIBiznesit || ""}</Text>
+        </View>
+        <View style={styles.bandRight}>
+          {/* Custom document types can carry long titles ("FATURË SIPAS KONTRATËS"); stepping the
+              size down keeps them on one line. */}
+          <Text
+            style={[styles.title, styles.titleBand, styles.bold, ...(titulliDokumentit.length > 20 ? [styles.titleLong] : [])]}
+          >
+            {titulliDokumentit}
+          </Text>
+          <Image src={barcode.dataUrl} style={[styles.barcodeImage, { width: barcode.width, height: barcode.height }]} />
+        </View>
+      </View>
+
+      <View style={styles.header}>
+        <View style={styles.colShitesi}>
+        <Text style={styles.colHeading}>SHITËSI</Text>
         <Text style={styles.text}>
           <Text style={styles.bold}>Adresa: </Text>
           {teDhenatBiznesit?.adresa || ""}
@@ -146,17 +173,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
       </View>
 
       <View style={styles.colDokumenti}>
-        <View style={styles.barcodeContainer}>
-          {/* Custom document types can carry long titles ("FATURË SIPAS KONTRATËS"); stepping the
-              size down keeps them on one line inside the header column. */}
-          <Text style={[styles.title, styles.bold, ...(titulliDokumentit.length > 20 ? [styles.titleLong] : [])]}>
-            {titulliDokumentit}
-          </Text>
-          <Image
-            src={barcode.dataUrl}
-            style={[styles.barcodeImage, { width: barcode.width, height: barcode.height }]}
-          />
-        </View>
+        <Text style={styles.colHeading}>DETAJET</Text>
         <Text style={styles.text}>
           <Text style={styles.bold}>Data e Faturës: </Text>
           {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
@@ -176,6 +193,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
         <Text style={styles.bold}>
           Faqe: {NrFaqes} / {NrFaqeve}
         </Text>
+        </View>
       </View>
     </View>
   );
