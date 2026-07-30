@@ -27,18 +27,18 @@ const styles = StyleSheet.create({
   // The band's three parts line up with the three columns below it, so the two names — the
   // business's and the client's — sit on the same line as each other and each sits directly
   // above its own details.
-  bandLeft: { width: "34%", height: BAND_HEIGHT, justifyContent: "flex-end" },
-  bandMid: { width: "32%", height: BAND_HEIGHT, justifyContent: "flex-end" },
-  bandRight: { width: "32%", height: BAND_HEIGHT, alignItems: "flex-end", justifyContent: "flex-end" },
+  bandLeft: { width: "32%", height: BAND_HEIGHT, justifyContent: "flex-end" },
+  bandMid: { width: "36%", height: BAND_HEIGHT, justifyContent: "flex-end" },
+  bandRight: { width: "30%", height: BAND_HEIGHT, alignItems: "flex-end", justifyContent: "flex-end" },
   // Three columns: who's selling, who's buying, and the invoice's own details. Widths are set so
   // the seller's contact line fits without wrapping.
-  colShitesi: { width: "34%" },
-  colBleresi: { width: "32%" },
-  colDokumenti: { width: "32%" },
+  colShitesi: { width: "32%" },
+  colBleresi: { width: "36%" },
+  colDokumenti: { width: "30%" },
   // No column headings at all: the seller is named in the band above its column, the details
   // column labels every line of itself, and the client's name at 11pt is the biggest thing in
   // the row — which is what a reader looks for first anyway.
-  klientiEmri: { fontSize: 11, fontWeight: "bold" },
+  klientiEmri: { fontSize: 12, fontWeight: "bold" },
   klientiRresht: { marginBottom: 2 },
   title: { fontSize: 16, textAlign: "left", marginTop: 2 },
   titleLong: { fontSize: 12 },
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   // The registry line (NUI / NF / TVSH) is three long numbers with three labels — the one line
   // that doesn't fit a third of the page at 9pt. A point smaller keeps it on one line, and these
   // are reference numbers to copy rather than anything read at a glance.
-  textId: { fontSize: 8, marginBottom: 1.5 },
+  textId: { fontSize: 7.5, marginBottom: 1.5 },
   regjistri: { flexDirection: "row", flexWrap: "wrap" },
   // Just enough to separate two pairs on the same line — any more and a registry that used to fit
   // on one line starts wrapping for the sake of the gaps.
@@ -150,7 +150,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   // full module width the generated barcode was overflowing the header column. Cap the
   // displayed width and scale height down with it, keeping the bar-width ratios intact
   // (uniform scaling doesn't break scannability, only non-uniform stretching would).
-  const MAX_BARCODE_WIDTH = 170;
+  const MAX_BARCODE_WIDTH = 160;
   const MAX_BARCODE_HEIGHT = BAND_HEIGHT - 22;
 
   // Drawing the barcode means creating a canvas and rasterizing it — cached per invoice number
@@ -219,14 +219,18 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
           <Rresht label="Uebfaqja" value={teDhenatBiznesit?.website} style={styles.text} />
         </View>
 
+        {/* Same lines, same labels, same order as the seller's column beside it: the client's
+            address and contact were printed bare, which read as a stray block of text rather than
+            as the counterpart to the business's own details. */}
         <View style={styles.colBleresi}>
+          <Rresht label="Adresa" value={teDhenatFat?.regjistrimet?.adresa} style={styles.text} />
           <RreshtRegjistri
             nui={teDhenatFat?.regjistrimet?.nui}
             nf={teDhenatFat?.regjistrimet?.nrf}
             tvsh={teDhenatFat?.regjistrimet?.partneriTVSH}
           />
-          <Rresht value={teDhenatFat?.regjistrimet?.adresa} style={styles.text} />
           <Rresht
+            label="Kontakti"
             value={rreshtKontakti(teDhenatFat?.regjistrimet?.nrKontaktit, teDhenatFat?.regjistrimet?.email)}
             style={styles.text}
           />
