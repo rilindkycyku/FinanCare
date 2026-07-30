@@ -31,11 +31,9 @@ const styles = StyleSheet.create({
   colShitesi: { width: "34%" },
   colBleresi: { width: "32%" },
   colDokumenti: { width: "32%" },
-  // Sits inline with the client's name rather than on a line of its own: the label costs no
-  // vertical space that way, the client's block starts level with the seller's, and the name
-  // itself gets to be the biggest thing in the row of columns — it's what a reader looks for
-  // first. The details column needs no such label, since every line in it says what it is.
-  colHeading: { fontSize: 7, fontWeight: "bold", letterSpacing: 0.5 },
+  // No column headings at all: the seller is named in the band above its column, the details
+  // column labels every line of itself, and the client's name at 11pt is the biggest thing in
+  // the row — which is what a reader looks for first anyway.
   klientiEmri: { fontSize: 11, fontWeight: "bold" },
   klientiRresht: { marginBottom: 2 },
   title: { fontSize: 16, textAlign: "left", marginTop: 2 },
@@ -172,9 +170,10 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
       </View>
 
       <View style={styles.colBleresi}>
-        <Text style={styles.klientiRresht}>
-          <Text style={styles.colHeading}>KLIENTI </Text>
-          <Text style={styles.klientiEmri}>{teDhenatFat?.regjistrimet?.emriBiznesit || ""}</Text>
+        {/* No "KLIENTI" label: the middle column is the only party details on the page that
+            aren't the business's own (those are up in the band), and the name carries it. */}
+        <Text style={[styles.klientiRresht, styles.klientiEmri]}>
+          {teDhenatFat?.regjistrimet?.emriBiznesit || ""}
         </Text>
         <Text style={styles.textId}>
           <Text style={styles.bold}>NUI: </Text>
