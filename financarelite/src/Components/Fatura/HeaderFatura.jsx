@@ -24,8 +24,12 @@ const styles = StyleSheet.create({
   // whatever room is left beside the title and barcode, rather than the header growing to
   // accommodate it. A tall or square logo therefore comes out smaller, not more expensive.
   band: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", height: BAND_HEIGHT, marginBottom: 3 },
-  bandLeft: { width: "40%", height: BAND_HEIGHT, justifyContent: "flex-end" },
-  bandRight: { width: "58%", height: BAND_HEIGHT, alignItems: "flex-end", justifyContent: "flex-end" },
+  // The band's three parts line up with the three columns below it, so the two names — the
+  // business's and the client's — sit on the same line as each other and each sits directly
+  // above its own details.
+  bandLeft: { width: "34%", height: BAND_HEIGHT, justifyContent: "flex-end" },
+  bandMid: { width: "32%", height: BAND_HEIGHT, justifyContent: "flex-end" },
+  bandRight: { width: "32%", height: BAND_HEIGHT, alignItems: "flex-end", justifyContent: "flex-end" },
   // Three columns: who's selling, who's buying, and the invoice's own details. Widths are set so
   // the seller's contact line fits without wrapping.
   colShitesi: { width: "34%" },
@@ -45,6 +49,10 @@ const styles = StyleSheet.create({
   // that doesn't fit a third of the page at 9pt. A point smaller keeps it on one line, and these
   // are reference numbers to copy rather than anything read at a glance.
   textId: { fontSize: 8, marginBottom: 1.5 },
+  regjistri: { flexDirection: "row", flexWrap: "wrap" },
+  // Just enough to separate two pairs on the same line — any more and a registry that used to fit
+  // on one line starts wrapping for the sake of the gaps.
+  regjistriPjesa: { marginRight: 2 },
   bold: { fontWeight: "bold" },
   // Caps rather than a fixed box, with `contain`: a wide wordmark uses the full width at
   // whatever height that implies, a square mark stops at the height limit — neither is squashed,
@@ -79,6 +87,53 @@ const barcodeCache = new Map();
 function logoSrc(teDhenatBiznesit) {
   if (teDhenatBiznesit?.shfaqLogonNeFature === false) return null;
   return teDhenatBiznesit?.logo || null;
+}
+
+const ka = (value) => !!(value ?? "").toString().trim();
+
+/** One labelled line, or nothing at all when there's no value. A business with no website, or a
+ * private client with no email, shouldn't have to print an empty label on every invoice. */
+function Rresht({ label, value, style }) {
+  if (!ka(value)) return null;
+  return (
+    <Text style={style}>
+      {label ? <Text style={styles.bold}>{`${label}: `}</Text> : null}
+      {value}
+    </Text>
+  );
+}
+
+/** The NUI / NF / TVSH line, carrying only the numbers that exist — so a business registered
+ * without a VAT number prints "NUI: 812085688 / NF: 600111222" rather than a trailing "/ TVSH:"
+ * with nothing after it. Gone entirely when none of the three is filled in. */
+function RreshtRegjistri({ nui, nf, tvsh }) {
+  const parts = [
+    ["NUI", nui],
+    ["NF", nf],
+    ["TVSH", tvsh],
+  ].filter(([, value]) => ka(value));
+  if (parts.length === 0) return null;
+  // Each pair is its own item in a wrapping row rather than words in one paragraph, so a number
+  // that doesn't fit moves to the next line *with its label*. Written as running text it broke
+  // after "TVSH:" and left the number stranded underneath; joining the two with a non-breaking
+  // space only made react-pdf force-break the pair and print a hyphen, which reads as a typo in
+  // a registry number. Wrapping happens between items, where there's nothing to hyphenate.
+  return (
+    <View style={styles.regjistri}>
+      {parts.map(([label, value], index) => (
+        <Text key={label} style={[styles.textId, styles.regjistriPjesa]}>
+          <Text style={styles.bold}>{`${label}: `}</Text>
+          {value}
+          {index < parts.length - 1 ? " /" : ""}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
+/** Phone and email read as one contact line, joined only when both are there. */
+function rreshtKontakti(nrKontaktit, email) {
+  return [nrKontaktit, email].filter(ka).join(" - ");
 }
 
 function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
@@ -133,6 +188,13 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
           {logoSrc(teDhenatBiznesit) ? <Image src={logoSrc(teDhenatBiznesit)} style={styles.logo} /> : null}
           <Text style={[styles.emriBiznesit, styles.bold]}>{teDhenatBiznesit?.emriIBiznesit || ""}</Text>
         </View>
+        <View style={styles.bandMid}>
+          {/* The client's name rides the band too, level with the business's own, and its details
+              carry on in the column directly underneath. */}
+          <Text style={[styles.klientiEmri, styles.klientiRresht]}>
+            {teDhenatFat?.regjistrimet?.emriBiznesit || ""}
+          </Text>
+        </View>
         <View style={styles.bandRight}>
           {/* Custom document types can carry long titles ("FATURË SIPAS KONTRATËS"); stepping the
               size down keeps them on one line. */}
@@ -147,66 +209,48 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
 
       <View style={styles.header}>
         <View style={styles.colShitesi}>
-        <Text style={styles.text}>
-          <Text style={styles.bold}>Adresa: </Text>
-          {teDhenatBiznesit?.adresa || ""}
-        </Text>
-        <Text style={styles.textId}>
-          <Text style={styles.bold}>NUI: </Text>
-          {teDhenatBiznesit?.nui || ""} / <Text style={styles.bold}>NF: </Text>
-          {teDhenatBiznesit?.nf || ""} / <Text style={styles.bold}>TVSH: </Text>
-          {teDhenatBiznesit?.nrTVSH || ""}
-        </Text>
-        <Text style={styles.text}>
-          <Text style={styles.bold}>Kontakti: </Text>
-          {teDhenatBiznesit?.nrKontaktit || ""} - {teDhenatBiznesit?.email || ""}
-        </Text>
-        {teDhenatBiznesit?.website ? (
-          <Text style={styles.text}>
-            <Text style={styles.bold}>Uebfaqja: </Text>
-            {teDhenatBiznesit.website}
-          </Text>
-        ) : null}
-      </View>
+          <Rresht label="Adresa" value={teDhenatBiznesit?.adresa} style={styles.text} />
+          <RreshtRegjistri nui={teDhenatBiznesit?.nui} nf={teDhenatBiznesit?.nf} tvsh={teDhenatBiznesit?.nrTVSH} />
+          <Rresht
+            label="Kontakti"
+            value={rreshtKontakti(teDhenatBiznesit?.nrKontaktit, teDhenatBiznesit?.email)}
+            style={styles.text}
+          />
+          <Rresht label="Uebfaqja" value={teDhenatBiznesit?.website} style={styles.text} />
+        </View>
 
-      <View style={styles.colBleresi}>
-        {/* No "KLIENTI" label: the middle column is the only party details on the page that
-            aren't the business's own (those are up in the band), and the name carries it. */}
-        <Text style={[styles.klientiRresht, styles.klientiEmri]}>
-          {teDhenatFat?.regjistrimet?.emriBiznesit || ""}
-        </Text>
-        <Text style={styles.textId}>
-          <Text style={styles.bold}>NUI: </Text>
-          {teDhenatFat?.regjistrimet?.nui || ""} / <Text style={styles.bold}>NF: </Text>
-          {teDhenatFat?.regjistrimet?.nrf || ""} / <Text style={styles.bold}>TVSH: </Text>
-          {teDhenatFat?.regjistrimet?.partneriTVSH || ""}
-        </Text>
-        <Text style={styles.text}>{teDhenatFat?.regjistrimet?.adresa || ""}</Text>
-        <Text style={styles.text}>
-          {teDhenatFat?.regjistrimet?.nrKontaktit || ""} - {teDhenatFat?.regjistrimet?.email || ""}
-        </Text>
-      </View>
+        <View style={styles.colBleresi}>
+          <RreshtRegjistri
+            nui={teDhenatFat?.regjistrimet?.nui}
+            nf={teDhenatFat?.regjistrimet?.nrf}
+            tvsh={teDhenatFat?.regjistrimet?.partneriTVSH}
+          />
+          <Rresht value={teDhenatFat?.regjistrimet?.adresa} style={styles.text} />
+          <Rresht
+            value={rreshtKontakti(teDhenatFat?.regjistrimet?.nrKontaktit, teDhenatFat?.regjistrimet?.email)}
+            style={styles.text}
+          />
+        </View>
 
-      <View style={styles.colDokumenti}>
-        <Text style={styles.text}>
-          <Text style={styles.bold}>Data e Faturës: </Text>
-          {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
-        </Text>
-        {teDhenatFat?.regjistrimet?.afatiPageses ? (
-          <Text style={styles.text}>
-            <Text style={styles.bold}>Afati i Pagesës: </Text>
-            {new Date(teDhenatFat.regjistrimet.afatiPageses).toLocaleDateString("en-GB")}
+        <View style={styles.colDokumenti}>
+          <Rresht
+            label="Data e Faturës"
+            value={new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
+            style={styles.text}
+          />
+          <Rresht
+            label="Afati i Pagesës"
+            value={
+              teDhenatFat?.regjistrimet?.afatiPageses
+                ? new Date(teDhenatFat.regjistrimet.afatiPageses).toLocaleDateString("en-GB")
+                : ""
+            }
+            style={styles.text}
+          />
+          <Rresht label="Shënime" value={teDhenatFat?.regjistrimet?.pershkrimShtese} style={styles.text} />
+          <Text style={styles.bold}>
+            Faqe: {NrFaqes} / {NrFaqeve}
           </Text>
-        ) : null}
-        {teDhenatFat?.regjistrimet?.pershkrimShtese ? (
-          <Text style={styles.text}>
-            <Text style={styles.bold}>Shënime: </Text>
-            {teDhenatFat.regjistrimet.pershkrimShtese}
-          </Text>
-        ) : null}
-        <Text style={styles.bold}>
-          Faqe: {NrFaqes} / {NrFaqeve}
-        </Text>
         </View>
       </View>
     </View>
