@@ -229,7 +229,10 @@ function KrijoFaturen() {
             barkodi: manualItem.barkodi,
             emriNjesiaMatese: manualItem.emriNjesiaMatese,
             llojiTVSH: manualItem.llojiTVSH,
-            qmimiShites: manualItem.qmimiShites,
+            // Deliberately no price: the catalogue keeps *what* is sold, the invoice decides for
+            // how much. A standing price can still be set by hand from the Produktet page, and
+            // when it's there, picking the product prefills it.
+            qmimiShites: "",
             rabati1: manualItem.rabati1,
           };
           await put(STORES.products, productRecord);
@@ -273,13 +276,16 @@ function KrijoFaturen() {
       barkodi: p.barkodi || "",
       emriNjesiaMatese: p.emriNjesiaMatese,
       llojiTVSH: p.llojiTVSH,
-      qmimiShites: p.qmimiShites,
+      qmimiShites: p.qmimiShites || "",
       rabati1: p.rabati1 || "0",
       rabati2: "0",
       rabati3: "0",
       sasiaStokut: "1",
     });
     setEditingKey(null);
+    // Catalogue products don't have to carry a price (it usually belongs to the invoice, not the
+    // product) — when one doesn't, drop the cursor straight into the price field.
+    if (!p.qmimiShites) setTimeout(() => focusField("mi-cmimi"), 0);
   };
 
   const removeItem = (key) => {
@@ -421,6 +427,10 @@ function KrijoFaturen() {
       nrFatures: meta.nrFatures,
       nrRendorFatures: meta.nrRendorFatures,
       llojiDokumentit: dokumentiZgjedhur.value,
+      // Stored on the invoice itself so the printed title stays whatever the document type was
+      // called when it was issued — including custom types, which the invoice header has no
+      // other way of knowing about (and which would otherwise all print as a plain "FATURË").
+      titulliDokumentit: dokumentiZgjedhur.titleLabel || (dokumentiZgjedhur.label || "").toUpperCase(),
       dataRegjistrimit: new Date(dataRegjistrimit).toISOString(),
       pershkrimShtese,
       transporti: parseFloat(transportiSigned) || 0,

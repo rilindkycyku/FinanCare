@@ -16,7 +16,9 @@ function toRow(p) {
     "Barkodi / Kodi": [p.barkodi, p.kodiProduktit].filter(Boolean).join(" / ") || "-",
     Njesia: p.emriNjesiaMatese || "-",
     "TVSH %": p.llojiTVSH,
-    "Çmimi €": parseFloat(p.qmimiShites || 0).toFixed(2),
+    // A product doesn't have to carry a price — it's normally set on the invoice itself —
+    // so an unpriced product shows a dash instead of a misleading 0.00.
+    "Çmimi €": p.qmimiShites === "" || p.qmimiShites == null ? "-" : parseFloat(p.qmimiShites).toFixed(2),
   };
 }
 

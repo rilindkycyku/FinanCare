@@ -45,7 +45,9 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!produkti.emriProduktit || !produkti.qmimiShites) return;
+    // Only the name is required — the price is the invoice's business (it's typed there, per
+    // invoice), so a catalogue entry is allowed to carry no price at all.
+    if (!produkti.emriProduktit) return;
     const record = { id: produkti.id || makeId("prod"), ...produkti };
 
     const nameKey = record.emriProduktit.trim().toLowerCase();
@@ -124,10 +126,16 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
               />
             </Col>
             <Col md={4}>
-              <Form.Label>
-                Çmimi (me TVSH) € <span className="text-danger">*</span>
-              </Form.Label>
-              <Form.Control type="number" step="0.01" name="qmimiShites" value={produkti.qmimiShites} onChange={onChange} required />
+              <Form.Label>Çmimi (me TVSH) €</Form.Label>
+              <Form.Control
+                type="number"
+                step="0.01"
+                name="qmimiShites"
+                value={produkti.qmimiShites}
+                onChange={onChange}
+                placeholder="Opsionale"
+              />
+              <Form.Text className="text-muted">Lëreni bosh nëse çmimi vendoset gjatë krijimit të faturës.</Form.Text>
             </Col>
 
             <Col md={4}>

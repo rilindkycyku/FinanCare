@@ -369,7 +369,17 @@ function Tabela({
           white-space: nowrap;
         }
         .premium-filter-pill:hover { background: rgba(255,255,255,0.08); }
-        .premium-filter-pill.active { background: var(--pill-color); color: #0b1220; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
+        /* White label on the selected pill — the old near-black text sat too close to the
+           lighter pill colors (emerald, amber, lime) to read cleanly, especially in light mode.
+           The fill is darkened a notch so white keeps its contrast on every color in the cycle;
+           browsers without color-mix() just keep the flat color from the line above. */
+        .premium-filter-pill.active {
+          background: var(--pill-color);
+          background: color-mix(in srgb, var(--pill-color) 78%, #0b1220);
+          border-color: transparent;
+          color: #ffffff;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+        }
         .premium-input-group .form-control, .premium-select {
           background: var(--sp-surface-3) !important;
           color: var(--sp-text) !important;

@@ -33,7 +33,19 @@ export const DEFAULT_DOCUMENT_TYPES = [
   { id: "doctype_default_kesh", value: "KESH", label: "Faturë Kesh", titleLabel: "FATURË KESH", negateAmounts: false },
   { id: "doctype_default_kupon", value: "KUP", label: "Kupon Fiskal", titleLabel: "KUPON FISKAL", negateAmounts: false },
   { id: "doctype_default_saldo", value: "SALDO", label: "Bilanci Fillestar", titleLabel: "BILANCI FILLESTAR", negateAmounts: false },
+  { id: "doctype_default_ftr", value: "FTR", label: "Faturë", titleLabel: "FATURË", negateAmounts: false },
+  { id: "doctype_default_kontrate", value: "KON", label: "Faturë sipas Kontratës", titleLabel: "FATURË SIPAS KONTRATËS", negateAmounts: false },
+  { id: "doctype_default_sherbim", value: "SHR", label: "Faturë Shërbimi", titleLabel: "FATURË SHËRBIMI", negateAmounts: false },
+  { id: "doctype_default_avans", value: "AVS", label: "Faturë Avansi", titleLabel: "FATURË AVANSI", negateAmounts: false },
+  { id: "doctype_default_qira", value: "QRA", label: "Faturë Qiraje", titleLabel: "FATURË QIRAJE", negateAmounts: false },
+  { id: "doctype_default_situacion", value: "SIT", label: "Situacion Pune", titleLabel: "SITUACION PUNE", negateAmounts: false },
 ];
+
+// Units are seeded once when the store is created (see db.js) and the business owns the list
+// from then on — deleting a default is meant to stick. Defaults added *later* would therefore
+// never reach an existing database, so each new batch carries the seed version it arrived in and
+// gets topped up once (see ensureDefaultUnits); bump this when adding another batch below.
+export const UNITS_SEED_VERSION = 2;
 
 export const DEFAULT_UNITS = [
   { id: "unit_default_cope", emri: "copë" },
@@ -46,6 +58,14 @@ export const DEFAULT_UNITS = [
   { id: "unit_default_m3", emri: "m³" },
   { id: "unit_default_ore", emri: "orë" },
   { id: "unit_default_dite", emri: "ditë" },
+  { id: "unit_default_jave", emri: "javë", seedVersion: 2 },
+  { id: "unit_default_muaj", emri: "muaj", seedVersion: 2 },
+  { id: "unit_default_vit", emri: "vit", seedVersion: 2 },
   { id: "unit_default_paketë", emri: "paketë" },
   { id: "unit_default_kuti", emri: "kuti" },
+  { id: "unit_default_pale", emri: "palë", seedVersion: 2 },
+  { id: "unit_default_set", emri: "set", seedVersion: 2 },
+  { id: "unit_default_km", emri: "km", seedVersion: 2 },
+  { id: "unit_default_ton", emri: "ton", seedVersion: 2 },
+  { id: "unit_default_sherbim", emri: "shërbim", seedVersion: 2 },
 ];

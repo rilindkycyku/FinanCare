@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAll, ensureDefaultDocumentTypes, STORES } from "./db";
+import { getAll, ensureDefaultDocumentTypes, ensureDefaultUnits, STORES } from "./db";
 
 /** The business-configured VAT rates (see "Llojet e TVSH" in Settings) — sorted low to high so
  * they list the same way everywhere they're picked from. */
@@ -15,12 +15,13 @@ export function useTvshTypes() {
   return tvshTypes;
 }
 
-/** The business-configured measurement units (see "Njësitë Matëse" in Settings). */
+/** The business-configured measurement units (see "Njësitë Matëse" in Settings). Tops up any
+ * units added to the defaults after this browser's database was first seeded. */
 export function useUnits() {
   const [units, setUnits] = useState([]);
 
   useEffect(() => {
-    getAll(STORES.units).then(setUnits);
+    ensureDefaultUnits().then(setUnits);
   }, []);
 
   return units;

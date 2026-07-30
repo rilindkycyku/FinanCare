@@ -37,7 +37,7 @@ function SharedFatura({ encoded }) {
       // The current page URL *is* the share link already (it's what got us here) — re-render it
       // as a QR so the PDF exported from a scan still carries a working QR back to itself, no
       // need to rebuild/re-encode the payload.
-      qrDataUrl(toQrPayloadUrl(window.location.href))
+      qrDataUrl(toQrPayloadUrl(window.location.href), payload.biz?.logo || "/img/web/apple-touch-icon.png")
         .then((png) => {
           if (!cancelled) setQrCodeDataUrl(png);
         })

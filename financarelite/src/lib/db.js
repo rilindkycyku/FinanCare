@@ -4,7 +4,7 @@
  * Same hand-rolled wrapper shape as GuestSeat's `db.ts` (openDb/withStore), ported to plain JS.
  */
 
-import { DEFAULT_TVSH_TYPES, DEFAULT_UNITS, DEFAULT_DOCUMENT_TYPES } from "./options";
+import { DEFAULT_TVSH_TYPES, DEFAULT_UNITS, DEFAULT_DOCUMENT_TYPES, UNITS_SEED_VERSION } from "./options";
 
 const DB_NAME = "financarelite";
 const DB_VERSION = 4;
@@ -147,6 +147,36 @@ export async function ensureDefaultDocumentTypes() {
   const missing = DEFAULT_DOCUMENT_TYPES.filter((t) => !existingIds.has(t.id));
   if (missing.length === 0) return existing;
   await Promise.all(missing.map((t) => put(STORES.documentTypes, t)));
+  return [...existing, ...missing];
+}
+
+// Units, unlike document types, are *not* topped up on every load — a deleted default is meant
+// to stay deleted (that's what NjesiteMatese's quick-add chips are for). Only units introduced in
+// a later batch than this browser has seen get added, once, so new defaults (muaj, javë, palë...)
+// reach existing databases without resurrecting anything the business deliberately removed.
+const UNITS_SEED_VERSION_KEY = "financarelite.unitsSeedVersion";
+
+export async function ensureDefaultUnits() {
+  const existing = await getAll(STORES.units);
+  let seenVersion = 1;
+  try {
+    seenVersion = parseInt(localStorage.getItem(UNITS_SEED_VERSION_KEY) || "1", 10) || 1;
+  } catch {
+    return existing; // storage blocked (private mode) — nothing to top up, list still works
+  }
+  if (seenVersion >= UNITS_SEED_VERSION) return existing;
+
+  const existingIds = new Set(existing.map((u) => u.id));
+  const existingNames = new Set(existing.map((u) => (u.emri || "").trim().toLowerCase()));
+  const missing = DEFAULT_UNITS.filter(
+    (u) => (u.seedVersion || 1) > seenVersion && !existingIds.has(u.id) && !existingNames.has(u.emri.toLowerCase())
+  );
+  await Promise.all(missing.map((u) => put(STORES.units, u)));
+  try {
+    localStorage.setItem(UNITS_SEED_VERSION_KEY, String(UNITS_SEED_VERSION));
+  } catch {
+    /* best effort — worst case the same top-up runs again on the next load */
+  }
   return [...existing, ...missing];
 }
 

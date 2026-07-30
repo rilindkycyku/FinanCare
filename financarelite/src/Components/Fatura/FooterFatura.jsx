@@ -30,6 +30,11 @@ const styles = StyleSheet.create({
   bankRow: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" },
   bankHeader: { backgroundColor: "#f0f0f0" },
   bankCell: { flex: 1, padding: 3, fontSize: 7, textAlign: "center" },
+  // The account details are what someone actually has to read off the invoice to pay it, so
+  // they're set bold (and the number a touch larger) rather than left at the same weight as
+  // the column headings above them.
+  bankValue: { fontWeight: "bold" },
+  bankAccount: { fontWeight: "bold", fontSize: 8 },
   table: { width: "100%", borderStyle: "solid", borderWidth: 1, borderColor: "#ccc" },
   row: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" },
   header: { backgroundColor: "#f0f0f0" },
@@ -56,15 +61,15 @@ function FooterFatura({ Barkodi, data }) {
     return (
       <View style={styles.bankTable}>
         <View style={[styles.bankRow, styles.bankHeader]}>
-          <Text style={styles.bankCell}>Emri i Bankës</Text>
-          <Text style={styles.bankCell}>Numri i Llogarisë</Text>
-          <Text style={styles.bankCell}>Valuta</Text>
+          <Text style={[styles.bankCell, styles.boldT]}>Emri i Bankës</Text>
+          <Text style={[styles.bankCell, styles.boldT]}>Numri i Llogarisë</Text>
+          <Text style={[styles.bankCell, styles.boldT]}>Valuta</Text>
         </View>
         {activeBanks.map((banka, index) => (
           <View style={styles.bankRow} key={banka.id || index}>
-            <Text style={styles.bankCell}>{banka.emriBankes || ""}</Text>
-            <Text style={styles.bankCell}>{banka.numriLlogaris || ""}</Text>
-            <Text style={styles.bankCell}>{banka.valuta || ""}</Text>
+            <Text style={[styles.bankCell, styles.bankValue]}>{banka.emriBankes || ""}</Text>
+            <Text style={[styles.bankCell, styles.bankAccount]}>{banka.numriLlogaris || ""}</Text>
+            <Text style={[styles.bankCell, styles.bankValue]}>{banka.valuta || ""}</Text>
           </View>
         ))}
       </View>
