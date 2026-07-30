@@ -1,16 +1,9 @@
-import { View, Text, Link, Image, StyleSheet, Font } from "@react-pdf/renderer";
+import { View, Text, Link, Image, StyleSheet } from "@react-pdf/renderer";
+import "./pdfFonts";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 
 const FINANCARELITE_DOMAIN = "lite.financare.rilindkycyku.dev";
 const FINANCARELITE_URL = `https://${FINANCARELITE_DOMAIN}`;
-
-Font.register({
-  family: "Quicksand",
-  fonts: [
-    { src: "/fonts/Quicksand-Regular.ttf" },
-    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" },
-  ],
-});
 
 const styles = StyleSheet.create({
   footer: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginTop: 10, fontFamily: "Quicksand" },

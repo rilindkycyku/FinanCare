@@ -1,15 +1,8 @@
-import { View, StyleSheet, Font } from "@react-pdf/renderer";
+import { View, StyleSheet } from "@react-pdf/renderer";
+import "./pdfFonts";
 import HeaderFatura from "./HeaderFatura";
 import TeDhenatFatura from "./TeDhenatFatura";
 import FooterFatura from "./FooterFatura";
-
-Font.register({
-  family: "Quicksand",
-  fonts: [
-    { src: "/fonts/Quicksand-Regular.ttf" },
-    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" },
-  ],
-});
 
 const styles = StyleSheet.create({
   page: { padding: 20, fontSize: 11, fontFamily: "Quicksand" },

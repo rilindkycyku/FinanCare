@@ -1,14 +1,7 @@
-import { View, Text, StyleSheet, Image, Font } from "@react-pdf/renderer";
+import { View, Text, StyleSheet, Image } from "@react-pdf/renderer";
+import "./pdfFonts";
 import JsBarcode from "jsbarcode";
 import { DEFAULT_DOCUMENT_TYPES } from "../../lib/options";
-
-Font.register({
-  family: "Quicksand",
-  fonts: [
-    { src: "/fonts/Quicksand-Regular.ttf" },
-    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" },
-  ],
-});
 
 const styles = StyleSheet.create({
   header: {
@@ -16,10 +9,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     fontFamily: "Quicksand",
   },
-  column: { width: "48%" },
+  // Three columns instead of two: who's selling, who's buying, and what the document is. The
+  // invoice's own details (date, deadline, notes, page) used to sit under the seller, which made
+  // that column run far taller than the other one and left the right half half-empty. Widths are
+  // set so the seller's contact line and the barcode each still fit without wrapping.
+  colShitesi: { width: "34%" },
+  colBleresi: { width: "32%" },
+  colDokumenti: { width: "32%" },
+  colHeading: { fontSize: 7, fontWeight: "bold", letterSpacing: 0.5, marginBottom: 2 },
   title: { fontSize: 16, textAlign: "left", marginTop: 2 },
   titleLong: { fontSize: 12 },
-  text: { fontSize: 10, marginBottom: 2 },
+  text: { fontSize: 9, marginBottom: 1.5 },
+  // The registry line (NUI / NF / TVSH) is three long numbers with three labels — the one line
+  // that doesn't fit a third of the page at 9pt. A point smaller keeps it on one line, and these
+  // are reference numbers to copy rather than anything read at a glance.
+  textId: { fontSize: 8, marginBottom: 1.5 },
   bold: { fontWeight: "bold" },
   barcodeImage: { marginTop: 5 },
   barcodeContainer: { alignItems: "center" },
@@ -61,7 +65,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   // full module width the generated barcode was overflowing the header column. Cap the
   // displayed width and scale height down with it, keeping the bar-width ratios intact
   // (uniform scaling doesn't break scannability, only non-uniform stretching would).
-  const MAX_BARCODE_WIDTH = 190;
+  const MAX_BARCODE_WIDTH = 170;
 
   // Drawing the barcode means creating a canvas and rasterizing it — cached per invoice number
   // so it happens once, not on every re-render of every page's header while the PDF is built.
@@ -93,7 +97,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
 
   return (
     <View style={styles.header}>
-      <View style={styles.column}>
+      <View style={styles.colShitesi}>
         {/* `contain`, so a wide wordmark isn't squashed into the box's 2:1 shape — the box only
             caps how much room the logo may take. */}
         {logoSrc(teDhenatBiznesit) ? (
@@ -106,7 +110,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
           <Text style={styles.bold}>Adresa: </Text>
           {teDhenatBiznesit?.adresa || ""}
         </Text>
-        <Text style={styles.text}>
+        <Text style={styles.textId}>
           <Text style={styles.bold}>NUI: </Text>
           {teDhenatBiznesit?.nui || ""} / <Text style={styles.bold}>NF: </Text>
           {teDhenatBiznesit?.nf || ""} / <Text style={styles.bold}>TVSH: </Text>
@@ -122,27 +126,26 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
             {teDhenatBiznesit.website}
           </Text>
         ) : null}
+      </View>
+
+      <View style={styles.colBleresi}>
+        <Text style={styles.colHeading}>KLIENTI</Text>
         <Text style={styles.text}>
-          <Text style={styles.bold}>Data e Faturës: </Text>
-          {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
+          <Text style={styles.bold}>{teDhenatFat?.regjistrimet?.emriBiznesit || ""}</Text>
         </Text>
-        {teDhenatFat?.regjistrimet?.afatiPageses ? (
-          <Text style={styles.text}>
-            <Text style={styles.bold}>Afati i Pagesës: </Text>
-            {new Date(teDhenatFat.regjistrimet.afatiPageses).toLocaleDateString("en-GB")}
-          </Text>
-        ) : null}
-        {teDhenatFat?.regjistrimet?.pershkrimShtese ? (
-          <Text style={styles.text}>
-            <Text style={styles.bold}>Shënime Shtesë: </Text>
-            {teDhenatFat.regjistrimet.pershkrimShtese}
-          </Text>
-        ) : null}
-        <Text style={styles.bold}>
-          Faqe: {NrFaqes} / {NrFaqeve}
+        <Text style={styles.textId}>
+          <Text style={styles.bold}>NUI: </Text>
+          {teDhenatFat?.regjistrimet?.nui || ""} / <Text style={styles.bold}>NF: </Text>
+          {teDhenatFat?.regjistrimet?.nrf || ""} / <Text style={styles.bold}>TVSH: </Text>
+          {teDhenatFat?.regjistrimet?.partneriTVSH || ""}
+        </Text>
+        <Text style={styles.text}>{teDhenatFat?.regjistrimet?.adresa || ""}</Text>
+        <Text style={styles.text}>
+          {teDhenatFat?.regjistrimet?.nrKontaktit || ""} - {teDhenatFat?.regjistrimet?.email || ""}
         </Text>
       </View>
-      <View style={styles.column}>
+
+      <View style={styles.colDokumenti}>
         <View style={styles.barcodeContainer}>
           {/* Custom document types can carry long titles ("FATURË SIPAS KONTRATËS"); stepping the
               size down keeps them on one line inside the header column. */}
@@ -155,17 +158,23 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
           />
         </View>
         <Text style={styles.text}>
-          <Text style={styles.bold}>{teDhenatFat?.regjistrimet?.emriBiznesit || ""}</Text>
+          <Text style={styles.bold}>Data e Faturës: </Text>
+          {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
         </Text>
-        <Text style={styles.text}>
-          <Text style={styles.bold}>NUI: </Text>
-          {teDhenatFat?.regjistrimet?.nui || ""} / <Text style={styles.bold}>NF: </Text>
-          {teDhenatFat?.regjistrimet?.nrf || ""} / <Text style={styles.bold}>TVSH: </Text>
-          {teDhenatFat?.regjistrimet?.partneriTVSH || ""}
-        </Text>
-        <Text style={styles.text}>{teDhenatFat?.regjistrimet?.adresa || ""}</Text>
-        <Text style={styles.text}>
-          {teDhenatFat?.regjistrimet?.nrKontaktit || ""} - {teDhenatFat?.regjistrimet?.email || ""}
+        {teDhenatFat?.regjistrimet?.afatiPageses ? (
+          <Text style={styles.text}>
+            <Text style={styles.bold}>Afati i Pagesës: </Text>
+            {new Date(teDhenatFat.regjistrimet.afatiPageses).toLocaleDateString("en-GB")}
+          </Text>
+        ) : null}
+        {teDhenatFat?.regjistrimet?.pershkrimShtese ? (
+          <Text style={styles.text}>
+            <Text style={styles.bold}>Shënime: </Text>
+            {teDhenatFat.regjistrimet.pershkrimShtese}
+          </Text>
+        ) : null}
+        <Text style={styles.bold}>
+          Faqe: {NrFaqes} / {NrFaqeve}
         </Text>
       </View>
     </View>
