@@ -16,7 +16,7 @@ function esteMbyllur(inv) {
   return inv.mbyllur !== false;
 }
 
-function toRow(inv, documentTypes) {
+function toRow(inv, documentTypes, showAfati) {
   const totals = calcInvoiceTotals(inv.items, inv.transporti);
   const dokumenti = documentTypes.find((d) => d.value === inv.llojiDokumentit) || documentTypes[0];
   return {
@@ -25,6 +25,9 @@ function toRow(inv, documentTypes) {
     Lloji: dokumenti.label,
     Klienti: inv.klienti?.emriBiznesit || "-",
     Data: inv.dataRegjistrimit,
+    // Only once some invoice actually states a payment deadline — same rule the invoice itself
+    // follows for its empty columns.
+    ...(showAfati ? { Afati: inv.afatiPageses ? new Date(inv.afatiPageses).toLocaleDateString("en-GB") : "-" } : {}),
     "Totali €": totals.totaliFinal.toFixed(2),
     Statusi: esteMbyllur(inv) ? "I Mbyllur" : "I Hapur",
   };
@@ -79,7 +82,7 @@ function ListaFaturave() {
       <PageTitle title="Faturat" />
       <NavBar />
       <Tabela
-        data={invoices.map((inv) => toRow(inv, documentTypes))}
+        data={invoices.map((inv) => toRow(inv, documentTypes, invoices.some((i) => i.afatiPageses)))}
         tableName="Faturat"
         kaButona
         funksionButonShto={() => navigate("/faturat/re")}

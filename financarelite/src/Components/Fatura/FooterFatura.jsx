@@ -1,16 +1,9 @@
-import { View, Text, Link, Image, StyleSheet, Font } from "@react-pdf/renderer";
+import { View, Text, Link, Image, StyleSheet } from "@react-pdf/renderer";
+import "./pdfFonts";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 
 const FINANCARELITE_DOMAIN = "lite.financare.rilindkycyku.dev";
 const FINANCARELITE_URL = `https://${FINANCARELITE_DOMAIN}`;
-
-Font.register({
-  family: "Quicksand",
-  fonts: [
-    { src: "/fonts/Quicksand-Regular.ttf" },
-    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" },
-  ],
-});
 
 const styles = StyleSheet.create({
   footer: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginTop: 10, fontFamily: "Quicksand" },
@@ -59,6 +52,9 @@ function FooterFatura({ Barkodi, data }) {
   const activeCurrencies = (currencies || []).filter((c) => c.code && parseFloat(c.rate) > 0);
 
   const transporti = parseFloat(teDhenatFat?.regjistrimet?.transporti) || 0;
+  // Repeated here, next to the account numbers, because this is the line someone reads when
+  // they're actually about to pay — the header states it as a fact, this states it as a deadline.
+  const afatiPageses = teDhenatFat?.regjistrimet?.afatiPageses;
   const { totaliMeTVSH, totaliPaTVSH, tvshBreakdown, rabati, totaliFinal } = calcInvoiceTotals(produktet, transporti);
 
   // Checked on the absolute value: a Fletëkthim (or any type flagged negateAmounts) carries
@@ -98,7 +94,11 @@ function FooterFatura({ Barkodi, data }) {
             Gjatë pagesës ju lutem të shkruani numrin e Faturës: <Text style={styles.bold}>{Barkodi}</Text>
           </Text>
           <Text style={styles.text}>
-            <Text style={styles.bold}>Pagesa duhet të bëhet në një nga llogaritë e cekura më poshtë:</Text>
+            <Text style={styles.bold}>
+              Pagesa duhet të bëhet
+              {afatiPageses ? ` deri më ${new Date(afatiPageses).toLocaleDateString("en-GB")}` : ""} në një nga llogaritë e
+              cekura më poshtë:
+            </Text>
           </Text>
           {bankTable()}
         </View>

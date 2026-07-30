@@ -1,13 +1,6 @@
-import { View, Text, StyleSheet, Font } from "@react-pdf/renderer";
+import { View, Text, StyleSheet } from "@react-pdf/renderer";
+import "./pdfFonts";
 import { calcLineItem } from "../../lib/invoiceCalc";
-
-Font.register({
-  family: "Quicksand",
-  fonts: [
-    { src: "/fonts/Quicksand-Regular.ttf" },
-    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" },
-  ],
-});
 
 const styles = StyleSheet.create({
   table: { width: "100%", borderStyle: "solid", borderWidth: 1, borderColor: "#999", fontFamily: "Quicksand" },

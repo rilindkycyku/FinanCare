@@ -14,6 +14,7 @@ export function buildFaturaData({ invoice, teDhenatBiznesit, banks, currencies }
         nrFatures: invoice.nrFatures,
         nrRendorFatures: invoice.nrRendorFatures,
         dataRegjistrimit: invoice.dataRegjistrimit,
+        afatiPageses: invoice.afatiPageses,
         pershkrimShtese: invoice.pershkrimShtese,
         transporti: invoice.transporti,
         emriBiznesit: klienti.emriBiznesit,

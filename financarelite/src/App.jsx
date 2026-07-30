@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "./Pages/Styles/PremiumTheme.css";
 import "./Pages/Styles/DizajniPergjithshem.css";
 import { readSharePayload } from "./lib/shareLink";
+import PwaUpdater from "./Components/PwaUpdater";
 
 // Split per route. Nearly every heavy dependency this app has belongs to one screen — the PDF
 // renderer to the invoice views, pdf.js to the on-screen preview, the chart/analysis pages to
@@ -37,6 +38,7 @@ function App() {
         <Suspense fallback={<Loading mesazhi="Duke hapur faturën..." />}>
           <SharedFatura encoded={sharePayload} />
         </Suspense>
+        <PwaUpdater />
         <Analytics />
       </>
     );
@@ -60,6 +62,7 @@ function App() {
           <Route path="/faturat/:id" element={<FaturaView />} />
         </Routes>
       </Suspense>
+      <PwaUpdater />
       <Analytics />
     </>
   );
