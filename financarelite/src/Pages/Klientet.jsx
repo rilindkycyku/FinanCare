@@ -75,6 +75,12 @@ function Klientet() {
         }}
         onSaved={onSaved}
         initial={editing}
+        // Data pushed over from ARBK arrives without anyone having opened the dialog — open it
+        // (as a new client, not whatever was last being edited) so the import is visible.
+        onArbkImport={() => {
+          setEditing(null);
+          setShowModal(true);
+        }}
       />
 
       <Footer />

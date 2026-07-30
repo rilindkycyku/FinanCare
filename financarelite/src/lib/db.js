@@ -4,7 +4,15 @@
  * Same hand-rolled wrapper shape as GuestSeat's `db.ts` (openDb/withStore), ported to plain JS.
  */
 
-import { DEFAULT_TVSH_TYPES, DEFAULT_UNITS, DEFAULT_DOCUMENT_TYPES, UNITS_SEED_VERSION } from "./options";
+import {
+  DEFAULT_TVSH_TYPES,
+  DEFAULT_UNITS,
+  DEFAULT_DOCUMENT_TYPES,
+  UNITS_SEED_VERSION,
+  DOCUMENT_TYPES_SEED_VERSION,
+  LEGACY_DOCUMENT_TYPE_RENAMES,
+  OBSOLETE_DOCUMENT_TYPES,
+} from "./options";
 
 const DB_NAME = "financarelite";
 const DB_VERSION = 4;
@@ -142,12 +150,55 @@ export function clearStore(store) {
 // are still missing (matched by id, so it never touches a type the business already
 // edited/renamed) — safe to call on every load.
 export async function ensureDefaultDocumentTypes() {
-  const existing = await getAll(STORES.documentTypes);
+  let existing = await getAll(STORES.documentTypes);
+  existing = await applyDocumentTypeRenames(existing);
   const existingIds = new Set(existing.map((t) => t.id));
   const missing = DEFAULT_DOCUMENT_TYPES.filter((t) => !existingIds.has(t.id));
   if (missing.length === 0) return existing;
   await Promise.all(missing.map((t) => put(STORES.documentTypes, t)));
   return [...existing, ...missing];
+}
+
+// Renaming a default ("Faturë Shitëse" → "Faturë") can't ride along with the top-up above: the
+// record already exists, and rewriting it on every load would keep undoing the business's own
+// edit. So it runs once per browser, and only against a record still carrying the exact old
+// text — anything renamed by hand is left alone. Same one-shot pass drops defaults that were
+// superseded (see OBSOLETE_DOCUMENT_TYPES).
+const DOCUMENT_TYPES_SEED_VERSION_KEY = "financarelite.documentTypesSeedVersion";
+
+async function applyDocumentTypeRenames(existing) {
+  let seenVersion = 1;
+  try {
+    seenVersion = parseInt(localStorage.getItem(DOCUMENT_TYPES_SEED_VERSION_KEY) || "1", 10) || 1;
+    if (seenVersion >= DOCUMENT_TYPES_SEED_VERSION) return existing;
+  } catch {
+    return existing; // storage blocked (private mode) — leave the list exactly as it is
+  }
+
+  let updated = existing;
+  for (const rename of LEGACY_DOCUMENT_TYPE_RENAMES) {
+    const record = updated.find((t) => t.id === rename.id);
+    const target = DEFAULT_DOCUMENT_TYPES.find((t) => t.id === rename.id);
+    if (!record || !target) continue;
+    if (record.label !== rename.fromLabel || record.titleLabel !== rename.fromTitleLabel) continue;
+    const renamed = { ...record, label: target.label, titleLabel: target.titleLabel };
+    await put(STORES.documentTypes, renamed);
+    updated = updated.map((t) => (t.id === rename.id ? renamed : t));
+  }
+
+  for (const obsolete of OBSOLETE_DOCUMENT_TYPES) {
+    const record = updated.find((t) => t.id === obsolete.id);
+    if (!record || record.label !== obsolete.label) continue;
+    await remove(STORES.documentTypes, obsolete.id);
+    updated = updated.filter((t) => t.id !== obsolete.id);
+  }
+
+  try {
+    localStorage.setItem(DOCUMENT_TYPES_SEED_VERSION_KEY, String(DOCUMENT_TYPES_SEED_VERSION));
+  } catch {
+    /* best effort — worst case the same one-shot pass runs again on the next load */
+  }
+  return updated;
 }
 
 // Units, unlike document types, are *not* topped up on every load — a deleted default is meant
@@ -178,6 +229,19 @@ export async function ensureDefaultUnits() {
     /* best effort — worst case the same top-up runs again on the next load */
   }
   return [...existing, ...missing];
+}
+
+/** Adds a unit typed straight into a product/line-item form to "Njësitë Matëse", so it's there
+ * the next time — unless one with that name already exists. Returns the new record, or null when
+ * there was nothing to add. */
+export async function saveUnitIfNew(emri) {
+  const name = (emri || "").trim();
+  if (!name) return null;
+  const existing = await getAll(STORES.units);
+  if (existing.some((u) => (u.emri || "").trim().toLowerCase() === name.toLowerCase())) return null;
+  const record = { id: makeId("unit"), emri: name };
+  await put(STORES.units, record);
+  return record;
 }
 
 // ---- business details: single record keyed by a constant ----

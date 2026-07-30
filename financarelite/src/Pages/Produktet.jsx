@@ -9,16 +9,21 @@ import { useDialog } from "../Context/DialogContext";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 
-function toRow(p) {
+function hasPrice(p) {
+  return p.qmimiShites !== "" && p.qmimiShites != null;
+}
+
+// Same idea as the invoice's item table: a column nothing fills in is a column worth leaving
+// out. Businesses that don't use product codes, or that set every price on the invoice itself,
+// get a list of what they actually track instead of one full of dashes.
+function toRow(p, { showCodes, showPrices }) {
   return {
     ID: p.id,
     Emri: p.emriProduktit,
-    "Barkodi / Kodi": [p.barkodi, p.kodiProduktit].filter(Boolean).join(" / ") || "-",
+    ...(showCodes ? { "Barkodi / Kodi": [p.barkodi, p.kodiProduktit].filter(Boolean).join(" / ") || "-" } : {}),
     Njesia: p.emriNjesiaMatese || "-",
     "TVSH %": p.llojiTVSH,
-    // A product doesn't have to carry a price — it's normally set on the invoice itself —
-    // so an unpriced product shows a dash instead of a misleading 0.00.
-    "Çmimi €": p.qmimiShites === "" || p.qmimiShites == null ? "-" : parseFloat(p.qmimiShites).toFixed(2),
+    ...(showPrices ? { "Çmimi €": hasPrice(p) ? parseFloat(p.qmimiShites).toFixed(2) : "-" } : {}),
   };
 }
 
@@ -29,6 +34,11 @@ function Produktet() {
   const dialog = useDialog();
 
   const load = () => getAll(STORES.products).then(setProducts);
+
+  const columns = {
+    showCodes: products.some((p) => p.barkodi || p.kodiProduktit),
+    showPrices: products.some(hasPrice),
+  };
 
   useEffect(() => {
     load();
@@ -57,7 +67,7 @@ function Produktet() {
       <PageTitle title="Produktet" />
       <NavBar />
       <Tabela
-        data={products.map(toRow)}
+        data={products.map((p) => toRow(p, columns))}
         tableName="Produktet"
         kaButona
         funksionButonShto={() => {

@@ -8,7 +8,7 @@ import PageTitle from "../Components/PageTitle";
 import { getBusinessDetails, putBusinessDetails, getAll, put, remove, makeId, STORES } from "../lib/db";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
 import { CURRENCY_OPTIONS } from "../lib/options";
-import { parseArbkPayload } from "../lib/arbk";
+import { parseArbkPayload, subscribeArbkBridge } from "../lib/arbk";
 import "./Styles/PremiumTheme.css";
 import "./Styles/DizajniPergjithshem.css";
 import "./Styles/TeDhenatEBiznesit.css";
@@ -99,31 +99,15 @@ function TeDhenatBiznesit() {
     }
   };
 
-  // Bridge contract from FinanCare-ARBK-Extension: listens for a postMessage while the tab is
-  // open, and for a one-shot localStorage flag set right before the extension focuses this tab.
-  useEffect(() => {
-    const handleMessage = (event) => {
-      if (event.data && event.data.type === "ARBK_BRIDGE_DATA" && event.data.payload) {
-        setArbkJson(event.data.payload);
-        handleAutoParse(event.data.payload);
-        // Without this, the flag below survives and gets wrongly replayed on whichever
-        // FinanCare page/component mounts next (e.g. pre-filling business details with
-        // a client's ARBK data), since only the mount-time check used to clear it.
-        localStorage.removeItem("arbk_bridge_data");
-      }
-    };
-    window.addEventListener("message", handleMessage);
-
-    const savedData = localStorage.getItem("arbk_bridge_data");
-    if (savedData) {
-      setArbkJson(savedData);
-      handleAutoParse(savedData);
-      localStorage.removeItem("arbk_bridge_data");
-    }
-
-    return () => window.removeEventListener("message", handleMessage);
+  useEffect(
+    () =>
+      subscribeArbkBridge((payload) => {
+        setArbkJson(payload);
+        handleAutoParse(payload);
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    []
+  );
 
   // Manual fallback for when the browser extension isn't installed/enabled: paste the ARBK
   // page's own `localStorage.getItem("state")` value straight into the textarea below.

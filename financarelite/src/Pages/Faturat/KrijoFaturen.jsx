@@ -9,7 +9,7 @@ import Footer from "../../Components/Footer";
 import PageTitle from "../../Components/PageTitle";
 import BarcodeScannerModal from "../../Components/BarcodeScannerModal";
 import Tabela from "../../Components/Tabela/Tabela";
-import { getAll, getOne, getBusinessDetails, put, remove, makeId, STORES } from "../../lib/db";
+import { getAll, getOne, getBusinessDetails, put, remove, makeId, saveUnitIfNew, STORES } from "../../lib/db";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 import { generateNrFatures } from "../../lib/invoiceView";
 import { darkSelectStyles } from "../../lib/darkSelectStyles";
@@ -86,7 +86,19 @@ function KrijoFaturen() {
     () => tvshTypes.map((t) => ({ value: String(t.perqindja), label: `${t.perqindja}%` })),
     [tvshTypes]
   );
-  const unitOptions = useMemo(() => units.map((u) => ({ value: u.emri, label: u.emri })), [units]);
+  // Units typed into the item form below are saved to "Njësitë Matëse" straight away, but the
+  // hook's list is loaded once on mount — this keeps them in the dropdown for the rest of the
+  // session without re-reading the store after every add.
+  const [extraUnits, setExtraUnits] = useState([]);
+  const unitOptions = useMemo(
+    () => [...units, ...extraUnits].map((u) => ({ value: u.emri, label: u.emri })),
+    [units, extraUnits]
+  );
+
+  const saveNewUnit = async (emri) => {
+    const record = await saveUnitIfNew(emri);
+    if (record) setExtraUnits((prev) => [...prev, record]);
+  };
 
   useEffect(() => {
     Promise.all([getAll(STORES.clients), getAll(STORES.products), getBusinessDetails()]).then(
@@ -755,11 +767,15 @@ function KrijoFaturen() {
                       <Row className="g-2 mb-2">
                         <Col xs={6} md={3}>
                           <Form.Label className="small text-muted mb-1">Njm</Form.Label>
-                          <Select
+                          {/* Creatable, like the product form's: an invoice shouldn't stall because
+                              the unit it needs (muaj, m/l, projekt...) isn't in the list yet — typing
+                              it uses it right away and adds it to Njësitë Matëse for next time. */}
+                          <CreatableSelect
                             styles={darkSelectStyles}
                             classNamePrefix="react-select"
                             options={unitOptions}
                             inputId="mi-njm-input"
+                            formatCreateLabel={(input) => `Përdor "${input}"`}
                             value={
                               manualItem.emriNjesiaMatese
                                 ? { value: manualItem.emriNjesiaMatese, label: manualItem.emriNjesiaMatese }
@@ -767,6 +783,7 @@ function KrijoFaturen() {
                             }
                             onChange={(opt) => {
                               onManualItemChange("emriNjesiaMatese", opt?.value || "");
+                              if (opt?.__isNew__) saveNewUnit(opt.value);
                               if (opt) focusField("mi-sasia");
                             }}
                             onKeyDown={(e) => {

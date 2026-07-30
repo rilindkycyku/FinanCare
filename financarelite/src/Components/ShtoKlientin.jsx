@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal, Button, Tab, Tabs, Form, Row, Col, Alert } from "react-bootstrap";
 import { Search, Info } from "lucide-react";
 import { getAll, put, makeId, STORES } from "../lib/db";
-import { parseArbkPayload } from "../lib/arbk";
+import { parseArbkPayload, subscribeArbkBridge } from "../lib/arbk";
 import { useDialog } from "../Context/DialogContext";
 
 const BLANK = {
@@ -19,7 +19,20 @@ const BLANK = {
   email: "",
 };
 
-function ShtoKlientin({ show, onHide, onSaved, initial }) {
+function klientiNgaArbk(biz) {
+  return {
+    llojiPartnerit: "biznes",
+    emriBiznesit: biz.EmriBiznesit || "",
+    shkurtesaPartnerit: biz.EmriTregtar || biz.EmriBiznesit?.substring(0, 3)?.toUpperCase() || "",
+    nui: biz.NUI || "",
+    nrf: biz.NumriFiskal || "",
+    adresa: `${biz.Adresa || ""}, ${biz.Komuna || ""}`.trim().replace(/^,|,$/g, ""),
+    nrKontaktit: biz.Telefoni || "",
+    email: biz.Email || "",
+  };
+}
+
+function ShtoKlientin({ show, onHide, onSaved, initial, onArbkImport }) {
   const [klienti, setKlienti] = useState(BLANK);
   const [key, setKey] = useState("privat");
   const [error, setError] = useState("");
@@ -30,31 +43,40 @@ function ShtoKlientin({ show, onHide, onSaved, initial }) {
   const [arbkResults, setArbkResults] = useState([]);
   const [arbkError, setArbkError] = useState("");
 
+  // Data can arrive from the ARBK bridge while this dialog is closed — the extension only
+  // focuses the tab, it can't open anything. Held here until the dialog opens, because the reset
+  // below would otherwise wipe the import the moment it did.
+  const pendingArbkRef = useRef(null);
+
   useEffect(() => {
-    if (show) {
-      setKlienti(initial || BLANK);
-      setKey(initial?.llojiPartnerit || "privat");
+    if (!show) return;
+    const pending = pendingArbkRef.current;
+    pendingArbkRef.current = null;
+    if (pending) {
+      setKlienti({ ...BLANK, ...klientiNgaArbk(pending) });
+      setKey("biznes");
       setError("");
+      return;
     }
+    setKlienti(initial || BLANK);
+    setKey(initial?.llojiPartnerit || "privat");
+    setError("");
   }, [show, initial]);
 
   const applyArbkData = (biz) => {
-    setKlienti((prev) => ({
-      ...prev,
-      llojiPartnerit: "biznes",
-      emriBiznesit: biz.EmriBiznesit || "",
-      shkurtesaPartnerit: biz.EmriTregtar || biz.EmriBiznesit?.substring(0, 3)?.toUpperCase() || "",
-      nui: biz.NUI || "",
-      nrf: biz.NumriFiskal || "",
-      adresa: `${biz.Adresa || ""}, ${biz.Komuna || ""}`.trim().replace(/^,|,$/g, ""),
-      nrKontaktit: biz.Telefoni || "",
-      email: biz.Email || "",
-    }));
-    setKey("biznes");
     setShowArbkModal(false);
     setArbkJson("");
     setArbkResults([]);
     setArbkError("");
+
+    if (!show) {
+      // Filling a hidden form would drop the import silently — ask to be opened on it instead.
+      pendingArbkRef.current = biz;
+      onArbkImport?.();
+      return;
+    }
+    setKlienti((prev) => ({ ...prev, ...klientiNgaArbk(biz) }));
+    setKey("biznes");
   };
 
   const handleAutoParse = (payloadStr) => {
@@ -71,31 +93,15 @@ function ShtoKlientin({ show, onHide, onSaved, initial }) {
     }
   };
 
-  // Bridge contract from FinanCare-ARBK-Extension: listens for a postMessage while the tab is
-  // open, and for a one-shot localStorage flag set right before the extension focuses this tab.
-  useEffect(() => {
-    const handleMessage = (event) => {
-      if (event.data && event.data.type === "ARBK_BRIDGE_DATA" && event.data.payload) {
-        setArbkJson(event.data.payload);
-        handleAutoParse(event.data.payload);
-        // Without this, the flag below survives and gets wrongly replayed on whichever
-        // FinanCare page/component mounts next (e.g. pre-filling business details with
-        // a client's ARBK data), since only the mount-time check used to clear it.
-        localStorage.removeItem("arbk_bridge_data");
-      }
-    };
-    window.addEventListener("message", handleMessage);
-
-    const savedData = localStorage.getItem("arbk_bridge_data");
-    if (savedData) {
-      setArbkJson(savedData);
-      handleAutoParse(savedData);
-      localStorage.removeItem("arbk_bridge_data");
-    }
-
-    return () => window.removeEventListener("message", handleMessage);
+  useEffect(
+    () =>
+      subscribeArbkBridge((payload) => {
+        setArbkJson(payload);
+        handleAutoParse(payload);
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    [show]
+  );
 
   const handleParseJSON = () => {
     try {

@@ -55,11 +55,11 @@ function LlojetEDokumentit({ embedded }) {
     <div className={embedded ? "pt-3" : "containerDashboardP"}>
       {!embedded && <h1 className="titulliPerditeso">Llojet e Faturave</h1>}
       <p className="settings-list-intro">
-        Shtoni lloje faturash sipas nevojës, përveç atyre bazë (Faturë Shitëse, Faturë, Faturë sipas Kontratës,
-        Faturë Shërbimi, Faturë Avansi, Faturë Qiraje, Situacion Pune, Porosi, Fletëkthim, Ofertë, Parafaturë,
-        Fletëdërgesë, Notë Debiti, Faturë POS, Porosi Online, Faturë Bankare, Faturë Kesh, Kupon Fiskal, Bilanci
-        Fillestar). Çdo lloj ka emër, prefiks numërimi (p.sh. "OFR") dhe mund të shënohet me shuma negative — si
-        Fletëkthimi — për dokumente kthimi/krediti.
+        Shtoni lloje faturash sipas nevojës, përveç atyre bazë (Faturë, Faturë sipas Kontratës, Faturë Shërbimi,
+        Faturë Avansi, Faturë Qiraje, Faturë Mujore, Faturë Eksporti, Situacion Pune, Porosi, Fletëkthim, Ofertë,
+        Parafaturë, Fletëdërgesë, Notë Debiti, Faturë POS, Porosi Online, Faturë Bankare, Faturë Kesh, Kupon Fiskal,
+        Bilanci Fillestar). Çdo lloj ka emër, prefiks numërimi (p.sh. "OFR") dhe mund të shënohet me shuma negative —
+        si Fletëkthimi — për dokumente kthimi/krediti.
       </p>
 
       <div className="settings-add-bar">
