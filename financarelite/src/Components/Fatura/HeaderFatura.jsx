@@ -39,8 +39,12 @@ const TITLE_MAP = {
 // would otherwise re-rasterize on every page of every PDF rebuild.
 const barcodeCache = new Map();
 
+// No logo means no image at all — not a placeholder. The "kjo faqe nuk ka logo" box belongs to
+// the settings form, where it's a prompt to upload one; on a finished invoice it's just a grey
+// box telling the recipient something they can't act on. It shows up most on invoices opened
+// from a share link, where the logo often can't travel inside the QR (see lib/invoiceQr.js).
 function logoSrc(teDhenatBiznesit) {
-  return teDhenatBiznesit?.logo || "/img/web/PaLogo.png";
+  return teDhenatBiznesit?.logo || null;
 }
 
 function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
@@ -90,7 +94,11 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   return (
     <View style={styles.header}>
       <View style={styles.column}>
-        <Image src={logoSrc(teDhenatBiznesit)} style={{ width: 100, height: 50 }} />
+        {/* `contain`, so a wide wordmark isn't squashed into the box's 2:1 shape — the box only
+            caps how much room the logo may take. */}
+        {logoSrc(teDhenatBiznesit) ? (
+          <Image src={logoSrc(teDhenatBiznesit)} style={{ width: 100, height: 50, objectFit: "contain" }} />
+        ) : null}
         <Text style={[styles.title, styles.bold]}>
           {teDhenatBiznesit?.emriIBiznesit || ""}
         </Text>

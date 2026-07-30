@@ -10,8 +10,8 @@ Font.register({
 });
 
 const styles = StyleSheet.create({
-  table: { width: "100%", borderStyle: "solid", borderWidth: 1, borderColor: "#ccc", fontFamily: "Quicksand" },
-  row: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" },
+  table: { width: "100%", borderStyle: "solid", borderWidth: 1, borderColor: "#999", fontFamily: "Quicksand" },
+  row: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#999" },
   header: { backgroundColor: "#f0f0f0", fontWeight: "bold" },
   cell: { padding: 3, fontSize: 7, textAlign: "center" },
   cellNr: { width: "6%" },
