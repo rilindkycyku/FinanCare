@@ -70,7 +70,11 @@ function Tabela({
   const headeri = data.length > 0 ? Object.keys(data[0]) : [];
   const filteredHeaders = mosShfaqID ? headeri.filter((header) => header !== "ID") : headeri;
 
-  const renderCellContent = (content) => <div dangerouslySetInnerHTML={{ __html: content ?? "" }} />;
+  // Rendered as text, not HTML. Every row here is built from plain strings (names, codes,
+  // amounts), so there was nothing to gain from injecting markup — but the values come from
+  // whatever the business typed, imported from a JSON backup, or pulled in over the ARBK
+  // bridge, and a product named `<img src=x onerror=...>` would have run as script.
+  const renderCellContent = (content) => <div>{content ?? ""}</div>;
 
   return (
     <div className="tabela-premium-wrapper p-2">

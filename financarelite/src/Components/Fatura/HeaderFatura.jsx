@@ -34,6 +34,11 @@ const TITLE_MAP = {
   OFERTE: "OFERTË",
 };
 
+// One entry per invoice number, and an invoice number never changes what its barcode looks
+// like — so this is bounded by how many invoices get opened in a session, and each of those
+// would otherwise re-rasterize on every page of every PDF rebuild.
+const barcodeCache = new Map();
+
 function logoSrc(teDhenatBiznesit) {
   return teDhenatBiznesit?.logo || "/img/web/PaLogo.png";
 }
@@ -54,7 +59,12 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   // (uniform scaling doesn't break scannability, only non-uniform stretching would).
   const MAX_BARCODE_WIDTH = 190;
 
+  // Drawing the barcode means creating a canvas and rasterizing it — cached per invoice number
+  // so it happens once, not on every re-render of every page's header while the PDF is built.
   const generateBarcodeImage = () => {
+    const cached = barcodeCache.get(Barkodi);
+    if (cached) return cached;
+
     const canvas = document.createElement("canvas");
     JsBarcode(canvas, Barkodi || " ", {
       width: 1 * BARCODE_SCALE,
@@ -70,7 +80,9 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
       width = MAX_BARCODE_WIDTH;
       height *= scale;
     }
-    return { dataUrl: canvas.toDataURL("image/png"), width, height };
+    const barcode = { dataUrl: canvas.toDataURL("image/png"), width, height };
+    barcodeCache.set(Barkodi, barcode);
+    return barcode;
   };
 
   const barcode = generateBarcodeImage();

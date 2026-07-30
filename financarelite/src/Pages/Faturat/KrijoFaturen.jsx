@@ -403,14 +403,20 @@ function KrijoFaturen() {
   const draftMetaRef = useRef(null);
   const draftCreationPromiseRef = useRef(null);
 
-  // Each document type keeps its own running sequence (Faturë Shitëse #1, #2... Porosi #1,
-  // #2... independently), so nrFatures always reads e.g. "SHK-220726-POR-3" rather than
-  // sharing one counter across every type. `excludeId` keeps a reopened/in-progress invoice
-  // from counting itself when its own type changes.
+  // Each document type keeps its own running sequence (Faturë #1, #2... Porosi #1, #2...
+  // independently), so nrFatures always reads e.g. "SHK-220726-POR-3" rather than sharing one
+  // counter across every type. `excludeId` keeps a reopened/in-progress invoice from counting
+  // itself when its own type changes.
+  //
+  // Taken from the highest number issued, not from how many invoices exist: counting meant that
+  // deleting one handed its number straight back out, so the next invoice of that type could be
+  // issued with a number — and a barcode — an earlier one already carried.
   const nextNrRendorFatures = async (llojiDokumentitValue, excludeId) => {
     const allInvoices = await getAll(STORES.invoices);
-    const sameType = allInvoices.filter((inv) => inv.llojiDokumentit === llojiDokumentitValue && inv.id !== excludeId);
-    return sameType.length + 1;
+    const highest = allInvoices
+      .filter((inv) => inv.llojiDokumentit === llojiDokumentitValue && inv.id !== excludeId)
+      .reduce((max, inv) => Math.max(max, parseInt(inv.nrRendorFatures, 10) || 0), 0);
+    return highest + 1;
   };
 
   const ensureDraftInvoice = () => {
