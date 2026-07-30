@@ -30,6 +30,11 @@ const styles = StyleSheet.create({
   bankRow: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" },
   bankHeader: { backgroundColor: "#f0f0f0" },
   bankCell: { flex: 1, padding: 3, fontSize: 7, textAlign: "center" },
+  // The account details are what someone actually has to read off the invoice to pay it, so
+  // they're set bold (and the number a touch larger) rather than left at the same weight as
+  // the column headings above them.
+  bankValue: { fontWeight: "bold" },
+  bankAccount: { fontWeight: "bold", fontSize: 8 },
   table: { width: "100%", borderStyle: "solid", borderWidth: 1, borderColor: "#ccc" },
   row: { flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" },
   header: { backgroundColor: "#f0f0f0" },
@@ -47,6 +52,11 @@ function FooterFatura({ Barkodi, data }) {
   const transporti = parseFloat(teDhenatFat?.regjistrimet?.transporti) || 0;
   const { totaliMeTVSH, totaliPaTVSH, tvshBreakdown, rabati, totaliFinal } = calcInvoiceTotals(produktet, transporti);
 
+  // Checked on the absolute value: a Fletëkthim (or any type flagged negateAmounts) carries
+  // negative amounts throughout, so a discount there lands as a negative number too.
+  const kaRabat = Math.abs(rabati) >= 0.005;
+  const kaTransport = Math.abs(transporti) >= 0.005;
+
   const activeBanks = (bankat || []).filter((b) => b.emriBankes);
 
   const bankTable = () => {
@@ -56,15 +66,15 @@ function FooterFatura({ Barkodi, data }) {
     return (
       <View style={styles.bankTable}>
         <View style={[styles.bankRow, styles.bankHeader]}>
-          <Text style={styles.bankCell}>Emri i Bankës</Text>
-          <Text style={styles.bankCell}>Numri i Llogarisë</Text>
-          <Text style={styles.bankCell}>Valuta</Text>
+          <Text style={[styles.bankCell, styles.boldT]}>Emri i Bankës</Text>
+          <Text style={[styles.bankCell, styles.boldT]}>Numri i Llogarisë</Text>
+          <Text style={[styles.bankCell, styles.boldT]}>Valuta</Text>
         </View>
         {activeBanks.map((banka, index) => (
           <View style={styles.bankRow} key={banka.id || index}>
-            <Text style={styles.bankCell}>{banka.emriBankes || ""}</Text>
-            <Text style={styles.bankCell}>{banka.numriLlogaris || ""}</Text>
-            <Text style={styles.bankCell}>{banka.valuta || ""}</Text>
+            <Text style={[styles.bankCell, styles.bankValue]}>{banka.emriBankes || ""}</Text>
+            <Text style={[styles.bankCell, styles.bankAccount]}>{banka.numriLlogaris || ""}</Text>
+            <Text style={[styles.bankCell, styles.bankValue]}>{banka.valuta || ""}</Text>
           </View>
         ))}
       </View>
@@ -91,14 +101,21 @@ function FooterFatura({ Barkodi, data }) {
         )}
         <View style={styles.column}>
           <View style={styles.table}>
-            <View style={styles.row}>
-              <Text style={[styles.cell, styles.boldT, styles.header]}>Nëntotali</Text>
-              <Text style={styles.cell}>{(totaliMeTVSH + rabati).toFixed(2)} €</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={[styles.cell, styles.boldT, styles.header]}>Rabati</Text>
-              <Text style={styles.cell}>{(-rabati).toFixed(2)} €</Text>
-            </View>
+            {/* With no discount and no transport, "Nëntotali" is the same number as "Çmimi
+                Total" and "Rabati" is a row of zeroes — an invoice that never carries a discount
+                shouldn't have to print either. */}
+            {(kaRabat || kaTransport) && (
+              <View style={styles.row}>
+                <Text style={[styles.cell, styles.boldT, styles.header]}>Nëntotali</Text>
+                <Text style={styles.cell}>{(totaliMeTVSH + rabati).toFixed(2)} €</Text>
+              </View>
+            )}
+            {kaRabat && (
+              <View style={styles.row}>
+                <Text style={[styles.cell, styles.boldT, styles.header]}>Rabati</Text>
+                <Text style={styles.cell}>{(-rabati).toFixed(2)} €</Text>
+              </View>
+            )}
             <View style={styles.row}>
               <Text style={[styles.cell, styles.boldT, styles.header]}>Totali Pa TVSH</Text>
               <Text style={styles.cell}>{totaliPaTVSH.toFixed(2)} €</Text>
@@ -109,7 +126,7 @@ function FooterFatura({ Barkodi, data }) {
                 <Text style={styles.cell}>{value.toFixed(2)} €</Text>
               </View>
             ))}
-            {transporti > 0 && (
+            {kaTransport && (
               <View style={styles.row}>
                 <Text style={[styles.cell, styles.boldT, styles.header]}>Transporti</Text>
                 <Text style={styles.cell}>{transporti.toFixed(2)} €</Text>

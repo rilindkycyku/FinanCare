@@ -3,7 +3,7 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { Camera } from "lucide-react";
-import { getAll, put, makeId, STORES } from "../lib/db";
+import { getAll, put, makeId, saveUnitIfNew, STORES } from "../lib/db";
 import { darkSelectStyles } from "../lib/darkSelectStyles";
 import { useTvshTypes, useUnits } from "../lib/useConfigLists";
 import BarcodeScannerModal from "./BarcodeScannerModal";
@@ -34,7 +34,13 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
     () => tvshTypes.map((t) => ({ value: String(t.perqindja), label: `${t.emri} (${t.perqindja}%)` })),
     [tvshTypes]
   );
-  const unitOptions = useMemo(() => units.map((u) => ({ value: u.emri, label: u.emri })), [units]);
+  // A unit typed here (rather than picked) is kept in "Njësitë Matëse" too, so the next product
+  // — and the invoice form — can just pick it.
+  const [extraUnits, setExtraUnits] = useState([]);
+  const unitOptions = useMemo(
+    () => [...units, ...extraUnits].map((u) => ({ value: u.emri, label: u.emri })),
+    [units, extraUnits]
+  );
 
   const onChange = (e) => setProdukti({ ...produkti, [e.target.name]: e.target.value });
 
@@ -45,7 +51,9 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!produkti.emriProduktit || !produkti.qmimiShites) return;
+    // Only the name is required — the price is the invoice's business (it's typed there, per
+    // invoice), so a catalogue entry is allowed to carry no price at all.
+    if (!produkti.emriProduktit) return;
     const record = { id: produkti.id || makeId("prod"), ...produkti };
 
     const nameKey = record.emriProduktit.trim().toLowerCase();
@@ -110,7 +118,13 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
                 placeholder="copë, kg, orë..."
                 formatCreateLabel={(input) => `Përdor "${input}"`}
                 value={produkti.emriNjesiaMatese ? { value: produkti.emriNjesiaMatese, label: produkti.emriNjesiaMatese } : null}
-                onChange={(opt) => setProdukti({ ...produkti, emriNjesiaMatese: opt?.value || "" })}
+                onChange={async (opt) => {
+                  setProdukti({ ...produkti, emriNjesiaMatese: opt?.value || "" });
+                  if (opt?.__isNew__) {
+                    const record = await saveUnitIfNew(opt.value);
+                    if (record) setExtraUnits((prev) => [...prev, record]);
+                  }
+                }}
               />
             </Col>
             <Col md={4}>
@@ -124,10 +138,16 @@ function ShtoProduktin({ show, onHide, onSaved, initial }) {
               />
             </Col>
             <Col md={4}>
-              <Form.Label>
-                Çmimi (me TVSH) € <span className="text-danger">*</span>
-              </Form.Label>
-              <Form.Control type="number" step="0.01" name="qmimiShites" value={produkti.qmimiShites} onChange={onChange} required />
+              <Form.Label>Çmimi (me TVSH) €</Form.Label>
+              <Form.Control
+                type="number"
+                step="0.01"
+                name="qmimiShites"
+                value={produkti.qmimiShites}
+                onChange={onChange}
+                placeholder="Opsionale"
+              />
+              <Form.Text className="text-muted">Lëreni bosh nëse çmimi vendoset gjatë krijimit të faturës.</Form.Text>
             </Col>
 
             <Col md={4}>

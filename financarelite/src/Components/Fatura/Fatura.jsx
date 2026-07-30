@@ -187,7 +187,10 @@ function Fatura({
   async function ruajFaturen() {
     try {
       setSaving(true);
-      const blob = await pdf(invoiceDocument).toBlob();
+      // The preview above has already rendered this exact document; reusing its blob makes the
+      // download instant instead of rendering the whole invoice a second time. Only invoices
+      // saved before the preview finishes (or an auto-download) still render their own.
+      const blob = previewBlob || (await pdf(invoiceDocument).toBlob());
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

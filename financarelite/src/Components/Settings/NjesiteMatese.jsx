@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Table, Form } from "react-bootstrap";
 import { Trash2, Plus } from "lucide-react";
-import { getAll, put, remove, makeId, STORES } from "../../lib/db";
+import { getAll, put, remove, makeId, ensureDefaultUnits, STORES } from "../../lib/db";
 import { DEFAULT_UNITS } from "../../lib/options";
 import "./SettingsList.css";
 
@@ -19,7 +19,7 @@ function NjesiteMatese({ embedded }) {
   const load = () => getAll(STORES.units).then(setUnits);
 
   useEffect(() => {
-    load();
+    ensureDefaultUnits().then(setUnits);
   }, []);
 
   const addUnit = async (emriRaw) => {

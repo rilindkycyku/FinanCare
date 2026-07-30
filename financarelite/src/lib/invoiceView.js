@@ -10,6 +10,7 @@ export function buildFaturaData({ invoice, teDhenatBiznesit, banks, currencies }
     teDhenatFat: {
       regjistrimet: {
         llojiKalkulimit: invoice.llojiDokumentit || "FAT",
+        titulliKalkulimit: invoice.titulliDokumentit,
         nrFatures: invoice.nrFatures,
         nrRendorFatures: invoice.nrRendorFatures,
         dataRegjistrimit: invoice.dataRegjistrimit,

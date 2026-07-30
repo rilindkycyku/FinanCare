@@ -60,13 +60,17 @@ async function gunzip(bytes) {
   return new Response(stream).text();
 }
 
-/** Build the invoice payload: business + banks + currency-rate snapshot (no logo) + invoice header/items. */
-export function buildInvoicePayload({ teDhenatBiznesit, banks, currencies, invoice }) {
-  const { logo, ...bizNoLogo } = teDhenatBiznesit || {};
-  void logo;
+/** Build the invoice payload: business + banks + currency-rate snapshot + invoice header/items.
+ * The business's own (full-size) logo is always dropped — it's a raw uploaded data URL and would
+ * dwarf everything else in the payload. Pass `logo` to carry a downscaled copy instead (see
+ * `shrinkLogoDataUrl`), so an invoice opened from a share link still shows the business's logo;
+ * leave it out for the QR payload, where every character counts. */
+export function buildInvoicePayload({ teDhenatBiznesit, banks, currencies, invoice, logo = null }) {
+  const { logo: originalLogo, ...bizNoLogo } = teDhenatBiznesit || {};
+  void originalLogo;
   return {
     v: 1,
-    biz: bizNoLogo,
+    biz: logo ? { ...bizNoLogo, logo } : bizNoLogo,
     banks: (banks || []).map(({ emriBankes, numriLlogaris, valuta }) => ({ emriBankes, numriLlogaris, valuta })),
     currencies: (currencies || []).map(({ code, rate }) => ({ code, rate })),
     inv: invoice,

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "FinanCare ARBK Bridge",
-  "version": "1.3",
+  "version": "1.5",
   "description": "Automatically sends ARBK business data directly to FinanCare.",
   "permissions": [
     "storage",

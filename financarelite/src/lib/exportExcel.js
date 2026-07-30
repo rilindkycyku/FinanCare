@@ -1,4 +1,3 @@
-import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { getBusinessDetails } from "./db";
 
@@ -38,6 +37,9 @@ const font = (bold = false, color = CLR.valueFg, size = 11) => ({
 
 /** Reusable utility to export any flat list of display-row objects into a styled ExcelJS workbook. */
 export async function exportListExcel(title, headers, data, filename = "Eksport.xlsx") {
+  // ExcelJS is ~900 KB of the bundle and only matters the moment someone actually exports, so
+  // it's fetched then rather than shipped to everyone who opens a list.
+  const { default: ExcelJS } = await import("exceljs");
   const biz = await getBusinessDetails();
   const shopName = biz?.emriIBiznesit || "FinanCareLite";
   const shopNUI = `NUI: ${biz?.nui || "–"} / NF: ${biz?.nf || "–"} / TVSH: ${biz?.nrTVSH || "–"}`;

@@ -1,41 +1,49 @@
 import { useEffect } from "react";
 import { Modal } from "react-bootstrap";
-import { Html5QrcodeScanner } from "html5-qrcode";
 import { Camera, X } from "lucide-react";
 
 /** Camera barcode/QR scanner — works from any HTTPS origin (camera access requires a secure
  * context), which is why this is safe to ship in a purely static, no-backend app. */
 const BarcodeScannerModal = ({ show, onHide, onScan }) => {
   useEffect(() => {
+    if (!show) return undefined;
     let html5QrcodeScanner = null;
+    let cancelled = false;
 
-    if (show) {
-      // Small timeout to ensure the DOM element #reader is mounted by the Modal
-      setTimeout(() => {
-        html5QrcodeScanner = new Html5QrcodeScanner(
-          "reader",
-          {
-            fps: 10,
-            qrbox: { width: 280, height: 180 },
-            aspectRatio: 1.0,
-            showTorchButtonIfSupported: true,
-          },
-          false
-        );
+    // The scanner library is only needed once someone actually opens the camera, so it's loaded
+    // here instead of riding along in the main bundle. The small delay is still there for the
+    // Modal to have mounted #reader; the import usually covers it on its own by now.
+    const start = async () => {
+      const { Html5QrcodeScanner } = await import("html5-qrcode");
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      if (cancelled || !document.getElementById("reader")) return;
 
-        html5QrcodeScanner.render(
-          (decodedText) => {
-            html5QrcodeScanner.clear().catch(console.error);
-            onScan(decodedText);
-          },
-          () => {
-            // Ignore scan failures — they fire continuously while no code is in frame.
-          }
-        );
-      }, 150);
-    }
+      html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        {
+          fps: 10,
+          qrbox: { width: 280, height: 180 },
+          aspectRatio: 1.0,
+          showTorchButtonIfSupported: true,
+        },
+        false
+      );
+
+      html5QrcodeScanner.render(
+        (decodedText) => {
+          html5QrcodeScanner.clear().catch(console.error);
+          onScan(decodedText);
+        },
+        () => {
+          // Ignore scan failures — they fire continuously while no code is in frame.
+        }
+      );
+    };
+
+    start().catch((err) => console.error("Skaneri nuk u ngarkua dot:", err));
 
     return () => {
+      cancelled = true;
       if (html5QrcodeScanner) {
         html5QrcodeScanner.clear().catch(console.error);
       }

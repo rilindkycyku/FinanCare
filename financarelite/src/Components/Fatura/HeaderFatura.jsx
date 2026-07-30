@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Image, Font } from "@react-pdf/renderer";
 import JsBarcode from "jsbarcode";
+import { DEFAULT_DOCUMENT_TYPES } from "../../lib/options";
 
 Font.register({
   family: "Quicksand",
@@ -17,19 +18,26 @@ const styles = StyleSheet.create({
   },
   column: { width: "48%" },
   title: { fontSize: 16, textAlign: "left", marginTop: 2 },
+  titleLong: { fontSize: 12 },
   text: { fontSize: 10, marginBottom: 2 },
   bold: { fontWeight: "bold" },
   barcodeImage: { marginTop: 5 },
   barcodeContainer: { alignItems: "center" },
 });
 
+// Fallback for invoices issued before the document title started being stored on the invoice
+// record itself (see `titulliDokumentit` in KrijoFaturen) — derived from the built-in types so
+// adding one there is enough, and old invoices of a custom type still read "FATURË".
 const TITLE_MAP = {
-  FAT: "FATURË SHITËSE",
-  POR: "POROSI",
-  KTHIM: "FLETËKTHIM",
+  ...Object.fromEntries(DEFAULT_DOCUMENT_TYPES.map((t) => [t.value, t.titleLabel])),
   PARAGON: "PARAGON",
   OFERTE: "OFERTË",
 };
+
+// One entry per invoice number, and an invoice number never changes what its barcode looks
+// like — so this is bounded by how many invoices get opened in a session, and each of those
+// would otherwise re-rasterize on every page of every PDF rebuild.
+const barcodeCache = new Map();
 
 function logoSrc(teDhenatBiznesit) {
   return teDhenatBiznesit?.logo || "/img/web/PaLogo.png";
@@ -38,6 +46,7 @@ function logoSrc(teDhenatBiznesit) {
 function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   const { teDhenatFat, teDhenatBiznesit } = data || {};
   const llojiKalkulimit = teDhenatFat?.regjistrimet?.llojiKalkulimit || "FAT";
+  const titulliDokumentit = teDhenatFat?.regjistrimet?.titulliKalkulimit || TITLE_MAP[llojiKalkulimit] || "FATURË";
 
   // JsBarcode draws onto a canvas at 1x pixel density; embedding that raw PNG
   // into the PDF makes it look blurry once printed/zoomed. Render the canvas
@@ -50,7 +59,12 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   // (uniform scaling doesn't break scannability, only non-uniform stretching would).
   const MAX_BARCODE_WIDTH = 190;
 
+  // Drawing the barcode means creating a canvas and rasterizing it — cached per invoice number
+  // so it happens once, not on every re-render of every page's header while the PDF is built.
   const generateBarcodeImage = () => {
+    const cached = barcodeCache.get(Barkodi);
+    if (cached) return cached;
+
     const canvas = document.createElement("canvas");
     JsBarcode(canvas, Barkodi || " ", {
       width: 1 * BARCODE_SCALE,
@@ -66,7 +80,9 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
       width = MAX_BARCODE_WIDTH;
       height *= scale;
     }
-    return { dataUrl: canvas.toDataURL("image/png"), width, height };
+    const barcode = { dataUrl: canvas.toDataURL("image/png"), width, height };
+    barcodeCache.set(Barkodi, barcode);
+    return barcode;
   };
 
   const barcode = generateBarcodeImage();
@@ -114,7 +130,11 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
       </View>
       <View style={styles.column}>
         <View style={styles.barcodeContainer}>
-          <Text style={[styles.title, styles.bold]}>{TITLE_MAP[llojiKalkulimit] || "FATURË"}</Text>
+          {/* Custom document types can carry long titles ("FATURË SIPAS KONTRATËS"); stepping the
+              size down keeps them on one line inside the header column. */}
+          <Text style={[styles.title, styles.bold, ...(titulliDokumentit.length > 20 ? [styles.titleLong] : [])]}>
+            {titulliDokumentit}
+          </Text>
           <Image
             src={barcode.dataUrl}
             style={[styles.barcodeImage, { width: barcode.width, height: barcode.height }]}

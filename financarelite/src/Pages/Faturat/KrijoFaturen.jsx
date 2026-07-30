@@ -9,7 +9,7 @@ import Footer from "../../Components/Footer";
 import PageTitle from "../../Components/PageTitle";
 import BarcodeScannerModal from "../../Components/BarcodeScannerModal";
 import Tabela from "../../Components/Tabela/Tabela";
-import { getAll, getOne, getBusinessDetails, put, remove, makeId, STORES } from "../../lib/db";
+import { getAll, getOne, getBusinessDetails, put, remove, makeId, saveUnitIfNew, STORES } from "../../lib/db";
 import { calcInvoiceTotals } from "../../lib/invoiceCalc";
 import { generateNrFatures } from "../../lib/invoiceView";
 import { darkSelectStyles } from "../../lib/darkSelectStyles";
@@ -86,7 +86,19 @@ function KrijoFaturen() {
     () => tvshTypes.map((t) => ({ value: String(t.perqindja), label: `${t.perqindja}%` })),
     [tvshTypes]
   );
-  const unitOptions = useMemo(() => units.map((u) => ({ value: u.emri, label: u.emri })), [units]);
+  // Units typed into the item form below are saved to "Njësitë Matëse" straight away, but the
+  // hook's list is loaded once on mount — this keeps them in the dropdown for the rest of the
+  // session without re-reading the store after every add.
+  const [extraUnits, setExtraUnits] = useState([]);
+  const unitOptions = useMemo(
+    () => [...units, ...extraUnits].map((u) => ({ value: u.emri, label: u.emri })),
+    [units, extraUnits]
+  );
+
+  const saveNewUnit = async (emri) => {
+    const record = await saveUnitIfNew(emri);
+    if (record) setExtraUnits((prev) => [...prev, record]);
+  };
 
   useEffect(() => {
     Promise.all([getAll(STORES.clients), getAll(STORES.products), getBusinessDetails()]).then(
@@ -229,7 +241,10 @@ function KrijoFaturen() {
             barkodi: manualItem.barkodi,
             emriNjesiaMatese: manualItem.emriNjesiaMatese,
             llojiTVSH: manualItem.llojiTVSH,
-            qmimiShites: manualItem.qmimiShites,
+            // Deliberately no price: the catalogue keeps *what* is sold, the invoice decides for
+            // how much. A standing price can still be set by hand from the Produktet page, and
+            // when it's there, picking the product prefills it.
+            qmimiShites: "",
             rabati1: manualItem.rabati1,
           };
           await put(STORES.products, productRecord);
@@ -273,13 +288,16 @@ function KrijoFaturen() {
       barkodi: p.barkodi || "",
       emriNjesiaMatese: p.emriNjesiaMatese,
       llojiTVSH: p.llojiTVSH,
-      qmimiShites: p.qmimiShites,
+      qmimiShites: p.qmimiShites || "",
       rabati1: p.rabati1 || "0",
       rabati2: "0",
       rabati3: "0",
       sasiaStokut: "1",
     });
     setEditingKey(null);
+    // Catalogue products don't have to carry a price (it usually belongs to the invoice, not the
+    // product) — when one doesn't, drop the cursor straight into the price field.
+    if (!p.qmimiShites) setTimeout(() => focusField("mi-cmimi"), 0);
   };
 
   const removeItem = (key) => {
@@ -359,20 +377,22 @@ function KrijoFaturen() {
     () => signedItems.filter((it, i) => items[i].emriProduktit && parseFloat(items[i].qmimiShites) > 0),
     [signedItems, items]
   );
-  const itemRows = useMemo(
-    () =>
-      items.map((it) => ({
-        ID: it.key,
-        Emërtimi: it.emriProduktit,
-        "Barkodi / Kodi": [it.barkodi, it.kodiProduktit].filter(Boolean).join(" / ") || "-",
-        Njm: it.emriNjesiaMatese,
-        Sasia: parseFloat(it.sasiaStokut || 0),
-        "Çmimi €": `${parseFloat(it.qmimiShites || 0).toFixed(2)} €`,
-        "TVSH %": `${it.llojiTVSH}%`,
-        "Rabati %": `${parseFloat(it.rabati1 || 0)}%`,
-      })),
-    [items]
-  );
+  // Columns nothing fills in are left out, the same way the printed invoice does it — an invoice
+  // with no product codes or no discounts shouldn't show a column of dashes and zeroes.
+  const itemRows = useMemo(() => {
+    const showCodes = items.some((it) => it.barkodi || it.kodiProduktit);
+    const showRabat = items.some((it) => parseFloat(it.rabati1) > 0);
+    return items.map((it) => ({
+      ID: it.key,
+      Emërtimi: it.emriProduktit,
+      ...(showCodes ? { "Barkodi / Kodi": [it.barkodi, it.kodiProduktit].filter(Boolean).join(" / ") || "-" } : {}),
+      Njm: it.emriNjesiaMatese,
+      Sasia: parseFloat(it.sasiaStokut || 0),
+      "Çmimi €": `${parseFloat(it.qmimiShites || 0).toFixed(2)} €`,
+      "TVSH %": `${it.llojiTVSH}%`,
+      ...(showRabat ? { "Rabati %": `${parseFloat(it.rabati1 || 0)}%` } : {}),
+    }));
+  }, [items]);
   const transportiSigned = dokumentiZgjedhur.negateAmounts ? -(parseFloat(transporti) || 0) : transporti;
   const totals = useMemo(() => calcInvoiceTotals(validItems, transportiSigned), [validItems, transportiSigned]);
 
@@ -383,14 +403,20 @@ function KrijoFaturen() {
   const draftMetaRef = useRef(null);
   const draftCreationPromiseRef = useRef(null);
 
-  // Each document type keeps its own running sequence (Faturë Shitëse #1, #2... Porosi #1,
-  // #2... independently), so nrFatures always reads e.g. "SHK-220726-POR-3" rather than
-  // sharing one counter across every type. `excludeId` keeps a reopened/in-progress invoice
-  // from counting itself when its own type changes.
+  // Each document type keeps its own running sequence (Faturë #1, #2... Porosi #1, #2...
+  // independently), so nrFatures always reads e.g. "SHK-220726-POR-3" rather than sharing one
+  // counter across every type. `excludeId` keeps a reopened/in-progress invoice from counting
+  // itself when its own type changes.
+  //
+  // Taken from the highest number issued, not from how many invoices exist: counting meant that
+  // deleting one handed its number straight back out, so the next invoice of that type could be
+  // issued with a number — and a barcode — an earlier one already carried.
   const nextNrRendorFatures = async (llojiDokumentitValue, excludeId) => {
     const allInvoices = await getAll(STORES.invoices);
-    const sameType = allInvoices.filter((inv) => inv.llojiDokumentit === llojiDokumentitValue && inv.id !== excludeId);
-    return sameType.length + 1;
+    const highest = allInvoices
+      .filter((inv) => inv.llojiDokumentit === llojiDokumentitValue && inv.id !== excludeId)
+      .reduce((max, inv) => Math.max(max, parseInt(inv.nrRendorFatures, 10) || 0), 0);
+    return highest + 1;
   };
 
   const ensureDraftInvoice = () => {
@@ -421,6 +447,10 @@ function KrijoFaturen() {
       nrFatures: meta.nrFatures,
       nrRendorFatures: meta.nrRendorFatures,
       llojiDokumentit: dokumentiZgjedhur.value,
+      // Stored on the invoice itself so the printed title stays whatever the document type was
+      // called when it was issued — including custom types, which the invoice header has no
+      // other way of knowing about (and which would otherwise all print as a plain "FATURË").
+      titulliDokumentit: dokumentiZgjedhur.titleLabel || (dokumentiZgjedhur.label || "").toUpperCase(),
       dataRegjistrimit: new Date(dataRegjistrimit).toISOString(),
       pershkrimShtese,
       transporti: parseFloat(transportiSigned) || 0,
@@ -745,11 +775,15 @@ function KrijoFaturen() {
                       <Row className="g-2 mb-2">
                         <Col xs={6} md={3}>
                           <Form.Label className="small text-muted mb-1">Njm</Form.Label>
-                          <Select
+                          {/* Creatable, like the product form's: an invoice shouldn't stall because
+                              the unit it needs (muaj, m/l, projekt...) isn't in the list yet — typing
+                              it uses it right away and adds it to Njësitë Matëse for next time. */}
+                          <CreatableSelect
                             styles={darkSelectStyles}
                             classNamePrefix="react-select"
                             options={unitOptions}
                             inputId="mi-njm-input"
+                            formatCreateLabel={(input) => `Përdor "${input}"`}
                             value={
                               manualItem.emriNjesiaMatese
                                 ? { value: manualItem.emriNjesiaMatese, label: manualItem.emriNjesiaMatese }
@@ -757,6 +791,7 @@ function KrijoFaturen() {
                             }
                             onChange={(opt) => {
                               onManualItemChange("emriNjesiaMatese", opt?.value || "");
+                              if (opt?.__isNew__) saveNewUnit(opt.value);
                               if (opt) focusField("mi-sasia");
                             }}
                             onKeyDown={(e) => {

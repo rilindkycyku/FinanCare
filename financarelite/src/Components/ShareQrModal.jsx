@@ -5,7 +5,7 @@ import { Copy, Share2 } from "lucide-react";
 /** QR modal for one invoice — same interaction pattern as GuestSeat's share-link QR modal.
  * `status`/`link`/`dataUrl` are computed once by the parent (see `buildInvoiceShareQr`) and
  * reused here, so the modal always shows exactly the QR that's also embedded on the invoice. */
-function ShareQrModal({ show, onHide, status = "loading", link, dataUrl }) {
+function ShareQrModal({ show, onHide, status = "loading", link, dataUrl, dense = false }) {
   const [copied, setCopied] = useState(false);
 
   const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
@@ -56,6 +56,13 @@ function ShareQrModal({ show, onHide, status = "loading", link, dataUrl }) {
             <div className="text-center text-muted small px-2">Nuk u krijua dot QR-ja</div>
           )}
         </div>
+
+        {status === "ready" && dense && (
+          <p className="text-muted small mt-2 mb-0">
+            Fatura ka shumë artikuj, prandaj kodi është shumë i dendur — nëse skanimi nuk kap dot, përdorni lidhjen më
+            poshtë.
+          </p>
+        )}
 
         {link && (
           <div className="mt-3 d-grid gap-2">

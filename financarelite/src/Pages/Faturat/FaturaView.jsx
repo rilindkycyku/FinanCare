@@ -8,7 +8,6 @@ import PagesaModal from "../../Components/PagesaModal";
 import { getOne, getBusinessDetails, getAll, put, STORES } from "../../lib/db";
 import { buildFaturaData } from "../../lib/invoiceView";
 import { buildInvoiceShareQr } from "../../lib/invoiceQr";
-import { QrTooLargeError } from "../../lib/qr";
 import { useDialog } from "../../Context/DialogContext";
 
 function FaturaView() {
@@ -18,7 +17,7 @@ function FaturaView() {
   const [teDhenatBiznesit, setTeDhenatBiznesit] = useState(null);
   const [banks, setBanks] = useState([]);
   const [currencies, setCurrencies] = useState([]);
-  const [shareQr, setShareQr] = useState({ status: "loading", link: null, dataUrl: null });
+  const [shareQr, setShareQr] = useState({ status: "loading", link: null, dataUrl: null, dense: false });
   const [showShare, setShowShare] = useState(false);
   const [showPagesaModal, setShowPagesaModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -41,15 +40,17 @@ function FaturaView() {
   useEffect(() => {
     if (!invoice) return;
     let cancelled = false;
-    setShareQr({ status: "loading", link: null, dataUrl: null });
+    setShareQr({ status: "loading", link: null, dataUrl: null, dense: false });
     buildInvoiceShareQr({ teDhenatBiznesit, banks, currencies, invoice })
       .then((qr) => {
-        if (!cancelled) setShareQr({ status: "ready", ...qr });
+        // An invoice too big to fit in a QR still gets its link — that's what the modal offers
+        // instead of the code, so it's kept here rather than dropped with the error.
+        if (!cancelled) setShareQr({ status: qr.tooLarge ? "tooLarge" : "ready", ...qr });
       })
       .catch((err) => {
         if (cancelled) return;
         console.error("Gabim gjatë krijimit të QR-së:", err);
-        setShareQr({ status: err instanceof QrTooLargeError ? "tooLarge" : "failed", link: null, dataUrl: null });
+        setShareQr({ status: "failed", link: null, dataUrl: null, dense: false });
       });
     return () => {
       cancelled = true;
@@ -105,6 +106,7 @@ function FaturaView() {
             status={shareQr.status}
             link={shareQr.link}
             dataUrl={shareQr.dataUrl}
+            dense={shareQr.dense}
           />
           <PagesaModal
             show={showPagesaModal}

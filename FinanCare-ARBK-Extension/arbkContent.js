@@ -17,14 +17,20 @@ window.addEventListener("message", (event) => {
       if (response && response.success) {
         // Send success signal to main world button UI
         window.postMessage({ type: "ARBK_SEND_STATUS", status: "success" }, "*");
-      } else {
-        // Send error signal to main world button UI
-        window.postMessage({
-          type: "ARBK_SEND_STATUS",
-          status: "error",
-          message: "Gabim! Sigurohuni që keni hapur aplikacionin FinanCare dhe keni hapur dialogun 'Shto Partnerin'."
-        }, "*");
+        return;
       }
+
+      // Say which of the two things actually went wrong instead of one catch-all message:
+      // either no FinanCare tab is open (or the URL setting doesn't match it), or the tab is
+      // open but predates the extension being installed/reloaded and has no bridge in it yet.
+      const patterns = (response && response.patterns) || [];
+      const listed = patterns.length > 0 ? ` (URL të konfiguruara: ${patterns.join(", ")})` : "";
+      const message =
+        response && response.reason === "no-content-script"
+          ? `FinanCare është e hapur, por skeda duhet rifreskuar që ura të aktivizohet. Rifreskoni skedën e FinanCare dhe provoni sërish.${listed}`
+          : `Nuk u gjet asnjë skedë e hapur e FinanCare. Hapeni aplikacionin FinanCare në një skedë tjetër — ose ndryshoni URL-në te ikona e shtesës nëse e përdorni në një adresë tjetër.${listed}`;
+
+      window.postMessage({ type: "ARBK_SEND_STATUS", status: "error", message }, "*");
     });
   }
 });
