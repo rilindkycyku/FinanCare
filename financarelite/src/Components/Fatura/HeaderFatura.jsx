@@ -3,6 +3,13 @@ import "./pdfFonts";
 import JsBarcode from "jsbarcode";
 import { DEFAULT_DOCUMENT_TYPES } from "../../lib/options";
 
+// The whole letterhead band is this tall and no taller — see `band` below. Sized to what the
+// document title and its barcode need, since those are fixed; everything else fits inside it.
+const BAND_HEIGHT = 50;
+// Room for the logo once the business name underneath it has taken its line.
+const LOGO_MAX_HEIGHT = 28;
+const LOGO_MAX_WIDTH = 80;
+
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
@@ -13,9 +20,12 @@ const styles = StyleSheet.create({
   // top, so the three text columns below can start on the same line and end at roughly the same
   // depth. Stacking the logo inside the seller's column instead made that column run long while
   // the client's ended early, leaving an obvious hole under it.
-  band: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 6 },
-  bandLeft: { width: "40%", justifyContent: "flex-end" },
-  bandRight: { width: "58%", alignItems: "flex-end" },
+  // Fixed height, so nothing in the band can push the invoice down: the logo is fitted into
+  // whatever room is left beside the title and barcode, rather than the header growing to
+  // accommodate it. A tall or square logo therefore comes out smaller, not more expensive.
+  band: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", height: BAND_HEIGHT, marginBottom: 3 },
+  bandLeft: { width: "40%", height: BAND_HEIGHT, justifyContent: "flex-end" },
+  bandRight: { width: "58%", height: BAND_HEIGHT, alignItems: "flex-end", justifyContent: "flex-end" },
   // Three columns: who's selling, who's buying, and the invoice's own details. Widths are set so
   // the seller's contact line fits without wrapping.
   colShitesi: { width: "34%" },
@@ -32,10 +42,10 @@ const styles = StyleSheet.create({
   // are reference numbers to copy rather than anything read at a glance.
   textId: { fontSize: 8, marginBottom: 1.5 },
   bold: { fontWeight: "bold" },
-  // `contain`, so a wide wordmark isn't squashed to the box's shape — the box only caps how much
-  // room the logo may take, and at 80x36 that's most of the height back without the mark
-  // becoming unreadable.
-  logo: { width: 80, height: 36, objectFit: "contain", marginBottom: 2 },
+  // Caps rather than a fixed box, with `contain`: a wide wordmark uses the full width at
+  // whatever height that implies, a square mark stops at the height limit — neither is squashed,
+  // and neither can outgrow the band.
+  logo: { maxWidth: LOGO_MAX_WIDTH, maxHeight: LOGO_MAX_HEIGHT, objectFit: "contain", marginBottom: 2 },
   barcodeImage: { marginTop: 5 },
   barcodeContainer: { alignItems: "center" },
 });
@@ -82,6 +92,7 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
   // displayed width and scale height down with it, keeping the bar-width ratios intact
   // (uniform scaling doesn't break scannability, only non-uniform stretching would).
   const MAX_BARCODE_WIDTH = 170;
+  const MAX_BARCODE_HEIGHT = BAND_HEIGHT - 22;
 
   // Drawing the barcode means creating a canvas and rasterizing it — cached per invoice number
   // so it happens once, not on every re-render of every page's header while the PDF is built.
@@ -99,11 +110,11 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
     });
     let width = canvas.width / BARCODE_SCALE;
     let height = canvas.height / BARCODE_SCALE;
-    if (width > MAX_BARCODE_WIDTH) {
-      const scale = MAX_BARCODE_WIDTH / width;
-      width = MAX_BARCODE_WIDTH;
-      height *= scale;
-    }
+    // Scaled by whichever limit binds first — width to stay inside its half of the band, height
+    // so the title and barcode together always fit the band's fixed height.
+    const scale = Math.min(MAX_BARCODE_WIDTH / width, MAX_BARCODE_HEIGHT / height, 1);
+    width *= scale;
+    height *= scale;
     const barcode = { dataUrl: canvas.toDataURL("image/png"), width, height };
     barcodeCache.set(Barkodi, barcode);
     return barcode;
@@ -132,7 +143,6 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
 
       <View style={styles.header}>
         <View style={styles.colShitesi}>
-        <Text style={styles.colHeading}>SHITËSI</Text>
         <Text style={styles.text}>
           <Text style={styles.bold}>Adresa: </Text>
           {teDhenatBiznesit?.adresa || ""}
