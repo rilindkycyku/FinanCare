@@ -19,6 +19,15 @@ import { useDialog } from "../../Context/DialogContext";
 
 const BLANK_CLIENT = { emriBiznesit: "", nui: "", nrf: "", tvsh: "", adresa: "", nrKontaktit: "", email: "" };
 
+/** `yyyy-mm-dd` plus n days, back as `yyyy-mm-dd` — what the payment-term buttons produce. */
+function shtoDite(dateStr, dite) {
+  const d = new Date(dateStr || Date.now());
+  if (Number.isNaN(d.getTime())) return "";
+  d.setDate(d.getDate() + dite);
+  // Built from the local date parts: toISOString() would shift the day for anyone east of UTC.
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 const BLANK_ITEM = () => ({
   key: makeId("li"),
   emriProduktit: "",
@@ -47,6 +56,8 @@ function KrijoFaturen() {
   const [pershkrimShtese, setPershkrimShtese] = useState("");
   const [transporti, setTransporti] = useState("");
   const [dataRegjistrimit, setDataRegjistrimit] = useState(new Date().toISOString().slice(0, 10));
+  // Optional: an invoice that doesn't state a due date simply doesn't print one.
+  const [afatiPageses, setAfatiPageses] = useState("");
   const [llojiDokumentit, setLlojiDokumentit] = useState("");
   const [saving, setSaving] = useState(false);
   // Step 1 collects the partner/client and invoice details; step 2 opens the
@@ -130,6 +141,7 @@ function KrijoFaturen() {
       draftMetaRef.current = { id: inv.id, nrFatures: inv.nrFatures, nrRendorFatures: inv.nrRendorFatures };
       setKlienti({ ...BLANK_CLIENT, ...inv.klienti });
       setDataRegjistrimit((inv.dataRegjistrimit || new Date().toISOString()).slice(0, 10));
+      setAfatiPageses(inv.afatiPageses ? inv.afatiPageses.slice(0, 10) : "");
       setPershkrimShtese(inv.pershkrimShtese || "");
       setLlojiDokumentit(inv.llojiDokumentit || "");
       // Stored amounts are already sign-flipped for negateAmounts document types (e.g.
@@ -452,6 +464,7 @@ function KrijoFaturen() {
       // other way of knowing about (and which would otherwise all print as a plain "FATURË").
       titulliDokumentit: dokumentiZgjedhur.titleLabel || (dokumentiZgjedhur.label || "").toUpperCase(),
       dataRegjistrimit: new Date(dataRegjistrimit).toISOString(),
+      afatiPageses: afatiPageses ? new Date(afatiPageses).toISOString() : "",
       pershkrimShtese,
       transporti: parseFloat(transportiSigned) || 0,
       klienti,
@@ -680,8 +693,46 @@ function KrijoFaturen() {
                       type="date"
                       value={dataRegjistrimit}
                       onChange={(e) => setDataRegjistrimit(e.target.value)}
+                      onKeyDown={(e) => focusNextField(e, "fd-afati")}
+                    />
+                  </Col>
+                  <Col md={4}>
+                    <Form.Label>Afati i Pagesës</Form.Label>
+                    <Form.Control
+                      id="fd-afati"
+                      type="date"
+                      min={dataRegjistrimit}
+                      value={afatiPageses}
+                      onChange={(e) => setAfatiPageses(e.target.value)}
                       onKeyDown={(e) => focusNextField(e, "fd-transport")}
                     />
+                    {/* The usual terms, one click away — nobody wants to count 30 days forward
+                        in their head, and typing a date is the slowest field on this form. */}
+                    <div className="d-flex flex-wrap gap-1 mt-1">
+                      {[7, 15, 30].map((dite) => (
+                        <Button
+                          key={dite}
+                          variant="outline-secondary"
+                          size="sm"
+                          className="py-0 px-2"
+                          style={{ fontSize: "0.75rem" }}
+                          onClick={() => setAfatiPageses(shtoDite(dataRegjistrimit, dite))}
+                        >
+                          +{dite} ditë
+                        </Button>
+                      ))}
+                      {afatiPageses && (
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          className="py-0 px-2"
+                          style={{ fontSize: "0.75rem" }}
+                          onClick={() => setAfatiPageses("")}
+                        >
+                          Pastro
+                        </Button>
+                      )}
+                    </div>
                   </Col>
                   <Col md={4}>
                     <Form.Label>Transporti €</Form.Label>
@@ -927,12 +978,20 @@ function KrijoFaturen() {
                             {dokumentiZgjedhur.label} <Badge bg="secondary">{dokumentiZgjedhur.value}</Badge>
                           </div>
                         </Col>
-                        <Col sm={12}>
+                        <Col sm={afatiPageses ? 6 : 12}>
                           <div className="text-muted" style={{ fontSize: "9pt" }}>
                             Data e Faturës
                           </div>
                           <div className="fw-semibold">{dataRegjistrimit}</div>
                         </Col>
+                        {afatiPageses && (
+                          <Col sm={6}>
+                            <div className="text-muted" style={{ fontSize: "9pt" }}>
+                              Afati i Pagesës
+                            </div>
+                            <div className="fw-semibold">{afatiPageses}</div>
+                          </Col>
+                        )}
                       </Row>
 
                       <hr />

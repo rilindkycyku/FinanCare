@@ -126,6 +126,12 @@ function HeaderFatura({ Barkodi, NrFaqes, NrFaqeve, data }) {
           <Text style={styles.bold}>Data e Faturës: </Text>
           {new Date(teDhenatFat?.regjistrimet?.dataRegjistrimit || Date.now()).toLocaleDateString("en-GB")}
         </Text>
+        {teDhenatFat?.regjistrimet?.afatiPageses ? (
+          <Text style={styles.text}>
+            <Text style={styles.bold}>Afati i Pagesës: </Text>
+            {new Date(teDhenatFat.regjistrimet.afatiPageses).toLocaleDateString("en-GB")}
+          </Text>
+        ) : null}
         {teDhenatFat?.regjistrimet?.pershkrimShtese ? (
           <Text style={styles.text}>
             <Text style={styles.bold}>Shënime Shtesë: </Text>
