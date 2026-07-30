@@ -377,20 +377,22 @@ function KrijoFaturen() {
     () => signedItems.filter((it, i) => items[i].emriProduktit && parseFloat(items[i].qmimiShites) > 0),
     [signedItems, items]
   );
-  const itemRows = useMemo(
-    () =>
-      items.map((it) => ({
-        ID: it.key,
-        Emërtimi: it.emriProduktit,
-        "Barkodi / Kodi": [it.barkodi, it.kodiProduktit].filter(Boolean).join(" / ") || "-",
-        Njm: it.emriNjesiaMatese,
-        Sasia: parseFloat(it.sasiaStokut || 0),
-        "Çmimi €": `${parseFloat(it.qmimiShites || 0).toFixed(2)} €`,
-        "TVSH %": `${it.llojiTVSH}%`,
-        "Rabati %": `${parseFloat(it.rabati1 || 0)}%`,
-      })),
-    [items]
-  );
+  // Columns nothing fills in are left out, the same way the printed invoice does it — an invoice
+  // with no product codes or no discounts shouldn't show a column of dashes and zeroes.
+  const itemRows = useMemo(() => {
+    const showCodes = items.some((it) => it.barkodi || it.kodiProduktit);
+    const showRabat = items.some((it) => parseFloat(it.rabati1) > 0);
+    return items.map((it) => ({
+      ID: it.key,
+      Emërtimi: it.emriProduktit,
+      ...(showCodes ? { "Barkodi / Kodi": [it.barkodi, it.kodiProduktit].filter(Boolean).join(" / ") || "-" } : {}),
+      Njm: it.emriNjesiaMatese,
+      Sasia: parseFloat(it.sasiaStokut || 0),
+      "Çmimi €": `${parseFloat(it.qmimiShites || 0).toFixed(2)} €`,
+      "TVSH %": `${it.llojiTVSH}%`,
+      ...(showRabat ? { "Rabati %": `${parseFloat(it.rabati1 || 0)}%` } : {}),
+    }));
+  }, [items]);
   const transportiSigned = dokumentiZgjedhur.negateAmounts ? -(parseFloat(transporti) || 0) : transporti;
   const totals = useMemo(() => calcInvoiceTotals(validItems, transportiSigned), [validItems, transportiSigned]);
 

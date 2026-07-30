@@ -52,6 +52,11 @@ function FooterFatura({ Barkodi, data }) {
   const transporti = parseFloat(teDhenatFat?.regjistrimet?.transporti) || 0;
   const { totaliMeTVSH, totaliPaTVSH, tvshBreakdown, rabati, totaliFinal } = calcInvoiceTotals(produktet, transporti);
 
+  // Checked on the absolute value: a Fletëkthim (or any type flagged negateAmounts) carries
+  // negative amounts throughout, so a discount there lands as a negative number too.
+  const kaRabat = Math.abs(rabati) >= 0.005;
+  const kaTransport = Math.abs(transporti) >= 0.005;
+
   const activeBanks = (bankat || []).filter((b) => b.emriBankes);
 
   const bankTable = () => {
@@ -96,14 +101,21 @@ function FooterFatura({ Barkodi, data }) {
         )}
         <View style={styles.column}>
           <View style={styles.table}>
-            <View style={styles.row}>
-              <Text style={[styles.cell, styles.boldT, styles.header]}>Nëntotali</Text>
-              <Text style={styles.cell}>{(totaliMeTVSH + rabati).toFixed(2)} €</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={[styles.cell, styles.boldT, styles.header]}>Rabati</Text>
-              <Text style={styles.cell}>{(-rabati).toFixed(2)} €</Text>
-            </View>
+            {/* With no discount and no transport, "Nëntotali" is the same number as "Çmimi
+                Total" and "Rabati" is a row of zeroes — an invoice that never carries a discount
+                shouldn't have to print either. */}
+            {(kaRabat || kaTransport) && (
+              <View style={styles.row}>
+                <Text style={[styles.cell, styles.boldT, styles.header]}>Nëntotali</Text>
+                <Text style={styles.cell}>{(totaliMeTVSH + rabati).toFixed(2)} €</Text>
+              </View>
+            )}
+            {kaRabat && (
+              <View style={styles.row}>
+                <Text style={[styles.cell, styles.boldT, styles.header]}>Rabati</Text>
+                <Text style={styles.cell}>{(-rabati).toFixed(2)} €</Text>
+              </View>
+            )}
             <View style={styles.row}>
               <Text style={[styles.cell, styles.boldT, styles.header]}>Totali Pa TVSH</Text>
               <Text style={styles.cell}>{totaliPaTVSH.toFixed(2)} €</Text>
@@ -114,7 +126,7 @@ function FooterFatura({ Barkodi, data }) {
                 <Text style={styles.cell}>{value.toFixed(2)} €</Text>
               </View>
             ))}
-            {transporti > 0 && (
+            {kaTransport && (
               <View style={styles.row}>
                 <Text style={[styles.cell, styles.boldT, styles.header]}>Transporti</Text>
                 <Text style={styles.cell}>{transporti.toFixed(2)} €</Text>
