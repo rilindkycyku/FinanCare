@@ -219,6 +219,18 @@ function TeDhenatBiznesit() {
                 <Form.Group className="w-100">
                   <Form.Label>Logo (mos ta ketë sfond të bardhë)</Form.Label>
                   <Form.Control type="file" accept="image/*" onChange={handleFotoChange} disabled={!edito} />
+                  {/* Turning the logo off leaves the uploaded file alone — it's for businesses
+                      that want a plain printed invoice without having to delete their logo, and
+                      it also keeps it out of the share link and the QR. */}
+                  <Form.Check
+                    type="switch"
+                    id="shfaq-logon"
+                    className="mt-3"
+                    label="Shfaq logon në faturë"
+                    checked={formValue.shfaqLogonNeFature !== false}
+                    disabled={!edito}
+                    onChange={(e) => setFormValue((prev) => ({ ...prev, shfaqLogonNeFature: e.target.checked }))}
+                  />
                 </Form.Group>
               </Col>
 

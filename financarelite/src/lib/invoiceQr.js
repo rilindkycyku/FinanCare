@@ -30,9 +30,12 @@ const QR_LOGO_SIZE = [48, 24];
  *    its middle, so the printed code still looks like the business's own. */
 export async function buildInvoiceShareQr({ teDhenatBiznesit, banks, currencies, invoice }) {
   const payloadFor = (logo) => buildInvoicePayload({ teDhenatBiznesit, banks, currencies, invoice, logo });
+  // A business that switched the logo off wants a plain invoice, so it doesn't ride along in the
+  // link either — which leaves the QR smaller and easier to scan into the bargain.
+  const logo = teDhenatBiznesit?.shfaqLogonNeFature === false ? null : teDhenatBiznesit?.logo;
   const [linkLogo, qrLogo] = await Promise.all([
-    shrinkLogoDataUrl(teDhenatBiznesit?.logo, ...LINK_LOGO_SIZE),
-    shrinkLogoDataUrl(teDhenatBiznesit?.logo, ...QR_LOGO_SIZE, { jpeg: true }),
+    shrinkLogoDataUrl(logo, ...LINK_LOGO_SIZE),
+    shrinkLogoDataUrl(logo, ...QR_LOGO_SIZE, { jpeg: true }),
   ]);
 
   const link = await encodeInvoiceToLink(payloadFor(linkLogo));
@@ -50,7 +53,7 @@ export async function buildInvoiceShareQr({ teDhenatBiznesit, banks, currencies,
   let dataUrl = null;
   let tooLarge = false;
   try {
-    dataUrl = await qrDataUrl(qrText, teDhenatBiznesit?.logo || FALLBACK_QR_LOGO);
+    dataUrl = await qrDataUrl(qrText, logo || FALLBACK_QR_LOGO);
   } catch (err) {
     if (!(err instanceof QrTooLargeError)) throw err;
     tooLarge = true;

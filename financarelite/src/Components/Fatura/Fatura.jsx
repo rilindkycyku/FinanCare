@@ -1,20 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Styles/FaturaModern.css";
-import { Document, Page, pdf, View, Text, StyleSheet, Font } from "@react-pdf/renderer";
+import { Document, Page, pdf, View, Text, StyleSheet } from "@react-pdf/renderer";
+import "./pdfFonts";
 import { Button, Spinner } from "react-bootstrap";
 import { Download, ArrowLeft, FileText, Share2, Pencil, Lock, Unlock, CreditCard } from "lucide-react";
 import DetajeFatura from "./DetajeFatura";
 import HeaderFatura from "./HeaderFatura";
 import FooterFatura from "./FooterFatura";
 import PdfCanvasViewer from "./PdfCanvasViewer";
-
-Font.register({
-  family: "Quicksand",
-  fonts: [
-    { src: "/fonts/Quicksand-Regular.ttf" },
-    { src: "/fonts/Quicksand-Bold.ttf", fontWeight: "bold" },
-  ],
-});
 
 const styles = StyleSheet.create({
   hr: { borderBottomWidth: 1, borderColor: "black", marginVertical: 5 },
